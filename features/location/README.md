@@ -58,7 +58,7 @@ para validar la ciudad con `listLocations()`; sin ubicación la búsqueda es nac
 | Opciones de la cookie (duración, `secure`) | `saveLocation` en `actions.ts` | el `toHaveBeenCalledWith` de `actions.test.ts` |
 | Textos o pasos del selector | `LocationPicker.tsx` | los nombres accesibles que busca `LocationPicker.test.tsx` |
 | Cómo llega la ubicación a la consulta | `toGeoFilter` en `cookie.ts` | `GeoFilter` vive en `lib/marketplace/params.ts` y no se cambia desde acá |
-| Qué ubicación cuenta como efectiva | `getEffectiveLocation` en `server.ts` | sus casos en `server.test.ts`; la consumen `LocationBar.tsx`, `features/search/SearchResults.tsx` y `features/store/NearbyStores.tsx` |
+| Qué ubicación cuenta como efectiva | `getEffectiveLocation` en `server.ts` | sus casos en `server.test.ts`; la consumen `LocationBar.tsx`, `features/search/SearchResults.tsx`, `features/store/NearbyStores.tsx` y `features/product/ProductOffers.tsx` |
 
 ## 4. API pública
 

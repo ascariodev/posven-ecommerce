@@ -166,7 +166,7 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 | Adaptador simulado | `lib/marketplace/mock/adapter.ts` | las nueve funciones de `client.ts` con la misma firma; interpreta la consulta de `params.ts` como la API |
 | Ofertas simuladas | `productPage` en `lib/marketplace/mock/adapter.ts` | redirección, producto sin ofertas, orden por precio o distancia, hasta dos premium destacadas y relleno hasta tres con `outside_radius` |
 | Datos simulados | `lib/marketplace/mock/fixtures.ts` | tasa, ubicaciones, categorías, seis tiendas con `distance_km` fijo y sus detalles (`MOCK_STORE_DETAILS`), productos con sus ofertas, `MOCK_REDIRECTS` y `MOCK_UNAVAILABLE_PRODUCTS` |
-| Selección de modo | `usesMock` en `lib/marketplace/client.ts` | `MARKETPLACE_MODE` ausente o `mock`: simulado; `api`: `requestJson`; otro valor: `Error` |
+| Selección de modo | `usesMock` en `lib/marketplace/client.ts` | `MARKETPLACE_MODE` ausente o `mock`: simulado; `api`: las funciones de `http.ts` (`requestJson`, `requestJsonOrNull`, `postJson`); otro valor: `Error` |
 
 ## 6. Dependencias
 

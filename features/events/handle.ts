@@ -4,6 +4,8 @@ export const EVENT_DEDUP_WINDOW_MS = 600_000;
 
 const MAX_DEDUP_KEYS = 10_000;
 
+const MAX_EVENT_BODY_CHARS = 1024;
+
 const BOT_USER_AGENT = /bot|crawl|spider|slurp|facebookexternalhit|headless|lighthouse|preview/i;
 
 export function isBot(userAgent: string | null): boolean {
@@ -17,11 +19,11 @@ export function createDeduper(windowMs = EVENT_DEDUP_WINDOW_MS): (key: string, n
     const last = lastForwardedAt.get(key);
     if (last !== undefined && now - last < windowMs) return false;
 
+    lastForwardedAt.delete(key);
     lastForwardedAt.set(key, now);
-    if (lastForwardedAt.size > MAX_DEDUP_KEYS) {
-      for (const [storedKey, forwardedAt] of lastForwardedAt) {
-        if (now - forwardedAt >= windowMs) lastForwardedAt.delete(storedKey);
-      }
+    for (const [storedKey, forwardedAt] of lastForwardedAt) {
+      if (lastForwardedAt.size <= MAX_DEDUP_KEYS && now - forwardedAt < windowMs) break;
+      lastForwardedAt.delete(storedKey);
     }
     return true;
   };
@@ -42,6 +44,7 @@ export function handleEvent(p: {
   now: number;
   shouldForward: (key: string, now: number) => boolean;
 }): { status: 202 | 400; forward: MarketplaceEvent | null } {
+  if (p.body.length > MAX_EVENT_BODY_CHARS) return { status: 400, forward: null };
   const parsed = eventInputSchema.safeParse(parseJson(p.body));
   if (!parsed.success) return { status: 400, forward: null };
   if (isBot(p.userAgent)) return { status: 202, forward: null };

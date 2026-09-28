@@ -28,7 +28,8 @@ paths:
 7. El e2e (`e2e/*.spec.ts`, `playwright.config.ts`) corre en modo simulado con
    `npx playwright test` al cerrar un plan: Chromium con el dispositivo "Pixel 7" contra
    `http://localhost:3000`. `webServer` levanta `npm run dev` con `MARKETPLACE_MODE=mock`, o reusa
-   el servidor que ya escucha en ese puerto, que entonces debe correr en modo simulado.
+   el servidor que ya escucha en ese puerto, que entonces debe correr en modo simulado y con
+   `SITE_URL=http://localhost:3000`: con `reuseExistingServer`, `webServer.env` no le llega.
    `webServer.env` fija además `SITE_URL=http://localhost:3000`, del que salen las canónicas y
    los sitemaps que se comprueban. El e2e de cierre son `e2e/search.spec.ts` y
    `e2e/product.spec.ts`.

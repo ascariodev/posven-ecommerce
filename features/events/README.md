@@ -11,7 +11,7 @@ capabilities:
     intent_aliases: ["registrar evento", "contar visitas", "analitica de tienda", "clics de whatsapp", "vistas de producto"]
     entrypoint: "POST /api/events"
     file: "app/api/events/route.ts"
-    input: "cuerpo JSON { type: 'product_view' | 'store_view' | 'click_whatsapp' | 'click_call' | 'click_route', store_slug: string | null, product_slug: string | null }; product_view exige product_slug y store_slug null, los demás exigen store_slug; cookie sid opcional"
+    input: "cuerpo JSON de hasta 1024 caracteres { type: 'product_view' | 'store_view' | 'click_whatsapp' | 'click_call' | 'click_route', store_slug: string | null, product_slug: string | null }; product_view exige product_slug y store_slug null, los demás exigen store_slug; cookie sid opcional"
     output: "202 o 400 sin cuerpo; fija la cookie sid (UUID, httpOnly, sameSite lax, de sesión) si falta o no es UUID"
     source: "navegador vía sendBeaconEvent(); reenvía { ...evento, session_id } a sendEvent() de lib/marketplace"
     rules: ["RN-EVENTS-01", "RN-EVENTS-02"]
@@ -47,7 +47,7 @@ estadísticas ni guarda nada propio.
 | Regla | Enunciado | Test que la hace cumplir |
 |---|---|---|
 | `RN-EVENTS-01` | Un evento sin user-agent o con uno de bot (`bot`, `crawl`, `spider`, `slurp`, `facebookexternalhit`, `headless`, `lighthouse`, `preview`) responde 202 y no se reenvía. | `features/events/handle.test.ts` ("un bot (Googlebot) y un user-agent nulo responden 202 sin reenvío") |
-| `RN-EVENTS-02` | Un evento con la misma sesión, tipo, tienda y producto que otro reenviado hace menos de 10 minutos responde 202 y no se reenvía; un duplicado no renueva la ventana. | `features/events/handle.test.ts` ("el mismo evento dentro de 10 minutos no se reenvía y pasados 10 minutos sí") |
+| `RN-EVENTS-02` | Un evento con la misma sesión, tipo, tienda y producto que otro reenviado hace menos de 10 minutos responde 202 y no se reenvía; un duplicado no renueva la ventana. Con más de 10 000 claves se descartan las más viejas. | `features/events/handle.test.ts` ("el mismo evento dentro de 10 minutos no se reenvía y pasados 10 minutos sí", "con más de 10 000 claves dentro de la ventana se descarta la más vieja") |
 | `RN-EVENTS-03` | El botón de WhatsApp no se pinta si la tienda no tiene `whatsapp` o si el producto es `recipe`; "Llamar" no se pinta si la tienda no tiene `phone`. | `features/events/ContactButtons.test.tsx` ("sin whatsapp no pinta WhatsApp", "con un producto recipe no pinta WhatsApp", "sin phone no pinta Llamar") |
 
 ## 3. Dónde hacer cambios
@@ -55,8 +55,8 @@ estadísticas ni guarda nada propio.
 | Tipo de cambio | Dónde va | Además hay que |
 |---|---|---|
 | Qué user-agent cuenta como bot | `BOT_USER_AGENT` en `handle.ts` | el caso de RN-EVENTS-01 en `handle.test.ts` |
-| Ventana de deduplicación o clave | `EVENT_DEDUP_WINDOW_MS` y la `key` de `handleEvent` en `handle.ts` | el caso de RN-EVENTS-02 en `handle.test.ts` |
-| Cookie de sesión | `readSessionId` en `app/api/events/route.ts` | nada: el valor tiene que seguir siendo UUID, lo exige `marketplaceEventSchema` |
+| Ventana de deduplicación, tope de claves o clave | `EVENT_DEDUP_WINDOW_MS`, `MAX_DEDUP_KEYS` y la `key` de `handleEvent` en `handle.ts` | el caso de RN-EVENTS-02 en `handle.test.ts` |
+| Cookie de sesión | `readSessionId` en `app/api/events/route.ts` | que siga siendo UUID: `readSessionId` lo valida con `z.uuid()` y el contrato lo pide (`session_id` en `marketplaceEventSchema`), pero nada lo comprueba al reenviar |
 | Un botón de contacto, su texto o su enlace | `ContactButtons.tsx` | `ContactButtons.test.tsx`; el tipo de evento sale de `EventType` en `lib/marketplace/schemas.ts` |
 | Un tipo de evento nuevo | spec §3.4 y `eventTypeSchema` en `lib/marketplace/schemas.ts` | quien lo manda (`ContactButtons` o un `ViewBeacon` montado en su página) |
 
@@ -75,8 +75,8 @@ estadísticas ni guarda nada propio.
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| `handleEvent` | `features/events/handle.ts` | cuerpo que no es JSON o no pasa `eventInputSchema`: 400; bot o duplicado: 202 sin reenvío; si no, 202 con `session_id` |
-| `createDeduper` | `features/events/handle.ts` | `Map` de clave a hora del último reenvío; con más de 10 000 claves borra las vencidas |
+| `handleEvent` | `features/events/handle.ts` | cuerpo de más de 1024 caracteres (`MAX_EVENT_BODY_CHARS`), que no es JSON o que no pasa `eventInputSchema`: 400; bot o duplicado: 202 sin reenvío; si no, 202 con `session_id` |
+| `createDeduper` | `features/events/handle.ts` | `Map` de clave a hora del último reenvío, ordenado por esa hora; en cada reenvío borra las vencidas del frente y, con más de 10 000 claves (`MAX_DEDUP_KEYS`), descarta las más viejas aunque no hayan vencido |
 | Deduplicador de módulo | `app/api/events/route.ts` | una instancia por proceso de Node, compartida por todas las peticiones |
 | `readSessionId` | `app/api/events/route.ts` | lee la cookie `sid`; si falta o no es UUID fija `crypto.randomUUID()` |
 | Reenvío | `app/api/events/route.ts` | `after(() => sendEvent(forward))`; un error se registra con `console.error("[events]", error)` |
@@ -115,9 +115,11 @@ export function StoreContact({ store }: { store: StoreSummary }) {
 - `product_view` lleva `store_slug` nulo porque una página de producto muestra varias tiendas (spec §3.4).
 - Un producto `recipe` se muestra sin WhatsApp y con "Llamar" y "Ver ruta" (spec §3.1, ítem 5); "Ver ruta" abre sólo Google Maps.
 - La deduplicación vive en la memoria del proceso: con varias instancias del servidor, cada una deduplica por su cuenta.
+- La memoria del deduplicador tiene tope: con más de 10 000 claves sin vencer (un cliente sin cookies estrena `sid` en cada petición) se descartan las más viejas, así que un duplicado de una clave descartada se reenvía otra vez.
+- `handleEvent` rechaza con 400 un cuerpo de más de 1024 caracteres antes de parsearlo; `route.ts` lo lee entero con `request.text()` y no limita la frecuencia por IP.
 
 ## 9. Pruebas
 
 - Comando: `npx vitest run features/events`
-- `features/events/handle.test.ts`: cuerpo inválido 400, `product_view` válido con `session_id`, bot y user-agent nulo sin reenvío, duplicado dentro y fuera de la ventana.
+- `features/events/handle.test.ts`: cuerpo inválido 400, cuerpo de más de 1024 caracteres 400, `product_view` válido con `session_id`, bot y user-agent nulo sin reenvío, duplicado dentro y fuera de la ventana, descarte de la clave más vieja con el tope superado.
 - `features/events/ContactButtons.test.tsx`: los tres `href`, sin WhatsApp por falta de número o por `recipe`, sin "Llamar" sin teléfono, clic en "Ver ruta" manda `click_route`.

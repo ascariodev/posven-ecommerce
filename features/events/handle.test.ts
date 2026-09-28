@@ -19,6 +19,11 @@ describe("handleEvent", () => {
     });
   });
 
+  it("un cuerpo de más de 1024 caracteres responde 400 sin reenvío", () => {
+    const longBody = JSON.stringify({ type: "product_view", store_slug: null, product_slug: "a".repeat(1024) });
+    expect(handle(longBody, BROWSER_UA)).toEqual({ status: 400, forward: null });
+  });
+
   it("un product_view válido responde 202 y se reenvía con session_id", () => {
     expect(handle(PRODUCT_VIEW, BROWSER_UA)).toEqual({
       status: 202,
@@ -40,5 +45,12 @@ describe("handleEvent", () => {
       forward: null,
     });
     expect(handle(PRODUCT_VIEW, BROWSER_UA, shouldForward, T0 + EVENT_DEDUP_WINDOW_MS).forward).not.toBeNull();
+  });
+
+  it("con más de 10 000 claves dentro de la ventana se descarta la más vieja", () => {
+    const shouldForward = createDeduper();
+    for (let i = 0; i <= 10_000; i++) expect(shouldForward(`clave-${i}`, T0)).toBe(true);
+    expect(shouldForward("clave-10000", T0 + 1)).toBe(false);
+    expect(shouldForward("clave-0", T0 + 1)).toBe(true);
   });
 });

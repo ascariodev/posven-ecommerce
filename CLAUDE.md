@@ -23,8 +23,9 @@ separado.
 ## Verificación
 
 Mientras trabajas: `npx tsc --noEmit` y `npx eslint <archivos>`. Antes de cerrar: además
-`npx vitest run <área>`, y `npx next build` si se tocaron rutas, metadatos o caché. Nada se
-reporta como pasando sin haberse corrido.
+`npx vitest run <área>`, y `npx next build` si se tocaron rutas, metadatos o caché. Antes de
+cerrar un plan: `npx playwright test` (e2e en modo simulado). Nada se reporta como pasando sin
+haberse corrido.
 
 ## Documentos
 

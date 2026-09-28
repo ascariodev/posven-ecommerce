@@ -1,0 +1,29 @@
+---
+paths:
+  - "app/page.tsx"
+  - "app/layout.tsx"
+  - "app/buscar/**"
+---
+
+# Metadatos y SEO
+
+Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec §4.1
+(`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`).
+
+1. **El título lo arma la plantilla del layout.** `app/layout.tsx` fija `title.default` y
+   `title.template` (`%s | SITE_NAME`); una página exporta sólo su parte (`title: "Buscar"` en
+   `app/buscar/page.tsx`) o nada, como `/`. La marca sale de `SITE_NAME` (`lib/site.ts`), nunca
+   escrita a mano.
+2. **La canónica es relativa y sin parámetros.** `metadataBase` (`SITE_URL`, en el layout) la
+   vuelve absoluta; `/` exporta `alternates: { canonical: "/" }` y Next la emite sin barra final
+   (`http://localhost:3000`). Nunca lleva parámetros de ubicación ni de búsqueda (`q`,
+   `categoria`, `radio`, `pagina`).
+3. **Lo que no se indexa lleva `noindex`.** `/buscar` exporta
+   `robots: { index: false, follow: true }`; `app/error.tsx` pinta
+   `<meta name="robots" content="noindex" />` porque es Client Component y `metadata` sólo se exporta desde Server Components (guía
+   `generate-metadata`).
+4. **Metadatos estáticos (`export const metadata`) por defecto.** `generateMetadata` sólo cuando
+   la ruta los saca de sus datos (el nombre del producto o de la tienda), y nunca de la cookie de
+   ubicación.
+5. **El e2e comprueba la canónica de `/` y el `noindex` de `/buscar`** (`e2e/search.spec.ts`):
+   quien cambia esos metadatos corre `npx playwright test`.

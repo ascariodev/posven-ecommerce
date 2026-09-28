@@ -19,6 +19,7 @@ Datos de entorno y flujo que `posven-ecommerce/CLAUDE.md` no repite. Versiones e
 | Lint | `npx eslint <rutas>` |
 | Pruebas | `npx vitest run <ruta>` |
 | Build | `npx next build` |
+| E2E, antes de cerrar un plan | `npx playwright test` (modo simulado; `playwright.config.ts`) |
 | Desarrollo | `npm run dev` (puerto 3000) |
 
 ## 3. Ramas

@@ -23,6 +23,15 @@ README: `features/search/README.md`
 | leer y escribir los parámetros de la URL de /buscar | `parseSearchQuery() / searchHref()` | `features/search/query.ts` | RN-SEARCH-02 |
 | mostrar el formulario de búsqueda | `<SearchForm />` | `features/search/SearchForm.tsx` |  |
 
+## store
+
+README: `features/store/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| mostrar las tiendas cercanas en la portada | `<NearbyStores />` | `features/store/NearbyStores.tsx` | RN-STORE-02 |
+| mostrar la tarjeta de una tienda | `<StoreCard />` | `features/store/StoreCard.tsx` | RN-STORE-01 |
+
 ## marketplace
 
 README: `lib/marketplace/README.md`

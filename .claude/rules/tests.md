@@ -3,6 +3,8 @@ paths:
   - "**/*.test.ts"
   - "**/*.test.tsx"
   - "vitest.config.mts"
+  - "e2e/**"
+  - "playwright.config.ts"
 ---
 
 # Pruebas
@@ -23,3 +25,7 @@ paths:
    `cacheLife()`, que fuera de Next lanza "only available with the `cacheComponents` config". Se
    prueban `mock/adapter.ts` y `http.ts`; `client.ts` lo cubren `next build` y el e2e.
 6. No se agregan pruebas que no se pidieron, salvo la que reproduce un bug que se corrige.
+7. El e2e (`e2e/*.spec.ts`, `playwright.config.ts`) corre en modo simulado con
+   `npx playwright test` al cerrar un plan: Chromium con el dispositivo "Pixel 7" contra
+   `http://localhost:3000`. `webServer` levanta `npm run dev` con `MARKETPLACE_MODE=mock`, o reusa
+   el servidor que ya escucha en ese puerto, que entonces debe correr en modo simulado.

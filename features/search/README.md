@@ -3,9 +3,9 @@ module: "search"
 path: "features/search"
 type: "feature"
 exports: ["SearchQuery", "parseSearchQuery", "searchHref", "SearchForm", "SearchResults", "ProductCard", "FeaturedCard", "RadiusFilter", "Pagination", "EmptyState", "CategoryLinks"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/badge.tsx"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/location/LocationBar.tsx", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/badge.tsx", "components/ui/skeleton.tsx"]
 tests: "features/search/*.test.{ts,tsx}"
-verified_against: ["features/search/query.ts", "features/search/SearchForm.tsx", "features/search/SearchResults.tsx", "features/search/ProductCard.tsx", "features/search/FeaturedCard.tsx", "features/search/RadiusFilter.tsx", "features/search/Pagination.tsx", "features/search/EmptyState.tsx", "features/search/CategoryLinks.tsx", "app/buscar/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/cookie.ts", "features/location/server.ts"]
+verified_against: ["features/search/query.ts", "features/search/SearchForm.tsx", "features/search/SearchResults.tsx", "features/search/ProductCard.tsx", "features/search/FeaturedCard.tsx", "features/search/RadiusFilter.tsx", "features/search/Pagination.tsx", "features/search/EmptyState.tsx", "features/search/CategoryLinks.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/cookie.ts", "features/location/server.ts"]
 capabilities:
   - intent: "buscar productos por texto o categoría cerca del usuario"
     intent_aliases: ["buscar producto", "resultados de busqueda", "pagina buscar", "buscar por categoria"]
@@ -93,7 +93,7 @@ Componentes:
 
 - `lib/marketplace/client.ts`: `searchProducts()`, `listLocations()` y `listCategories()` en `SearchResults.tsx`.
 - `lib/marketplace/params.ts` (`RADIUS_OPTIONS`, `DEFAULT_RADIUS_KM`, `RadiusKm`) y `lib/marketplace/schemas.ts` (`SearchItem`, `FeaturedProduct`, `PageMeta`, `CategoryNode`).
-- `features/location/server.ts` (`getUserLocation`) y `features/location/cookie.ts` (`toGeoFilter`, `describeLocation`).
+- `features/location/server.ts` (`getUserLocation`) y `features/location/cookie.ts` (`toGeoFilter`, `describeLocation`); `features/location/LocationBar.tsx` (`LocationBar`, `LocationBarSkeleton`) en la página.
 - `lib/format.ts` (`formatUsd`, `formatVes`, `formatRate`, `formatDistance`) y `lib/site.ts` (`SITE_NAME`).
 - `components/ui/button.tsx`, `components/ui/input.tsx`, `components/ui/badge.tsx` y `components/ui/skeleton.tsx` (en la página).
 - `next/form`, `next/link` y `next/image`.

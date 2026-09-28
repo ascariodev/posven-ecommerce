@@ -4,6 +4,7 @@ paths:
   - "app/layout.tsx"
   - "app/buscar/**"
   - "app/p/**"
+  - "app/tienda/**"
   - "lib/jsonld.ts"
   - "features/*/jsonld.ts"
 ---
@@ -35,7 +36,8 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
    sale de lo cacheado por slug (`productJsonLd` en `features/product/jsonld.ts`). Cada objeto
    trae su `@context` y va en su propio `<script>`.
 7. **Una página con slug resuelve el 404 y el 308 fuera de `<Suspense>`**: `await params` y la
-   lectura cacheada (`loadProduct` en `features/product/load.ts`) en la página misma, con
+   lectura cacheada en la página misma (`loadProduct` en `app/p/[slug]/page.tsx`, `getStore`
+   en `app/tienda/[slug]/page.tsx`), con
    `generateStaticParams` de al menos un slug (`[{ slug: "__vacio" }]` si la API no trae
    ninguno, porque un arreglo vacío rompe el build con Cache Components). Sin `loading.tsx` ni
    `<Suspense>` por encima de la página: convertirían el 404 en un 200. Sólo se comprueba con

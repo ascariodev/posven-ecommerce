@@ -49,4 +49,9 @@ describe("StoreCard", () => {
     render(<StoreCard store={store()} featured />);
     expect(screen.getByText("Destacado")).toBeTruthy();
   });
+
+  it("una tienda con outside_radius muestra Fuera de tu zona", () => {
+    render(<StoreCard store={store({ outside_radius: true })} />);
+    expect(screen.getByText("Fuera de tu zona")).toBeTruthy();
+  });
 });

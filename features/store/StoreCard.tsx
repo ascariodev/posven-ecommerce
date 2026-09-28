@@ -4,15 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { cx } from "@/components/ui/cx";
 import { formatDistance } from "@/lib/format";
 import type { NearbyStore } from "@/lib/marketplace/schemas";
-
-function initials(name: string): string {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((word) => word.charAt(0).toUpperCase())
-    .join("");
-}
+import { storeInitials } from "./initials";
 
 export function StoreCard({ store, featured }: { store: NearbyStore; featured?: boolean }) {
   const logoUrl = store.is_premium ? store.logo_url : null;
@@ -37,14 +29,15 @@ export function StoreCard({ store, featured }: { store: NearbyStore; featured?: 
           aria-hidden="true"
           className="flex size-14 shrink-0 items-center justify-center rounded-full bg-muted text-lg font-semibold text-muted-foreground"
         >
-          {initials(store.name)}
+          {storeInitials(store.name)}
         </div>
       )}
       <div className="flex min-w-0 flex-col gap-1">
-        {featured && (
-          <Badge variant="featured" className="self-start">
-            Destacado
-          </Badge>
+        {(featured || store.outside_radius) && (
+          <div className="flex flex-wrap gap-1">
+            {featured && <Badge variant="featured">Destacado</Badge>}
+            {store.outside_radius && <Badge>Fuera de tu zona</Badge>}
+          </div>
         )}
         <h3 className="font-medium text-foreground">{store.name}</h3>
         <p className="text-sm text-muted-foreground">

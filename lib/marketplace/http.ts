@@ -27,6 +27,7 @@ export async function requestJson<T>(
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
     if (!response.ok) {
+      await response.body?.cancel();
       throw new MarketplaceUnavailableError(path, { cause: new Error(`HTTP ${response.status}`) });
     }
     body = await response.json();

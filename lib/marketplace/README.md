@@ -63,7 +63,7 @@ renderiza, no lee cookies ni `searchParams` y no calcula montos ni distancias.
 |---|---|---|
 | Campo nuevo del contrato | la spec §3 primero, después `schemas.ts` | agregarlo a los objetos de `mock/fixtures.ts` y a lo que arma `mock/adapter.ts`, para que `schemas.test.ts` siga pasando |
 | Endpoint nuevo | función pública en `client.ts` que llama a `requestJson` | su esquema en `schemas.ts`, la misma firma en `mock/adapter.ts` y su caso en `schemas.test.ts` |
-| Parámetro de consulta nuevo | `searchQuery` o `storesQuery` en `params.ts` | su caso en `params.test.ts` y su lectura en `readScope` de `mock/adapter.ts` |
+| Parámetro de consulta nuevo | `searchQuery` o `storesQuery` en `params.ts` | su caso en `params.test.ts` y su lectura en `mock/adapter.ts` (`readScope` si es de ubicación; si no, la función que la usa) |
 | Radios elegibles | `RADIUS_OPTIONS` y `DEFAULT_RADIUS_KM` en `params.ts` | cambiar antes la spec §5.1 |
 | Datos simulados | `mock/fixtures.ts` | montos, `nearest_km` y `distance_km` como literales, nunca calculados |
 

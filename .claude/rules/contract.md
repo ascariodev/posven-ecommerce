@@ -16,7 +16,7 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
 3. **`server-only` en lo que toca la clave.** `http.ts` y `client.ts` abren con
    `import "server-only"`, y todo archivo nuevo que lea `MARKETPLACE_API_KEY` o importe `http.ts`
    también. Fuera de `lib/marketplace/` se entra por `client.ts`: nadie importa `http.ts` ni
-   `mock/`.
+   `mock/`; sus constantes (`params.ts`) y tipos (`schemas.ts`) sí se importan directo.
 4. **Un campo nuevo entra primero en la spec §3**
    (`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`) y después en
    `schemas.ts`. Ningún campo se renombra ni se quita (spec §3.1, ítem 7).

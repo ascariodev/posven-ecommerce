@@ -5,7 +5,7 @@ type: "feature"
 exports: ["StoreCard", "NearbyStores", "NearbyStoresSkeleton"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "components/ui/badge.tsx", "components/ui/cx.ts", "components/ui/skeleton.tsx"]
 tests: "features/store/*.test.{ts,tsx}"
-verified_against: ["features/store/StoreCard.tsx", "features/store/NearbyStores.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "components/ui/badge.tsx", "components/ui/skeleton.tsx"]
+verified_against: ["features/store/StoreCard.tsx", "features/store/NearbyStores.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "components/ui/badge.tsx", "components/ui/cx.ts", "components/ui/skeleton.tsx"]
 capabilities:
   - intent: "mostrar las tiendas cercanas en la portada"
     intent_aliases: ["tiendas cercanas", "tiendas cerca de mi", "comercios cercanos", "tiendas destacadas"]

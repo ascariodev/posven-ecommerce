@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { describeLocation, toGeoFilter } from "@/features/location/cookie";
-import { getUserLocation } from "@/features/location/server";
-import { listLocations, listNearbyStores } from "@/lib/marketplace/client";
+import { toGeoFilter } from "@/features/location/cookie";
+import { getEffectiveLocation } from "@/features/location/server";
+import { listNearbyStores } from "@/lib/marketplace/client";
 import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
 import { SITE_NAME } from "@/lib/site";
 import { StoreCard } from "./StoreCard";
@@ -9,8 +9,7 @@ import { StoreCard } from "./StoreCard";
 const MAX_FEATURED_STORES = 2;
 
 export async function NearbyStores() {
-  const [storedLocation, states] = await Promise.all([getUserLocation(), listLocations()]);
-  const location = describeLocation(storedLocation, states) === null ? null : storedLocation;
+  const { location } = await getEffectiveLocation();
   const geo = toGeoFilter(location);
   const { data, featured } = await listNearbyStores({
     geo,

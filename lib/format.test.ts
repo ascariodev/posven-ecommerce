@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDistance, formatRate, formatUsd, formatVes } from "@/lib/format";
+import { formatDistance, formatRate, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
 
 describe("formatUsd", () => {
   it.each([
@@ -58,5 +58,22 @@ describe("formatDistance", () => {
     [12, "a 12 km"],
   ])("%s km -> %s", (km, expected) => {
     expect(formatDistance(km)).toBe(expected);
+  });
+});
+
+describe("formatUpdatedAgo", () => {
+  const now = new Date("2026-09-28T12:00:00Z");
+
+  it.each([
+    ["2026-09-28T11:59:30Z", "Actualizado hace un momento"],
+    ["2026-09-28T11:15:10Z", "Actualizado hace 44 min"],
+    ["2026-09-28T06:30:00Z", "Actualizado hace 5 h"],
+    ["2026-09-25T10:00:00Z", "Actualizado hace 3 días"],
+  ])("%s -> %s", (iso, expected) => {
+    expect(formatUpdatedAgo(iso, now)).toBe(expected);
+  });
+
+  it("usa el singular con un día", () => {
+    expect(formatUpdatedAgo("2026-09-27T08:00:00Z", now)).toBe("Actualizado hace 1 día");
   });
 });

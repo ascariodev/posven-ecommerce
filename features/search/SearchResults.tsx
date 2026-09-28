@@ -1,7 +1,7 @@
-import { describeLocation, toGeoFilter } from "@/features/location/cookie";
-import { getUserLocation } from "@/features/location/server";
+import { toGeoFilter } from "@/features/location/cookie";
+import { getEffectiveLocation } from "@/features/location/server";
 import { formatRate } from "@/lib/format";
-import { listCategories, listLocations, searchProducts } from "@/lib/marketplace/client";
+import { listCategories, searchProducts } from "@/lib/marketplace/client";
 import { EmptyState } from "./EmptyState";
 import { FeaturedCard } from "./FeaturedCard";
 import { Pagination } from "./Pagination";
@@ -19,9 +19,7 @@ export async function SearchResults({
     return <p className="text-muted-foreground">Escribe qué buscas o elige una categoría.</p>;
   }
 
-  const [storedLocation, states] = await Promise.all([getUserLocation(), listLocations()]);
-  const locationName = describeLocation(storedLocation, states);
-  const location = locationName === null ? null : storedLocation;
+  const { location, name: locationName } = await getEffectiveLocation();
   const geoKind = location?.kind ?? null;
 
   const { data, featured, meta, rate } = await searchProducts({

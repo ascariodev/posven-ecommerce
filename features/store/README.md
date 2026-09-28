@@ -13,7 +13,7 @@ capabilities:
     file: "features/store/NearbyStores.tsx"
     input: "sin props; lee la cookie loc; se monta dentro de <Suspense fallback={<NearbyStoresSkeleton />}>"
     output: "sección 'Tiendas cercanas' (con ubicación) o 'Tiendas en {SITE_NAME}' (sin ella): destacados primero y un StoreCard por tienda; sin tiendas, un aviso que invita a probar otra ciudad"
-    source: "listNearbyStores() de lib/marketplace con geo de la cookie loc"
+    source: "listNearbyStores() de lib/marketplace con geo de getEffectiveLocation() (cookie loc)"
     rules: ["RN-STORE-02"]
   - intent: "mostrar la tarjeta de una tienda"
     intent_aliases: ["tarjeta de tienda", "logo de tienda", "iniciales de tienda"]
@@ -60,15 +60,14 @@ ni pinta la página de una tienda.
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
 | `initials` | `features/store/StoreCard.tsx` | primeras letras de las dos primeras palabras del nombre, en mayúscula |
-| Ubicación efectiva | `features/store/NearbyStores.tsx` | una ciudad que `describeLocation` no reconoce cuenta como sin ubicación: `geo` null y sin radio |
 | Consulta | `features/store/NearbyStores.tsx` | `listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1 })` |
 | Orden de pintado | `features/store/NearbyStores.tsx` | `featured` (hasta `MAX_FEATURED_STORES`, 2) y después `data` sin los slugs destacados |
 
 ## 6. Dependencias
 
-- `lib/marketplace/client.ts`: `listNearbyStores()` y `listLocations()` en `NearbyStores.tsx`.
+- `lib/marketplace/client.ts`: `listNearbyStores()` en `NearbyStores.tsx`.
 - `lib/marketplace/params.ts` (`DEFAULT_RADIUS_KM`) y `lib/marketplace/schemas.ts` (`NearbyStore`).
-- `features/location/server.ts` (`getUserLocation`) y `features/location/cookie.ts` (`toGeoFilter`, `describeLocation`).
+- `features/location/server.ts` (`getEffectiveLocation`) y `features/location/cookie.ts` (`toGeoFilter`).
 - `lib/format.ts` (`formatDistance`) y `lib/site.ts` (`SITE_NAME`).
 - `components/ui/badge.tsx`, `components/ui/cx.ts` y `components/ui/skeleton.tsx`.
 - `next/link` y `next/image`.
@@ -91,6 +90,7 @@ export default function Home() {
 ## 8. Restricciones
 
 - `NearbyStores` lee la cookie `loc`: va siempre dentro de un `<Suspense>` (`cacheComponents: true`) y nunca dentro de `'use cache'`.
+- La ubicación sale de `getEffectiveLocation`: una ciudad que no reconoce llega como sin ubicación (RN-LOCATION-04), así que se pide sin `geo` ni radio y el título es el nacional.
 - El orden de las tiendas y `distance_km` los entrega la API; aquí sólo se quitan los destacados repetidos y se formatea la distancia.
 - Logo sólo para premium porque es parte de lo que la tienda premium recibe (spec §5.4); `logo_url` de una tienda sin premium se ignora.
 - El logo va por `next/image`: su dominio tiene que estar en `images.remotePatterns` de `next.config.ts` (spec §4.5).
@@ -99,5 +99,5 @@ export default function Home() {
 
 - Comando: `npx vitest run features/store`
 - `features/store/StoreCard.test.tsx`: iniciales "FS", premium sin logo y no premium con `logo_url` muestran iniciales, y "Destacado" con `featured`.
-- `features/store/NearbyStores.test.tsx`: destacado repetido en `data` aparece una vez y primero; ciudad desconocida se pide sin ubicación.
+- `features/store/NearbyStores.test.tsx`: destacado repetido en `data` aparece una vez y primero.
 - `e2e/search.spec.ts` (`npx playwright test`): la portada muestra el bloque de tiendas.

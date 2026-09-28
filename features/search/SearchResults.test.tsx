@@ -6,11 +6,10 @@ import { SearchResults } from "./SearchResults";
 vi.mock("@/lib/marketplace/client", () => ({
   searchProducts: vi.fn(),
   listCategories: vi.fn(async () => []),
-  listLocations: vi.fn(async () => []),
 }));
 
 vi.mock("@/features/location/server", () => ({
-  getUserLocation: vi.fn(async () => null),
+  getEffectiveLocation: vi.fn(async () => ({ location: null, name: null })),
 }));
 
 afterEach(() => {

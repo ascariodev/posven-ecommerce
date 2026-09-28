@@ -13,7 +13,7 @@ capabilities:
     file: "features/search/SearchResults.tsx"
     input: "searchParams: Promise<Record<string, string | string[] | undefined>> con q, categoria, radio (3 | 10 | 25 | 50 | pais) y pagina"
     output: "línea de tasa, RadiusFilter si hay ubicación, FeaturedCard por destacado, ProductCard por resultado y Pagination; EmptyState si no hay nada"
-    source: "searchProducts() de lib/marketplace con geo de la cookie loc"
+    source: "searchProducts() de lib/marketplace con geo de getEffectiveLocation() (cookie loc)"
     rules: ["RN-SEARCH-01", "RN-SEARCH-03", "RN-SEARCH-04"]
   - intent: "leer y escribir los parámetros de la URL de /buscar"
     intent_aliases: ["parametros de busqueda", "url de buscar", "radio de busqueda", "enlace a buscar"]
@@ -84,16 +84,15 @@ Componentes:
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| Ubicación efectiva | `SearchResults.tsx` | una ciudad que `describeLocation` no reconoce cuenta como sin ubicación: `geo` y `geoKind` null |
 | `optionsFor` | `RadiusFilter.tsx` | con coordenadas, 3, 10, 25, 50 km y todo el país; con ciudad, "Sólo {ciudad}" (radio 10) y todo el país; el vigente lleva `aria-current="true"` |
 | `relatedCategories` | `EmptyState.tsx` | hasta cuatro: con `categoria`, sus hermanas; sin ella o si no está en el árbol, las raíz |
 | Página | `app/buscar/page.tsx` | `metadata` estática con `robots` `noindex, follow`; formulario, `LocationBar` y resultados, cada uno en su `<Suspense>` |
 
 ## 6. Dependencias
 
-- `lib/marketplace/client.ts`: `searchProducts()`, `listLocations()` y `listCategories()` en `SearchResults.tsx`.
+- `lib/marketplace/client.ts`: `searchProducts()` y `listCategories()` en `SearchResults.tsx`.
 - `lib/marketplace/params.ts` (`RADIUS_OPTIONS`, `DEFAULT_RADIUS_KM`, `RadiusKm`) y `lib/marketplace/schemas.ts` (`SearchItem`, `FeaturedProduct`, `PageMeta`, `CategoryNode`).
-- `features/location/server.ts` (`getUserLocation`) y `features/location/cookie.ts` (`toGeoFilter`, `describeLocation`); `features/location/LocationBar.tsx` (`LocationBar`, `LocationBarSkeleton`) en la página.
+- `features/location/server.ts` (`getEffectiveLocation`) y `features/location/cookie.ts` (`toGeoFilter`); `features/location/LocationBar.tsx` (`LocationBar`, `LocationBarSkeleton`) en la página.
 - `lib/format.ts` (`formatUsd`, `formatVes`, `formatRate`, `formatDistance`) y `lib/site.ts` (`SITE_NAME`).
 - `components/ui/button.tsx`, `components/ui/input.tsx`, `components/ui/badge.tsx` y `components/ui/skeleton.tsx` (en la página).
 - `next/form`, `next/link` y `next/image`.
@@ -124,6 +123,7 @@ export default function SearchPage({
 ## 8. Restricciones
 
 - `SearchResults` lee `searchParams` y la cookie `loc`: va siempre dentro de un `<Suspense>` (`cacheComponents: true`).
+- La ubicación sale de `getEffectiveLocation`: una ciudad que no reconoce llega como sin ubicación (RN-LOCATION-04), con `geo` y `geoKind` null, y el nombre de la ciudad del filtro de radio es su `name`.
 - Montos y tasa sólo por `lib/format.ts`; ni el precio ni la distancia se calculan aquí.
 - Todo enlace de la búsqueda se arma con `searchHref`, y los que cambian el radio vuelven a la página 1.
 - Con ciudad, "todo el país" envía `radio` null y `searchProducts` no manda `city` (lo decide `searchQuery` de `lib/marketplace/params.ts`).

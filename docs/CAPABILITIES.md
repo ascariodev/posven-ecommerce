@@ -42,3 +42,8 @@ README: `lib/marketplace/README.md`
 | listar las tiendas cercanas o de una ciudad con su distancia y las premium destacadas | `listNearbyStores()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02, RN-MARKETPLACE-03 |
 | obtener el árbol de categorías globales | `listCategories()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02 |
 | obtener estados, municipios y ciudades con tiendas | `listLocations()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02 |
+| obtener la ficha de un producto con el resumen nacional de sus ofertas, o su slug nuevo | `getProduct()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02, RN-MARKETPLACE-04 |
+| listar las ofertas de un producto según la ubicación, por precio o por distancia | `getProductOffers()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02, RN-MARKETPLACE-03, RN-MARKETPLACE-04 |
+| obtener la ficha de una tienda con sus productos y precios en esa tienda | `getStore()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02, RN-MARKETPLACE-04 |
+| listar los slugs de productos o tiendas para el sitemap | `listSitemap()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02 |
+| registrar un evento de visita o de contacto con una tienda | `sendEvent()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02 |

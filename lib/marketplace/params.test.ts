@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { searchQuery, storesQuery } from "./params";
+import { productQuery, searchQuery, storesQuery } from "./params";
 
 const LOCATION_KEYS = ["lat", "lng", "city", "radius_km"];
 
@@ -73,5 +73,25 @@ describe("storesQuery", () => {
   it("sin geo no envía ubicación aunque haya radio (RN-MARKETPLACE-03)", () => {
     const query = storesQuery({ geo: null, radiusKm: 25, page: 1 });
     expect(keysOf(query)).toEqual(["page"]);
+  });
+});
+
+describe("productQuery", () => {
+  it("con coordenadas y radio envía lat, lng, radius_km y sort", () => {
+    const query = productQuery({ geo: { lat: 10.18, lng: -68.01 }, radiusKm: 10, sort: "distance" });
+    expect(keysOf(query)).toEqual(["lat", "lng", "radius_km", "sort"]);
+    expect(query.get("sort")).toBe("distance");
+  });
+
+  it("con ciudad envía city sin radius_km", () => {
+    const query = productQuery({ geo: { city: "valencia" }, radiusKm: 10, sort: "price" });
+    expect(keysOf(query)).toEqual(["city", "sort"]);
+    expect(query.get("city")).toBe("valencia");
+  });
+
+  it("sin ubicación sólo envía sort", () => {
+    const query = productQuery({ geo: null, radiusKm: null, sort: "price" });
+    expect(keysOf(query)).toEqual(["sort"]);
+    expect(query.get("sort")).toBe("price");
   });
 });

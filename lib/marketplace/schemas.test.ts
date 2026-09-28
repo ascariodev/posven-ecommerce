@@ -1,10 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { listCategories, listLocations, listNearbyStores, searchProducts } from "./mock/adapter";
+import {
+  getProduct,
+  getStore,
+  listCategories,
+  listLocations,
+  listNearbyStores,
+  listSitemap,
+  searchProducts,
+} from "./mock/adapter";
 import {
   categoriesResponseSchema,
+  eventInputSchema,
   locationsResponseSchema,
   moneySchema,
+  productResponseSchema,
   searchResponseSchema,
+  sitemapResponseSchema,
+  storeResponseSchema,
   storesResponseSchema,
 } from "./schemas";
 
@@ -45,6 +57,43 @@ describe("el simulado pasa los esquemas del contrato", () => {
   it("ubicaciones", async () => {
     const data = await listLocations();
     expect(locationsResponseSchema.safeParse({ data }).success).toBe(true);
+  });
+
+  it.each([
+    "acetaminofen-500-mg-20-tabletas",
+    "jarabe-para-la-tos-120-ml",
+    "acetaminofen-500mg-x-20",
+  ])("producto %s", async (slug) => {
+    const response = await getProduct(slug);
+    expect(response).not.toBeNull();
+    expect(productResponseSchema.safeParse(response).success).toBe(true);
+  });
+
+  it("tienda", async () => {
+    const response = await getStore({ slug: "farmacia-central-valencia", page: 1 });
+    expect(response).not.toBeNull();
+    expect(storeResponseSchema.safeParse(response).success).toBe(true);
+  });
+
+  it.each(["products", "stores"] as const)("sitemap de %s", async (type) => {
+    const response = await listSitemap({ type, page: 1 });
+    expect(sitemapResponseSchema.safeParse(response).success).toBe(true);
+  });
+});
+
+describe("eventInputSchema", () => {
+  it("rechaza product_view con store_slug", () => {
+    const event = {
+      type: "product_view",
+      store_slug: "farmacia-central-valencia",
+      product_slug: "acetaminofen-500-mg-20-tabletas",
+    };
+    expect(eventInputSchema.safeParse(event).success).toBe(false);
+  });
+
+  it("rechaza click_call sin store_slug", () => {
+    const event = { type: "click_call", store_slug: null, product_slug: null };
+    expect(eventInputSchema.safeParse(event).success).toBe(false);
   });
 });
 

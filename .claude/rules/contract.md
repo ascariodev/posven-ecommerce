@@ -9,7 +9,9 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
 
 1. **Montos como cadena y sin cálculo.** Todo monto es `Money` (`moneySchema`, `^\d+\.\d{2}$`,
    en `schemas.ts`). Nada en el módulo suma, convierte ni redondea: la API calcula. El simulado
-   escribe montos y distancias como literales en `mock/fixtures.ts`.
+   escribe montos y distancias como literales en `mock/fixtures.ts`. Única excepción:
+   `mock/adapter.ts` compara montos con `Number()` para ordenar y elegir mínimo y máximo, porque
+   simula lo que calcula la API; no suma ni redondea.
 2. **Esquema antes que tipo a mano.** Cada tipo del contrato es `z.infer` de su esquema en
    `schemas.ts`; no se declara un `type` o `interface` paralelo. Los tipos que no son contrato
    (`GeoFilter` en `params.ts`, `MockProduct` en `mock/fixtures.ts`) sí se escriben a mano.
@@ -23,7 +25,10 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
 5. **El simulado pasa los mismos esquemas.** `mock/adapter.ts` exporta las mismas funciones con
    las mismas firmas que `client.ts`, y `schemas.test.ts` valida cada respuesta simulada contra su
    esquema. Un campo nuevo se agrega también a `mock/fixtures.ts`.
-6. **Consultas sólo por `params.ts`.** `searchQuery` y `storesQuery` fijan las claves y cuándo
-   se envía la ubicación (RN-MARKETPLACE-03); `client.ts` y el simulado las usan las dos.
-7. **`'use cache'` sólo en funciones que reciben todo por argumento** y no leen la petición:
-   `listCategories` y `listLocations`, con `cacheLife` y `cacheTag` explícitos.
+6. **Consultas sólo por `params.ts`.** `searchQuery`, `storesQuery`, `productQuery` y
+   `pageQuery` fijan las claves y cuándo se envía la ubicación (RN-MARKETPLACE-03); `client.ts`
+   las usa todas y el simulado lee la ubicación de las tres primeras con `readScope`.
+7. **`'use cache'` sólo en funciones que reciben todo por argumento** y no leen la petición, con
+   `cacheLife` y `cacheTag` explícitos: `"hours"` en `listCategories`, `listLocations`,
+   `getProduct` y `listSitemap`; `"minutes"` en `getProductOffers` y `getStore`, que traen
+   precios por tienda.

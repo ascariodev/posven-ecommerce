@@ -11,6 +11,7 @@ export type Rate = z.infer<typeof rateSchema>;
 
 export const availabilitySchema = z.enum(["available", "low"]);
 export const restrictionSchema = z.enum(["none", "recipe", "controlled"]);
+export type Restriction = z.infer<typeof restrictionSchema>;
 
 export const categorySchema = z.object({
   slug: z.string(),
@@ -132,3 +133,112 @@ export const categoriesResponseSchema = z.object({
 export const locationsResponseSchema = z.object({
   data: z.array(locationStateSchema),
 });
+
+export const scheduleEntrySchema = z.object({
+  days: z.array(z.enum(["mo", "tu", "we", "th", "fr", "sa", "su"])).min(1),
+  opens: z.string().regex(/^\d{2}:\d{2}$/),
+  closes: z.string().regex(/^\d{2}:\d{2}$/),
+});
+export type ScheduleEntry = z.infer<typeof scheduleEntrySchema>;
+
+export const storeSchema = storeSummarySchema.extend({
+  company_name: z.string(),
+  cover_url: z.url().nullable(),
+  schedule: z.array(scheduleEntrySchema),
+});
+export type Store = z.infer<typeof storeSchema>;
+
+export const storeProductSchema = productSchema.extend({
+  price_usd: moneySchema,
+  price_ves: moneySchema,
+  availability: availabilitySchema,
+  updated_at: z.iso.datetime({ offset: true }),
+});
+export type StoreProduct = z.infer<typeof storeProductSchema>;
+
+export const storeResponseSchema = z.object({
+  data: storeSchema,
+  products: z.array(storeProductSchema),
+  meta: pageMetaSchema,
+  rate: rateSchema,
+});
+export type StoreResponse = z.infer<typeof storeResponseSchema>;
+
+export const productOfferSchema = offerSchema.extend({
+  outside_radius: z.boolean(),
+});
+export type ProductOffer = z.infer<typeof productOfferSchema>;
+
+export const offersSummarySchema = z.object({
+  offer_count: z.int().min(0),
+  low_price_usd: moneySchema.nullable(),
+  high_price_usd: moneySchema.nullable(),
+});
+export type OffersSummary = z.infer<typeof offersSummarySchema>;
+
+export const productDetailSchema = productSchema.extend({
+  offers_summary: offersSummarySchema,
+});
+export type ProductDetail = z.infer<typeof productDetailSchema>;
+
+export const productRedirectSchema = z.object({
+  redirect_to: z.string(),
+});
+
+export const productPageSchema = z.object({
+  data: productDetailSchema,
+  featured: z.array(productOfferSchema).max(2),
+  offers: z.array(productOfferSchema).max(50),
+  rate: rateSchema,
+});
+export type ProductPage = z.infer<typeof productPageSchema>;
+
+export const productResponseSchema = z.union([productRedirectSchema, productPageSchema]);
+export type ProductResponse = z.infer<typeof productResponseSchema>;
+
+export const sitemapTypeSchema = z.enum(["products", "stores"]);
+export type SitemapType = z.infer<typeof sitemapTypeSchema>;
+
+export const sitemapResponseSchema = z.object({
+  data: z.array(
+    z.object({
+      slug: z.string(),
+      updated_at: z.iso.datetime({ offset: true }),
+    }),
+  ),
+  meta: pageMetaSchema,
+});
+export type SitemapResponse = z.infer<typeof sitemapResponseSchema>;
+
+export const eventTypeSchema = z.enum([
+  "product_view",
+  "store_view",
+  "click_whatsapp",
+  "click_call",
+  "click_route",
+]);
+export type EventType = z.infer<typeof eventTypeSchema>;
+
+const eventFieldsSchema = z.object({
+  type: eventTypeSchema,
+  store_slug: z.string().nullable(),
+  product_slug: z.string().nullable(),
+});
+
+function hasSlugsForType(event: z.infer<typeof eventFieldsSchema>): boolean {
+  if (event.type === "product_view") return event.product_slug !== null && event.store_slug === null;
+  return event.store_slug !== null;
+}
+
+const EVENT_SLUGS_MESSAGE =
+  "product_view exige product_slug y store_slug nulo; los demás eventos exigen store_slug";
+
+export const eventInputSchema = eventFieldsSchema.refine(hasSlugsForType, {
+  message: EVENT_SLUGS_MESSAGE,
+});
+export type EventInput = z.infer<typeof eventInputSchema>;
+
+export const marketplaceEventSchema = eventFieldsSchema
+  .extend({ session_id: z.uuid() })
+  .refine(hasSlugsForType, { message: EVENT_SLUGS_MESSAGE });
+export type MarketplaceEvent = z.infer<typeof marketplaceEventSchema>;

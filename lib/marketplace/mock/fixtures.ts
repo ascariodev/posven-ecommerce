@@ -7,6 +7,7 @@ import type {
   Offer,
   Product,
   Rate,
+  ScheduleEntry,
   StoreSummary,
 } from "../schemas";
 
@@ -167,6 +168,50 @@ export const MOCK_STORES: MockStore[] = [
   },
 ];
 
+type MockStoreDetails = { company_name: string; cover_url: null; schedule: ScheduleEntry[] };
+
+const pharmacySchedule: ScheduleEntry[] = [
+  { days: ["mo", "tu", "we", "th", "fr", "sa"], opens: "08:00", closes: "20:00" },
+  { days: ["su"], opens: "09:00", closes: "13:00" },
+];
+
+const shopSchedule: ScheduleEntry[] = [
+  { days: ["mo", "tu", "we", "th", "fr", "sa"], opens: "08:00", closes: "18:00" },
+];
+
+export const MOCK_STORE_DETAILS: Record<string, MockStoreDetails> = {
+  "farmacia-central-valencia": {
+    company_name: "Farmacia Central C.A.",
+    cover_url: null,
+    schedule: pharmacySchedule,
+  },
+  "ferreteria-el-tornillo": {
+    company_name: "Ferretería El Tornillo C.A.",
+    cover_url: null,
+    schedule: shopSchedule,
+  },
+  "abasto-la-esquina": {
+    company_name: "Abasto La Esquina C.A.",
+    cover_url: null,
+    schedule: shopSchedule,
+  },
+  "farmacia-naguanagua": {
+    company_name: "Farmacia Naguanagua C.A.",
+    cover_url: null,
+    schedule: pharmacySchedule,
+  },
+  "farmacia-altamira": {
+    company_name: "Farmacia Altamira C.A.",
+    cover_url: null,
+    schedule: pharmacySchedule,
+  },
+  "bodegon-los-palos-grandes": {
+    company_name: "Bodegón Los Palos Grandes C.A.",
+    cover_url: null,
+    schedule: shopSchedule,
+  },
+};
+
 function offer(
   store_slug: string,
   price_usd: Money,
@@ -199,6 +244,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       offer("farmacia-central-valencia", "2.50", "91.25"),
       offer("farmacia-naguanagua", "2.35", "85.78", "low"),
       offer("farmacia-altamira", "2.80", "102.20"),
+      offer("abasto-la-esquina", "2.40", "87.60"),
     ],
   },
   {
@@ -593,5 +639,23 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     min_price_ves: "71.18",
     nearest_km: 4.8,
     offers: [offer("ferreteria-el-tornillo", "1.95", "71.18")],
+  },
+];
+
+export const MOCK_REDIRECTS: Record<string, string> = {
+  "acetaminofen-500mg-x-20": "acetaminofen-500-mg-20-tabletas",
+};
+
+export const MOCK_UNAVAILABLE_PRODUCTS: Product[] = [
+  {
+    slug: "jarabe-para-la-tos-120-ml",
+    name: "Jarabe para la tos 120 ml",
+    ean: null,
+    brand: null,
+    category: farmacia,
+    image_url: null,
+    attributes: [],
+    restriction: "none",
+    is_unified: false,
   },
 ];

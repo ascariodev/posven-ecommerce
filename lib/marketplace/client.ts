@@ -1,16 +1,32 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { requestJson } from "./http";
+import { postJson, requestJson, requestJsonOrNull } from "./http";
 import * as mock from "./mock/adapter";
-import { searchQuery, storesQuery, type GeoFilter, type RadiusKm } from "./params";
+import {
+  pageQuery,
+  productQuery,
+  searchQuery,
+  storesQuery,
+  type GeoFilter,
+  type OfferSort,
+  type RadiusKm,
+} from "./params";
 import {
   categoriesResponseSchema,
   locationsResponseSchema,
+  productResponseSchema,
   searchResponseSchema,
+  sitemapResponseSchema,
+  storeResponseSchema,
   storesResponseSchema,
   type CategoryNode,
   type LocationState,
+  type MarketplaceEvent,
+  type ProductResponse,
   type SearchResponse,
+  type SitemapResponse,
+  type SitemapType,
+  type StoreResponse,
   type StoresResponse,
 } from "./schemas";
 
@@ -57,4 +73,58 @@ export async function listLocations(): Promise<LocationState[]> {
   if (usesMock()) return mock.listLocations();
   const response = await requestJson("/locations", new URLSearchParams(), locationsResponseSchema);
   return response.data;
+}
+
+export async function getProduct(slug: string): Promise<ProductResponse | null> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(`marketplace:product:${slug}`);
+  if (usesMock()) return mock.getProduct(slug);
+  return requestJsonOrNull(
+    `/products/${encodeURIComponent(slug)}`,
+    productQuery({ geo: null, radiusKm: null, sort: "price" }),
+    productResponseSchema,
+  );
+}
+
+export async function getProductOffers(p: {
+  slug: string;
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+  sort: OfferSort;
+}): Promise<ProductResponse | null> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`marketplace:product:${p.slug}`);
+  if (usesMock()) return mock.getProductOffers(p);
+  return requestJsonOrNull(
+    `/products/${encodeURIComponent(p.slug)}`,
+    productQuery(p),
+    productResponseSchema,
+  );
+}
+
+export async function getStore(p: { slug: string; page: number }): Promise<StoreResponse | null> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`marketplace:store:${p.slug}`);
+  if (usesMock()) return mock.getStore(p);
+  return requestJsonOrNull(
+    `/stores/${encodeURIComponent(p.slug)}`,
+    pageQuery(p.page),
+    storeResponseSchema,
+  );
+}
+
+export async function listSitemap(p: { type: SitemapType; page: number }): Promise<SitemapResponse> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(`marketplace:sitemap:${p.type}`);
+  if (usesMock()) return mock.listSitemap(p);
+  return requestJson(`/sitemap/${p.type}`, pageQuery(p.page), sitemapResponseSchema);
+}
+
+export async function sendEvent(event: MarketplaceEvent): Promise<void> {
+  if (usesMock()) return mock.sendEvent(event);
+  await postJson("/events", event);
 }

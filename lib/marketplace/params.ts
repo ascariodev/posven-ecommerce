@@ -40,3 +40,20 @@ export function storesQuery(p: {
   query.set("page", String(p.page));
   return query;
 }
+
+export type OfferSort = "price" | "distance";
+
+export function productQuery(p: {
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+  sort: OfferSort;
+}): URLSearchParams {
+  const query = new URLSearchParams();
+  appendLocation(query, p.geo, p.radiusKm);
+  query.set("sort", p.sort);
+  return query;
+}
+
+export function pageQuery(page: number): URLSearchParams {
+  return new URLSearchParams({ page: String(page) });
+}

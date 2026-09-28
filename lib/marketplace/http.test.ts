@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MarketplaceUnavailableError } from "./errors";
-import { requestJson } from "./http";
+import { postJson, requestJson, requestJsonOrNull } from "./http";
 
 const schema = z.object({ data: z.array(z.string()) });
 const fetchMock = vi.fn<typeof fetch>();
@@ -94,5 +94,49 @@ describe("requestJson", () => {
       "MARKETPLACE_API_URL y MARKETPLACE_API_KEY son obligatorias con MARKETPLACE_MODE=api",
     );
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("requestJsonOrNull", () => {
+  it("un 404 devuelve null (RN-MARKETPLACE-04)", async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ message: "no existe" }, 404));
+
+    await expect(requestJsonOrNull("/products/x", new URLSearchParams(), schema)).resolves.toBeNull();
+  });
+
+  it("un estado 500 lanza MarketplaceUnavailableError (RN-MARKETPLACE-04)", async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ message: "error" }, 500));
+
+    const error = await captureError(requestJsonOrNull("/products/x", new URLSearchParams(), schema));
+
+    expect(error).toBeInstanceOf(MarketplaceUnavailableError);
+    expect((error as MarketplaceUnavailableError).endpoint).toBe("/products/x");
+  });
+});
+
+describe("postJson", () => {
+  it("manda POST con el cuerpo JSON y Bearer", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 202 }));
+    const event = { type: "store_view", store_slug: "abasto-la-esquina", product_slug: null };
+
+    await postJson("/events", event);
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("https://api.test/api/marketplace/v1/events");
+    expect(init?.method).toBe("POST");
+    expect(init?.body).toBe(JSON.stringify(event));
+    expect(init?.headers).toMatchObject({
+      Authorization: "Bearer clave-de-prueba",
+      "Content-Type": "application/json",
+    });
+  });
+
+  it("un estado 500 lanza MarketplaceUnavailableError", async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ message: "error" }, 500));
+
+    const error = await captureError(postJson("/events", {}));
+
+    expect(error).toBeInstanceOf(MarketplaceUnavailableError);
+    expect((error as MarketplaceUnavailableError).endpoint).toBe("/events");
   });
 });

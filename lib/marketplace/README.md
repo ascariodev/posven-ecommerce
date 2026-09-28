@@ -112,7 +112,8 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 ## 6. Dependencias
 
 - `package.json`: `zod` para los esquemas.
-- `next/cache` (`cacheLife`, `cacheTag`) y `next.config.ts` con `cacheComponents: true`.
+- `next/cache` (`cacheLife`, `cacheTag`) y `cacheComponents: true` en `next.config.ts`, que
+  `cacheLife` exige (`poweredByHeader: false` en el mismo archivo no afecta a este módulo).
 - `server-only`, que resuelve Next; en vitest, el alias de `vitest.config.mts`.
 - Variables de `.env.example`: `MARKETPLACE_MODE`, `MARKETPLACE_API_URL` (incluye `/api/marketplace/v1`), `MARKETPLACE_API_KEY`.
 

@@ -9,6 +9,7 @@
   --muted: #f5f5f5;
   --muted-foreground: #595959;
   --border: #e5e5e5;
+  --input-border: #8c8c8c;
   --featured: #fff4e5;
   --warning: #8a4b00;
 }
@@ -22,6 +23,7 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-input-border: var(--input-border);
   --color-featured: var(--featured);
   --color-warning: var(--warning);
   --font-sans: var(--font-geist-sans);

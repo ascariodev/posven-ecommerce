@@ -23,6 +23,16 @@ README: `features/location/README.md`
 | guardar la ubicación del usuario por geolocalización o ciudad elegida | `setLocationFromCoords() / setLocationCity() / clearLocation()` | `features/location/actions.ts` | RN-LOCATION-01, RN-LOCATION-03 |
 | mostrar y cambiar la ubicación en pantalla | `<LocationBar />` | `features/location/LocationBar.tsx` | RN-LOCATION-02, RN-LOCATION-03 |
 
+## product
+
+README: `features/product/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| cargar un producto por slug con su 404 y su redirección | `loadProduct()` | `features/product/load.ts` | RN-PRODUCT-02 |
+| armar los metadatos y el JSON-LD de un producto | `productMetadata()` | `features/product/metadata.ts` | RN-PRODUCT-01, RN-PRODUCT-02 |
+| mostrar dónde comprar un producto ordenado por precio o cercanía | `<ProductOffers />` | `features/product/ProductOffers.tsx` | RN-PRODUCT-03, RN-PRODUCT-04 |
+
 ## search
 
 README: `features/search/README.md`

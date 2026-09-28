@@ -3,6 +3,9 @@ paths:
   - "app/page.tsx"
   - "app/layout.tsx"
   - "app/buscar/**"
+  - "app/p/**"
+  - "lib/jsonld.ts"
+  - "features/*/jsonld.ts"
 ---
 
 # Metadatos y SEO
@@ -24,6 +27,16 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
    `generate-metadata`).
 4. **Metadatos estáticos (`export const metadata`) por defecto.** `generateMetadata` sólo cuando
    la ruta los saca de sus datos (el nombre del producto o de la tienda), y nunca de la cookie de
-   ubicación.
+   ubicación: `productMetadata` en `features/product/metadata.ts`, que usa `app/p/[slug]/page.tsx`.
 5. **El e2e comprueba la canónica de `/` y el `noindex` de `/buscar`** (`e2e/search.spec.ts`):
    quien cambia esos metadatos corre `npx playwright test`.
+6. **JSON-LD por `serializeJsonLd`** (`lib/jsonld.ts`, que escapa `<` como `\u003c`, guía
+   `json-ld`) en un `<script type="application/ld+json">`, y sin datos de la cookie de ubicación:
+   sale de lo cacheado por slug (`productJsonLd` en `features/product/jsonld.ts`). Cada objeto
+   trae su `@context` y va en su propio `<script>`.
+7. **Una página con slug resuelve el 404 y el 308 fuera de `<Suspense>`**: `await params` y la
+   lectura cacheada (`loadProduct` en `features/product/load.ts`) en la página misma, con
+   `generateStaticParams` de al menos un slug (`[{ slug: "__vacio" }]` si la API no trae
+   ninguno, porque un arreglo vacío rompe el build con Cache Components). Sin `loading.tsx` ni
+   `<Suspense>` por encima de la página: convertirían el 404 en un 200. Sólo se comprueba con
+   `next start`; `next dev` no corre el modo de respaldo bloqueante.

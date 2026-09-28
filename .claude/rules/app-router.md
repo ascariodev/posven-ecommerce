@@ -1,11 +1,12 @@
 ---
 paths:
   - "app/**"
+  - "features/**"
 ---
 
 # App Router
 
-Rige al editar `app/`.
+Rige al editar `app/` y `features/`.
 
 1. **Guía antes que memoria.** Antes de usar una API de Next se lee su guía en
    `node_modules/next/dist/docs/` (`AGENTS.md`): esta versión cambia firmas y convenciones, como

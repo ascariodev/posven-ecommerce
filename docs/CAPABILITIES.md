@@ -3,6 +3,16 @@
 Generado por `node posven/.claude/scripts/generate-index.mjs posven-ecommerce`: no se edita a mano.
 Se regenera y commitea junto con todo cambio al frontmatter `capabilities` de un README.
 
+## location
+
+README: `features/location/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| leer la ubicación del usuario para filtrar por cercanía | `getUserLocation()` | `features/location/server.ts` | RN-LOCATION-01, RN-LOCATION-02 |
+| guardar la ubicación del usuario por geolocalización o ciudad elegida | `setLocationFromCoords() / setLocationCity() / clearLocation()` | `features/location/actions.ts` | RN-LOCATION-01, RN-LOCATION-03 |
+| mostrar y cambiar la ubicación en pantalla | `<LocationBar />` | `features/location/LocationBar.tsx` | RN-LOCATION-02, RN-LOCATION-03 |
+
 ## marketplace
 
 README: `lib/marketplace/README.md`

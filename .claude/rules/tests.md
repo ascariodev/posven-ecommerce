@@ -29,6 +29,9 @@ paths:
    `npx playwright test` al cerrar un plan: Chromium con el dispositivo "Pixel 7" contra
    `http://localhost:3000`. `webServer` levanta `npm run dev` con `MARKETPLACE_MODE=mock`, o reusa
    el servidor que ya escucha en ese puerto, que entonces debe correr en modo simulado.
+   `webServer.env` fija además `SITE_URL=http://localhost:3000`, del que salen las canónicas y
+   los sitemaps que se comprueban. El e2e de cierre son `e2e/search.spec.ts` y
+   `e2e/product.spec.ts`.
 8. Vitest corre sin `globals`, así que Testing Library no desmonta sola: toda prueba `.tsx` llama
    `cleanup()` en `afterEach`. Un Server Component async se prueba con `render(await Comp(props))`,
    como en `features/store/NearbyStores.test.tsx`.

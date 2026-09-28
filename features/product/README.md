@@ -46,7 +46,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 | Regla | Enunciado | Test que la hace cumplir |
 |---|---|---|
 | `RN-PRODUCT-01` | El `AggregateOffer` del JSON-LD sale de `offers_summary`, nacional: la cookie no lo cambia. | `features/product/jsonld.test.ts` ("con ofertas trae un AggregateOffer con los valores de offers_summary", "sin ofertas no trae offers") |
-| `RN-PRODUCT-02` | Un producto sin ofertas en el país muestra "Sin disponibilidad ahora." y lleva `noindex`. | `features/product/metadata.test.ts` ("sin ofertas lleva noindex y la descripción de sin disponibilidad"); el texto visible de `app/p/[slug]/page.tsx`, pendiente: sin prueba |
+| `RN-PRODUCT-02` | Un producto sin ofertas en el país muestra "Sin disponibilidad ahora." y lleva `noindex`. | `features/product/metadata.test.ts` ("sin ofertas lleva noindex y la descripción de sin disponibilidad"); `e2e/product.spec.ts` ("un producto sin ofertas muestra sin disponibilidad y lleva noindex") |
 | `RN-PRODUCT-03` | Las ofertas destacadas, dos como máximo, van primero y no se repiten; las de fuera del radio van bajo "Fuera de tu zona". | `features/product/ProductOffers.test.tsx` ("las destacadas van primero con Destacado y las de fuera del radio bajo Fuera de tu zona") |
 | `RN-PRODUCT-04` | "Más cerca" sólo se ofrece con ubicación; sin ella el orden es por precio. | `features/product/ProductOffers.test.tsx` ("sin ubicación no ofrece Más cerca y pide sort price aunque venga orden=cerca", "con coordenadas y orden=cerca pide sort distance y radiusKm 10") |
 

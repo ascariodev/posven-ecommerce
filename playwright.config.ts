@@ -15,6 +15,6 @@ export default defineConfig({
     command: "npm run dev",
     url: "http://localhost:3000",
     reuseExistingServer: true,
-    env: { MARKETPLACE_MODE: "mock" },
+    env: { MARKETPLACE_MODE: "mock", SITE_URL: "http://localhost:3000" },
   },
 });

@@ -7,6 +7,9 @@ paths:
   - "app/tienda/**"
   - "lib/jsonld.ts"
   - "features/*/jsonld.ts"
+  - "app/sitemap.ts"
+  - "app/robots.ts"
+  - "lib/sitemap.ts"
 ---
 
 # Metadatos y SEO
@@ -29,8 +32,9 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
 4. **Metadatos estáticos (`export const metadata`) por defecto.** `generateMetadata` sólo cuando
    la ruta los saca de sus datos (el nombre del producto o de la tienda), y nunca de la cookie de
    ubicación: `productMetadata` en `features/product/metadata.ts`, que usa `app/p/[slug]/page.tsx`.
-5. **El e2e comprueba la canónica de `/` y el `noindex` de `/buscar`** (`e2e/search.spec.ts`):
-   quien cambia esos metadatos corre `npx playwright test`.
+5. **El e2e comprueba la canónica de `/` y el `noindex` de `/buscar`** (`e2e/search.spec.ts`),
+   y la canónica, el JSON-LD y el `noindex` de producto y tienda, `robots.txt` y el sitemap
+   (`e2e/product.spec.ts`): quien cambia esos metadatos corre `npx playwright test`.
 6. **JSON-LD por `serializeJsonLd`** (`lib/jsonld.ts`, que escapa `<` como `\u003c`, guía
    `json-ld`) en un `<script type="application/ld+json">`, y sin datos de la cookie de ubicación:
    sale de lo cacheado por slug (`productJsonLd` en `features/product/jsonld.ts`). Cada objeto
@@ -42,3 +46,7 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
    ninguno, porque un arreglo vacío rompe el build con Cache Components). Sin `loading.tsx` ni
    `<Suspense>` por encima de la página: convertirían el 404 en un 200. Sólo se comprueba con
    `next start`; `next dev` no corre el modo de respaldo bloqueante.
+8. **Una ruta indexable nueva entra al sitemap por `lib/sitemap.ts`**: `sitemapIds` parte cada
+   `SitemapType` en `{tipo}-{n}` según `meta.total` y `meta.per_page` de `listSitemap`, y
+   `sitemapEntries` arma las URLs absolutas con `SITE_URL`; `app/sitemap.ts` sirve
+   `/sitemap/{id}.xml`. `app/robots.ts` excluye `/buscar` y `/api/` y lista cada sitemap.

@@ -33,7 +33,7 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
    la ruta los saca de sus datos (el nombre del producto o de la tienda), y nunca de la cookie de
    ubicación: `productMetadata` en `features/product/metadata.ts`, que usa `app/p/[slug]/page.tsx`.
 5. **El e2e comprueba la canónica de `/` y el `noindex` de `/buscar`** (`e2e/search.spec.ts`),
-   y la canónica, el JSON-LD y el `noindex` de producto y tienda, `robots.txt` y el sitemap
+   la canónica y el JSON-LD de producto y tienda, el `noindex` del producto sin ofertas, `robots.txt` y el sitemap
    (`e2e/product.spec.ts`): quien cambia esos metadatos corre `npx playwright test`.
 6. **JSON-LD por `serializeJsonLd`** (`lib/jsonld.ts`, que escapa `<` como `\u003c`, guía
    `json-ld`) en un `<script type="application/ld+json">`, y sin datos de la cookie de ubicación:

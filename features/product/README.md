@@ -3,7 +3,7 @@ module: "product"
 path: "features/product"
 type: "feature"
 exports: ["loadProduct", "productMetadata", "productJsonLd", "SortLinks", "OfferCard", "ProductOffers", "ProductOffersSkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/events/ContactButtons.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/events/ContactButtons.tsx", "features/events/ViewBeacon.tsx", "lib/jsonld.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
 tests: "features/product/*.test.{ts,tsx}"
 verified_against: ["features/product/load.ts", "features/product/metadata.ts", "features/product/jsonld.ts", "features/product/SortLinks.tsx", "features/product/OfferCard.tsx", "features/product/ProductOffers.tsx", "app/p/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/events/ContactButtons.tsx", "features/events/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
 capabilities:

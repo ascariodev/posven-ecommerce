@@ -3,6 +3,16 @@
 Generado por `node posven/.claude/scripts/generate-index.mjs posven-ecommerce`: no se edita a mano.
 Se regenera y commitea junto con todo cambio al frontmatter `capabilities` de un README.
 
+## events
+
+README: `features/events/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| registrar una vista o un clic de contacto de quien busca | `POST /api/events` | `app/api/events/route.ts` | RN-EVENTS-01, RN-EVENTS-02 |
+| mostrar los botones de contacto de una tienda | `<ContactButtons />` | `features/events/ContactButtons.tsx` | RN-EVENTS-03 |
+| registrar la vista de una página de producto o de tienda | `<ViewBeacon />` | `features/events/ViewBeacon.tsx` |  |
+
 ## location
 
 README: `features/location/README.md`

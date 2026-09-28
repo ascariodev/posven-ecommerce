@@ -81,7 +81,7 @@ estadísticas ni guarda nada propio.
 | `readSessionId` | `app/api/events/route.ts` | lee la cookie `sid`; si falta o no es UUID fija `crypto.randomUUID()` |
 | Reenvío | `app/api/events/route.ts` | `after(() => sendEvent(forward))`; un error se registra con `console.error("[events]", error)` |
 | `sendBeaconEvent` | `features/events/beacon.ts` | `navigator.sendBeacon` con un `Blob` `text/plain;charset=UTF-8`; si no existe o devuelve `false`, `fetch` con `keepalive` |
-| `whatsappHref` | `features/events/ContactButtons.tsx` | `https://wa.me/{dígitos}?text=` con el mensaje que nombra el producto o, sin producto, la tienda |
+| `whatsappHref` | `features/events/ContactButtons.tsx` | `https://wa.me/{dígitos}?text=` con el mensaje que nombra el producto o, sin producto, el sitio (`SITE_NAME`) |
 
 ## 6. Dependencias
 

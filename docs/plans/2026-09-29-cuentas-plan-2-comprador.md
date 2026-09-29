@@ -298,7 +298,7 @@ si el árbol de posveapi está en otra rama).
 - modifica: `.claude/rules/contract.md:22-24`: "Un campo nuevo entra primero en la spec §3
   (`...ecommerce-hiperlocal-design.md`), o en la §4 de `posven/.claude/docs/specs/2026-09-29-cuentas-y-compras-design.md`
   si es de cuentas, y después en `schemas.ts`." El resto igual.
-- después `node "C:/Users/Windows 11/Documents/Development/posven/.claude/scripts/generate-index.mjs" "C:/Users/Windows 11/Documents/Development/posven/posven-ecommerce"`
+- después `node "C:/Users/Windows 11/Documents/Development/posven/.claude/scripts/generate-index.mjs" posven-ecommerce`
   y `docs/CAPABILITIES.md` en el mismo commit.
 - test: `lib/marketplace/http.test.ts`, `lib/marketplace/schemas.test.ts`, crea
   `lib/marketplace/mock/accounts.test.ts`

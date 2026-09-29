@@ -3,6 +3,15 @@
 Generado por `node posven/.claude/scripts/generate-index.mjs posven-ecommerce`: no se edita a mano.
 Se regenera y commitea junto con todo cambio al frontmatter `capabilities` de un README.
 
+## account
+
+README: `features/account/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| leer el comprador de la sesión | `getCurrentCustomer()` | `features/account/session.ts` | RN-ACCOUNT-01, RN-ACCOUNT-03, RN-ACCOUNT-04 |
+| entrar, crear cuenta y recuperar la contraseña | `login() / register() / logout() / forgotPassword() / resetPasswordAction() / verifyEmailAction() / resendVerificationAction()` | `features/account/actions.ts` | RN-ACCOUNT-01, RN-ACCOUNT-02, RN-ACCOUNT-03 |
+
 ## events
 
 README: `features/events/README.md`

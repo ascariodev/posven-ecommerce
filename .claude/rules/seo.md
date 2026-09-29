@@ -28,7 +28,9 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
 3. **Lo que no se indexa lleva `noindex`.** `/buscar` exporta
    `robots: { index: false, follow: true }`; `app/error.tsx` pinta
    `<meta name="robots" content="noindex" />` porque es Client Component y `metadata` sólo se exporta desde Server Components (guía
-   `generate-metadata`).
+   `generate-metadata`). Las rutas de acceso (`/entrar`, `/registro`, `/recuperar`,
+   `/restablecer/[token]`, `/verificar/[token]`) y `/cuenta/*` exportan
+   `robots: { index: false, follow: false }` y no entran al sitemap.
 4. **Metadatos estáticos (`export const metadata`) por defecto.** `generateMetadata` sólo cuando
    la ruta los saca de sus datos (el nombre del producto o de la tienda), y nunca de la cookie de
    ubicación: `productMetadata` en `features/product/metadata.ts`, que usa `app/p/[slug]/page.tsx`.
@@ -49,4 +51,5 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
 8. **Una ruta indexable nueva entra al sitemap por `lib/sitemap.ts`**: `sitemapIds` parte cada
    `SitemapType` en `{tipo}-{n}` según `meta.total` y `meta.per_page` de `listSitemap`, y
    `sitemapEntries` arma las URLs absolutas con `SITE_URL`; `app/sitemap.ts` sirve
-   `/sitemap/{id}.xml`. `app/robots.ts` excluye `/buscar` y `/api/` y lista cada sitemap.
+   `/sitemap/{id}.xml`. `app/robots.ts` excluye `/buscar`, `/api/`, `/cuenta`, `/restablecer/` y
+   `/verificar/` y lista cada sitemap.

@@ -5,7 +5,7 @@ import { sitemapIds } from "@/lib/sitemap";
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const ids = await sitemapIds();
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/buscar", "/api/"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/buscar", "/api/", "/cuenta", "/restablecer/", "/verificar/"] },
     sitemap: ids.map((id) => new URL(`/sitemap/${id}.xml`, SITE_URL).href),
   };
 }

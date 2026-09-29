@@ -2,10 +2,10 @@
 module: "search"
 path: "features/search"
 type: "feature"
-exports: ["SearchQuery", "parseSearchQuery", "searchHref", "SearchForm", "SearchResults", "ProductCard", "FeaturedCard", "RadiusFilter", "Pagination", "EmptyState", "CategoryLinks"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/location/LocationBar.tsx", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/badge.tsx", "components/ui/skeleton.tsx"]
+exports: ["SearchQuery", "parseSearchQuery", "searchHref", "SearchForm", "SearchResults", "ProductCard", "FeaturedCard", "RadiusFilter", "Pagination", "EmptyState", "CategoryLinks", "categoryIcon", "ProductThumb", "HeaderSearchSlot"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/location/LocationBar.tsx", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/badge.tsx", "components/ui/skeleton.tsx", "components/ui/cx.ts"]
 tests: "features/search/*.test.{ts,tsx}"
-verified_against: ["features/search/query.ts", "features/search/SearchForm.tsx", "features/search/SearchResults.tsx", "features/search/ProductCard.tsx", "features/search/FeaturedCard.tsx", "features/search/RadiusFilter.tsx", "features/search/Pagination.tsx", "features/search/EmptyState.tsx", "features/search/CategoryLinks.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/cookie.ts", "features/location/server.ts", "features/location/LocationBar.tsx", "components/ui/skeleton.tsx"]
+verified_against: ["features/search/query.ts", "features/search/SearchForm.tsx", "features/search/SearchResults.tsx", "features/search/ProductCard.tsx", "features/search/FeaturedCard.tsx", "features/search/RadiusFilter.tsx", "features/search/Pagination.tsx", "features/search/EmptyState.tsx", "features/search/CategoryLinks.tsx", "features/search/categoryIcon.ts", "features/search/ProductThumb.tsx", "features/search/HeaderSearchSlot.tsx", "app/layout.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/cookie.ts", "features/location/server.ts", "features/location/LocationBar.tsx", "components/ui/skeleton.tsx"]
 capabilities:
   - intent: "buscar productos por texto o categoría cerca del usuario"
     intent_aliases: ["buscar producto", "resultados de busqueda", "pagina buscar", "buscar por categoria"]
@@ -27,8 +27,8 @@ capabilities:
     intent_aliases: ["caja de busqueda", "buscador", "formulario buscar"]
     entrypoint: "<SearchForm />"
     file: "features/search/SearchForm.tsx"
-    input: "defaultQuery?: string"
-    output: "Form de next/form con action /buscar y campo q"
+    input: "defaultQuery?: string; size?: 'lg' | 'sm' (por defecto 'lg')"
+    output: "Form de next/form con action /buscar y campo q; 'lg' es el buscador grande con vidrio, 'sm' el compacto de la cabecera"
     source: "URL"
     rules: []
 ---
@@ -60,6 +60,8 @@ orden y los montos, y esto sólo los formatea.
 | Opciones del filtro de radio | `optionsFor` en `RadiusFilter.tsx` | las opciones salen de `RADIUS_OPTIONS`; `RadiusFilter.test.tsx` cuenta los enlaces |
 | Sugerencias del estado vacío | `EmptyState.tsx` (`relatedCategories`, ampliar radio, todo el país) | sus casos en `EmptyState.test.tsx` |
 | Datos de la tarjeta de producto | `ProductCard.tsx` | `ProductCard.test.tsx`; los montos sólo por `formatUsd` y `formatVes` |
+| El ícono de una categoría raíz | `ROOT_ICONS` en `categoryIcon.ts` | su caso en `categoryIcon.test.ts`; los íconos salen sólo de `lucide-react` |
+| En qué rutas la cabecera muestra el buscador | `HeaderSearchSlot.tsx` | sus casos en `HeaderSearchSlot.test.tsx` |
 
 ## 4. API pública
 
@@ -71,7 +73,7 @@ URL de la búsqueda, `features/search/query.ts`:
 
 Componentes:
 
-- `SearchForm({ defaultQuery }: { defaultQuery?: string })`, `features/search/SearchForm.tsx`
+- `SearchForm({ defaultQuery, size = "lg" }: { defaultQuery?: string; size?: "lg" | "sm" })`, `features/search/SearchForm.tsx`: `"lg"` con vidrio propio; `"sm"` sin vidrio, con input y botón de 36 px, para la cabecera
 - `SearchResults({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/search/SearchResults.tsx`
 - `ProductCard({ item }: { item: SearchItem })`, `features/search/ProductCard.tsx`
 - `FeaturedCard({ item }: { item: FeaturedProduct })`, `features/search/FeaturedCard.tsx`
@@ -79,6 +81,12 @@ Componentes:
 - `Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta })`, `features/search/Pagination.tsx`
 - `EmptyState({ query, geoKind, categories }: { query: SearchQuery; geoKind: "coords" | "city" | null; categories: CategoryNode[] })`, `features/search/EmptyState.tsx`
 - `CategoryLinks({ categories }: { categories: CategoryNode[] })`, `features/search/CategoryLinks.tsx`
+- `ProductThumb({ imageUrl, category, size }: { imageUrl: string | null; category: Category | null; size: "md" | "lg" })`, Server Component, `features/search/ProductThumb.tsx`: la imagen con `alt=""` (96 o 320 px) o, sin imagen, el ícono de `categoryIcon(category)` sobre `bg-primary-soft`, con `aria-hidden`
+- `HeaderSearchSlot({ children }: { children: ReactNode })`, `features/search/HeaderSearchSlot.tsx` (`"use client"`): `null` en `/` y en toda ruta que empieza por `/buscar`, que ya tienen su buscador; si no, sus hijos
+
+Íconos, `features/search/categoryIcon.ts`:
+
+- `categoryIcon(category: Category | null): LucideIcon`: el ícono de `lucide-react` de la raíz (`parent_slug ?? slug`); `Package` sin categoría o con una raíz sin mapeo.
 
 ## 5. Estructura interna
 
@@ -86,6 +94,7 @@ Componentes:
 |---|---|---|
 | `optionsFor` | `RadiusFilter.tsx` | con coordenadas, 3, 10, 25, 50 km y todo el país; con ciudad, "Sólo {ciudad}" (radio 10) y todo el país; el vigente lleva `aria-current="true"` |
 | `relatedCategories` | `EmptyState.tsx` | hasta cuatro: con `categoria`, sus hermanas; sin ella o si no está en el árbol, las raíz |
+| Cabecera | `app/layout.tsx` | `SearchForm size="sm"` y `LocationSummary` dentro de `HeaderSearchSlot`, en un `<Suspense fallback={null}>` porque `usePathname` suspende en las rutas con parámetros de respaldo |
 | Página | `app/buscar/page.tsx` | `metadata` estática con `robots` `noindex, follow`; formulario, `LocationBar` y resultados, cada uno en su `<Suspense>` |
 
 ## 6. Dependencias
@@ -95,7 +104,9 @@ Componentes:
 - `features/location/server.ts` (`getEffectiveLocation`) y `features/location/cookie.ts` (`toGeoFilter`); `features/location/LocationBar.tsx` (`LocationBar`, `LocationBarSkeleton`) en la página.
 - `lib/format.ts` (`formatUsd`, `formatVes`, `formatRate`, `formatDistance`) y `lib/site.ts` (`SITE_NAME`).
 - `components/ui/button.tsx`, `components/ui/input.tsx`, `components/ui/badge.tsx` y `components/ui/skeleton.tsx` (en la página).
-- `next/form`, `next/link` y `next/image`.
+- `next/form`, `next/link`, `next/image` y `next/navigation` (`usePathname` en `HeaderSearchSlot`).
+- `lucide-react`: íconos por nombre, decorativos con `aria-hidden`.
+- `components/ui/cx.ts` en `SearchForm` y `ProductThumb`.
 
 ## 7. Ejemplo de uso
 
@@ -137,3 +148,5 @@ export default function SearchPage({
 - `features/search/EmptyState.test.tsx`: ampliar radio, todo el país según ubicación y radio, categorías hermanas y enlace a `/comercios`.
 - `features/search/RadiusFilter.test.tsx`: cinco enlaces con coordenadas y dos con ciudad.
 - `features/search/SearchResults.test.tsx`: sin `q` ni `categoria` no llama a `searchProducts`.
+- `features/search/categoryIcon.test.ts`: hija por su raíz, raíz propia, `null` y raíz sin mapeo.
+- `features/search/HeaderSearchSlot.test.tsx`: oculto en `/` y `/buscar`, visible en la ficha de un producto.

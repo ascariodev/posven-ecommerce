@@ -1,0 +1,44 @@
+import Image from "next/image";
+import { createElement } from "react";
+import { cx } from "@/components/ui/cx";
+import type { Category } from "@/lib/marketplace/schemas";
+import { categoryIcon } from "./categoryIcon";
+
+const thumbSizes = {
+  md: { px: 96, box: "size-24", icon: "size-10" },
+  lg: { px: 320, box: "size-64 sm:size-80", icon: "size-20" },
+} as const;
+
+export function ProductThumb({
+  imageUrl,
+  category,
+  size,
+}: {
+  imageUrl: string | null;
+  category: Category | null;
+  size: "md" | "lg";
+}) {
+  const { px, box, icon } = thumbSizes[size];
+  if (imageUrl !== null) {
+    return (
+      <Image
+        src={imageUrl}
+        alt=""
+        width={px}
+        height={px}
+        className={cx(box, "shrink-0 rounded-xl object-contain")}
+      />
+    );
+  }
+  return (
+    <div
+      aria-hidden="true"
+      className={cx(
+        box,
+        "flex shrink-0 items-center justify-center rounded-xl bg-primary-soft text-warning",
+      )}
+    >
+      {createElement(categoryIcon(category), { "aria-hidden": true, className: icon })}
+    </div>
+  );
+}

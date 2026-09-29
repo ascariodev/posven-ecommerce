@@ -17,13 +17,16 @@ Rige al editar `components/`. Las primitivas viven en `components/ui/` (`Button`
    concatenar plantillas a mano.
 4. **Colores sólo por tokens**: `bg-primary`, `hover:bg-primary-hover`, `text-primary-foreground`,
    `bg-muted`, `text-muted-foreground`, `border-border`, `border-input-border`, `bg-featured`,
-   `text-warning`, `bg-background`, `text-foreground`. Nada de `zinc-*`, `black`, `white` ni hex en
-   clases. Un color nuevo entra como variable en `:root` y su `--color-*` en `@theme inline` de
-   `app/globals.css`. No hay modo oscuro.
+   `text-warning`, `bg-background`, `text-foreground`, `bg-surface`, `bg-glass`,
+   `border-glass-border`, `bg-primary-soft`, `shadow-card`, `shadow-raised`. Nada de `zinc-*`,
+   `black`, `white` ni hex en clases. Un color nuevo entra como variable en `:root` y su
+   `--color-*` en `@theme inline` de `app/globals.css`. No hay modo oscuro. El desenfoque va sólo
+   en la cabecera y en el buscador grande; las tarjetas usan `bg-surface` sin desenfoque.
 5. **Contraste AA.** El texto sobre el naranja de marca es oscuro (`text-primary-foreground`),
    nunca blanco. El foco visible usa `outline-foreground`, no el primario, porque el naranja sobre
    blanco no llega a 3:1. Los bordes de controles de formulario usan `border-input-border`
    (`--border` no llega a 3:1 sobre blanco); `border-border` queda para tarjetas y separadores.
 6. **Nombre accesible en todo control**; lo decorativo lleva `aria-hidden` (`Skeleton` ya lo trae).
-7. **Sin dependencias de componentes** (shadcn, Radix, Headless UI, iconos) sin aprobación de quien
+7. **Íconos sólo de `lucide-react`**, importados por nombre, con `aria-hidden` en lo decorativo;
+   otras dependencias de componentes (shadcn, Radix, Headless UI) no entran sin aprobación de quien
    coordina: se escribe con Tailwind y HTML.

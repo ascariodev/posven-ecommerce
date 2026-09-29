@@ -1,17 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #fffaf3;
   --foreground: #262627;
   --primary: #f7900a;
   --primary-hover: #db820e;
   --primary-foreground: #262627;
-  --muted: #f5f5f5;
+  --primary-soft: #fde3c0;
+  --muted: #f7efe4;
   --muted-foreground: #595959;
-  --border: #e5e5e5;
+  --border: #efe3d3;
   --input-border: #8c8c8c;
   --featured: #fff4e5;
   --warning: #8a4b00;
+  --surface: rgb(255 255 255 / 0.92);
+  --glass: rgb(255 255 255 / 0.72);
+  --glass-border: rgb(255 255 255 / 0.9);
+  --elevation-card: 0 1px 2px rgb(38 38 39 / 0.04), 0 8px 24px rgb(138 75 0 / 0.08);
+  --elevation-raised: 0 2px 4px rgb(38 38 39 / 0.05), 0 16px 32px rgb(138 75 0 / 0.12);
 }
 
 @theme inline {
@@ -20,16 +26,49 @@
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-input-border: var(--input-border);
   --color-featured: var(--featured);
   --color-warning: var(--warning);
-  --font-sans: var(--font-geist-sans);
+  --color-surface: var(--surface);
+  --color-glass: var(--glass);
+  --color-glass-border: var(--glass-border);
+  --shadow-card: var(--elevation-card);
+  --shadow-raised: var(--elevation-raised);
+  --font-sans: var(--font-sans-brand);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  isolation: isolate;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 0% 0%, #ffe6c7, transparent),
+    radial-gradient(50% 40% at 100% 0%, #ffe4dc, transparent),
+    var(--background);
+}
+
+@keyframes header-elevate {
+  to {
+    box-shadow: var(--elevation-raised);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .header-elevate {
+    animation: header-elevate linear both;
+    animation-timeline: scroll();
+    animation-range: 0 64px;
+  }
 }

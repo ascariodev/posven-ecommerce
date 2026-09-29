@@ -2,10 +2,10 @@
 module: "location"
 path: "features/location"
 type: "feature"
-exports: ["LOCATION_COOKIE", "UserLocation", "isValidCoords", "parseLocationCookie", "serializeLocation", "toGeoFilter", "describeLocation", "getUserLocation", "getEffectiveLocation", "setLocationFromCoords", "setLocationCity", "clearLocation", "LocationPicker", "LocationBar", "LocationBarSkeleton"]
+exports: ["LOCATION_COOKIE", "UserLocation", "isValidCoords", "parseLocationCookie", "serializeLocation", "toGeoFilter", "describeLocation", "getUserLocation", "getEffectiveLocation", "setLocationFromCoords", "setLocationCity", "clearLocation", "LocationPicker", "LocationBar", "LocationBarSkeleton", "LocationSummary", "LocationSummarySkeleton"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
 tests: "features/location/*.test.{ts,tsx}"
-verified_against: ["features/location/cookie.ts", "features/location/server.ts", "features/location/actions.ts", "features/location/LocationPicker.tsx", "features/location/LocationBar.tsx", "features/location/server.test.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
+verified_against: ["features/location/cookie.ts", "features/location/server.ts", "features/location/actions.ts", "features/location/LocationPicker.tsx", "features/location/LocationBar.tsx", "features/location/server.test.ts", "app/layout.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
 capabilities:
   - intent: "leer la ubicación efectiva del usuario para filtrar por cercanía"
     intent_aliases: ["ubicacion del usuario", "ubicacion efectiva", "cookie de ubicacion", "donde esta el usuario", "filtro geo"]
@@ -58,7 +58,7 @@ para validar la ciudad con `listLocations()`; sin ubicación la búsqueda es nac
 | Opciones de la cookie (duración, `secure`) | `saveLocation` en `actions.ts` | el `toHaveBeenCalledWith` de `actions.test.ts` |
 | Textos o pasos del selector | `LocationPicker.tsx` | los nombres accesibles que busca `LocationPicker.test.tsx` |
 | Cómo llega la ubicación a la consulta | `toGeoFilter` en `cookie.ts` | `GeoFilter` vive en `lib/marketplace/params.ts` y no se cambia desde acá |
-| Qué ubicación cuenta como efectiva | `getEffectiveLocation` en `server.ts` | sus casos en `server.test.ts`; la consumen `LocationBar.tsx`, `features/search/SearchResults.tsx`, `features/store/NearbyStores.tsx` y `features/product/ProductOffers.tsx` |
+| Qué ubicación cuenta como efectiva | `getEffectiveLocation` en `server.ts` | sus casos en `server.test.ts`; la consumen `LocationBar.tsx` (`LocationBar` y `LocationSummary`), `features/search/SearchResults.tsx`, `features/store/NearbyStores.tsx` y `features/product/ProductOffers.tsx` |
 
 ## 4. API pública
 
@@ -87,6 +87,7 @@ Componentes:
 
 - `LocationPicker({ label, states }: { label: string | null; states: LocationState[] })`, `features/location/LocationPicker.tsx` (`"use client"`)
 - `LocationBar(): Promise<React.JSX.Element>`, Server Component, y `LocationBarSkeleton()`, `features/location/LocationBar.tsx`
+- `LocationSummary(): Promise<React.JSX.Element>`, Server Component, y `LocationSummarySkeleton()`, `features/location/LocationBar.tsx`: sólo lectura, "Cerca de: {name}" o "Sin ubicación" con `getEffectiveLocation()`; lo usa la cabecera de `app/layout.tsx`
 
 ## 5. Estructura interna
 
@@ -102,6 +103,7 @@ Componentes:
 - `lib/marketplace/params.ts` (`GeoFilter`) y `lib/marketplace/schemas.ts` (`LocationState`), sólo tipos.
 - `next/headers` (`cookies`) y `next/navigation` (`useRouter`).
 - `components/ui/button.tsx` y `components/ui/skeleton.tsx`.
+- `lucide-react` (`MapPin` en `LocationSummary`).
 
 ## 7. Ejemplo de uso
 
@@ -134,7 +136,7 @@ export default function Page() {
 
 ## 8. Restricciones
 
-- `LocationBar`, `getUserLocation` y `getEffectiveLocation` leen `cookies()`: quien los usa los envuelve en `<Suspense>` (`cacheComponents: true`) y nunca dentro de `'use cache'`.
+- `LocationBar`, `LocationSummary`, `getUserLocation` y `getEffectiveLocation` leen `cookies()`: quien los usa los envuelve en `<Suspense>` (`cacheComponents: true`) y nunca dentro de `'use cache'`.
 - `LocationPicker` no importa `server.ts` ni `lib/marketplace/client.ts`: recibe `states` y `label` por props y escribe la cookie sólo con las acciones de `actions.ts`.
 - La cookie es `httpOnly`: el navegador no la lee; tras cada acción el selector llama a `router.refresh()` para que el servidor repinte con la ubicación nueva.
 - Las coordenadas se redondean a 3 decimales (unos 100 m) porque el orden por cercanía no necesita más y la cookie no guarda la posición exacta.

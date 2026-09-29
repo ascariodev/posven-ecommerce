@@ -242,3 +242,105 @@ export const marketplaceEventSchema = eventFieldsSchema
   .extend({ session_id: z.uuid() })
   .refine(hasSlugsForType, { message: EVENT_SLUGS_MESSAGE });
 export type MarketplaceEvent = z.infer<typeof marketplaceEventSchema>;
+
+export const accountErrorCodeSchema = z.enum([
+  "unauthenticated",
+  "not_found",
+  "validation_failed",
+  "invalid_credentials",
+  "token_invalid",
+  "token_expired",
+  "too_many_attempts",
+]);
+export type AccountErrorCode = z.infer<typeof accountErrorCodeSchema>;
+
+export const accountErrorBodySchema = z.object({
+  error: z.object({
+    code: accountErrorCodeSchema,
+    message: z.string(),
+    fields: z.record(z.string(), z.string()).optional(),
+    retry_after: z.int().min(0).optional(),
+  }),
+});
+
+export const customerSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  phone: z.string(),
+  email_verified: z.boolean(),
+  pending_email: z.string().nullable(),
+  settings: z.object({
+    order_status_emails: z.boolean(),
+  }),
+});
+export type Customer = z.infer<typeof customerSchema>;
+
+export const customerEnvelopeSchema = z.object({
+  data: customerSchema,
+});
+
+export const authResponseSchema = z.object({
+  token: z.string().regex(/^\d{1,18}\|.+$/),
+  customer: customerSchema,
+});
+export type AuthResponse = z.infer<typeof authResponseSchema>;
+
+export const addressSchema = z.object({
+  id: z.int().min(1),
+  label: z.string(),
+  recipient_name: z.string(),
+  phone: z.string(),
+  city: cityRefSchema,
+  line: z.string(),
+  reference: z.string().nullable(),
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  is_default: z.boolean(),
+});
+export type Address = z.infer<typeof addressSchema>;
+
+export const addressEnvelopeSchema = z.object({
+  data: addressSchema,
+});
+
+export const addressListSchema = z.object({
+  data: z.array(addressSchema),
+});
+
+export const addressInputSchema = z.object({
+  label: z.string(),
+  recipient_name: z.string(),
+  phone: z.string(),
+  city_slug: z.string(),
+  line: z.string(),
+  reference: z.string().nullable(),
+  lat: z.number(),
+  lng: z.number(),
+  is_default: z.boolean().optional(),
+});
+export type AddressInput = z.infer<typeof addressInputSchema>;
+
+export const addressPatchSchema = addressInputSchema.partial();
+export type AddressPatch = z.infer<typeof addressPatchSchema>;
+
+export const registerInputSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  phone: z.string(),
+  password: z.string(),
+});
+export type RegisterInput = z.infer<typeof registerInputSchema>;
+
+export const profilePatchSchema = z.object({
+  name: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().optional(),
+  current_password: z.string().optional(),
+});
+export type ProfilePatch = z.infer<typeof profilePatchSchema>;
+
+export const favoritesResponseSchema = z.object({
+  products: z.array(productSchema),
+  stores: z.array(storeSummarySchema),
+});
+export type FavoritesResponse = z.infer<typeof favoritesResponseSchema>;

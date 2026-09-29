@@ -70,3 +70,7 @@ README: `lib/marketplace/README.md`
 | obtener la ficha de una tienda con sus productos y precios en esa tienda | `getStore()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02, RN-MARKETPLACE-04 |
 | listar los slugs de productos o tiendas para el sitemap | `listSitemap()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02 |
 | registrar un evento de visita o de contacto con una tienda | `sendEvent()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02 |
+| registrar a un comprador, iniciar y cerrar su sesión, verificar su correo y recuperar su contraseña | `loginCustomer()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-06, RN-MARKETPLACE-07 |
+| leer y cambiar el perfil, la contraseña y la configuración del comprador, o eliminar su cuenta | `getMe()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-06, RN-MARKETPLACE-07 |
+| listar, crear, editar y borrar las direcciones del comprador | `listAddresses()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07 |
+| listar, marcar y desmarcar los productos y las tiendas favoritas del comprador | `listFavorites()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07 |

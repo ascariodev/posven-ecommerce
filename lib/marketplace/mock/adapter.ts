@@ -345,3 +345,25 @@ export async function listSitemap(p: { type: SitemapType; page: number }): Promi
 }
 
 export const sendEvent: (event: MarketplaceEvent) => Promise<void> = async () => {};
+
+export {
+  addFavorite,
+  changePassword,
+  createAddress,
+  deleteAccount,
+  deleteAddress,
+  getMe,
+  listAddresses,
+  listFavorites,
+  loginCustomer,
+  logoutCustomer,
+  registerCustomer,
+  removeFavorite,
+  requestPasswordReset,
+  resendVerification,
+  resetPassword,
+  updateAddress,
+  updateMe,
+  updateSettings,
+  verifyEmail,
+} from "./accounts";

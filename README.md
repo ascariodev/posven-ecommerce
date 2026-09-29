@@ -29,8 +29,17 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Despliegue
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Cada push a `main` corre `.gitea/workflows/deploy.yaml`: compila en modo standalone con el `.env`
+de producción y deja el servidor en `/var/www/html/posven-ecommerce/current` (montado en el
+runner como `/posven-ecommerce`). PM2 vigila `.deployed` y reinicia el proceso.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Preparación única en el servidor:
+
+1. Crear `/var/www/html/posven-ecommerce/.env` con `MARKETPLACE_MODE=api`,
+   `MARKETPLACE_API_URL`, `MARKETPLACE_API_KEY` y `SITE_URL` de producción.
+2. Montar esa carpeta en el runner de Gitea como `/posven-ecommerce`, igual que `/posvenapp`.
+3. Tras el primer despliegue:
+   `pm2 start /var/www/html/posven-ecommerce/ecosystem.config.cjs && pm2 save`.
+4. nginx hace proxy a `127.0.0.1:3000` (el puerto se cambia en `deploy/ecosystem.config.cjs`).

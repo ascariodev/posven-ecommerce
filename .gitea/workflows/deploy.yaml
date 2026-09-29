@@ -1,0 +1,43 @@
+name: Despliegue posven-ecommerce
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      # El prerender del build lee SITE_URL y MARKETPLACE_*: sin el .env de producción hornearía el simulado.
+      - name: Cargar variables de producción
+        run: cp /posven-ecommerce/.env .env
+
+      - name: Compilar
+        run: npm run build
+
+      - name: Desplegar
+        run: |
+          if [ -d public ]; then cp -r public .next/standalone/; fi
+          cp -r .next/static .next/standalone/.next/
+          cp /posven-ecommerce/.env .next/standalone/
+
+          rm -rf /posven-ecommerce/current.new /posven-ecommerce/current.old
+          cp -a .next/standalone /posven-ecommerce/current.new
+          if [ -d /posven-ecommerce/current ]; then mv /posven-ecommerce/current /posven-ecommerce/current.old; fi
+          mv /posven-ecommerce/current.new /posven-ecommerce/current
+          cp deploy/ecosystem.config.cjs /posven-ecommerce/
+
+          # PM2 vigila este archivo y reinicia el proceso al cambiar.
+          date > /posven-ecommerce/.deployed
+          echo "Listo: /var/www/html/posven-ecommerce/current desplegado."

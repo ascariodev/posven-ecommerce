@@ -51,16 +51,26 @@ export const MOCK_LOCATIONS: LocationState[] = [
   },
 ];
 
-const farmacia: Category = { slug: "farmacia", name: "Farmacia", parent_slug: null };
-const viveres: Category = { slug: "viveres", name: "Víveres", parent_slug: null };
+const salud: Category = { slug: "salud-y-medicamentos", name: "Salud y medicamentos", parent_slug: null };
+const alimentos: Category = { slug: "alimentos", name: "Alimentos", parent_slug: null };
+const bebidas: Category = { slug: "bebidas", name: "Bebidas", parent_slug: null };
 const ferreteria: Category = { slug: "ferreteria", name: "Ferretería", parent_slug: null };
-const analgesicos: Category = { slug: "analgesicos", name: "Analgésicos", parent_slug: "farmacia" };
-const antibioticos: Category = { slug: "antibioticos", name: "Antibióticos", parent_slug: "farmacia" };
-const antialergicos: Category = { slug: "antialergicos", name: "Antialérgicos", parent_slug: "farmacia" };
-const vitaminas: Category = { slug: "vitaminas", name: "Vitaminas", parent_slug: "farmacia" };
-const granos: Category = { slug: "granos-y-harinas", name: "Granos y harinas", parent_slug: "viveres" };
-const lacteos: Category = { slug: "lacteos", name: "Lácteos", parent_slug: "viveres" };
-const bebidas: Category = { slug: "bebidas", name: "Bebidas", parent_slug: "viveres" };
+const dolorYFiebre: Category = { slug: "dolor-y-fiebre", name: "Dolor y fiebre", parent_slug: "salud-y-medicamentos" };
+const gripe: Category = { slug: "gripe-y-respiratorio", name: "Gripe y respiratorio", parent_slug: "salud-y-medicamentos" };
+const antibioticos: Category = {
+  slug: "antibioticos-y-antiinfecciosos",
+  name: "Antibióticos y antiinfecciosos",
+  parent_slug: "salud-y-medicamentos",
+};
+const vitaminas: Category = {
+  slug: "vitaminas-y-suplementos",
+  name: "Vitaminas y suplementos",
+  parent_slug: "salud-y-medicamentos",
+};
+const viveres: Category = { slug: "viveres", name: "Víveres", parent_slug: "alimentos" };
+const lacteos: Category = { slug: "lacteos-y-huevos", name: "Lácteos y huevos", parent_slug: "alimentos" };
+const aguaYRefrescos: Category = { slug: "agua-y-refrescos", name: "Agua y refrescos", parent_slug: "bebidas" };
+const cafe: Category = { slug: "cafe-y-te", name: "Café y té", parent_slug: "bebidas" };
 const herramientas: Category = { slug: "herramientas", name: "Herramientas", parent_slug: "ferreteria" };
 const electricidad: Category = { slug: "electricidad", name: "Electricidad", parent_slug: "ferreteria" };
 const pinturas: Category = { slug: "pinturas", name: "Pinturas", parent_slug: "ferreteria" };
@@ -70,8 +80,9 @@ function node(category: Category, children: Category[]): CategoryNode {
 }
 
 export const MOCK_CATEGORIES: CategoryNode[] = [
-  node(farmacia, [analgesicos, antibioticos, antialergicos, vitaminas]),
-  node(viveres, [granos, lacteos, bebidas]),
+  node(salud, [dolorYFiebre, gripe, antibioticos, vitaminas]),
+  node(alimentos, [viveres, lacteos]),
+  node(bebidas, [aguaYRefrescos, cafe]),
   node(ferreteria, [herramientas, electricidad, pinturas]),
 ];
 
@@ -228,7 +239,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Acetaminofén 500 mg x 20 tabletas",
       ean: "7590000000011",
       brand: "Genven",
-      category: analgesicos,
+      category: dolorYFiebre,
       image_url: null,
       attributes: [
         { name: "Concentración", value: "500 mg" },
@@ -253,7 +264,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Acetaminofén 650 mg x 10 tabletas",
       ean: "7590000000028",
       brand: "Calox",
-      category: analgesicos,
+      category: dolorYFiebre,
       image_url: null,
       attributes: [{ name: "Concentración", value: "650 mg" }],
       restriction: "none",
@@ -273,7 +284,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Acetaminofén infantil jarabe 120 ml",
       ean: "7590000000035",
       brand: "Atamel",
-      category: analgesicos,
+      category: dolorYFiebre,
       image_url: null,
       attributes: [{ name: "Presentación", value: "Jarabe 120 ml" }],
       restriction: "none",
@@ -290,7 +301,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Ibuprofeno 400 mg x 10 tabletas",
       ean: "7590000000042",
       brand: "Brugesic",
-      category: analgesicos,
+      category: dolorYFiebre,
       image_url: null,
       attributes: [{ name: "Concentración", value: "400 mg" }],
       restriction: "none",
@@ -330,7 +341,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Loratadina 10 mg x 10 tabletas",
       ean: "7590000000066",
       brand: "La Santé",
-      category: antialergicos,
+      category: gripe,
       image_url: null,
       attributes: [],
       restriction: "none",
@@ -387,7 +398,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Harina de maíz precocida 1 kg",
       ean: "7591002000011",
       brand: "P.A.N.",
-      category: granos,
+      category: viveres,
       image_url: null,
       attributes: [{ name: "Peso", value: "1 kg" }],
       restriction: "none",
@@ -407,7 +418,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Arroz blanco tipo I 1 kg",
       ean: "7591002000028",
       brand: "Mary",
-      category: granos,
+      category: viveres,
       image_url: null,
       attributes: [{ name: "Peso", value: "1 kg" }],
       restriction: "none",
@@ -424,7 +435,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Caraotas negras 500 g",
       ean: "7591002000035",
       brand: "Pantera",
-      category: granos,
+      category: viveres,
       image_url: null,
       attributes: [{ name: "Peso", value: "500 g" }],
       restriction: "none",
@@ -481,7 +492,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Café molido 500 g",
       ean: "7591002000059",
       brand: "Fama de América",
-      category: bebidas,
+      category: cafe,
       image_url: null,
       attributes: [{ name: "Peso", value: "500 g" }],
       restriction: "none",
@@ -501,7 +512,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Malta 355 ml",
       ean: "7591002000066",
       brand: "Maltín Polar",
-      category: bebidas,
+      category: aguaYRefrescos,
       image_url: null,
       attributes: [{ name: "Volumen", value: "355 ml" }],
       restriction: "none",
@@ -521,7 +532,7 @@ export const MOCK_PRODUCTS: MockProduct[] = [
       name: "Aceite de maíz 1 l",
       ean: "7591002000073",
       brand: "Mazeite",
-      category: viveres,
+      category: alimentos,
       image_url: null,
       attributes: [{ name: "Volumen", value: "1 l" }],
       restriction: "none",
@@ -652,7 +663,7 @@ export const MOCK_UNAVAILABLE_PRODUCTS: Product[] = [
     name: "Jarabe para la tos 120 ml",
     ean: null,
     brand: null,
-    category: farmacia,
+    category: salud,
     image_url: null,
     attributes: [],
     restriction: "none",

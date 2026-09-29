@@ -6,7 +6,7 @@ test("la portada lleva a la búsqueda con resultados, tasa y noindex", async ({ 
   await expect(
     page.getByRole("heading", { level: 1, name: "Encuentra lo que buscas en tiendas cerca de ti" }),
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "Farmacia", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Salud y medicamentos", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: `Tiendas en ${SITE_NAME}` })).toBeVisible();
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000");
 

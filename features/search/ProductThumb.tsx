@@ -13,19 +13,24 @@ export function ProductThumb({
   imageUrl,
   category,
   size,
+  alt = "",
+  preload = false,
 }: {
   imageUrl: string | null;
   category: Category | null;
   size: "md" | "lg";
+  alt?: string;
+  preload?: boolean;
 }) {
   const { px, box, icon } = thumbSizes[size];
   if (imageUrl !== null) {
     return (
       <Image
         src={imageUrl}
-        alt=""
+        alt={alt}
         width={px}
         height={px}
+        preload={preload}
         className={cx(box, "shrink-0 rounded-xl object-contain")}
       />
     );

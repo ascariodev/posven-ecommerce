@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { ViewBeacon } from "@/features/events/ViewBeacon";
 import { productJsonLd } from "@/features/product/jsonld";
 import { loadProduct } from "@/features/product/load";
 import { productMetadata } from "@/features/product/metadata";
 import { ProductOffers, ProductOffersSkeleton } from "@/features/product/ProductOffers";
+import { ProductThumb } from "@/features/search/ProductThumb";
 import { breadcrumbListJsonLd, serializeJsonLd } from "@/lib/jsonld";
 import { listCategories, listSitemap } from "@/lib/marketplace/client";
 import type { CategoryNode, ProductDetail } from "@/lib/marketplace/schemas";
@@ -85,20 +86,15 @@ export default async function ProductPage({
         </ol>
       </nav>
       <div className="flex flex-col gap-6 sm:flex-row">
-        {product.image_url !== null ? (
-          <Image
-            src={product.image_url}
-            alt={product.name}
-            width={320}
-            height={320}
-            preload
-            className="size-64 shrink-0 rounded-lg object-contain sm:size-80"
-          />
-        ) : (
-          <div aria-hidden="true" className="size-64 shrink-0 rounded-lg bg-muted sm:size-80" />
-        )}
+        <ProductThumb
+          imageUrl={product.image_url}
+          category={product.category}
+          size="lg"
+          alt={product.name}
+          preload
+        />
         <div className="flex min-w-0 flex-col gap-3">
-          <h1 className="text-2xl font-semibold text-foreground">{product.name}</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
           {product.brand !== null && <p className="text-muted-foreground">{product.brand}</p>}
           {product.restriction === "recipe" && (
             <Badge variant="warning" className="self-start">
@@ -106,14 +102,16 @@ export default async function ProductPage({
             </Badge>
           )}
           {product.attributes.length > 0 && (
-            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-              {product.attributes.map((attribute) => (
-                <div key={attribute.name} className="contents">
-                  <dt className="text-muted-foreground">{attribute.name}</dt>
-                  <dd className="text-foreground">{attribute.value}</dd>
-                </div>
-              ))}
-            </dl>
+            <Card>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                {product.attributes.map((attribute) => (
+                  <div key={attribute.name} className="contents">
+                    <dt className="text-muted-foreground">{attribute.name}</dt>
+                    <dd className="text-foreground">{attribute.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Card>
           )}
         </div>
       </div>

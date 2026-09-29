@@ -16,7 +16,7 @@ export function StoreHeader({ store }: { store: Store }) {
           width={1200}
           height={300}
           preload
-          className="h-40 w-full rounded-lg object-cover sm:h-56"
+          className="h-40 w-full rounded-2xl object-cover sm:h-56"
         />
       )}
       <div className="flex items-center gap-4">
@@ -31,13 +31,13 @@ export function StoreHeader({ store }: { store: Store }) {
         ) : (
           <div
             aria-hidden="true"
-            className="flex size-18 shrink-0 items-center justify-center rounded-full bg-muted text-2xl font-semibold text-muted-foreground"
+            className="flex size-18 shrink-0 items-center justify-center rounded-full bg-primary-soft text-2xl font-bold text-warning"
           >
             {storeInitials(store.name)}
           </div>
         )}
         <div className="flex min-w-0 flex-col gap-1">
-          <h1 className="text-2xl font-semibold text-foreground">{store.name}</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">{store.name}</h1>
           <p className="text-muted-foreground">{store.company_name}</p>
         </div>
       </div>
@@ -45,7 +45,7 @@ export function StoreHeader({ store }: { store: Store }) {
         {store.address}, {store.city.name}
       </p>
       <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold">Horario</h2>
+        <h2 className="text-xl font-bold tracking-tight">Horario</h2>
         <ul className="text-sm text-foreground">
           {formatSchedule(store.schedule).map((line) => (
             <li key={line}>{line}</li>

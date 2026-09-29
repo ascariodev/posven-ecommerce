@@ -26,7 +26,7 @@ export async function NearbyStores() {
 
   return (
     <section aria-labelledby="nearby-stores-title" className="flex flex-col gap-3">
-      <h2 id="nearby-stores-title" className="text-lg font-semibold text-foreground">
+      <h2 id="nearby-stores-title" className="text-xl font-bold tracking-tight text-foreground">
         {location !== null ? "Tiendas cercanas" : `Tiendas en ${SITE_NAME}`}
       </h2>
       {stores.length === 0 ? (

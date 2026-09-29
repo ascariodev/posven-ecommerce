@@ -31,7 +31,7 @@ export async function ProductOffers({
   if (page === null || (page.offers.length === 0 && page.featured.length === 0)) {
     return (
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold">Dónde comprarlo</h2>
+        <h2 className="text-xl font-bold tracking-tight">Dónde comprarlo</h2>
         <p className="text-muted-foreground">No hay ofertas cerca. Prueba con otra ciudad.</p>
       </section>
     );
@@ -42,7 +42,7 @@ export async function ProductOffers({
 
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-xl font-semibold">Dónde comprarlo</h2>
+      <h2 className="text-xl font-bold tracking-tight">Dónde comprarlo</h2>
       <p className="text-sm text-muted-foreground">{formatRate(page.rate)}</p>
       {location !== null && <SortLinks slug={product.slug} sort={sort} />}
       {page.featured.length + inside.length > 0 && (
@@ -61,7 +61,7 @@ export async function ProductOffers({
       )}
       {outside.length > 0 && (
         <>
-          <h3 className="text-lg font-semibold">Fuera de tu zona</h3>
+          <h3 className="text-lg font-bold tracking-tight">Fuera de tu zona</h3>
           <ul aria-label="Fuera de tu zona" className="grid gap-4 sm:grid-cols-2">
             {outside.map((offer) => (
               <li key={offer.store.slug}>

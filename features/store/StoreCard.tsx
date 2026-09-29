@@ -12,8 +12,8 @@ export function StoreCard({ store, featured }: { store: NearbyStore; featured?: 
     <Link
       href={`/tienda/${store.slug}`}
       className={cx(
-        "flex h-full items-center gap-4 rounded-lg border border-border p-4 hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
-        featured ? "bg-featured" : "bg-background",
+        "flex h-full items-center gap-4 rounded-2xl border border-border p-4 shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+        featured ? "bg-featured" : "bg-surface",
       )}
     >
       {logoUrl !== null ? (
@@ -27,7 +27,7 @@ export function StoreCard({ store, featured }: { store: NearbyStore; featured?: 
       ) : (
         <div
           aria-hidden="true"
-          className="flex size-14 shrink-0 items-center justify-center rounded-full bg-muted text-lg font-semibold text-muted-foreground"
+          className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary-soft text-lg font-bold text-warning"
         >
           {storeInitials(store.name)}
         </div>

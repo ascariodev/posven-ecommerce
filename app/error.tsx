@@ -9,9 +9,9 @@ export default function ErrorPage({
   retry: () => void;
 }) {
   return (
-    <section className="flex flex-col items-start gap-4">
+    <section className="flex flex-col items-start gap-4 rounded-2xl border border-border bg-surface p-8 shadow-card">
       <meta name="robots" content="noindex" />
-      <h1 className="text-2xl font-semibold">No pudimos cargar esta página</h1>
+      <h1 className="text-3xl font-bold tracking-tight">No pudimos cargar esta página</h1>
       <p className="text-muted-foreground">
         El servicio de búsqueda no responde. Intenta de nuevo en unos segundos.
       </p>

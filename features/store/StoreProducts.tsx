@@ -32,7 +32,7 @@ function StoreProductCard({ product, now }: { product: StoreProduct; now: Date }
         </div>
       )}
       <div>
-        <p className="font-semibold text-foreground">{formatUsd(product.price_usd)}</p>
+        <p className="text-xl font-bold text-foreground">{formatUsd(product.price_usd)}</p>
         <p className="text-sm text-foreground">{formatVes(product.price_ves)}</p>
         <p className="text-sm text-muted-foreground">{formatUpdatedAgo(product.updated_at, now)}</p>
       </div>
@@ -55,7 +55,7 @@ export async function StoreProducts({
   if (response === null || response.meta.total === 0) {
     return (
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold">Productos</h2>
+        <h2 className="text-xl font-bold tracking-tight">Productos</h2>
         <p className="text-muted-foreground">Esta tienda todavía no publicó productos.</p>
       </section>
     );
@@ -67,7 +67,7 @@ export async function StoreProducts({
 
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-xl font-semibold">Productos</h2>
+      <h2 className="text-xl font-bold tracking-tight">Productos</h2>
       <p className="text-sm text-muted-foreground">{formatRate(response.rate)}</p>
       {response.products.length > 0 && (
         <ul aria-label="Productos" className="grid gap-4 sm:grid-cols-2">

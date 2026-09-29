@@ -1,5 +1,6 @@
 "use client";
 
+import { MessageCircle, Navigation, Phone } from "lucide-react";
 import { buttonClasses } from "@/components/ui/button";
 import type { EventType, Restriction, StoreSummary } from "@/lib/marketplace/schemas";
 import { SITE_NAME } from "@/lib/site";
@@ -30,6 +31,7 @@ export function ContactButtons({ store, product }: { store: StoreSummary; produc
           className={buttonClasses("primary")}
           onClick={track("click_whatsapp")}
         >
+          <MessageCircle aria-hidden="true" className="size-4" />
           WhatsApp
         </a>
       ) : null}
@@ -40,6 +42,7 @@ export function ContactButtons({ store, product }: { store: StoreSummary; produc
           className={buttonClasses("secondary")}
           onClick={track("click_call")}
         >
+          <Phone aria-hidden="true" className="size-4" />
           Llamar
         </a>
       ) : null}
@@ -51,6 +54,7 @@ export function ContactButtons({ store, product }: { store: StoreSummary; produc
         className={buttonClasses("secondary")}
         onClick={track("click_route")}
       >
+        <Navigation aria-hidden="true" className="size-4" />
         Ver ruta
       </a>
     </div>

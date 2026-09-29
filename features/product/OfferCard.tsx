@@ -38,7 +38,7 @@ export function OfferCard({
         </div>
       </div>
       <div>
-        <p className="font-semibold text-foreground">{formatUsd(offer.price_usd)}</p>
+        <p className="text-xl font-bold text-foreground">{formatUsd(offer.price_usd)}</p>
         <p className="text-sm text-foreground">{formatVes(offer.price_ves)}</p>
         <p className="text-sm text-muted-foreground">{formatUpdatedAgo(offer.updated_at, now)}</p>
       </div>

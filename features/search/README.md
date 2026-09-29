@@ -81,7 +81,7 @@ Componentes:
 - `Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta })`, `features/search/Pagination.tsx`
 - `EmptyState({ query, geoKind, categories }: { query: SearchQuery; geoKind: "coords" | "city" | null; categories: CategoryNode[] })`, `features/search/EmptyState.tsx`
 - `CategoryLinks({ categories }: { categories: CategoryNode[] })`, `features/search/CategoryLinks.tsx`
-- `ProductThumb({ imageUrl, category, size }: { imageUrl: string | null; category: Category | null; size: "md" | "lg" })`, Server Component, `features/search/ProductThumb.tsx`: la imagen con `alt=""` (96 o 320 px) o, sin imagen, el ícono de `categoryIcon(category)` sobre `bg-primary-soft`, con `aria-hidden`
+- `ProductThumb({ imageUrl, category, size, alt, preload }: { imageUrl: string | null; category: Category | null; size: "md" | "lg"; alt?: string; preload?: boolean })`, Server Component, `features/search/ProductThumb.tsx`: la imagen (96 o 320 px) con `alt` (por defecto `""`) y `preload` (por defecto `false`), que sólo se aplican a `<Image>`, o, sin imagen, el ícono de `categoryIcon(category)` sobre `bg-primary-soft`, con `aria-hidden`
 - `HeaderSearchSlot({ children }: { children: ReactNode })`, `features/search/HeaderSearchSlot.tsx` (`"use client"`): `null` en `/` y en toda ruta que empieza por `/buscar`, que ya tienen su buscador; si no, sus hijos
 
 Íconos, `features/search/categoryIcon.ts`:

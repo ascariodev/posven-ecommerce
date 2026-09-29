@@ -6,5 +6,5 @@ import type { ReactNode } from "react";
 export function HeaderSearchSlot({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   if (pathname === "/" || pathname.startsWith("/buscar")) return null;
-  return <div className="flex w-full items-center gap-3 sm:w-auto sm:flex-1">{children}</div>;
+  return <div className="contents sm:flex sm:flex-1 sm:items-center sm:gap-3">{children}</div>;
 }

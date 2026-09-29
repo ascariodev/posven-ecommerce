@@ -43,10 +43,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </Link>
             <Suspense fallback={null}>
               <HeaderSearchSlot>
-                <SearchForm size="sm" />
-                <Suspense fallback={<LocationSummarySkeleton />}>
-                  <LocationSummary />
-                </Suspense>
+                <div className="order-last w-full sm:order-none sm:w-auto sm:flex-1">
+                  <SearchForm size="sm" />
+                </div>
+                <div className="ml-auto sm:ml-0">
+                  <Suspense fallback={<LocationSummarySkeleton />}>
+                    <LocationSummary />
+                  </Suspense>
+                </div>
               </HeaderSearchSlot>
             </Suspense>
           </div>

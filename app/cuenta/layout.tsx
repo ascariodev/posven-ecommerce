@@ -1,0 +1,34 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { buttonClasses } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
+
+const NAV_LINKS = [
+  { href: "/cuenta", label: "Resumen" },
+  { href: "/cuenta/perfil", label: "Perfil" },
+  { href: "/cuenta/direcciones", label: "Direcciones" },
+  { href: "/cuenta/favoritos", label: "Favoritos" },
+  { href: "/cuenta/configuracion", label: "Configuración" },
+];
+
+export default function AccountLayout({ children }: LayoutProps<"/cuenta">) {
+  return (
+    <div className="flex flex-col gap-6">
+      <nav aria-label="Mi cuenta">
+        <ul className="flex flex-wrap gap-2">
+          {NAV_LINKS.map((link) => (
+            <li key={link.href}>
+              <Link href={link.href} className={buttonClasses("secondary", "sm")}>
+                {link.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      {children}
+    </div>
+  );
+}

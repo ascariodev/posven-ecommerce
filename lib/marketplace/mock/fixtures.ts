@@ -1,7 +1,10 @@
+import type { FavoriteTarget } from "../params";
 import type {
+  Address,
   Category,
   CategoryNode,
   CityRef,
+  Customer,
   LocationState,
   Money,
   Offer,
@@ -670,3 +673,46 @@ export const MOCK_UNAVAILABLE_PRODUCTS: Product[] = [
     is_unified: false,
   },
 ];
+
+export type MockAccount = {
+  id: number;
+  customer: Customer;
+  password: string;
+  addresses: Address[];
+  favorites: FavoriteTarget[];
+};
+
+export const MOCK_ACCOUNT_SEED: MockAccount[] = [
+  {
+    id: 1,
+    customer: {
+      name: "Comprador de prueba",
+      email: "comprador@posven.test",
+      phone: "+584141234567",
+      email_verified: true,
+      pending_email: null,
+      settings: { order_status_emails: true },
+    },
+    password: "clave-segura-1",
+    addresses: [
+      {
+        id: 1,
+        label: "Casa",
+        recipient_name: "Comprador de prueba",
+        phone: "+584141234567",
+        city: valencia,
+        line: "Av. Bolívar Norte, edificio Sol, piso 3",
+        reference: null,
+        lat: 10.162,
+        lng: -68.007,
+        is_default: true,
+      },
+    ],
+    favorites: [],
+  },
+];
+
+export const MOCK_VERIFY_TOKEN = "verificacion-simulada";
+export const MOCK_RESET_TOKEN = "restablecer-simulado";
+export const MOCK_EXPIRED_TOKEN = "enlace-vencido";
+export const MOCK_RATE_LIMITED_EMAIL = "limite@posven.test";

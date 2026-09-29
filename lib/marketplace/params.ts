@@ -57,3 +57,7 @@ export function productQuery(p: {
 export function pageQuery(page: number): URLSearchParams {
   return new URLSearchParams({ page: String(page) });
 }
+
+export type AccountContext = { session: string | null; clientIp: string | null };
+
+export type FavoriteTarget = { kind: "product" | "store"; slug: string };

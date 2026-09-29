@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/FavoriteButton";
 import { ViewBeacon } from "@/features/events/ViewBeacon";
 import { storeJsonLd } from "@/features/store/jsonld";
 import { StoreHeader } from "@/features/store/StoreHeader";
@@ -53,6 +54,9 @@ export default async function StorePage({
       />
       <ViewBeacon event={{ type: "store_view", store_slug: slug, product_slug: null }} />
       <StoreHeader store={store} />
+      <Suspense fallback={<FavoriteButtonSkeleton />}>
+        <FavoriteButton target={{ kind: "store", slug }} returnTo={`/tienda/${slug}`} />
+      </Suspense>
       <Suspense fallback={<StoreProductsSkeleton />}>
         <StoreProducts slug={slug} searchParams={searchParams} />
       </Suspense>

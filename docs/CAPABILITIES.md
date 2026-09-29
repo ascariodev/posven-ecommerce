@@ -3,6 +3,18 @@
 Generado por `node posven/.claude/scripts/generate-index.mjs posven-ecommerce`: no se edita a mano.
 Se regenera y commitea junto con todo cambio al frontmatter `capabilities` de un README.
 
+## account
+
+README: `features/account/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| leer el comprador de la sesión | `getCurrentCustomer()` | `features/account/session.ts` | RN-ACCOUNT-01, RN-ACCOUNT-03, RN-ACCOUNT-04 |
+| entrar, crear cuenta y recuperar la contraseña | `login() / register() / logout() / forgotPassword() / resetPasswordAction() / verifyEmailAction() / resendVerificationAction()` | `features/account/actions.ts` | RN-ACCOUNT-01, RN-ACCOUNT-02, RN-ACCOUNT-03 |
+| mostrar el acceso o el menú de la cuenta en la cabecera | `<AccountSlot />` | `features/account/AccountMenu.tsx` | RN-ACCOUNT-05 |
+| editar el perfil, la contraseña, los avisos, las direcciones del comprador o eliminar su cuenta | `updateProfile() / changePasswordAction() / updateSettingsAction() / deleteAccountAction() / saveAddress() / deleteAddressAction() / setDefaultAddress()` | `features/account/accountActions.ts` | RN-ACCOUNT-03, RN-ACCOUNT-06 |
+| marcar o quitar un producto o una tienda de favoritos | `<FavoriteButton /> / toggleFavorite()` | `features/account/FavoriteButton.tsx` | RN-ACCOUNT-03, RN-ACCOUNT-05 |
+
 ## events
 
 README: `features/events/README.md`
@@ -70,3 +82,7 @@ README: `lib/marketplace/README.md`
 | obtener la ficha de una tienda con sus productos y precios en esa tienda | `getStore()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02, RN-MARKETPLACE-04 |
 | listar los slugs de productos o tiendas para el sitemap | `listSitemap()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02 |
 | registrar un evento de visita o de contacto con una tienda | `sendEvent()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02 |
+| registrar a un comprador, iniciar y cerrar su sesión, verificar su correo y recuperar su contraseña | `loginCustomer()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-06, RN-MARKETPLACE-07 |
+| leer y cambiar el perfil, la contraseña y la configuración del comprador, o eliminar su cuenta | `getMe()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-06, RN-MARKETPLACE-07 |
+| listar, crear, editar y borrar las direcciones del comprador | `listAddresses()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07 |
+| listar, marcar y desmarcar los productos y las tiendas favoritas del comprador | `listFavorites()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07 |

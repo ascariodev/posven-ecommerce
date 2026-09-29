@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/FavoriteButton";
 import { ViewBeacon } from "@/features/events/ViewBeacon";
 import { productJsonLd } from "@/features/product/jsonld";
 import { loadProduct } from "@/features/product/load";
@@ -96,6 +97,9 @@ export default async function ProductPage({
         <div className="flex min-w-0 flex-col gap-3">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
           {product.brand !== null && <p className="text-muted-foreground">{product.brand}</p>}
+          <Suspense fallback={<FavoriteButtonSkeleton />}>
+            <FavoriteButton target={{ kind: "product", slug: product.slug }} returnTo={`/p/${product.slug}`} />
+          </Suspense>
           {product.restriction === "recipe" && (
             <Badge variant="warning" className="self-start">
               Requiere récipe

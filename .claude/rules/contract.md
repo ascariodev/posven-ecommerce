@@ -20,8 +20,9 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
    también. Fuera de `lib/marketplace/` se entra por `client.ts`: nadie importa `http.ts` ni
    `mock/`; sus constantes (`params.ts`) y tipos (`schemas.ts`) sí se importan directo.
 4. **Un campo nuevo entra primero en la spec §3**
-   (`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`) y después en
-   `schemas.ts`. Ningún campo se renombra ni se quita (spec §3.1, ítem 7).
+   (`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`), o en la §4 de
+   `posven/.claude/docs/specs/2026-09-29-cuentas-y-compras-design.md` si es de cuentas, y después
+   en `schemas.ts`. Ningún campo se renombra ni se quita (spec §3.1, ítem 7).
 5. **El simulado pasa los mismos esquemas.** `mock/adapter.ts` exporta las mismas funciones con
    las mismas firmas que `client.ts`, y `schemas.test.ts` valida cada respuesta simulada contra su
    esquema. Un campo nuevo se agrega también a `mock/fixtures.ts`.

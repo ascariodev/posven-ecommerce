@@ -1,28 +1,43 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { postJson, requestJson, requestJsonOrNull } from "./http";
+import { accountCommand, accountRequest, postJson, requestJson, requestJsonOrNull } from "./http";
 import * as mock from "./mock/adapter";
 import {
   pageQuery,
   productQuery,
   searchQuery,
   storesQuery,
+  type AccountContext,
+  type FavoriteTarget,
   type GeoFilter,
   type OfferSort,
   type RadiusKm,
 } from "./params";
 import {
+  addressEnvelopeSchema,
+  addressListSchema,
+  authResponseSchema,
   categoriesResponseSchema,
+  customerEnvelopeSchema,
+  favoritesResponseSchema,
   locationsResponseSchema,
   productResponseSchema,
   searchResponseSchema,
   sitemapResponseSchema,
   storeResponseSchema,
   storesResponseSchema,
+  type Address,
+  type AddressInput,
+  type AddressPatch,
+  type AuthResponse,
   type CategoryNode,
+  type Customer,
+  type FavoritesResponse,
   type LocationState,
   type MarketplaceEvent,
   type ProductResponse,
+  type ProfilePatch,
+  type RegisterInput,
   type SearchResponse,
   type SitemapResponse,
   type SitemapType,
@@ -127,4 +142,144 @@ export async function listSitemap(p: { type: SitemapType; page: number }): Promi
 export async function sendEvent(event: MarketplaceEvent): Promise<void> {
   if (usesMock()) return mock.sendEvent(event);
   await postJson("/events", event);
+}
+
+export async function registerCustomer(
+  ctx: AccountContext,
+  input: RegisterInput,
+): Promise<AuthResponse> {
+  if (usesMock()) return mock.registerCustomer(ctx, input);
+  return accountRequest({ method: "POST", path: "/customers", ctx, body: input }, authResponseSchema);
+}
+
+export async function loginCustomer(
+  ctx: AccountContext,
+  input: { email: string; password: string },
+): Promise<AuthResponse> {
+  if (usesMock()) return mock.loginCustomer(ctx, input);
+  return accountRequest({ method: "POST", path: "/auth/login", ctx, body: input }, authResponseSchema);
+}
+
+export async function logoutCustomer(ctx: AccountContext): Promise<void> {
+  if (usesMock()) return mock.logoutCustomer(ctx);
+  await accountCommand({ method: "POST", path: "/auth/logout", ctx });
+}
+
+export async function requestPasswordReset(ctx: AccountContext, email: string): Promise<void> {
+  if (usesMock()) return mock.requestPasswordReset(ctx, email);
+  await accountCommand({ method: "POST", path: "/auth/password/forgot", ctx, body: { email } });
+}
+
+export async function resetPassword(
+  ctx: AccountContext,
+  input: { token: string; password: string },
+): Promise<void> {
+  if (usesMock()) return mock.resetPassword(ctx, input);
+  await accountCommand({ method: "POST", path: "/auth/password/reset", ctx, body: input });
+}
+
+export async function verifyEmail(ctx: AccountContext, token: string): Promise<void> {
+  if (usesMock()) return mock.verifyEmail(ctx, token);
+  await accountCommand({ method: "POST", path: "/auth/email/verify", ctx, body: { token } });
+}
+
+export async function resendVerification(ctx: AccountContext): Promise<void> {
+  if (usesMock()) return mock.resendVerification(ctx);
+  await accountCommand({ method: "POST", path: "/auth/email/resend", ctx });
+}
+
+export async function getMe(ctx: AccountContext): Promise<Customer> {
+  if (usesMock()) return mock.getMe(ctx);
+  const response = await accountRequest({ method: "GET", path: "/me", ctx }, customerEnvelopeSchema);
+  return response.data;
+}
+
+export async function updateMe(ctx: AccountContext, patch: ProfilePatch): Promise<Customer> {
+  if (usesMock()) return mock.updateMe(ctx, patch);
+  const response = await accountRequest(
+    { method: "PATCH", path: "/me", ctx, body: patch },
+    customerEnvelopeSchema,
+  );
+  return response.data;
+}
+
+export async function changePassword(
+  ctx: AccountContext,
+  input: { current_password: string; password: string },
+): Promise<void> {
+  if (usesMock()) return mock.changePassword(ctx, input);
+  await accountCommand({ method: "PUT", path: "/me/password", ctx, body: input });
+}
+
+export async function updateSettings(
+  ctx: AccountContext,
+  input: { order_status_emails: boolean },
+): Promise<Customer> {
+  if (usesMock()) return mock.updateSettings(ctx, input);
+  const response = await accountRequest(
+    { method: "PATCH", path: "/me/settings", ctx, body: input },
+    customerEnvelopeSchema,
+  );
+  return response.data;
+}
+
+export async function deleteAccount(ctx: AccountContext, input: { password: string }): Promise<void> {
+  if (usesMock()) return mock.deleteAccount(ctx, input);
+  await accountCommand({ method: "DELETE", path: "/me", ctx, body: input });
+}
+
+export async function listAddresses(ctx: AccountContext): Promise<Address[]> {
+  if (usesMock()) return mock.listAddresses(ctx);
+  const response = await accountRequest(
+    { method: "GET", path: "/me/addresses", ctx },
+    addressListSchema,
+  );
+  return response.data;
+}
+
+export async function createAddress(ctx: AccountContext, input: AddressInput): Promise<Address> {
+  if (usesMock()) return mock.createAddress(ctx, input);
+  const response = await accountRequest(
+    { method: "POST", path: "/me/addresses", ctx, body: input },
+    addressEnvelopeSchema,
+  );
+  return response.data;
+}
+
+export async function updateAddress(
+  ctx: AccountContext,
+  id: number,
+  patch: AddressPatch,
+): Promise<Address> {
+  if (usesMock()) return mock.updateAddress(ctx, id, patch);
+  const response = await accountRequest(
+    { method: "PATCH", path: `/me/addresses/${id}`, ctx, body: patch },
+    addressEnvelopeSchema,
+  );
+  return response.data;
+}
+
+export async function deleteAddress(ctx: AccountContext, id: number): Promise<void> {
+  if (usesMock()) return mock.deleteAddress(ctx, id);
+  await accountCommand({ method: "DELETE", path: `/me/addresses/${id}`, ctx });
+}
+
+export async function listFavorites(ctx: AccountContext): Promise<FavoritesResponse> {
+  if (usesMock()) return mock.listFavorites(ctx);
+  return accountRequest({ method: "GET", path: "/me/favorites", ctx }, favoritesResponseSchema);
+}
+
+function favoritePath(target: FavoriteTarget): string {
+  const collection = target.kind === "product" ? "products" : "stores";
+  return `/me/favorites/${collection}/${encodeURIComponent(target.slug)}`;
+}
+
+export async function addFavorite(ctx: AccountContext, target: FavoriteTarget): Promise<void> {
+  if (usesMock()) return mock.addFavorite(ctx, target);
+  await accountCommand({ method: "PUT", path: favoritePath(target), ctx });
+}
+
+export async function removeFavorite(ctx: AccountContext, target: FavoriteTarget): Promise<void> {
+  if (usesMock()) return mock.removeFavorite(ctx, target);
+  await accountCommand({ method: "DELETE", path: favoritePath(target), ctx });
 }

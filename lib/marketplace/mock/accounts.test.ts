@@ -1,0 +1,222 @@
+import { beforeEach, describe, expect, it } from "vitest";
+import { MarketplaceAccountError } from "../errors";
+import type { AccountContext } from "../params";
+import type { AddressInput } from "../schemas";
+import {
+  addFavorite,
+  createAddress,
+  getMe,
+  listAddresses,
+  listFavorites,
+  loginCustomer,
+  registerCustomer,
+  requestPasswordReset,
+  resetMockAccounts,
+  resetPassword,
+  updateAddress,
+  updateMe,
+  verifyEmail,
+} from "./accounts";
+import {
+  MOCK_EXPIRED_TOKEN,
+  MOCK_RATE_LIMITED_EMAIL,
+  MOCK_RESET_TOKEN,
+  MOCK_VERIFY_TOKEN,
+} from "./fixtures";
+
+const anonymous: AccountContext = { session: null, clientIp: null };
+const seeded = { email: "comprador@posven.test", password: "clave-segura-1" };
+
+const newCustomer = {
+  name: "Nueva compradora",
+  email: "nueva@posven.test",
+  phone: "+584121112233",
+  password: "otra-clave-1",
+};
+
+const office: AddressInput = {
+  label: "Oficina",
+  recipient_name: "Comprador de prueba",
+  phone: "+584141234567",
+  city_slug: "valencia",
+  line: "Av. Cedeño, torre Norte, piso 8",
+  reference: null,
+  lat: 10.17,
+  lng: -68.0,
+};
+
+async function captureAccountError(promise: Promise<unknown>): Promise<MarketplaceAccountError> {
+  try {
+    await promise;
+  } catch (error) {
+    if (error instanceof MarketplaceAccountError) return error;
+    throw error;
+  }
+  throw new Error("se esperaba un MarketplaceAccountError");
+}
+
+async function sessionOf(credentials: { email: string; password: string }): Promise<AccountContext> {
+  const { token } = await loginCustomer(anonymous, credentials);
+  return { session: token, clientIp: null };
+}
+
+beforeEach(() => {
+  resetMockAccounts();
+});
+
+describe("simulado de cuentas: acceso", () => {
+  it("un correo ya registrado da validation_failed en email", async () => {
+    const error = await captureAccountError(
+      registerCustomer(anonymous, { ...newCustomer, email: " Comprador@Posven.test " }),
+    );
+
+    expect(error.status).toBe(422);
+    expect(error.code).toBe("validation_failed");
+    expect(error.fields?.email).toBe("El correo ya está registrado.");
+  });
+
+  it("un login errado da invalid_credentials", async () => {
+    const error = await captureAccountError(
+      loginCustomer(anonymous, { ...seeded, password: "otra-cosa-1" }),
+    );
+
+    expect(error.status).toBe(422);
+    expect(error.code).toBe("invalid_credentials");
+  });
+
+  it("MOCK_VERIFY_TOKEN verifica al recién registrado", async () => {
+    const { token } = await registerCustomer(anonymous, newCustomer);
+    const ctx = { session: token, clientIp: null };
+    expect((await getMe(ctx)).email_verified).toBe(false);
+
+    await verifyEmail(anonymous, MOCK_VERIFY_TOKEN);
+
+    expect((await getMe(ctx)).email_verified).toBe(true);
+  });
+
+  it("MOCK_EXPIRED_TOKEN da token_expired", async () => {
+    await registerCustomer(anonymous, newCustomer);
+
+    const error = await captureAccountError(verifyEmail(anonymous, MOCK_EXPIRED_TOKEN));
+
+    expect(error.code).toBe("token_expired");
+  });
+
+  it("otro token da token_invalid", async () => {
+    await registerCustomer(anonymous, newCustomer);
+
+    const error = await captureAccountError(verifyEmail(anonymous, "cualquier-otro"));
+
+    expect(error.code).toBe("token_invalid");
+  });
+
+  it("restablecer la contraseña revoca la sesión anterior", async () => {
+    const ctx = await sessionOf(seeded);
+    await requestPasswordReset(anonymous, seeded.email);
+
+    await resetPassword(anonymous, { token: MOCK_RESET_TOKEN, password: "clave-nueva-1" });
+
+    const error = await captureAccountError(getMe(ctx));
+    expect(error.status).toBe(401);
+    expect(error.code).toBe("unauthenticated");
+    await expect(sessionOf({ ...seeded, password: "clave-nueva-1" })).resolves.toBeDefined();
+  });
+
+  it("MOCK_RATE_LIMITED_EMAIL da 429 con retryAfter 42", async () => {
+    const error = await captureAccountError(
+      loginCustomer(anonymous, { email: MOCK_RATE_LIMITED_EMAIL, password: "lo-que-sea-1" }),
+    );
+
+    expect(error.status).toBe(429);
+    expect(error.code).toBe("too_many_attempts");
+    expect(error.retryAfter).toBe(42);
+    expect(error.message).toBe("Demasiados intentos. Prueba de nuevo en 42 segundos.");
+  });
+
+  it("una sesión desconocida da 401", async () => {
+    const error = await captureAccountError(getMe({ session: "1|desconocida", clientIp: null }));
+
+    expect(error.status).toBe(401);
+    expect(error.code).toBe("unauthenticated");
+  });
+});
+
+describe("simulado de cuentas: perfil", () => {
+  it("cambiar el correo sin current_password pide la contraseña y no guarda nada (RN-MKT-19)", async () => {
+    const ctx = await sessionOf(seeded);
+
+    const error = await captureAccountError(
+      updateMe(ctx, { name: "Otro nombre", email: "nuevo@posven.test" }),
+    );
+
+    expect(error.code).toBe("validation_failed");
+    expect(error.fields).toEqual({
+      current_password: "Ingresa tu contraseña actual para cambiar el correo.",
+    });
+    const customer = await getMe(ctx);
+    expect(customer.name).toBe("Comprador de prueba");
+    expect(customer.pending_email).toBeNull();
+  });
+});
+
+describe("simulado de cuentas: direcciones", () => {
+  it("la primera dirección queda predeterminada y marcar otra desmarca la anterior", async () => {
+    const { token } = await registerCustomer(anonymous, newCustomer);
+    const ctx = { session: token, clientIp: null };
+
+    const first = await createAddress(ctx, office);
+    const second = await createAddress(ctx, { ...office, label: "Casa", is_default: true });
+
+    expect(first.is_default).toBe(true);
+    expect(second.is_default).toBe(true);
+    const listed = await listAddresses(ctx);
+    expect(listed.map((address) => [address.id, address.is_default])).toEqual([
+      [second.id, true],
+      [first.id, false],
+    ]);
+  });
+
+  it("is_default false sobre la predeterminada la deja predeterminada", async () => {
+    const ctx = await sessionOf(seeded);
+
+    const updated = await updateAddress(ctx, 1, { label: "Casa de mamá", is_default: false });
+
+    expect(updated.label).toBe("Casa de mamá");
+    expect(updated.is_default).toBe(true);
+  });
+
+  it("listAddresses da la predeterminada primero y luego por id", async () => {
+    const ctx = await sessionOf(seeded);
+    const second = await createAddress(ctx, office);
+    const third = await createAddress(ctx, { ...office, label: "Depósito", is_default: true });
+
+    const listed = await listAddresses(ctx);
+
+    expect(listed.map((address) => address.id)).toEqual([third.id, 1, second.id]);
+  });
+});
+
+describe("simulado de cuentas: favoritos", () => {
+  it("listFavorites da primero el último marcado", async () => {
+    const ctx = await sessionOf(seeded);
+    await addFavorite(ctx, { kind: "product", slug: "acetaminofen-500-mg-20-tabletas" });
+    await addFavorite(ctx, { kind: "product", slug: "malta-355-ml" });
+    await addFavorite(ctx, { kind: "product", slug: "acetaminofen-500-mg-20-tabletas" });
+
+    const response = await listFavorites(ctx);
+
+    expect(response.products.map((product) => product.slug)).toEqual([
+      "malta-355-ml",
+      "acetaminofen-500-mg-20-tabletas",
+    ]);
+  });
+
+  it("un slug desconocido da 404", async () => {
+    const ctx = await sessionOf(seeded);
+
+    const error = await captureAccountError(addFavorite(ctx, { kind: "store", slug: "no-existe" }));
+
+    expect(error.status).toBe(404);
+    expect(error.code).toBe("not_found");
+  });
+});

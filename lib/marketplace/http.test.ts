@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { MarketplaceUnavailableError } from "./errors";
-import { postJson, requestJson, requestJsonOrNull } from "./http";
+import { MarketplaceAccountError, MarketplaceUnavailableError } from "./errors";
+import { accountCommand, accountRequest, postJson, requestJson, requestJsonOrNull } from "./http";
 
 const schema = z.object({ data: z.array(z.string()) });
 const fetchMock = vi.fn<typeof fetch>();
@@ -138,5 +138,164 @@ describe("postJson", () => {
 
     expect(error).toBeInstanceOf(MarketplaceUnavailableError);
     expect((error as MarketplaceUnavailableError).endpoint).toBe("/events");
+  });
+});
+
+const anonymous = { session: null, clientIp: null };
+
+describe("accountRequest", () => {
+  it("con sesión e IP manda los encabezados de cuenta y el cuerpo JSON (RN-MARKETPLACE-07)", async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ data: ["a"] }));
+    const body = { name: "Ana" };
+
+    const result = await accountRequest(
+      { method: "PATCH", path: "/me", ctx: { session: "7|abc", clientIp: "190.2.3.4" }, body },
+      schema,
+    );
+
+    expect(result).toEqual({ data: ["a"] });
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("https://api.test/api/marketplace/v1/me");
+    expect(init?.method).toBe("PATCH");
+    expect(init?.body).toBe(JSON.stringify(body));
+    expect(init?.headers).toEqual({
+      Authorization: "Bearer clave-de-prueba",
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "X-Marketplace-Customer": "7|abc",
+      "X-Client-IP": "190.2.3.4",
+    });
+  });
+
+  it("sin sesión ni IP no manda los encabezados de cuenta (RN-MARKETPLACE-07)", async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ data: [] }));
+
+    await accountRequest({ method: "GET", path: "/me", ctx: anonymous }, schema);
+
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init?.headers).toEqual({
+      Authorization: "Bearer clave-de-prueba",
+      Accept: "application/json",
+    });
+    expect(init?.body).toBeUndefined();
+  });
+
+  it("un 422 con fields lanza MarketplaceAccountError con code, message y fields (RN-MARKETPLACE-05)", async () => {
+    const fields = { email: "El correo ya está registrado." };
+    fetchMock.mockResolvedValue(
+      jsonResponse(
+        { error: { code: "validation_failed", message: "Revisa los datos del formulario.", fields } },
+        422,
+      ),
+    );
+
+    const error = await captureError(
+      accountRequest({ method: "POST", path: "/customers", ctx: anonymous, body: {} }, schema),
+    );
+
+    expect(error).toBeInstanceOf(MarketplaceAccountError);
+    const accountError = error as MarketplaceAccountError;
+    expect(accountError.status).toBe(422);
+    expect(accountError.code).toBe("validation_failed");
+    expect(accountError.message).toBe("Revisa los datos del formulario.");
+    expect(accountError.fields).toEqual(fields);
+    expect(accountError.retryAfter).toBeNull();
+  });
+
+  it("un 401 unauthenticated lanza MarketplaceAccountError (RN-MARKETPLACE-05)", async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse({ error: { code: "unauthenticated", message: "Inicia sesión para continuar." } }, 401),
+    );
+
+    const error = await captureError(accountRequest({ method: "GET", path: "/me", ctx: anonymous }, schema));
+
+    expect(error).toBeInstanceOf(MarketplaceAccountError);
+    expect((error as MarketplaceAccountError).code).toBe("unauthenticated");
+    expect((error as MarketplaceAccountError).status).toBe(401);
+  });
+
+  it("un 401 sin el cuerpo de error de cuenta es API caída (RN-MARKETPLACE-05)", async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ message: "Unauthenticated." }, 401));
+
+    const error = await captureError(accountRequest({ method: "GET", path: "/me", ctx: anonymous }, schema));
+
+    expect(error).toBeInstanceOf(MarketplaceUnavailableError);
+    expect((error as MarketplaceUnavailableError).endpoint).toBe("/me");
+  });
+
+  it("un 429 con retry_after da esos segundos (RN-MARKETPLACE-06)", async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(
+        {
+          error: {
+            code: "too_many_attempts",
+            message: "Demasiados intentos. Prueba de nuevo en 17 segundos.",
+            retry_after: 17,
+          },
+        },
+        429,
+      ),
+    );
+
+    const error = await captureError(
+      accountRequest({ method: "POST", path: "/auth/login", ctx: anonymous, body: {} }, schema),
+    );
+
+    expect(error).toBeInstanceOf(MarketplaceAccountError);
+    expect((error as MarketplaceAccountError).code).toBe("too_many_attempts");
+    expect((error as MarketplaceAccountError).retryAfter).toBe(17);
+  });
+
+  it("un 429 sin cuerpo de error toma Retry-After (RN-MARKETPLACE-06)", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ success: false, message: "Too Many Attempts.", status: 429 }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", "Retry-After": "30" },
+      }),
+    );
+
+    const error = await captureError(
+      accountRequest({ method: "POST", path: "/auth/login", ctx: anonymous, body: {} }, schema),
+    );
+
+    expect(error).toBeInstanceOf(MarketplaceAccountError);
+    expect((error as MarketplaceAccountError).code).toBe("too_many_attempts");
+    expect((error as MarketplaceAccountError).retryAfter).toBe(30);
+  });
+
+  it("un 429 sin cuerpo de error ni Retry-After da 60 (RN-MARKETPLACE-06)", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 429 }));
+
+    const error = await captureError(
+      accountRequest({ method: "POST", path: "/auth/login", ctx: anonymous, body: {} }, schema),
+    );
+
+    expect(error).toBeInstanceOf(MarketplaceAccountError);
+    expect((error as MarketplaceAccountError).retryAfter).toBe(60);
+  });
+
+  it.each([500, 409])("un estado %i lanza MarketplaceUnavailableError (RN-MARKETPLACE-05)", async (status) => {
+    fetchMock.mockResolvedValue(
+      jsonResponse({ error: { code: "not_found", message: "No encontrado." } }, status),
+    );
+
+    const error = await captureError(accountRequest({ method: "GET", path: "/me", ctx: anonymous }, schema));
+
+    expect(error).toBeInstanceOf(MarketplaceUnavailableError);
+    expect((error as MarketplaceUnavailableError).endpoint).toBe("/me");
+  });
+});
+
+describe("accountCommand", () => {
+  it("un 204 resuelve", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
+
+    await expect(
+      accountCommand({ method: "DELETE", path: "/me/addresses/3", ctx: { session: "7|abc", clientIp: null } }),
+    ).resolves.toBeUndefined();
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("https://api.test/api/marketplace/v1/me/addresses/3");
+    expect(init?.method).toBe("DELETE");
   });
 });

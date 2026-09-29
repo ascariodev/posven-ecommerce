@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
+import { AccountSlot, AccountSlotSkeleton } from "@/features/account/AccountMenu";
 import { LocationSummary, LocationSummarySkeleton } from "@/features/location/LocationBar";
 import { HeaderSearchSlot } from "@/features/search/HeaderSearchSlot";
 import { SearchForm } from "@/features/search/SearchForm";
@@ -53,6 +54,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 </div>
               </HeaderSearchSlot>
             </Suspense>
+            <div className="ml-auto shrink-0">
+              <Suspense fallback={<AccountSlotSkeleton />}>
+                <AccountSlot />
+              </Suspense>
+            </div>
           </div>
         </header>
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>

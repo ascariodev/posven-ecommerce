@@ -42,8 +42,8 @@ export function EmptyState({
   const related = relatedCategories(categories, query.categoria);
 
   return (
-    <section className="flex flex-col gap-4">
-      <h2 className="text-lg font-semibold text-foreground">
+    <section className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-4 shadow-card">
+      <h2 className="text-xl font-bold tracking-tight text-foreground">
         {query.q !== ""
           ? `No encontramos resultados para «${query.q}».`
           : "No encontramos resultados en esta categoría."}

@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import { toGeoFilter } from "@/features/location/cookie";
 import { getEffectiveLocation } from "@/features/location/server";
 import { formatRate } from "@/lib/format";
@@ -16,7 +17,11 @@ export async function SearchResults({
 }) {
   const query = parseSearchQuery(await searchParams);
   if (query.q === "" && query.categoria === null) {
-    return <p className="text-muted-foreground">Escribe qué buscas o elige una categoría.</p>;
+    return (
+      <Card>
+        <p className="text-muted-foreground">Escribe qué buscas o elige una categoría.</p>
+      </Card>
+    );
   }
 
   const { location, name: locationName } = await getEffectiveLocation();

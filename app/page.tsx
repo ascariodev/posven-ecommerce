@@ -15,8 +15,8 @@ export default async function Home() {
   const categories = await listCategories();
   return (
     <div className="flex flex-col gap-8">
-      <section className="flex flex-col gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight">
+      <section className="flex flex-col gap-5 py-6 sm:py-10">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-5xl">
           Encuentra lo que buscas en tiendas cerca de ti
         </h1>
         <p className="text-lg text-muted-foreground">{SITE_DESCRIPTION}</p>
@@ -26,7 +26,7 @@ export default async function Home() {
         </Suspense>
       </section>
       <section aria-labelledby="categories-title" className="flex flex-col gap-3">
-        <h2 id="categories-title" className="text-lg font-semibold text-foreground">
+        <h2 id="categories-title" className="text-xl font-bold tracking-tight text-foreground">
           Categorías
         </h2>
         <CategoryLinks categories={categories} />

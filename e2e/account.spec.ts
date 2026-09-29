@@ -98,7 +98,7 @@ test.describe("cuenta del comprador", () => {
     await expect(newAddress.getByText("Guardamos la dirección.")).toBeVisible();
     const saved = page.getByRole("listitem").filter({ has: page.getByRole("heading", { name: "Trabajo" }) });
     await expect(saved).toBeVisible();
-    await expect(saved.getByText("Predeterminada")).toBeVisible();
+    await expect(saved.getByText("Predeterminada", { exact: true })).toBeVisible();
   });
 
   test("un favorito pide entrar, vuelve a la ficha y se guarda", async ({ page }) => {

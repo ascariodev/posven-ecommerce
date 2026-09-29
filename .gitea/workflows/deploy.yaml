@@ -40,4 +40,4 @@ jobs:
 
           # PM2 vigila este archivo y reinicia el proceso al cambiar.
           date > /posven-ecommerce/.deployed
-          echo "Listo: /var/www/html/posven-ecommerce/current desplegado."
+          echo "Listo: /var/www/html/ecommerce/posven-ecommerce/current desplegado."

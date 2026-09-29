@@ -18,7 +18,7 @@ export function SearchForm({
       role="search"
       className={cx(
         "flex w-full gap-2",
-        large && "rounded-2xl border border-glass-border bg-glass p-2 shadow-card backdrop-blur-md",
+        large ? "rounded-2xl border border-glass-border bg-glass p-2 shadow-card backdrop-blur-md" : "items-center",
       )}
     >
       <Input
@@ -27,7 +27,7 @@ export function SearchForm({
         aria-label="Buscar productos"
         placeholder="Busca un producto, marca o código de barras"
         defaultValue={defaultQuery}
-        className={large ? undefined : "h-9 text-sm"}
+        inputSize={large ? "md" : "sm"}
       />
       <Button type="submit" size={large ? "md" : "sm"}>
         <Search aria-hidden="true" className="size-4" />

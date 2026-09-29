@@ -370,3 +370,7 @@ contiene sólo los archivos de esta tarea.
 ## Cierre
 
 ### Pendientes del cierre
+
+Vacío. Lo que quedó abierto está en §4 de `2026-09-28-visual-moderna-resultado.md` como deuda
+declarada; las diferencias contra el diseño quedaron escritas en la spec y en
+`.claude/rules/app-router.md` y `.claude/rules/ui.md`.

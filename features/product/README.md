@@ -89,6 +89,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 - `lib/format.ts`, `lib/jsonld.ts`, `lib/site.ts`.
 - `features/location/server.ts` (`getEffectiveLocation`) y `features/location/cookie.ts` (`toGeoFilter`).
 - `features/events/ContactButtons.tsx` y `features/events/ViewBeacon.tsx`.
+- `features/search/ProductThumb.tsx` (imagen o ícono de categoría de la ficha).
 - `components/ui/` (`Badge`, `buttonClasses`, `Card`, `Skeleton`).
 - `next/navigation`, `next/link`, `next/image`.
 

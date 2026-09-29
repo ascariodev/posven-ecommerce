@@ -14,7 +14,8 @@ Rige al editar `components/`. Las primitivas viven en `components/ui/` (`Button`
    `...props` al elemento y combina su `className` al final. `Button` pone `type="button"` por
    defecto; un enlace con forma de botón usa `buttonClasses(variant, size)` sobre `<Link>`.
 3. **Clases por `cx`** (`components/ui/cx.ts`), que descarta `false`, `null` y `undefined`. Sin
-   concatenar plantillas a mano.
+   concatenar plantillas a mano. `cx` no resuelve conflictos de Tailwind: altura, texto y color de
+   una primitiva salen de una variante (`inputSize` en `Input`), no del `className` de quien la usa.
 4. **Colores sólo por tokens**: `bg-primary`, `hover:bg-primary-hover`, `text-primary-foreground`,
    `bg-muted`, `text-muted-foreground`, `border-border`, `border-input-border`, `bg-featured`,
    `text-warning`, `bg-background`, `text-foreground`, `bg-surface`, `bg-glass`,

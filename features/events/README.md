@@ -88,6 +88,7 @@ estadísticas ni guarda nada propio.
 - `lib/marketplace/client.ts`: `sendEvent()` en `app/api/events/route.ts`.
 - `lib/marketplace/schemas.ts`: `eventInputSchema` y los tipos `EventInput`, `MarketplaceEvent`, `EventType`, `StoreSummary`, `Restriction`.
 - `lib/site.ts` (`SITE_NAME`) y `components/ui/button.tsx` (`buttonClasses`).
+- `lucide-react` (`MessageCircle`, `Phone`, `Navigation`) en `ContactButtons.tsx`.
 - `next/headers` (`cookies`), `next/server` (`after`) y `zod` (`z.uuid()`) en `app/api/events/route.ts`.
 
 ## 7. Ejemplo de uso

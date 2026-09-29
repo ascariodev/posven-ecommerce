@@ -44,11 +44,11 @@ En `:root` de `app/globals.css`, con su `--color-*` en `@theme inline`. Se conse
 | `--glass` | `rgb(255 255 255 / 0.72)` | cabecera fija y buscador grande (con desenfoque) |
 | `--glass-border` | `rgb(255 255 255 / 0.9)` | borde de las superficies de vidrio |
 | `--primary-soft` | `#fde3c0` | tinte detrás de íconos de reemplazo e iniciales |
-| `--shadow-card` | `0 1px 2px rgb(38 38 39 / 0.04), 0 8px 24px rgb(138 75 0 / 0.08)` | tarjeta en reposo |
-| `--shadow-raised` | `0 2px 4px rgb(38 38 39 / 0.05), 0 16px 32px rgb(138 75 0 / 0.12)` | tarjeta en hover y cabecera al desplazar |
+| `--elevation-card` | `0 1px 2px rgb(38 38 39 / 0.04), 0 8px 24px rgb(138 75 0 / 0.08)` | tarjeta en reposo |
+| `--elevation-raised` | `0 2px 4px rgb(38 38 39 / 0.05), 0 16px 32px rgb(138 75 0 / 0.12)` | tarjeta en hover y cabecera al desplazar |
 
-Las sombras entran en `@theme inline` como `--shadow-card` y `--shadow-raised` (clases
-`shadow-card` y `shadow-raised`). El degradado vive en una capa fija detrás del contenido
+Las sombras entran en `@theme inline` como `--shadow-card: var(--elevation-card)` y
+`--shadow-raised: var(--elevation-raised)` (clases `shadow-card` y `shadow-raised`). El degradado vive en una capa fija detrás del contenido
 (`body::before`, `position: fixed`, `inset: 0`, `z-index: -1`), no en `background-attachment:
 fixed`, que falla en Safari móvil: `radial-gradient(60% 50% at 0% 0%, #ffe6c7, transparent)`,
 `radial-gradient(50% 40% at 100% 0%, #ffe4dc, transparent)` sobre `--background`.
@@ -80,7 +80,8 @@ etiqueta "Buscar productos") y la ciudad elegida (`LocationBar` en variante comp
 `<Suspense>` con su esqueleto, porque lee la cookie y la ruta usa `cacheComponents`). Un Client
 Component mínimo decide por `usePathname()` si muestra ese bloque: lo oculta en `/` y en rutas
 que empiezan por `/buscar`, que ya tienen el buscador grande. En móvil el buscador compacto ocupa
-una segunda fila de la cabecera. El e2e que busca por `getByRole("searchbox", { name: "Buscar
+solo una segunda fila de la cabecera y la ciudad queda en la primera, a la derecha de la marca;
+`html` lleva `scroll-padding-top: 6rem` para que la cabecera fija no tape el foco. El e2e que busca por `getByRole("searchbox", { name: "Buscar
 productos" })` corre en `/` y `/buscar`, donde sigue habiendo uno solo.
 
 ## 6. Íconos y reemplazo de imagen

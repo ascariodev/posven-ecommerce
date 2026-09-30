@@ -77,7 +77,7 @@ export async function SearchResults({
             <div className="hidden md:block">
               <RadiusFilter query={query} geoKind={geoKind} cityName={geoKind === "city" ? locationName : null} />
             </div>
-            <FiltersSheet>
+            <FiltersSheet key={searchHref(query)}>
               <RadiusFilter query={query} geoKind={geoKind} cityName={geoKind === "city" ? locationName : null} />
             </FiltersSheet>
           </div>

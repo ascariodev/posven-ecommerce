@@ -61,7 +61,7 @@ describe("CartContent", () => {
     ["null", null],
     ["sin tiendas", { stores: [], total_usd: "0.00", total_ves: "0.00", line_count: 0, rate }],
   ])("vacío (%s) invita a buscar", (_name, value) => {
-    render(<CartContent cart={value} />);
+    render(<CartContent signedIn cart={value} />);
 
     expect(screen.getByText("Tu carrito está vacío.")).toBeTruthy();
     expect(screen.getByRole("link", { name: "Buscar productos" }).getAttribute("href")).toBe("/buscar");
@@ -70,7 +70,7 @@ describe("CartContent", () => {
   // Montos que no salen de multiplicar ni sumar (2,50 × 2 ≠ 5,10; 5,10 ≠ 6,20 ≠ 7,40): si el
   // componente calculara algo, estas cadenas no aparecerían.
   it("pinta las cadenas del carrito formateadas, sin calcular", () => {
-    render(<CartContent cart={cart([store([line()])])} />);
+    render(<CartContent signedIn cart={cart([store([line()])])} />);
 
     expect(screen.getByText("$ 2,50 · Bs 91,25 c/u")).toBeTruthy();
     expect(screen.getByText("$ 5,10")).toBeTruthy();
@@ -91,7 +91,7 @@ describe("CartContent", () => {
       status: "unavailable",
       unavailable_reason: "offer_gone",
     });
-    render(<CartContent cart={cart([store([line(), gone])])} />);
+    render(<CartContent signedIn cart={cart([store([line(), gone])])} />);
 
     const [okItem, item] = screen.getAllByRole("listitem");
     const quantity = within(okItem).getByRole("group", { name: "Cantidad de Acetaminofén 500 mg" });
@@ -104,16 +104,32 @@ describe("CartContent", () => {
   });
 
   it("Quitar uno se deshabilita en 1 y Agregar uno en 99", () => {
-    render(<CartContent cart={cart([store([line({ quantity: 1 })])])} />);
+    render(<CartContent signedIn cart={cart([store([line({ quantity: 1 })])])} />);
     expect((screen.getByRole("button", { name: "Quitar uno: Acetaminofén 500 mg" }) as HTMLButtonElement).disabled).toBe(true);
     cleanup();
 
-    render(<CartContent cart={cart([store([line({ quantity: 99 })])])} />);
+    render(<CartContent signedIn cart={cart([store([line({ quantity: 99 })])])} />);
     expect((screen.getByRole("button", { name: "Agregar uno: Acetaminofén 500 mg" }) as HTMLButtonElement).disabled).toBe(true);
   });
 
+  it("con sesión ofrece Ir a pagar; sin ella, Entra para pagar hacia el checkout", () => {
+    render(<CartContent signedIn cart={cart([store([line()])])} />);
+    expect(screen.getByRole("link", { name: "Ir a pagar" }).getAttribute("href")).toBe("/checkout");
+    cleanup();
+
+    render(<CartContent signedIn={false} cart={cart([store([line()])])} />);
+    expect(screen.getByRole("link", { name: "Entra para pagar" }).getAttribute("href")).toBe(
+      "/entrar?volver=%2Fcheckout",
+    );
+  });
+
+  it("sin líneas disponibles no ofrece pagar", () => {
+    render(<CartContent signedIn cart={{ ...cart([store([line({ status: "unavailable", unavailable_reason: "offer_gone" })])]), line_count: 0 }} />);
+    expect(screen.queryByRole("link", { name: "Ir a pagar" })).toBeNull();
+  });
+
   it("una tienda cerrada lo indica", () => {
-    render(<CartContent cart={cart([store([line()], { is_open: false })])} />);
+    render(<CartContent signedIn cart={cart([store([line()], { is_open: false })])} />);
 
     expect(screen.getByText("Cerrada ahora")).toBeTruthy();
   });

@@ -19,8 +19,12 @@ const NEW_ADDRESS_HEADING_ID = "agregar-direccion-titulo";
 
 const linkClasses = "text-sm font-medium text-foreground underline underline-offset-4";
 
-async function AddressesPanel() {
+// Sólo el checkout pide volver: cualquier otro `volver` se ignora (decisión 3 del plan 4b).
+const CHECKOUT_RETURN = "/checkout";
+
+async function AddressesPanel({ searchParams }: { searchParams: PageProps<"/cuenta/direcciones">["searchParams"] }) {
   const { ctx } = await requireCustomer("/cuenta/direcciones");
+  const backToCheckout = (await searchParams).volver === CHECKOUT_RETURN;
   const [addresses, states] = await Promise.all([listAddresses(ctx), listLocations()]);
   const cities = states.flatMap((state) =>
     state.municipalities.flatMap((municipality) =>
@@ -31,6 +35,11 @@ async function AddressesPanel() {
   return (
     <div className="flex max-w-2xl flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight text-foreground">Direcciones</h1>
+      {backToCheckout && (
+        <Link href={CHECKOUT_RETURN} className={linkClasses}>
+          Volver al checkout
+        </Link>
+      )}
       {addresses.length === 0 ? (
         <div className="flex flex-col gap-2">
           <p className="text-muted-foreground">Todavía no tienes direcciones guardadas.</p>
@@ -103,10 +112,10 @@ async function AddressesPanel() {
   );
 }
 
-export default function AddressesPage() {
+export default function AddressesPage({ searchParams }: PageProps<"/cuenta/direcciones">) {
   return (
     <Suspense fallback={<Skeleton className="h-64 w-full" />}>
-      <AddressesPanel />
+      <AddressesPanel searchParams={searchParams} />
     </Suspense>
   );
 }

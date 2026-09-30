@@ -13,10 +13,13 @@ import {
   type CartStore,
   type UnavailableReason,
 } from "@/lib/marketplace/schemas";
+import { accountContext } from "@/features/account/session";
+import { loginHref } from "@/features/account/returnPath";
 import { cn } from "@/lib/utils";
 import { removeLine, setQuantity } from "./actions";
 import { getCurrentCart } from "./server";
 
+const CHECKOUT_PATH = "/checkout";
 
 const UNAVAILABLE_TEXT: Record<UnavailableReason, string> = {
   out_of_stock: "Sin existencias",
@@ -165,7 +168,7 @@ function StoreGroup({ entry }: { entry: CartStore }) {
   );
 }
 
-export function CartContent({ cart }: { cart: Cart | null }) {
+export function CartContent({ cart, signedIn }: { cart: Cart | null; signedIn: boolean }) {
   if (cart === null || cart.stores.length === 0) {
     return (
       <div className="flex flex-col items-start gap-3">
@@ -189,6 +192,14 @@ export function CartContent({ cart }: { cart: Cart | null }) {
           </p>
           <p className="text-right text-foreground">{formatVes(cart.total_ves)}</p>
           <p className="text-right text-sm text-muted-foreground">{formatRate(cart.rate)}</p>
+          {cart.line_count > 0 && (
+            <Link
+              href={signedIn ? CHECKOUT_PATH : loginHref(CHECKOUT_PATH)}
+              className={cn(buttonVariants({ size: "lg" }), "mt-3 w-full")}
+            >
+              {signedIn ? "Ir a pagar" : "Entra para pagar"}
+            </Link>
+          )}
         </CardContent>
       </Card>
     </div>
@@ -196,7 +207,8 @@ export function CartContent({ cart }: { cart: Cart | null }) {
 }
 
 export async function CartView() {
-  return <CartContent cart={await getCurrentCart()} />;
+  const [cart, ctx] = await Promise.all([getCurrentCart(), accountContext()]);
+  return <CartContent cart={cart} signedIn={ctx.session !== null} />;
 }
 
 export function CartViewSkeleton() {

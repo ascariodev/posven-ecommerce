@@ -1,0 +1,117 @@
+# shadcn/ui y dirección "Mercado" del ecommerce
+
+- Fecha: 2026-09-29
+- Estado: aprobado
+- Repos: posven-ecommerce
+- Spec del rasgo: `posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md` (esta spec
+  no cambia su contrato §3 ni sus rutas; lo que necesite un campo nuevo se declara en §7)
+- Reemplaza en lo visual a `2026-09-28-visual-moderna-design.md` (tokens y primitivas)
+
+## 1. Objetivo y alcance
+
+Dar al ecommerce una identidad más moderna y sencilla, tomando como referencia Airbnb (explorar)
+y Trivago (comparar), con shadcn/ui como base de componentes. La estructura de datos, las rutas,
+los metadatos y el contrato con posveapi no cambian.
+
+Entra: inicio, `/buscar`, `/p/[slug]`, y la migración de todas las pantallas que hoy usan las
+primitivas (`/tienda`, cuenta, formularios, error y 404). Queda afuera: modo oscuro, el backoffice
+de posveapi y cualquier campo nuevo del contrato (§7).
+
+## 2. Decisiones
+
+| Tema | Decisión |
+|---|---|
+| Dirección visual | C "Mercado": para explorar, píldora de búsqueda, carril de categorías y tarjetas con imagen; para decidir, panel fijo de tiendas ordenadas por precio en la ficha |
+| Librería | shadcn/ui estilo `radix-nova`, ya instalada (`components.json`, `lib/utils.ts`) |
+| Primitivas propias | Se reemplazan por las de shadcn (`badge`, `button`, `card`, `input`, `skeleton`) y se eliminan `components/ui/cx.ts` y las funciones `buttonClasses` e `inputSize` |
+| Paleta | Se define en las variables CSS de `app/globals.css`, que es la configuración de tema de shadcn; ningún componente lleva un color literal |
+| Íconos | `lucide-react`, como hoy |
+| Modo oscuro | Fuera; `@custom-variant dark` queda declarado para que las clases `dark:` de shadcn no reaccionen al sistema |
+| Tipografía | Plus Jakarta Sans por `next/font/google`, como hoy (no Geist) |
+| Cabecera | Fija con vidrio y desenfoque, como hoy |
+| Radio | `--radius` de 1 rem |
+| Prueba previa | Una ruta `/preview` con la dirección C y datos reales, desechable, antes de migrar (§9) |
+
+## 3. Tema
+
+`app/globals.css` conserva la paleta de marca (`--primary` `#f7900a`, `--background` `#fffaf3`,
+`--foreground` `#262627`) y mapea a ella los tokens de shadcn: `--card`, `--popover`,
+`--secondary`, `--accent`, `--destructive`, `--input`, `--ring` y `--radius` (1 rem). Mientras
+no se migre, la escala de radios de Tailwind no se sobrescribe, porque las páginas actuales
+usan `rounded-xl` y `rounded-2xl`; el plan 1 decide si adopta la escala de shadcn. Los tokens propios que no tienen equivalente en
+shadcn (`--surface`, `--glass`, `--glass-border`, `--featured`, `--warning`, `--primary-soft`,
+sombras) se conservan mientras alguna pantalla los use. Los cambios de valor (radio, sombra,
+contraste) se hacen aquí y no en cada componente.
+
+El botón por defecto de shadcn mide 32 px de alto. El ecommerce se usa en móvil, así que
+`button.tsx` y `input.tsx` conservan una altura táctil de al menos 44 px (`size="lg"` o el
+tamaño por defecto ajustado en el propio archivo). El contraste AA y el foco visible en
+`--foreground` siguen rigiendo.
+
+## 4. Pantallas de la dirección C
+
+| Pantalla | Composición | Piezas de shadcn |
+|---|---|---|
+| Inicio | Título, píldora de dos segmentos (qué y dónde), carril de categorías con icono, rejilla "Cerca de ti" con tarjetas de imagen, tiendas con portada | `input`, `button`, `tabs`, `card`, `badge` |
+| Búsqueda | Píldora compacta, chips de categoría, botón de filtros, orden y rejilla de tarjetas con "Desde" y número de tiendas | `sheet` (filtros en móvil), `select`, `badge`, `toggle-group` |
+| Ficha | Imagen a la izquierda; a la derecha un panel fijo con el producto, "Desde" y las tiendas ordenadas por precio, con "Mejor precio", Llamar y Ver ruta | `card`, `badge`, `button` |
+
+Sin imagen, una tarjeta muestra el icono de su categoría raíz sobre un tinte por categoría (el
+comportamiento actual de `ProductThumb`, con los tintes del prototipo). "Mejor precio" marca la
+oferta de menor precio de la ficha; el frontend no calcula montos, usa el orden y los importes
+que entrega la API.
+
+## 5. Estrategia de migración
+
+Las primitivas actuales las usan 42 archivos (88 usos). El reemplazo va primero y por sí solo,
+para que el resto del trabajo parta de la librería:
+
+1. `npx shadcn add badge button card input skeleton --overwrite` (una a una, revisando el diff
+   contra los tokens de §3) y migración de los usos: `primary` a `default`, `secondary` a
+   `outline`, `ghost` igual, `md` al tamaño por defecto y `sm` a `sm`; un enlace con forma de
+   botón usa `buttonVariants` sobre `<Link>`.
+2. Lo que ya se ve bien no cambia de aspecto en esa tarea: es una migración de API, no un
+   rediseño. La verificación es `tsc`, `vitest`, `next build` y `playwright`.
+
+## 6. Descomposición en planes
+
+Modo ligero (pantallas contra un simulado y datos locales), un solo repo. Razones de corte:
+
+| Plan | Contenido | Razón de corte | Tamaño |
+|---|---|---|---|
+| 1 | Reemplazo de primitivas y migración de usos (§5) | Mecánico, diff que se revisa aparte | ~42 archivos, advertencia de tamaño |
+| 2 | Inicio y búsqueda en dirección C (§4) | Depende de 1; juicio visual | ~10 archivos |
+| 3 | Ficha en dirección C (§4) | Otra pantalla; se puede revisar sola | ~5 archivos |
+
+El plan 1 se parte en dos tareas por área (cuenta y formularios frente a búsqueda, producto y
+tienda) si el diff no se revisa en una pasada. Antes de ejecutar 2 y 3 se instalan solo las piezas
+nuevas que cada uno use (`carousel` queda para §7).
+
+## 7. Fuera de alcance y dependencias del contrato
+
+- **Rango "desde / hasta".** La ficha lo tiene: `offers_summary.low_price_usd` y
+  `high_price_usd` (`lib/marketplace/schemas.ts`). La búsqueda solo entrega `offers_count`,
+  `min_price_usd` y `min_price_ves`, así que la tarjeta muestra "Desde" y nada más; un máximo en
+  la tarjeta exige un campo nuevo en la spec §3 y en posveapi.
+- **Galería y carrusel.** El contrato entrega una sola `image_url` por producto. Varias imágenes
+  exigen un campo nuevo en spec y en posveapi; hasta entonces la ficha lleva una imagen y no se
+  instala `carousel`.
+- **Deuda observada en el entorno local** (no la resuelve esta spec): `/categories` de posveapi
+  local devuelve vacío y los productos vienen sin categoría, así que el carril de categorías queda
+  sin datos; la imagen de la ficha se ve rota porque el archivo no existe en el `storage` del
+  contenedor local (posveapi responde 404 a esa URL); `next build` y el modo `standalone` con las
+  dependencias nuevas no se han probado.
+- **Regla `.claude/rules/ui.md`.** Sus ítems 1 (primitivas sin estado ni `'use client'`), 3 (`cx`)
+  y 7 (sin shadcn ni Radix) dejan de regir; se reescribe al cerrar el plan 1.
+
+## 8. Decisiones abiertas
+
+Ninguna: la tipografía, la cabecera, el radio y la ruta de prueba se cerraron y están en §2. La
+spec fue aprobada por quien coordina el 2026-09-29 tras ver `/preview`.
+
+## 9. Ruta de prueba desechable
+
+`app/preview/` monta la dirección C (inicio, búsqueda y ficha en pestañas) con los datos reales de
+posveapi. Es un sondeo: `noindex`, fuera del sitemap, sin README de módulo y sin pruebas. Sus
+piezas de shadcn viven en `components/preview-ui/` para no pisar las primitivas actuales, y se
+borra junto con esa carpeta cuando el plan 2 reemplace las pantallas reales.

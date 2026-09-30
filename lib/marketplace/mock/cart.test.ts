@@ -3,13 +3,13 @@ import { MarketplaceAccountError } from "../errors";
 import type { AccountContext } from "../params";
 import type { CartItem } from "../schemas";
 import { loginCustomer, resetMockAccounts } from "./accounts";
-import { MOCK_PRODUCTS } from "./fixtures";
+import { MOCK_PRODUCTS, MOCK_RATE } from "./fixtures";
 import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "./cart";
 
 const anonymous: AccountContext = { session: null, clientIp: null };
 
 // Tiendas del simulado: farmacia-central-valencia y abasto-la-esquina venden en línea;
-// farmacia-naguanagua no. Acetaminofén 500 está "low" (stock 3) en farmacia-naguanagua.
+// farmacia-naguanagua no. El arroz está "low" (stock simulado 3) en abasto-la-esquina.
 const ACETAMINOFEN = "acetaminofen-500-mg-20-tabletas";
 const CENTRAL = "farmacia-central-valencia";
 
@@ -39,7 +39,7 @@ beforeEach(() => {
 describe("cotización del carrito simulado", () => {
   it("vacío: sin tiendas, totales en cero y line_count 0", async () => {
     const cart = await quoteGuestCart(anonymous, []);
-    expect(cart).toMatchObject({ stores: [], total_usd: "0.00", total_ves: "0.00", line_count: 0 });
+    expect(cart).toEqual({ stores: [], total_usd: "0.00", total_ves: "0.00", line_count: 0, rate: MOCK_RATE });
   });
 
   it("suma sólo las líneas ok: la de una tienda que no vende sale unavailable y no suma", async () => {
@@ -87,12 +87,24 @@ describe("carrito del comprador simulado", () => {
     const cart = await setCartItem(ctx, item(CENTRAL, ACETAMINOFEN, 99));
     expect(cart.stores[0].lines[0].quantity).toBe(50);
     expect(cart.line_count).toBe(1);
+    const low = await setCartItem(ctx, item("abasto-la-esquina", "arroz-blanco-tipo-i-1-kg", 5));
+    expect(low.stores[1].lines[0].quantity).toBe(3);
   });
 
-  it("PUT de un producto con récipe responde product_restricted", async () => {
+  it("PUT con un campo mal formado responde validation_failed con el campo", async () => {
     const ctx = await session();
-    expect(await errorCode(setCartItem(ctx, item(CENTRAL, "amoxicilina-500-mg-21-capsulas")))).toBe("product_restricted");
+    const error = await setCartItem(ctx, { store_slug: "", product_slug: ACETAMINOFEN, quantity: 1 }).catch((reason: unknown) => reason);
+    expect(error).toBeInstanceOf(MarketplaceAccountError);
+    expect((error as MarketplaceAccountError).fields).toEqual({ store_slug: "Elige una tienda válida." });
   });
+
+  it.each(["amoxicilina-500-mg-21-capsulas", "clonazepam-0-5-mg-30-tabletas"])(
+    "PUT de un producto restringido (%s) responde product_restricted",
+    async (product) => {
+      const ctx = await session();
+      expect(await errorCode(setCartItem(ctx, item(CENTRAL, product)))).toBe("product_restricted");
+    },
+  );
 
   it("PUT en una tienda que no vende responde not_orderable", async () => {
     const ctx = await session();
@@ -104,7 +116,8 @@ describe("carrito del comprador simulado", () => {
     const slugs = MOCK_PRODUCTS.map((entry) => entry.product.slug).filter((slug) => slug !== ACETAMINOFEN);
     await mergeCart(ctx, slugs.slice(0, 15).map((slug) => item("ferreteria-el-tornillo", slug)));
     const merged = await mergeCart(ctx, slugs.slice(15, 24).map((slug) => item("ferreteria-el-tornillo", slug)));
-    expect(merged.stores.flatMap((store) => store.lines)).toHaveLength(20);
+    const mergedSlugs = merged.stores.flatMap((store) => store.lines.map((line) => line.product.slug));
+    expect(mergedSlugs).toEqual(slugs.slice(0, 20));
     expect(await errorCode(setCartItem(ctx, item(CENTRAL, ACETAMINOFEN)))).toBe("cart_full");
   });
 

@@ -61,6 +61,8 @@ function sameLine(a: CartItem, b: { store_slug: string; product_slug: string }):
   return a.store_slug === b.store_slug && a.product_slug === b.product_slug;
 }
 
+// Prioridad de los motivos (no la fija la enmienda C): restringido, tienda que no vende, oferta
+// desaparecida. `out_of_stock` no se produce aquí: el stock simulado sale de `availability`.
 function unavailableReason(store: MockStore, catalog: CatalogProduct, offer: MockOffer | undefined): UnavailableReason | null {
   if (catalog.restricted) return "restricted";
   if (!store.summary.accepts_orders) return "store_not_selling";
@@ -126,6 +128,22 @@ function quote(items: CartItem[]): Cart {
   };
 }
 
+const FIELD_MESSAGES: Record<string, string> = {
+  store_slug: "Elige una tienda válida.",
+  product_slug: "Elige un producto válido.",
+  quantity: "La cantidad debe estar entre 0 y 99.",
+};
+
+// Un mensaje por campo con error, como la API (enmienda G: "el de cada campo").
+function fieldErrors(issues: { path: PropertyKey[] }[]): Record<string, string> {
+  const fields: Record<string, string> = {};
+  for (const issue of issues) {
+    const key = String(issue.path[0] ?? "quantity");
+    fields[key] ??= FIELD_MESSAGES[key] ?? "Revisa este dato.";
+  }
+  return fields;
+}
+
 function parseItems(items: unknown): CartItem[] {
   const parsed = cartItemsSchema.safeParse(items);
   if (!parsed.success) throw accountError("validation_failed", { items: "Revisa los productos del carrito." });
@@ -143,7 +161,7 @@ export async function getCart(ctx: AccountContext): Promise<Cart> {
 export async function setCartItem(ctx: AccountContext, input: CartItemPut): Promise<Cart> {
   const id = customerIdFor(ctx);
   const parsed = cartItemPutSchema.safeParse(input);
-  if (!parsed.success) throw accountError("validation_failed", { quantity: "La cantidad debe estar entre 0 y 99." });
+  if (!parsed.success) throw accountError("validation_failed", fieldErrors(parsed.error.issues));
   const item = parsed.data;
   const lines = carts().get(id) ?? [];
   // `quantity: 0` borra siempre, sin validar si la línea se puede comprar (enmienda J).

@@ -2,10 +2,10 @@
 module: "location"
 path: "features/location"
 type: "feature"
-exports: ["LOCATION_COOKIE", "UserLocation", "isValidCoords", "parseLocationCookie", "serializeLocation", "toGeoFilter", "describeLocation", "getUserLocation", "getEffectiveLocation", "setLocationFromCoords", "setLocationCity", "clearLocation", "LocationPicker", "LocationBar", "LocationBarSkeleton", "LocationSummary", "LocationSummarySkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
+exports: ["LOCATION_COOKIE", "UserLocation", "isValidCoords", "parseLocationCookie", "serializeLocation", "toGeoFilter", "describeLocation", "getUserLocation", "getEffectiveLocation", "setLocationFromCoords", "setLocationCity", "clearLocation", "LocationPicker", "LocationSheet", "LocationBar", "LocationBarSkeleton", "LocationSummary", "LocationSummarySkeleton"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/select.tsx", "components/ui/sheet.tsx", "components/ui/skeleton.tsx"]
 tests: "features/location/*.test.{ts,tsx}"
-verified_against: ["features/location/cookie.ts", "features/location/server.ts", "features/location/actions.ts", "features/location/LocationPicker.tsx", "features/location/LocationBar.tsx", "features/location/server.test.ts", "features/location/LocationBar.test.tsx", "app/layout.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
+verified_against: ["features/location/cookie.ts", "features/location/server.ts", "features/location/actions.ts", "features/location/LocationPicker.tsx", "features/location/LocationBar.tsx", "features/location/LocationSheet.tsx", "features/location/server.test.ts", "features/location/LocationBar.test.tsx", "app/layout.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
 capabilities:
   - intent: "leer la ubicación efectiva del usuario para filtrar por cercanía"
     intent_aliases: ["ubicacion del usuario", "ubicacion efectiva", "cookie de ubicacion", "donde esta el usuario", "filtro geo"]
@@ -27,8 +27,8 @@ capabilities:
     intent_aliases: ["barra de ubicacion", "selector de ubicacion", "cerca de"]
     entrypoint: "<LocationBar />"
     file: "features/location/LocationBar.tsx"
-    input: "sin props; se monta dentro de <Suspense fallback={<LocationBarSkeleton />}>"
-    output: "LocationPicker con label 'Cerca de: {ciudad o Tu ubicación actual}' y selector Estado/Municipio/Ciudad"
+    input: "compact?: boolean; se monta dentro de <Suspense fallback={<LocationBarSkeleton />}> (lo hace SearchPill)"
+    output: "LocationSheet: botón con la ciudad (o '¿Dónde?') que abre un Sheet 'Tu ubicación' con LocationPicker y su selector Estado/Municipio/Ciudad; acepta compact"
     source: "cookie loc y listLocations()"
     rules: ["RN-LOCATION-02", "RN-LOCATION-03"]
 ---
@@ -56,7 +56,8 @@ para validar la ciudad con `listLocations()`; sin ubicación la búsqueda es nac
 |---|---|---|
 | Forma o validación del valor de la cookie | `parseLocationCookie` y `serializeLocation` en `cookie.ts` | sus casos en `cookie.test.ts`; una cookie vieja que deje de leerse vale como sin ubicación (RN-LOCATION-02) |
 | Opciones de la cookie (duración, `secure`) | `saveLocation` en `actions.ts` | el `toHaveBeenCalledWith` de `actions.test.ts` |
-| Textos o pasos del selector | `LocationPicker.tsx` | los nombres accesibles que busca `LocationPicker.test.tsx` |
+| Textos o pasos del selector | `LocationPicker.tsx` | los nombres accesibles que busca `LocationPicker.test.tsx` y `e2e/search.spec.ts` |
+| El botón o la hoja de ubicación | `LocationSheet.tsx` | su nombre accesible ("Ubicación: {label}" o "¿Dónde? Ubicación: sin elegir", que contiene el texto visible, WCAG 2.5.3) lo busca `e2e/search.spec.ts` |
 | Cómo llega la ubicación a la consulta | `toGeoFilter` en `cookie.ts` | `GeoFilter` vive en `lib/marketplace/params.ts` y no se cambia desde acá |
 | Qué ubicación cuenta como efectiva | `getEffectiveLocation` en `server.ts` | sus casos en `server.test.ts`; la consumen `LocationBar.tsx` (`LocationBar` y `LocationSummary`), `features/search/SearchResults.tsx`, `features/store/NearbyStores.tsx` y `features/product/ProductOffers.tsx` |
 
@@ -85,8 +86,9 @@ Acciones de servidor, `features/location/actions.ts` (`"use server"`):
 
 Componentes:
 
-- `LocationPicker({ label, states }: { label: string | null; states: LocationState[] })`, `features/location/LocationPicker.tsx` (`"use client"`)
-- `LocationBar(): Promise<React.JSX.Element>`, Server Component, y `LocationBarSkeleton()`, `features/location/LocationBar.tsx`
+- `LocationPicker({ label, states, onDone }: { label: string | null; states: LocationState[]; onDone?: () => void })`, `features/location/LocationPicker.tsx` (`"use client"`): `onDone` se llama tras guardar la ciudad, usar la ubicación con éxito o quitarla
+- `LocationSheet({ label, states, compact }: { label: string | null; states: LocationState[]; compact?: boolean })`, `features/location/LocationSheet.tsx` (`"use client"`): `Sheet` controlado, `side="bottom"` en móvil y `"right"` desde `sm`; disparador `Button variant="ghost"` con `MapPin` y `label ?? "¿Dónde?"`; contenido "Tu ubicación", "Buscamos tiendas cerca de este lugar." y `LocationPicker` con `onDone` que lo cierra
+- `LocationBar({ compact }: { compact?: boolean }): Promise<React.JSX.Element>`, Server Component, y `LocationBarSkeleton({ compact }: { compact?: boolean })` (`h-11 w-28 rounded-full`, `h-9` con `compact`), `features/location/LocationBar.tsx`: `LocationBar` es el segmento "dónde" de `SearchPill` y pinta `LocationSheet`
 - `LocationSummary(): Promise<React.JSX.Element>`, Server Component, y `LocationSummarySkeleton()`, `features/location/LocationBar.tsx`: sólo lectura, "Cerca de: {name}" o "Sin ubicación" con `getEffectiveLocation()`, y "Sin ubicación" también si lanza `MarketplaceUnavailableError`; lo usa la cabecera de `app/layout.tsx`
 
 ## 5. Estructura interna
@@ -94,7 +96,8 @@ Componentes:
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
 | `saveLocation` | `features/location/actions.ts` | escribe `loc` con `httpOnly`, `sameSite: "lax"`, `path: "/"`, `maxAge` de 30 días y `secure` en producción |
-| Selector en cascada | `features/location/LocationPicker.tsx` | tres `<select>` (Estado, Municipio, Ciudad); cambiar uno vacía los de abajo |
+| Selector en cascada | `features/location/LocationPicker.tsx` | tres `Select` de `components/ui/select.tsx` (Estado, Municipio, Ciudad), cada etiqueta asociada por `id`; cambiar uno vacía los de abajo |
+| Hoja de ubicación | `features/location/LocationSheet.tsx` | `useSyncExternalStore` sobre `(min-width: 40rem)` elige el lado del `Sheet`; sin JavaScript de medios (servidor) parte en `bottom` |
 | Geolocalización | `requestCurrentPosition` en `features/location/LocationPicker.tsx` | `getCurrentPosition` con `timeout: 10000` y `maximumAge: 600000`; si falla, aviso y selector |
 
 ## 6. Dependencias
@@ -103,8 +106,9 @@ Componentes:
 - `lib/marketplace/errors.ts`: `MarketplaceUnavailableError`, que `LocationSummary` atrapa.
 - `lib/marketplace/params.ts` (`GeoFilter`) y `lib/marketplace/schemas.ts` (`LocationState`), sólo tipos.
 - `next/headers` (`cookies`) y `next/navigation` (`useRouter`).
-- `components/ui/button.tsx` y `components/ui/skeleton.tsx`.
-- `lucide-react` (`MapPin` en `LocationSummary`).
+- `components/ui/button.tsx`, `components/ui/select.tsx`, `components/ui/sheet.tsx` y `components/ui/skeleton.tsx`.
+- `lib/utils.ts` (`cn`) en `LocationSheet` y `LocationBar`.
+- `lucide-react` (`MapPin` en `LocationSummary` y `LocationSheet`).
 
 ## 7. Ejemplo de uso
 
@@ -142,6 +146,7 @@ export default function Page() {
 - `LocationPicker` no importa `server.ts` ni `lib/marketplace/client.ts`: recibe `states` y `label` por props y escribe la cookie sólo con las acciones de `actions.ts`.
 - La cookie es `httpOnly`: el navegador no la lee; tras cada acción el selector llama a `router.refresh()` para que el servidor repinte con la ubicación nueva.
 - Las coordenadas se redondean a 3 decimales (unos 100 m) porque el orden por cercanía no necesita más y la cookie no guarda la posición exacta.
+- `LocationSheet` es cliente y recibe `states` y `label` de `LocationBar`; nunca importa `server.ts`. El `Select` se abre en un portal: en pruebas se abre el `combobox` por su etiqueta y se elige el `option`.
 - Ubicación denegada o fallida no bloquea nada: se ofrece el selector de ciudad (spec §6).
 
 ## 9. Pruebas
@@ -151,4 +156,4 @@ export default function Page() {
 - `features/location/server.test.ts`: `getEffectiveLocation` con ciudad desconocida, ciudad conocida y coordenadas.
 - `features/location/actions.test.ts`: ciudad desconocida sin tocar la cookie y ciudad válida con las opciones exactas.
 - `features/location/LocationBar.test.tsx`: `LocationSummary` con ciudad efectiva y con la API caída.
-- `features/location/LocationPicker.test.tsx`: botones sin ubicación, aviso y selector ante geolocalización fallida, y cascada Estado a Municipio.
+- `features/location/LocationPicker.test.tsx`: botones sin ubicación, aviso y selector ante geolocalización fallida, cascada Estado a Municipio con el `Select` de Radix (jsdom simula `hasPointerCapture`, `releasePointerCapture` y `scrollIntoView` en el propio archivo) y `onDone` tras guardar la ciudad.

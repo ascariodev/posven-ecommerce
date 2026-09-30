@@ -12,7 +12,7 @@ capabilities:
     entrypoint: "<NearbyStores />"
     file: "features/store/NearbyStores.tsx"
     input: "sin props; lee la cookie loc; se monta dentro de <Suspense fallback={<NearbyStoresSkeleton />}>"
-    output: "sección 'Tiendas cercanas' (con ubicación) o 'Tiendas en {SITE_NAME}' (sin ella): destacados primero y un StoreCard por tienda; sin tiendas, un aviso que invita a probar otra ciudad"
+    output: "sección 'Tiendas cercanas' (con ubicación) o 'Tiendas en {SITE_NAME}' (sin ella): destacados primero y un StoreCard por tienda en rejilla sm:2 lg:3; sin tiendas, un aviso que invita a probar otra ciudad"
     source: "listNearbyStores() de lib/marketplace con geo de getEffectiveLocation() (cookie loc)"
     rules: ["RN-STORE-02"]
   - intent: "mostrar la tarjeta de una tienda"
@@ -20,7 +20,7 @@ capabilities:
     entrypoint: "<StoreCard />"
     file: "features/store/StoreCard.tsx"
     input: "store: NearbyStore; featured?: boolean"
-    output: "enlace a /tienda/{slug} con logo o iniciales, nombre, city.name, distancia si no es null, 'Destacado' si featured y 'Fuera de tu zona' si outside_radius"
+    output: "Card entera como enlace a /tienda/{slug}: banda de color por token (bg-featured si featured), logo o iniciales encima, nombre, city.name, distancia si no es null, 'Destacado' si featured y 'Fuera de tu zona' si outside_radius"
     source: "props"
     rules: ["RN-STORE-01", "RN-STORE-03"]
   - intent: "mostrar la cabecera de la página de una tienda con su horario y contacto"
@@ -71,7 +71,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 
 | Tipo de cambio | Dónde va | Además hay que |
 |---|---|---|
-| Datos o aspecto de la tarjeta | `StoreCard.tsx` | `StoreCard.test.tsx`; la distancia sólo por `formatDistance` |
+| Datos o aspecto de la tarjeta | `StoreCard.tsx` | `StoreCard.test.tsx`; la distancia sólo por `formatDistance`; los colores de la banda son tokens |
 | Cuándo se muestra el logo o cómo salen las iniciales | `logoUrl` en `StoreCard.tsx` y `StoreHeader.tsx`; `storeInitials` en `initials.ts` | los casos de RN-STORE-01 en `StoreCard.test.tsx` |
 | Qué se pide a la API o cuántos destacados | la llamada a `listNearbyStores` y `MAX_FEATURED_STORES` en `NearbyStores.tsx` | `NearbyStores.test.tsx`; las claves de la consulta las fija `storesQuery` de `lib/marketplace/params.ts` |
 | Títulos o aviso sin tiendas | `NearbyStores.tsx` | el `getByRole("heading")` de `e2e/search.spec.ts` |
@@ -97,6 +97,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
+| Tarjeta | `StoreCard.tsx` | `Card` dentro de un `<Link>` (foco en `--foreground`, `hover:shadow-raised`); banda `h-16` `bg-primary-soft` (`bg-featured` si `featured`) y el logo o las iniciales (`size-14`, `border-4 border-card`) montados sobre su borde; la portada real espera `cover_url` en `NearbyStore` (spec §7) |
 | Iniciales | `initials.ts` | primeras letras de las dos primeras palabras del nombre, en mayúscula |
 | Consulta de cercanas | `NearbyStores.tsx` | `listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1 })` |
 | Orden de pintado | `NearbyStores.tsx` | `featured` (hasta `MAX_FEATURED_STORES`, 2) y después `data` sin los slugs destacados |
@@ -134,6 +135,7 @@ if (response === null) notFound();
 - `NearbyStores` lee la cookie `loc`: va siempre dentro de un `<Suspense>` (`cacheComponents: true`) y nunca dentro de `'use cache'`.
 - La ubicación sale de `getEffectiveLocation`: una ciudad que no reconoce llega como sin ubicación (RN-LOCATION-04), así que se pide sin `geo` ni radio y el título es el nacional.
 - El orden de las tiendas, `distance_km` y `outside_radius` los entrega la API; aquí sólo se quitan los destacados repetidos y se formatea la distancia.
+- La tarjeta del inicio no muestra portada: `NearbyStore` no trae `cover_url` (spec §7), así que la banda es un color de token y no una imagen.
 - Logo y portada sólo para premium porque es parte de lo que la tienda premium recibe (spec §5.4); `logo_url` y `cover_url` de una tienda sin premium se ignoran.
 - Logo y portada van por `next/image`: su dominio tiene que estar en `images.remotePatterns` de `next.config.ts` (spec §4.5).
 - La página hace `await params` y `getStore({ slug, page: 1 })` fuera de `<Suspense>` para que `notFound()` dé 404 antes del primer byte; `app/tienda/` no lleva `loading.tsx`. `generateStaticParams` devuelve al menos un slug porque con Cache Components un arreglo vacío rompe el build.

@@ -56,6 +56,23 @@ tamaño por defecto ajustado en el propio archivo). El contraste AA y el foco vi
 | Búsqueda | Píldora compacta, chips de categoría, botón de filtros, orden y rejilla de tarjetas con "Desde" y número de tiendas | `sheet` (filtros en móvil), `select`, `badge`, `toggle-group` |
 | Ficha | Imagen a la izquierda; a la derecha un panel fijo con el producto, "Desde" y las tiendas ordenadas por precio, con "Mejor precio", Llamar y Ver ruta | `card`, `badge`, `button` |
 
+Diferencias del plan 2 (`docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda.md`) contra
+la tabla anterior, decididas al planificarlo y ya en el código:
+
+1. **Inicio sin rejilla "Cerca de ti" de productos.** El contrato no tiene un endpoint de
+   productos destacados o cercanos (la vista previa lo simulaba con `q: "a"`); se declara en §7.
+2. **Búsqueda sin selector de orden.** `/search` no acepta `sort` y ordenar una página en el
+   navegador mentiría sobre el conjunto; se declara en §7. `select` sólo se usa en el selector de
+   ubicación.
+3. **Inicio sin `tabs`.** No se instala; el carril de categorías son enlaces a `/buscar`.
+4. **Filtro de distancia con la forma de `toggle-group`, hecho de enlaces.** `RadiusFilter` usa
+   `toggleVariants` por `cn` sobre `<Link>` y conserva sus URL, `aria-current` y el funcionamiento
+   sin JavaScript. En móvil va dentro de un `Sheet` ("Filtros").
+5. **Escala de radios de shadcn** derivada de `--radius` (`rounded-md`, `rounded-lg`...); las
+   pantallas pasan a esa escala.
+6. **Tarjeta de tienda con banda de color por token** y el logo o las iniciales encima; la portada
+   real exige `cover_url` en las tiendas cercanas, que se declara en §7.
+
 Sin imagen, una tarjeta muestra el icono de su categoría raíz sobre un tinte por categoría (el
 comportamiento actual de `ProductThumb`, con los tintes del prototipo). "Mejor precio" marca la
 oferta de menor precio de la ficha; el frontend no calcula montos, usa el orden y los importes
@@ -96,6 +113,14 @@ nuevas que cada uno use (`carousel` queda para §7).
 - **Galería y carrusel.** El contrato entrega una sola `image_url` por producto. Varias imágenes
   exigen un campo nuevo en spec y en posveapi; hasta entonces la ficha lleva una imagen y no se
   instala `carousel`.
+- **Productos destacados o cercanos para el inicio.** El contrato no tiene un endpoint que
+  entregue productos para la portada, así que el inicio no muestra la rejilla "Cerca de ti" de la
+  dirección C. Exige un endpoint nuevo en la spec §3 y en posveapi.
+- **Orden de la búsqueda.** `/search` no acepta `sort` (`searchQuery` en
+  `lib/marketplace/params.ts`), así que `/buscar` no tiene selector de orden. Exige un parámetro
+  nuevo en la spec §3 y en posveapi.
+- **Portada de las tiendas cercanas.** `NearbyStore` no trae `cover_url`; la tarjeta de tienda usa
+  una banda de color por token en lugar de la portada. Exige el campo en la spec §3 y en posveapi.
 - **Deuda observada en el entorno local** (no la resuelve esta spec): `/categories` de posveapi
   local devuelve vacío y los productos vienen sin categoría, así que el carril de categorías queda
   sin datos; la imagen de la ficha se ve rota porque el archivo no existe en el `storage` del
@@ -111,7 +136,7 @@ spec fue aprobada por quien coordina el 2026-09-29 tras ver `/preview`.
 
 ## 9. Ruta de prueba desechable
 
-`app/preview/` monta la dirección C (inicio, búsqueda y ficha en pestañas) con los datos reales de
-posveapi. Es un sondeo: `noindex`, fuera del sitemap, sin README de módulo y sin pruebas. Sus
-piezas de shadcn viven en `components/preview-ui/` para no pisar las primitivas actuales, y se
-borra junto con esa carpeta cuando el plan 2 reemplace las pantallas reales.
+Retirada en el plan 2. `app/preview/` montaba la dirección C (inicio, búsqueda y ficha en pestañas)
+con los datos reales de posveapi, y sus piezas de shadcn vivían en `components/preview-ui/`. Al
+pasar el inicio y la búsqueda a `components/ui/` y a las pantallas reales, ambas carpetas se
+borraron; nada las importa. La ficha se rediseña en el plan 3 sin ruta de prueba.

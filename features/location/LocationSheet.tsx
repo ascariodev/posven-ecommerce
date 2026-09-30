@@ -30,7 +30,7 @@ export function LocationSheet({ label, states }: { label: string | null; states:
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="shrink-0 rounded-full px-3" aria-label={`Ubicación: ${label ?? "sin elegir"}`}>
+        <Button variant="ghost" className="shrink-0 rounded-full px-3" aria-label={label === null ? "¿Dónde? Ubicación: sin elegir" : `Ubicación: ${label}`}>
           <MapPin aria-hidden="true" className="size-4" />
           <span className="max-w-32 truncate">{label ?? "¿Dónde?"}</span>
         </Button>

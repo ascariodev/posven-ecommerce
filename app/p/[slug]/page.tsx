@@ -4,12 +4,12 @@ import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/FavoriteButton";
+import { cartEnabled } from "@/features/cart/flag";
 import { ViewBeacon } from "@/features/events/ViewBeacon";
 import { productJsonLd } from "@/features/product/jsonld";
 import { loadProduct } from "@/features/product/load";
 import { productMetadata } from "@/features/product/metadata";
 import { PriceSummary } from "@/features/product/PriceSummary";
-import { cartEnabled } from "@/features/cart/flag";
 import { ProductOffers, ProductOffersSkeleton } from "@/features/product/ProductOffers";
 import { ProductThumb } from "@/features/search/ProductThumb";
 import { breadcrumbListJsonLd, serializeJsonLd } from "@/lib/jsonld";
@@ -120,7 +120,8 @@ export default async function ProductPage({
               {product.name}
             </h1>
             {product.brand !== null && <p className="text-muted-foreground">{product.brand}</p>}
-            {product.restriction === "recipe" && <Badge variant="warning">Requiere récipe</Badge>}
+            {/* Con el carrito, la nota de abajo explica la restricción y reemplaza a la insignia. */}
+            {product.restriction === "recipe" && !cartEnabled() && <Badge variant="warning">Requiere récipe</Badge>}
             <PriceSummary summary={product.offers_summary} />
             {cartEnabled() && product.restriction !== "none" && (
               <p className="text-sm text-muted-foreground">{RESTRICTED_NOTE[product.restriction]}</p>

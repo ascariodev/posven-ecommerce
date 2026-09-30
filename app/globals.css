@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   --background: #fffaf3;
@@ -18,6 +22,18 @@
   --glass-border: rgb(255 255 255 / 0.9);
   --elevation-card: 0 1px 2px rgb(38 38 39 / 0.04), 0 8px 24px rgb(138 75 0 / 0.08);
   --elevation-raised: 0 2px 4px rgb(38 38 39 / 0.05), 0 16px 32px rgb(138 75 0 / 0.12);
+  --card: #ffffff;
+  --card-foreground: var(--foreground);
+  --popover: #ffffff;
+  --popover-foreground: var(--foreground);
+  --secondary: var(--muted);
+  --secondary-foreground: var(--foreground);
+  --accent: var(--primary-soft);
+  --accent-foreground: var(--foreground);
+  --destructive: #b42318;
+  --input: var(--input-border);
+  --ring: var(--foreground);
+  --radius: 0.75rem;
 }
 
 @theme inline {
@@ -38,7 +54,19 @@
   --color-glass-border: var(--glass-border);
   --shadow-card: var(--elevation-card);
   --shadow-raised: var(--elevation-raised);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --font-sans: var(--font-sans-brand);
+  --font-heading: var(--font-sans-brand);
 }
 
 html {

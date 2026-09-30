@@ -1,0 +1,49 @@
+import { ShoppingCart } from "lucide-react";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getCart } from "@/lib/marketplace/client";
+import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
+import { accountContext } from "@/features/account/session";
+import { cn } from "@/lib/utils";
+import { readGuestCart } from "./cookie";
+import { cartEnabled } from "./flag";
+
+// Contador del carrito en la cabecera. El layout raíz no lo cubre app/error.tsx (L-02): ante
+// cualquier error de la API degrada a "Carrito" sin número. El invitado cuenta las entradas de
+// `mp_cart` sin llamar a la API; el usuario, `line_count` de su carrito.
+async function cartCount(): Promise<number | null> {
+  const ctx = await accountContext();
+  if (ctx.session !== null) {
+    try {
+      return (await getCart(ctx)).line_count;
+    } catch (error) {
+      if (error instanceof MarketplaceUnavailableError) return null;
+      if (!(error instanceof MarketplaceAccountError)) throw error;
+      if (error.code !== "unauthenticated") return null;
+    }
+  }
+  return (await readGuestCart()).length;
+}
+
+export async function CartLink() {
+  if (!cartEnabled()) return null;
+  const count = await cartCount();
+  const label =
+    count === null || count === 0 ? "Carrito" : `Carrito, ${count} ${count === 1 ? "producto" : "productos"}`;
+  return (
+    <Link href="/carrito" aria-label={label} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}>
+      <ShoppingCart aria-hidden="true" className="size-4" />
+      <span className="hidden sm:inline">Carrito</span>
+      {count !== null && count > 0 && (
+        <span className="min-w-5 rounded-full bg-primary px-1.5 text-center text-xs font-bold text-primary-foreground">
+          {count}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+export function CartLinkSkeleton() {
+  return <Skeleton className="h-11 w-11 md:h-9 sm:w-24" />;
+}

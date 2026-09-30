@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AccountSlot, AccountSlotSkeleton } from "@/features/account/AccountMenu";
+import { CartLink, CartLinkSkeleton } from "@/features/cart/CartLink";
 import { HeaderSearchSlot } from "@/features/search/HeaderSearchSlot";
 import { SearchPill } from "@/features/search/SearchPill";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -50,7 +51,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 </div>
               </HeaderSearchSlot>
             </Suspense>
-            <div className="ml-auto shrink-0">
+            <div className="ml-auto flex shrink-0 items-center gap-2">
+              <Suspense fallback={<CartLinkSkeleton />}>
+                <CartLink />
+              </Suspense>
               <Suspense fallback={<AccountSlotSkeleton />}>
                 <AccountSlot />
               </Suspense>

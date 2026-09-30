@@ -6,12 +6,15 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/session";
 import { ResendVerificationForm } from "@/features/account/VerifyEmailForm";
+import { cartEnabled } from "@/features/cart/flag";
+import { RecentPurchases } from "@/features/purchases/RecentPurchases";
 
 export const metadata: Metadata = {
   title: "Mi cuenta",
   robots: { index: false, follow: false },
 };
 
+const PURCHASES_SHORTCUT = { href: "/cuenta/compras", title: "Mis compras", description: "Pedidos, códigos de retiro y reembolsos" };
 const SHORTCUTS = [
   { href: "/cuenta/perfil", title: "Perfil", description: "Nombre, correo y teléfono" },
   { href: "/cuenta/direcciones", title: "Direcciones", description: "Dónde recibes tus pedidos" },
@@ -23,7 +26,9 @@ const shortcutClasses =
   "rounded-lg border border-border bg-surface p-4 shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
 
 async function AccountSummary() {
-  const { customer } = await requireCustomer("/cuenta");
+  const { customer, ctx } = await requireCustomer("/cuenta");
+  const withPurchases = cartEnabled();
+  const shortcuts = withPurchases ? [PURCHASES_SHORTCUT, ...SHORTCUTS] : SHORTCUTS;
 
   return (
     <div className="flex flex-col gap-6">
@@ -46,8 +51,13 @@ async function AccountSummary() {
           </CardContent>
         </Card>
       )}
+      {withPurchases && (
+        <Suspense fallback={<Skeleton className="h-40 w-full" />}>
+          <RecentPurchases ctx={ctx} />
+        </Suspense>
+      )}
       <ul className="grid gap-4 sm:grid-cols-2">
-        {SHORTCUTS.map((shortcut) => (
+        {shortcuts.map((shortcut) => (
           <li key={shortcut.href} className="flex">
             <Link href={shortcut.href} className={cn(shortcutClasses, "flex w-full flex-col gap-1")}>
               <span className="text-lg font-bold tracking-tight text-foreground">{shortcut.title}</span>

@@ -24,6 +24,7 @@ const customer: Customer = {
 
 afterEach(() => {
   cleanup();
+  vi.unstubAllEnvs();
   vi.mocked(getCurrentCustomer).mockReset();
 });
 
@@ -54,18 +55,32 @@ describe("AccountSlot", () => {
     const items = await screen.findAllByRole("menuitem");
     expect(items.map((item) => item.textContent)).toEqual([
       "Resumen",
+      "Mis compras",
       "Perfil",
       "Direcciones",
       "Favoritos",
       "Configuración",
       "Salir",
     ]);
-    expect(items.slice(0, 5).map((item) => item.getAttribute("href"))).toEqual([
+    expect(items.slice(0, 6).map((item) => item.getAttribute("href"))).toEqual([
       "/cuenta",
+      "/cuenta/compras",
       "/cuenta/perfil",
       "/cuenta/direcciones",
       "/cuenta/favoritos",
       "/cuenta/configuracion",
     ]);
+  });
+
+  it("con el carrito apagado el menú no ofrece Mis compras", async () => {
+    vi.stubEnv("MARKETPLACE_MODE", "api");
+    vi.stubEnv("MARKETPLACE_CART_ENABLED", "");
+    vi.mocked(getCurrentCustomer).mockResolvedValue(customer);
+
+    render(await AccountSlot());
+    fireEvent.keyDown(screen.getByRole("button", { name: "Mi cuenta" }), { key: "Enter" });
+
+    const items = await screen.findAllByRole("menuitem");
+    expect(items.map((item) => item.textContent)).not.toContain("Mis compras");
   });
 });

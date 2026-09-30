@@ -239,6 +239,25 @@ describe("deleteAccountAction", () => {
     expect(cookieStore.delete).not.toHaveBeenCalled();
   });
 
+  it("con pedidos en curso muestra el mensaje de la API y no borra la cookie", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(deleteAccount).mockRejectedValue(
+      new MarketplaceAccountError({
+        status: 409,
+        code: "open_orders",
+        message: "Tienes pedidos en curso. Podrás eliminar tu cuenta cuando se entreguen.",
+      }),
+    );
+
+    const state = await deleteAccountAction(INITIAL_FORM_STATE, form({ password: "clave-segura-1" }));
+
+    expect(state).toMatchObject({
+      status: "error",
+      message: "Tienes pedidos en curso. Podrás eliminar tu cuenta cuando se entreguen.",
+    });
+    expect(cookieStore.delete).not.toHaveBeenCalled();
+  });
+
   it("con éxito borra mp_session con path / y redirige a /", async () => {
     withSessionCookie("12|abc");
     vi.mocked(deleteAccount).mockResolvedValue(undefined);

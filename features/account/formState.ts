@@ -26,6 +26,8 @@ export function formStateFromError(error: unknown, values: Record<string, string
       case "token_invalid":
       case "token_expired":
       case "not_found":
+      // Eliminar la cuenta con pedidos en curso (spec cuentas-y-compras §5.8): el mensaje de la API.
+      case "open_orders":
         return errorState(error.message, values);
       case "too_many_attempts":
         return errorState(

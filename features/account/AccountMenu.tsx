@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Customer } from "@/lib/marketplace/schemas";
+import { cartEnabled } from "@/features/cart/flag";
 import { AccountDropdown } from "./AccountDropdown";
 import { getCurrentCustomer } from "./session";
 
@@ -27,7 +28,7 @@ export async function AccountSlot() {
       </Link>
     );
   }
-  return <AccountDropdown />;
+  return <AccountDropdown showPurchases={cartEnabled()} />;
 }
 
 export function AccountSlotSkeleton() {

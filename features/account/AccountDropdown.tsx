@@ -13,16 +13,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { logout } from "./actions";
 
+const SUMMARY_LINK = { href: "/cuenta", label: "Resumen" };
+const PURCHASES_LINK = { href: "/cuenta/compras", label: "Mis compras" };
 const MENU_LINKS = [
-  { href: "/cuenta", label: "Resumen" },
   { href: "/cuenta/perfil", label: "Perfil" },
   { href: "/cuenta/direcciones", label: "Direcciones" },
   { href: "/cuenta/favoritos", label: "Favoritos" },
   { href: "/cuenta/configuracion", label: "Configuración" },
 ];
 
-export function AccountDropdown() {
+// `showPurchases` lo decide el servidor con el interruptor del carrito: aquí no se lee el entorno.
+export function AccountDropdown({ showPurchases }: { showPurchases: boolean }) {
   const logoutForm = useRef<HTMLFormElement>(null);
+  const links = [SUMMARY_LINK, ...(showPurchases ? [PURCHASES_LINK] : []), ...MENU_LINKS];
   return (
     <>
       {/* Fuera del menú: al elegir "Salir" el menú se cierra y desmonta su contenido (sin animación
@@ -36,7 +39,7 @@ export function AccountDropdown() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
-          {MENU_LINKS.map((link) => (
+          {links.map((link) => (
             <DropdownMenuItem key={link.href} asChild>
               <Link href={link.href}>{link.label}</Link>
             </DropdownMenuItem>

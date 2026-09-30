@@ -104,7 +104,7 @@ export default async function ProductPage({
           alt={product.name}
           preload
         />
-        <Card className="md:sticky md:top-24">
+        <Card>
           <CardContent className="flex flex-col gap-3">
             {product.category !== null && (
               <Badge variant="secondary">{product.category.name}</Badge>

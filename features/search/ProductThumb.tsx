@@ -7,7 +7,6 @@ import { categoryTint } from "./categoryTint";
 
 const thumbSizes = {
   md: { px: 96, box: "size-24", icon: "size-10" },
-  lg: { px: 320, box: "size-64 sm:size-80", icon: "size-20" },
 } as const;
 
 const CARD_BOX = "relative aspect-[4/3] w-full overflow-hidden rounded-lg";
@@ -23,7 +22,7 @@ export function ProductThumb({
 }: {
   imageUrl: string | null;
   category: Category | null;
-  size: "md" | "lg" | "card" | "detail";
+  size: "md" | "card" | "detail";
   alt?: string;
   preload?: boolean;
   className?: string;
@@ -37,7 +36,7 @@ export function ProductThumb({
             alt={alt}
             fill
             preload={preload}
-            sizes="(min-width: 768px) 50vw, 100vw"
+            sizes="(min-width: 1024px) 540px, (min-width: 768px) 50vw, 100vw"
             className="object-contain p-6"
           />
         </div>

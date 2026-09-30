@@ -22,8 +22,8 @@ export function SearchPill({ defaultQuery, compact = false }: { defaultQuery?: s
         />
       </Form>
       <span aria-hidden="true" className="h-6 w-px shrink-0 bg-border" />
-      <Suspense fallback={<LocationBarSkeleton />}>
-        <LocationBar />
+      <Suspense fallback={<LocationBarSkeleton compact={compact} />}>
+        <LocationBar compact={compact} />
       </Suspense>
       <Button
         type="submit"

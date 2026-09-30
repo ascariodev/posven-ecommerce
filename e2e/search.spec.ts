@@ -43,6 +43,7 @@ test("elegir ciudad la guarda y la búsqueda ofrece sólo la ciudad o todo el pa
   await expect(page.getByRole("button", { name: "Ubicación: Valencia" })).toBeVisible();
 
   await page.goto("/buscar?q=acetaminofen");
+  await page.getByRole("button", { name: "Filtros" }).click();
   await expect(page.getByRole("link", { name: "Sólo Valencia" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Todo el país" })).toBeVisible();
 });

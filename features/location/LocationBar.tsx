@@ -2,16 +2,17 @@ import { MapPin } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { listLocations } from "@/lib/marketplace/client";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
+import { cn } from "@/lib/utils";
 import { LocationSheet } from "./LocationSheet";
 import { getEffectiveLocation } from "./server";
 
-export async function LocationBar() {
+export async function LocationBar({ compact = false }: { compact?: boolean }) {
   const [{ name }, states] = await Promise.all([getEffectiveLocation(), listLocations()]);
-  return <LocationSheet label={name} states={states} />;
+  return <LocationSheet label={name} states={states} compact={compact} />;
 }
 
-export function LocationBarSkeleton() {
-  return <Skeleton className="h-11 w-28 shrink-0 rounded-full" />;
+export function LocationBarSkeleton({ compact = false }: { compact?: boolean }) {
+  return <Skeleton className={cn("w-28 shrink-0 rounded-full", compact ? "h-9" : "h-11")} />;
 }
 
 async function summaryName(): Promise<string | null> {

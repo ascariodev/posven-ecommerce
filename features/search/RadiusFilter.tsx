@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { toggleVariants } from "@/components/ui/toggle";
 import { DEFAULT_RADIUS_KM, RADIUS_OPTIONS, type RadiusKm } from "@/lib/marketplace/params";
+import { cn } from "@/lib/utils";
 import { searchHref, type SearchQuery } from "./query";
 
 type RadiusOption = { label: string; radio: RadiusKm | null; current: boolean };
@@ -35,7 +36,8 @@ export function RadiusFilter({
             <Link
               href={searchHref({ ...query, radio: option.radio, pagina: 1 })}
               aria-current={option.current ? "true" : undefined}
-              className={buttonVariants({ variant: option.current ? "default" : "outline", size: "sm" })}
+              data-state={option.current ? "on" : "off"}
+              className={cn(toggleVariants({ variant: "outline", size: "sm" }), "rounded-full")}
             >
               {option.label}
             </Link>

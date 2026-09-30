@@ -24,13 +24,21 @@ function useIsDesktop(): boolean {
   );
 }
 
-export function LocationSheet({ label, states }: { label: string | null; states: LocationState[] }) {
+export function LocationSheet({
+  label,
+  states,
+  compact = false,
+}: {
+  label: string | null;
+  states: LocationState[];
+  compact?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const side = useIsDesktop() ? "right" : "bottom";
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="shrink-0 rounded-full px-3" aria-label={label === null ? "¿Dónde? Ubicación: sin elegir" : `Ubicación: ${label}`}>
+        <Button variant="ghost" size={compact ? "sm" : "default"} className="shrink-0 rounded-full px-3" aria-label={label === null ? "¿Dónde? Ubicación: sin elegir" : `Ubicación: ${label}`}>
           <MapPin aria-hidden="true" className="size-4" />
           <span className="max-w-32 truncate">{label ?? "¿Dónde?"}</span>
         </Button>

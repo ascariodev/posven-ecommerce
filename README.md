@@ -33,7 +33,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 Cada push a `main` corre `.gitea/workflows/deploy.yaml`: compila en modo standalone con el `.env`
 de producción y deja el servidor en `/var/www/html/ecommerce/posven-ecommerce/current` (montado en el
-runner como `/posven-ecommerce`). PM2 vigila `.deployed` y reinicia el proceso.
+runner como `/posven-ecommerce`). PM2 vigila `deployed.flag` y reinicia el proceso.
 
 Preparación única en el servidor:
 

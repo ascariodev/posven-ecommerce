@@ -39,5 +39,5 @@ jobs:
           cp deploy/ecosystem.config.cjs /posven-ecommerce/
 
           # PM2 vigila este archivo y reinicia el proceso al cambiar.
-          date > /posven-ecommerce/.deployed
+          date > /posven-ecommerce/deployed.flag
           echo "Listo: /var/www/html/ecommerce/posven-ecommerce/current desplegado."

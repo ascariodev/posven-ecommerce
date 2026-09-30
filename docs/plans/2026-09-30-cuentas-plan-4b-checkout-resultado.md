@@ -7,10 +7,11 @@
 - Repo y rama: posven-ecommerce, `feat/cuentas-checkout` (desde `feat/cuentas-carrito` `b8d9345`);
   cada tarea se subió con push a `gitea`, sin merge
 - Commits: `34812a9` (plan); Task 1 `7cd913b`; Task 2 `3d47693`; Task 3 `713e01f`; Task 4
-  `e72a134`; Task 5 `f794d85`; Task 6 `ae7af6b`; Task 7, el commit de cierre `docs(checkout):
-  cierre del plan 4b de cuentas y compras`
+  `e72a134`; Task 5 `f794d85`; Task 6 `ae7af6b`; Task 7 `cc0c105`; revisión final `6e0b60e`,
+  `052b09f` y el commit `docs(checkout): revisión final del plan 4b`
 - Revisiones: las de cada tarea (`review: yes`) se hicieron releyendo el diff antes del commit, sin
-  un revisor aparte; no hay informes de revisión por tarea como en el 4a.
+  un revisor aparte; no hay informes de revisión por tarea como en el 4a. La revisión final (ver
+  abajo) aprobó el plan con cinco correcciones menores, todas aplicadas.
 
 ## Qué queda hecho
 
@@ -86,11 +87,32 @@
 - **`quote_hash` del simulado** cubre la Quote, la dirección y las cantidades del carrito; posveapi
   decide qué cubre el suyo.
 
+## Revisión final
+
+Sin hallazgos bloqueantes; cinco menores, corregidos:
+
+1. **"Cambió" tras dos `quote_changed` seguidos** comparaba contra la Quote con que se pintó la
+   página; ahora compara contra la mostrada justo antes (`CheckoutForm.tsx`, `6e0b60e`, con su
+   prueba).
+2. **Un 403 `email_unverified` de la acción** sólo mostraba el mensaje; ahora ofrece "Reenviar
+   verificación" y deja de ofrecer "Pagar", como pide §6 (`6e0b60e`, con su prueba).
+3. **`RN-PURCHASES-01` citaba pruebas que no cubrían el 404 de una página fuera de rango**: la
+   lectura de `?pagina` y esa decisión pasaron a `features/purchases/pagination.ts` con su prueba
+   (`052b09f`).
+4. **`depends_on` incompletos**: `features/account` suma `features/cart/flag.ts` y
+   `features/purchases/RecentPurchases.tsx`; `lib/marketplace` suma `lib/site.ts`;
+   `features/checkout` suma `features/account/actions.ts`.
+5. **"Últimas compras" tumbaba `/cuenta` si la API fallaba**: ahora no se pinta con la API caída o
+   un error de cuenta que no sea 401, y el resumen sigue (`052b09f`). Es una diferencia con §6 ("API
+   caída: `error.tsx`"), declarada como excepción en `app-router.md` 7 y en el README de compras.
+
 ## Verificación
+
+Tras la revisión final:
 
 - `tsc --noEmit`: sin errores. `eslint` sobre `app`, `features`, `components`, `lib` y `e2e`: sin
   salida.
-- `vitest run` entero: 57 archivos, 433 pruebas, todas pasan.
+- `vitest run` entero: 58 archivos, 447 pruebas, todas pasan (al cerrar la Task 7: 57 y 433).
 - `next build` con `MARKETPLACE_MODE=mock SITE_URL=http://localhost:3000`: exit 0, 0 avisos
   `blocking-route`; `/checkout`, `/checkout/resultado`, `/cuenta/compras` y
   `/cuenta/compras/[codigo]` en `◐`.
@@ -99,11 +121,12 @@
   `/entrar?volver=…` en el streaming); 307 a entrar en `/cuenta/compras` y su detalle (`proxy.ts`);
   detenido, el puerto quedó libre.
 - `playwright test` entero en simulado (configuración temporal con el Chromium del contenedor,
-  borrada al terminar), dos veces seguidas contra el mismo `next dev`: 29 pasan y 1 `fixme` en cada
-  corrida. Antes, una prueba de humo con Playwright recorrió entrar, agregar, "Ir a pagar", elegir
+  borrada al terminar), dos veces seguidas contra el mismo `next dev` al cerrar la Task 7: 29 pasan
+  y 1 `fixme` en cada corrida; tras la revisión final, una corrida más: 29 pasan y 1 `fixme`. Antes, una prueba de humo con Playwright recorrió entrar, agregar, "Ir a pagar", elegir
   entrega, pagar, resultado confirmado y "Ver tu compra" sin errores de página.
 - `CAPABILITIES.md` regenerado con `gen-capabilities.mjs` después de añadir a git los README
-  nuevos, con el generador validado idéntico al archivo de `77ca74e`.
+  nuevos, con el generador validado idéntico al archivo de `77ca74e`; tras la revisión final, el
+  generador no da cambios.
 - **Sin comprobar**: el interruptor apagado en un build en modo API (lo cubren las pruebas de
   `actions`, menú y cuenta) y la revisión visual en navegador de escritorio.
 

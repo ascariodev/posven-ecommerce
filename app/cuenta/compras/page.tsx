@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/session";
 import { cartEnabled } from "@/features/cart/flag";
+import { isPageOutOfRange, readPurchasesPage } from "@/features/purchases/pagination";
 import { PurchaseList } from "@/features/purchases/PurchaseList";
 import { listPurchases } from "@/lib/marketplace/client";
 
@@ -12,15 +13,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-function readPage(raw: string | string[] | undefined): number {
-  return typeof raw === "string" && /^[1-9]\d{0,5}$/.test(raw) ? Number(raw) : 1;
-}
-
 async function PurchasesPanel({ searchParams }: { searchParams: PageProps<"/cuenta/compras">["searchParams"] }) {
   const { ctx } = await requireCustomer("/cuenta/compras");
-  const page = await listPurchases(ctx, readPage((await searchParams).pagina));
-  // Una página fuera de rango con compras es 404; sin compras, la página 1 muestra el vacío.
-  if (page.data.length === 0 && page.meta.page > 1) notFound();
+  const page = await listPurchases(ctx, readPurchasesPage((await searchParams).pagina));
+  if (isPageOutOfRange(page)) notFound();
   return <PurchaseList page={page} />;
 }
 

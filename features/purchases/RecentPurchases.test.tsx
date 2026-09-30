@@ -1,6 +1,7 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { listPurchases } from "@/lib/marketplace/client";
+import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import { RecentPurchases } from "./RecentPurchases";
 import { purchase } from "./testPurchase";
 
@@ -31,6 +32,23 @@ describe("RecentPurchases", () => {
       "/cuenta/compras/PV-000003",
     ]);
     expect(screen.getByRole("link", { name: "Ver todas" }).getAttribute("href")).toBe("/cuenta/compras");
+  });
+
+  it.each([
+    ["la API caída", new MarketplaceUnavailableError("/me/purchases")],
+    ["un 429", new MarketplaceAccountError({ status: 429, code: "too_many_attempts", message: "Demasiados intentos.", retryAfter: 30 })],
+  ])("con %s no pinta nada y el resumen sigue", async (_name, error) => {
+    vi.mocked(listPurchases).mockRejectedValue(error);
+
+    expect(await RecentPurchases({ ctx })).toBeNull();
+  });
+
+  it("un 401 sube: la sesión venció", async () => {
+    vi.mocked(listPurchases).mockRejectedValue(
+      new MarketplaceAccountError({ status: 401, code: "unauthenticated", message: "Inicia sesión para continuar." }),
+    );
+
+    await expect(RecentPurchases({ ctx })).rejects.toBeInstanceOf(MarketplaceAccountError);
   });
 
   it("sin compras no pinta nada", async () => {

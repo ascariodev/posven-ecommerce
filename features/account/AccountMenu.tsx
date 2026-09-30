@@ -66,5 +66,5 @@ export async function AccountSlot() {
 }
 
 export function AccountSlotSkeleton() {
-  return <Skeleton className="h-9 w-24" />;
+  return <Skeleton className="h-11 w-24 md:h-9" />;
 }

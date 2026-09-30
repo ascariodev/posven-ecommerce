@@ -39,7 +39,9 @@ nueva se agrega con `shadcn add` y se ajusta a los tokens y a las reglas de abaj
    blanco no llega a 3:1; el ring de shadcn no reemplaza ese outline. Los bordes de controles de
    formulario usan `border-input-border` (`--border` no llega a 3:1 sobre blanco); `border-border`
    queda para tarjetas y separadores. Los controles principales miden al menos 44 px de alto
-   (`h-11`).
+   (`h-11`). El tamaño `sm` de `Button`, `Toggle` y `SelectTrigger` mide 44 px en móvil y 36 px
+   desde `md` (`h-11 md:h-9`); un control o esqueleto con altura escrita a mano sigue esa misma
+   pareja.
 6. **Nombre accesible en todo control**; lo decorativo lleva `aria-hidden` (`Skeleton` ya lo trae).
 7. **Íconos sólo de `lucide-react`**, importados por nombre, con `aria-hidden` en lo decorativo.
    shadcn y Radix se permiten; otra librería de componentes (Headless UI, MUI y similares) no entra

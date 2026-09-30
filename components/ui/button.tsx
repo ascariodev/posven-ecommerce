@@ -20,7 +20,7 @@ const buttonStyles = cva(
       },
       size: {
         default: "h-11 gap-2 px-4 text-base",
-        sm: "h-9 gap-1.5 px-3 text-sm",
+        sm: "h-11 gap-1.5 px-3 text-sm md:h-9",
         lg: "h-12 gap-2 px-6 text-base",
         icon: "size-11",
       },

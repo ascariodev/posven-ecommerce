@@ -12,7 +12,7 @@ export async function LocationBar({ compact = false }: { compact?: boolean }) {
 }
 
 export function LocationBarSkeleton({ compact = false }: { compact?: boolean }) {
-  return <Skeleton className={cn("w-28 shrink-0 rounded-full", compact ? "h-9" : "h-11")} />;
+  return <Skeleton className={cn("w-28 shrink-0 rounded-full", compact ? "h-11 md:h-9" : "h-11")} />;
 }
 
 async function summaryName(): Promise<string | null> {

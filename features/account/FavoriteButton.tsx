@@ -59,5 +59,5 @@ export async function FavoriteButton({ target, returnTo }: { target: FavoriteTar
 }
 
 export function FavoriteButtonSkeleton() {
-  return <Skeleton className="h-9 w-44" />;
+  return <Skeleton className="h-11 w-44 md:h-9" />;
 }

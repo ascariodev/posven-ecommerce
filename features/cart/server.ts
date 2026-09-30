@@ -32,8 +32,8 @@ export const getCurrentCart = cache(async (): Promise<Cart | null> => {
 });
 
 // Fusión al entrar o registrarse (RN-CART-02): sólo desde una Server Action (borra `mp_cart`). Con la
-// API caída conserva la cookie para el próximo login; ante un error de la API (permanente) la borra.
-// Nunca interrumpe el acceso.
+// API caída o un 429 (pasajeros) conserva la cookie para el próximo login; ante otro error de la API
+// (permanente) la borra. Ningún error de la API interrumpe el acceso; uno de programación se relanza.
 export async function mergeGuestCart(ctx: AccountContext): Promise<void> {
   const store = await cookies();
   const raw = store.get(CART_COOKIE)?.value;
@@ -45,6 +45,7 @@ export async function mergeGuestCart(ctx: AccountContext): Promise<void> {
     } catch (error) {
       if (error instanceof MarketplaceUnavailableError) return;
       if (!(error instanceof MarketplaceAccountError)) throw error;
+      if (error.status === 429) return;
     }
   }
   store.delete({ name: CART_COOKIE, path: cartCookieOptions().path });

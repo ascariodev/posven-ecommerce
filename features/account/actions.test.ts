@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   loginCustomer,
   logoutCustomer,
@@ -213,6 +213,14 @@ describe("fusión del carrito de invitado al entrar (RN-CART-02)", () => {
   ]);
   const form = { email: customer.email, password: "secreta123", volver: "/carrito" };
 
+  beforeEach(() => {
+    vi.stubEnv("MARKETPLACE_MODE", "mock");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   function withGuestCart(value: string): void {
     cookieStore.get.mockImplementation((name: string) => (name === "mp_cart" ? { name, value } : undefined));
   }
@@ -266,6 +274,18 @@ describe("fusión del carrito de invitado al entrar (RN-CART-02)", () => {
     await expect(login(INITIAL_FORM_STATE, loginForm(form))).rejects.toThrow("NEXT_REDIRECT:/carrito");
 
     expect(cartDeleted()).toBe(true);
+  });
+
+  it("con un 429 el login sigue y mp_cart se conserva (es pasajero)", async () => {
+    withGuestCart(guestCart);
+    vi.mocked(loginCustomer).mockResolvedValue({ token: "7|nuevo", customer });
+    vi.mocked(mergeCart).mockRejectedValue(
+      new MarketplaceAccountError({ status: 429, code: "too_many_attempts", message: "Demasiados intentos.", retryAfter: 30 }),
+    );
+
+    await expect(login(INITIAL_FORM_STATE, loginForm(form))).rejects.toThrow("NEXT_REDIRECT:/carrito");
+
+    expect(cartDeleted()).toBe(false);
   });
 
   it("una mp_cart inválida se borra sin llamar a la API", async () => {

@@ -145,7 +145,7 @@ describe("addToCart como invitado", () => {
 
     const state = await addToCart(INITIAL_ADD_TO_CART_STATE, form(ref));
 
-    expect(state).toBe(INITIAL_ADD_TO_CART_STATE);
+    expect(state).toEqual(INITIAL_ADD_TO_CART_STATE);
     expect(cookieStore.set).not.toHaveBeenCalled();
   });
 });

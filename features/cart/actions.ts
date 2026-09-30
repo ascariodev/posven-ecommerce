@@ -6,8 +6,8 @@ import { getCart, setCartItem } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Cart } from "@/lib/marketplace/schemas";
 import { accountContext, SESSION_COOKIE, sessionCookieOptions } from "@/features/account/session";
-import type { AddToCartState } from "./addToCartState";
-import { readGuestCart, writeGuestCart } from "./cookie";
+import { INITIAL_ADD_TO_CART_STATE, type AddToCartState } from "./addToCartState";
+import { readGuestCart, serializeCart, writeGuestCart } from "./cookie";
 import { cartEnabled } from "./flag";
 
 // Todo export de este archivo es un endpoint público: sólo las tres acciones de formulario. La
@@ -70,12 +70,14 @@ async function addAsGuest(ref: LineRef): Promise<AddToCartState> {
     existing === undefined
       ? [...items, { ...ref, quantity: 1 }]
       : items.map((item) => (sameLine(item, ref) ? { ...item, quantity: item.quantity + 1 } : item));
-  if (!(await writeGuestCart(next))) return failed(CART_FULL);
+  // Se mide con todas las líneas en 99: así ningún cambio de cantidad posterior pasa del tope.
+  if (serializeCart(next.map((item) => ({ ...item, quantity: MAX_QUANTITY }))) === null) return failed(CART_FULL);
+  await writeGuestCart(next);
   return added();
 }
 
 export async function addToCart(prev: AddToCartState, formData: FormData): Promise<AddToCartState> {
-  if (!cartEnabled()) return prev;
+  if (!cartEnabled()) return INITIAL_ADD_TO_CART_STATE;
   const ref = lineRef(formData);
   if (ref === null) return failed(ADD_FAILED);
   const ctx = await accountContext();

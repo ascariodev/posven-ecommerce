@@ -33,7 +33,7 @@
   --destructive: #b42318;
   --input: var(--input-border);
   --ring: var(--foreground);
-  --radius: 0.75rem;
+  --radius: 1rem;
 }
 
 @theme inline {

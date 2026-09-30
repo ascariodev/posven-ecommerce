@@ -57,6 +57,8 @@
    (idéntica al archivo en `7fc83a4`), porque `posven/.claude/scripts/generate-index.mjs` no está
    en la nube: sólo sale la fila de `<SearchForm />`. La capacidad de `<SearchPill />` suma los
    alias "buscador de la cabecera", "caja de busqueda" y "buscador" de la que se quitó.
+8. **`docs/conventions/lessons.md`**, fuera del mapa de la Task 3: L-03 suma
+   `components/ui/dropdown-menu.tsx` en "aplicada en" y entra L-05 (la diferencia 4).
 
 ## Verificación
 
@@ -99,6 +101,13 @@ De la revisión de la Task 2:
   hidratación (`aria-hidden` que pone el `hideOthers` del menú modal de Radix). Sólo en desarrollo;
   `Sheet` y `Select` se comportan igual. `modal={false}` lo evitaría si molesta.
 - Sin JavaScript el menú de cuenta no abre (decisión 4).
+
+De la revisión final de la rama (APPROVED, sin Critical ni Important): sus cuatro Minor de
+documentación se corrigieron en el commit de ajustes (fila de `/cuenta` del README de account,
+`verified_against` del README de location, conteo de archivos de la spec y la diferencia 8). Queda
+una observación: la regla 4 de `ui.md` no lista `bg-accent`, `text-accent-foreground`,
+`text-popover-foreground`, `text-destructive` ni `ring-foreground/10`, que usan `select.tsx` (desde
+el plan 4) y `dropdown-menu.tsx`; se completa en el próximo cambio a `ui.md`.
 
 Heredadas: la deuda del plan 4 que sigue abierta (botón de cerrar del `Sheet` con scroll, peso de
 `cn/config`, foco al enviar una dirección sin ciudad, entre otras).

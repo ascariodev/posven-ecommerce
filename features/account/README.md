@@ -81,7 +81,7 @@ direcciones: lo hace la API.
 | Una acción nueva de cuenta con sesión | `actions.ts`, envuelta en `withSession(returnTo, run)` | el 401 `unauthenticated` lo resuelve `withSession`; `formStateFromError` lo relanza |
 | Textos o campos de un formulario | `LoginForm.tsx`, `RegisterForm.tsx`, `RecoveryForms.tsx`, `VerifyEmailForm.tsx` | el `pick` de su acción en `actions.ts` (qué valores vuelven al formulario) |
 | Rutas que exigen sesión | `matcher` de `proxy.ts` y `requireCustomer(path)` en la página | `disallow` de `app/robots.ts` si la ruta no se indexa |
-| Una pantalla nueva de `/cuenta` | `app/cuenta/<ruta>/page.tsx`, con `metadata` `noindex` y el cuerpo async en un `<Suspense>` que empieza con `requireCustomer("<su ruta>")` | el enlace en `app/cuenta/layout.tsx`, en `app/cuenta/page.tsx` y en `AccountMenu.tsx` |
+| Una pantalla nueva de `/cuenta` | `app/cuenta/<ruta>/page.tsx`, con `metadata` `noindex` y el cuerpo async en un `<Suspense>` que empieza con `requireCustomer("<su ruta>")` | el enlace en `app/cuenta/layout.tsx`, en `app/cuenta/page.tsx` y en `MENU_LINKS` de `AccountDropdown.tsx` |
 | Una mutación de cuenta | `accountActions.ts`, envuelta en `withSession(returnTo, ...)`; errores de negocio por `formStateFromError` | su formulario `"use client"` con `useActionState` y su prefijo de `useId()`; el caso en `accountActions.test.ts` |
 | Campos o textos de perfil, dirección o configuración | `ProfileForm.tsx`, `AddressForm.tsx`, `SettingsForms.tsx` | el `pick` o los campos que lee su acción en `accountActions.ts` |
 | Dónde se ofrece el favorito | `<FavoriteButton />` dentro de su propio `<Suspense fallback={<FavoriteButtonSkeleton />}>` en la ficha | nada de `<Suspense>` por encima de la página (`seo.md` regla 7) |

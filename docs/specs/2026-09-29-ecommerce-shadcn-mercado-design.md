@@ -138,7 +138,7 @@ Modo ligero (pantallas contra un simulado y datos locales), un solo repo. Razone
 | 2 | Inicio y búsqueda en dirección C (§4) | Depende de 1; juicio visual | ~10 archivos |
 | 3 | Ficha en dirección C (§4). **Cerrado** (2026-09-30) | Otra pantalla; se puede revisar sola | ~5 archivos |
 | 4 | Deuda menor de los planes 2 y 3: primitivas, `sm` táctil, ficha y `AddressForm` con `Select`. **Cerrado** (2026-09-30) | Arreglos repartidos que no cambian pantallas | ~25 archivos |
-| 5 | Cabecera en dirección C: píldora compacta y menú de cuenta. **Cerrado** (2026-09-30) | Pieza común a todas las pantallas; se revisa sola | ~10 archivos |
+| 5 | Cabecera en dirección C: píldora compacta y menú de cuenta. **Cerrado** (2026-09-30) | Pieza común a todas las pantallas; se revisa sola | ~22 archivos |
 
 El plan 1 se parte en dos tareas por área (cuenta y formularios frente a búsqueda, producto y
 tienda) si el diff no se revisa en una pasada. Antes de ejecutar 2 y 3 se instalan solo las piezas

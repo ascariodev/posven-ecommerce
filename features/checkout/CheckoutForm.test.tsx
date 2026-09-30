@@ -9,6 +9,7 @@ const replace = vi.hoisted(() => vi.fn());
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace }) }));
 vi.mock("./actions", () => ({ payCheckout: vi.fn() }));
+vi.mock("@/features/account/actions", () => ({ resendVerificationAction: vi.fn(), verifyEmailAction: vi.fn() }));
 
 afterEach(() => {
   cleanup();
@@ -130,6 +131,45 @@ describe("CheckoutForm", () => {
     const [central, abasto] = screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.parentElement as HTMLElement);
     expect(within(central).queryByText("Cambió")).toBeTruthy();
     expect(within(abasto).queryByText("Cambió")).toBeNull();
+  });
+
+  it("tras dos quote_changed seguidos, Cambió compara contra la Quote mostrada justo antes", async () => {
+    const first = quote([quoteStore({ total_usd: "5.90" }), quoteStore({ store_slug: ABASTO })], { quote_hash: "hash-2" });
+    const second = quote([quoteStore({ total_usd: "5.90" }), quoteStore({ store_slug: ABASTO, total_usd: "1.10" })], {
+      quote_hash: "hash-3",
+    });
+    const changed = (next: typeof first) => ({
+      status: "quote_changed" as const,
+      message: "Tu compra cambió. Revisa los precios y la entrega.",
+      quote: next,
+    });
+    vi.mocked(payCheckout).mockResolvedValueOnce(changed(first)).mockResolvedValueOnce(changed(second));
+    const { container } = renderForm();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /^Pagar Bs / }));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /^Pagar Bs / }));
+    });
+
+    expect(hiddenValue(container, "quote_hash")).toBe("hash-3");
+    const [central, abasto] = screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.parentElement as HTMLElement);
+    expect(within(central).queryByText("Cambió")).toBeNull();
+    expect(within(abasto).queryByText("Cambió")).toBeTruthy();
+  });
+
+  it("un email_unverified de la acción ofrece reenviar la verificación y deja de ofrecer pagar", async () => {
+    vi.mocked(payCheckout).mockResolvedValue({ status: "email_unverified", message: "Verifica tu correo para comprar." });
+    renderForm();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Pagar Bs 255,60" }));
+    });
+
+    expect(screen.getByRole("alert").textContent).toBe("Verifica tu correo para comprar.");
+    expect(screen.getByRole("button", { name: "Reenviar verificación" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Pagar/ })).toBeNull();
   });
 
   it("sin el correo verificado no ofrece pagar", () => {

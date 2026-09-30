@@ -17,6 +17,7 @@ import type {
   Quote,
   QuoteStore,
 } from "@/lib/marketplace/schemas";
+import { ResendVerificationForm } from "@/features/account/VerifyEmailForm";
 import { payCheckout } from "./actions";
 import { CheckoutEmpty } from "./CheckoutEmpty";
 import { INITIAL_CHECKOUT_STATE } from "./checkoutState";
@@ -150,8 +151,15 @@ export function CheckoutForm({
   const [updating, startTransition] = useTransition();
   const [state, formAction, paying] = useActionState(payCheckout, INITIAL_CHECKOUT_STATE);
   // La página monta este formulario con `key` = quote_hash: una Quote nueva del servidor lo reinicia.
-  const quote = state.status === "quote_changed" ? state.quote : initialQuote;
-  const previous = state.status === "quote_changed" ? initialQuote : null;
+  // Cada `quote_changed` reemplaza la Quote que se muestra, y "Cambió" compara contra la que se
+  // mostraba justo antes (no contra la de la página), también tras dos cambios seguidos.
+  const [shown, setShown] = useState<{ quote: Quote; previous: Quote | null }>({ quote: initialQuote, previous: null });
+  const [seenState, setSeenState] = useState(state);
+  if (seenState !== state) {
+    setSeenState(state);
+    if (state.status === "quote_changed") setShown({ quote: state.quote, previous: shown.quote });
+  }
+  const { quote, previous } = shown;
   const [choice, setChoice] = useState(() => ({
     addressId,
     delivery: initialQuote.stores.filter((store) => store.fulfillment === "delivery").map((store) => store.store_slug),
@@ -257,7 +265,10 @@ export function CheckoutForm({
               {message}
             </p>
           )}
-          {verified && (
+          {/* El servidor puede responder que el correo no está verificado aunque la página se pintó
+              verificada (spec §6: aviso con "reenviar verificación"). */}
+          {state.status === "email_unverified" && <ResendVerificationForm />}
+          {verified && state.status !== "email_unverified" && (
             <form action={formAction}>
               {/* La dirección y las entregas son las de la Quote que se muestra, no las que se eligen
                   mientras llega la nueva ("Pagar" está deshabilitado entretanto). */}

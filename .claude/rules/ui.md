@@ -20,7 +20,10 @@ nueva se agrega con `shadcn add` y se ajusta a los tokens y a las reglas de abaj
    de Tailwind: el `className` de quien usa la primitiva gana sobre la base. Una utilidad de clases
    exportada para usarse fuera del componente también pasa por `cn`. Un enlace con forma de botón
    usa `buttonVariants` sobre `<Link>`, no un `<button>` anidado; `toggleVariants` sobre `<Link>`
-   igual que `buttonVariants`, por `cn`.
+   igual que `buttonVariants`. Ambas ya devuelven su resultado por `cn`: sin clases extra se usan
+   tal cual (`className={buttonVariants({ size: "sm" })}`) y con clases extra,
+   `cn(buttonVariants(...), "extra")`. `cn` (`lib/utils.ts`) registra las sombras de token propio
+   (`shadow-card`, `shadow-raised`) para que se fusionen con las de serie.
 4. **Colores sólo por tokens**: `bg-primary`, `hover:bg-primary-hover`, `text-primary-foreground`,
    `bg-muted`, `text-muted-foreground`, `border-border`, `border-input-border`, `border-input`,
    `bg-card`, `bg-featured`, `text-warning`, `bg-best`, `text-best-foreground`,

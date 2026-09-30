@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Customer } from "@/lib/marketplace/schemas";
@@ -45,12 +45,27 @@ describe("AccountSlot", () => {
     expect(screen.queryByText("Mi cuenta")).toBeNull();
   });
 
-  it("con comprador muestra Mi cuenta y Salir", async () => {
+  it("con comprador, Mi cuenta abre el menú con sus enlaces y Salir", async () => {
     vi.mocked(getCurrentCustomer).mockResolvedValue(customer);
 
     render(await AccountSlot());
+    fireEvent.keyDown(screen.getByRole("button", { name: "Mi cuenta" }), { key: "Enter" });
 
-    expect(screen.getByText("Mi cuenta")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Salir" })).toBeTruthy();
+    const items = await screen.findAllByRole("menuitem");
+    expect(items.map((item) => item.textContent)).toEqual([
+      "Resumen",
+      "Perfil",
+      "Direcciones",
+      "Favoritos",
+      "Configuración",
+      "Salir",
+    ]);
+    expect(items.slice(0, 5).map((item) => item.getAttribute("href"))).toEqual([
+      "/cuenta",
+      "/cuenta/perfil",
+      "/cuenta/direcciones",
+      "/cuenta/favoritos",
+      "/cuenta/configuracion",
+    ]);
   });
 });

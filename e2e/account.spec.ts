@@ -60,8 +60,8 @@ test.describe("cuenta del comprador", () => {
     await signIn(page, email, password);
     await expect(page).toHaveURL("/cuenta");
 
-    await page.getByText("Mi cuenta", { exact: true }).click();
-    await page.getByRole("button", { name: "Salir" }).click();
+    await page.getByRole("button", { name: "Mi cuenta" }).click();
+    await page.getByRole("menuitem", { name: "Salir" }).click();
     await expect(page.locator("header").getByRole("link", { name: "Entrar" })).toBeVisible();
 
     await signIn(page, email, password, "/cuenta/favoritos");

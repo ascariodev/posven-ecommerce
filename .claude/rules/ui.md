@@ -11,7 +11,8 @@ nueva se agrega con `shadcn add` y se ajusta a los tokens y a las reglas de abaj
 
 1. **Sin estado, sin `'use client'`.** Las primitivas que no lo necesitan no llevan `'use client'`
    ni hooks, para que las usen por igual Server y Client Components. Las interactivas (`Sheet`,
-   `Select`, `Toggle` y `ToggleGroup`) traen el suyo y se consumen desde Server Components.
+   `Select` y `ToggleGroup`) traen el suyo y se consumen desde Server Components; `Toggle` no lo
+   lleva para que `toggleVariants` sirva en el servidor (Radix ya marca su primitiva).
 2. **Props nativas más variantes.** Cada primitiva extiende las props de su elemento, reparte
    `...props` y recibe `className`. `Button` pone `type="button"` por defecto cuando renderiza
    `<button>`.

@@ -124,10 +124,11 @@ nuevas que cada uno use (`carousel` queda para §7).
 - **Deuda observada en el entorno local** (no la resuelve esta spec): `/categories` de posveapi
   local devuelve vacío y los productos vienen sin categoría, así que el carril de categorías queda
   sin datos; la imagen de la ficha se ve rota porque el archivo no existe en el `storage` del
-  contenedor local (posveapi responde 404 a esa URL); `next build` y el modo `standalone` con las
-  dependencias nuevas no se han probado.
+  contenedor local (posveapi responde 404 a esa URL). `next build` y el modo `standalone` con las
+  dependencias nuevas se probaron en los planes 1 y 2.
 - **Regla `.claude/rules/ui.md`.** Sus ítems 1 (primitivas sin estado ni `'use client'`), 3 (`cx`)
-  y 7 (sin shadcn ni Radix) dejan de regir; se reescribe al cerrar el plan 1.
+  y 7 (sin shadcn ni Radix) dejaron de regir; se reescribió al cerrar el plan 1 y se amplió en el
+  plan 2.
 
 ## 8. Decisiones abiertas
 

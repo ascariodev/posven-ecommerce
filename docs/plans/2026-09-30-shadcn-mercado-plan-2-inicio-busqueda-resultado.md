@@ -2,7 +2,7 @@
 
 - Plan: `docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda.md` (modo ligero)
 - Spec: `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md` (aprobada), fila 2 de su §6
-- Repo y rama: posven-ecommerce, `feat/ui-shadcn-mercado` (desde `main` 56a2c44); cada tarea se subió con push, sin merge
+- Repo y rama: posven-ecommerce, `feat/ui-shadcn-mercado` (desde `main` 56a2c44); cada tarea se subió con push por pedido de quien coordina (la Restricción 10 decía sin push), sin merge
 - Commits del plan: `437c809` (plan); Task 1 `ed7a3ef`, con `d3d4225` y `e63063e` de su revisión;
   Task 2 `55a84e4`, con `0d337c1` de su revisión; Task 3 `f7fbac0` (sin revisión por tarea);
   `507d747` (arreglo aparte de `buttonVariants` por `cn` en `AccountMenu` y `FavoriteButton`, que
@@ -90,6 +90,16 @@ Del implementador, sin cubrir el plan al pie de la letra:
 - El `<select>` nativo de ciudad en `features/account/AddressForm.tsx` sigue sin migrar.
 - Heredada del plan 1: `cn` no fusiona utilidades de sombra de token propio; `/categories` local
   de posveapi vacío (el carril sale vacío con el entorno local real).
+
+- Revisión final de la rama: APPROVED, sin Critical ni Important. Su Minor 1 (la hoja de "Filtros"
+  seguía abierta tras elegir una distancia) se corrigió al cierre con `key={searchHref(query)}` en
+  `FiltersSheet`, junto con dos frases desfasadas de la spec §7. Quedan:
+  - En móvil el filtro de distancia sólo existe dentro del `Sheet`: sin JavaScript no hay filtro de
+    distancia en móvil (desde `md` sí, en línea).
+  - Sin `q` ni `categoria`, "Escribe qué buscas o elige una categoría." no muestra chips; quitar el
+    chip activo lleva ahí.
+  - Con una subcategoría en la URL ningún chip raíz queda activo ni permite quitarla.
+  - Chips, "Filtros" y el segmento de ubicación compacto miden 36 px (tamaño `sm`).
 
 ## Pasos de deploy
 

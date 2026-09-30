@@ -17,6 +17,8 @@
   --input-border: #8c8c8c;
   --featured: #fff4e5;
   --warning: #8a4b00;
+  --best: #d1fae5;
+  --best-foreground: #065f46;
   --surface: rgb(255 255 255 / 0.92);
   --glass: rgb(255 255 255 / 0.72);
   --glass-border: rgb(255 255 255 / 0.9);
@@ -58,6 +60,8 @@
   --color-input-border: var(--input-border);
   --color-featured: var(--featured);
   --color-warning: var(--warning);
+  --color-best: var(--best);
+  --color-best-foreground: var(--best-foreground);
   --color-surface: var(--surface);
   --color-glass: var(--glass);
   --color-glass-border: var(--glass-border);

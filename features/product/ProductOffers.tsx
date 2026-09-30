@@ -46,15 +46,15 @@ export async function ProductOffers({
       <p className="text-sm text-muted-foreground">{formatRate(page.rate)}</p>
       {location !== null && <SortLinks slug={product.slug} sort={sort} />}
       {page.featured.length + inside.length > 0 && (
-        <ul aria-label="Ofertas" className="grid gap-4 sm:grid-cols-2">
+        <ul aria-label="Ofertas" className="flex flex-col gap-3">
           {page.featured.map((offer) => (
             <li key={`destacada:${offer.store.slug}`}>
-              <OfferCard offer={offer} product={product} featured now={now} />
+              <OfferCard offer={offer} product={product} featured best={false} now={now} />
             </li>
           ))}
-          {inside.map((offer) => (
+          {inside.map((offer, index) => (
             <li key={offer.store.slug}>
-              <OfferCard offer={offer} product={product} featured={false} now={now} />
+              <OfferCard offer={offer} product={product} featured={false} best={sort === "price" && index === 0} now={now} />
             </li>
           ))}
         </ul>
@@ -62,10 +62,10 @@ export async function ProductOffers({
       {outside.length > 0 && (
         <>
           <h3 className="text-lg font-bold tracking-tight">Fuera de tu zona</h3>
-          <ul aria-label="Fuera de tu zona" className="grid gap-4 sm:grid-cols-2">
+          <ul aria-label="Fuera de tu zona" className="flex flex-col gap-3">
             {outside.map((offer) => (
               <li key={offer.store.slug}>
-                <OfferCard offer={offer} product={product} featured={false} now={now} />
+                <OfferCard offer={offer} product={product} featured={false} best={false} now={now} />
               </li>
             ))}
           </ul>
@@ -79,7 +79,7 @@ export function ProductOffersSkeleton() {
   return (
     <div className="flex flex-col gap-4">
       <Skeleton className="h-7 w-48" />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="flex flex-col gap-3">
         {Array.from({ length: 4 }, (_, index) => (
           <Skeleton key={index} className="h-44" />
         ))}

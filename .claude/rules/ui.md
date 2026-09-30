@@ -23,7 +23,7 @@ nueva se agrega con `shadcn add` y se ajusta a los tokens y a las reglas de abaj
    igual que `buttonVariants`, por `cn`.
 4. **Colores sólo por tokens**: `bg-primary`, `hover:bg-primary-hover`, `text-primary-foreground`,
    `bg-muted`, `text-muted-foreground`, `border-border`, `border-input-border`, `border-input`,
-   `bg-card`, `bg-featured`, `text-warning`, `bg-background`, `text-foreground`, `bg-surface`,
+   `bg-card`, `bg-featured`, `text-warning`, `bg-best`, `text-best-foreground`, `border-best-foreground`, `bg-background`, `text-foreground`, `bg-surface`,
    `bg-glass`, `border-glass-border`, `bg-primary-soft`, `bg-tint-N`/`text-tint-N-foreground`
    (N de 1 a 4), `bg-overlay`, `bg-popover`, `shadow-card`, `shadow-raised`. Nada de
    `zinc-*`, `black`, `white` ni hex en clases. Un color nuevo entra como variable en `:root` y su

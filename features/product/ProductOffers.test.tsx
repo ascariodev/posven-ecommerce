@@ -122,6 +122,44 @@ describe("ProductOffers", () => {
     expect(screen.getByRole("link", { name: "Más cerca" }).getAttribute("aria-current")).toBe("true");
   });
 
+  it("con orden por precio marca Mejor precio una sola vez, en la primera oferta normal y no en una destacada", async () => {
+    const premium = offer("farmacia-central-valencia", "Farmacia Central");
+    const first = offer("abasto-la-esquina", "Abasto La Esquina");
+    const second = offer("farmacia-altamira", "Farmacia Altamira");
+    vi.mocked(getProductOffers).mockResolvedValue(page([first, second], [premium]));
+
+    render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+    expect(screen.getAllByText("Mejor precio")).toHaveLength(1);
+    const items = within(screen.getByRole("list", { name: "Ofertas" })).getAllByRole("listitem");
+    expect(within(items[0]).queryByText("Mejor precio")).toBeNull();
+    expect(within(items[1]).getByText("Abasto La Esquina")).toBeTruthy();
+    expect(within(items[1]).getByText("Mejor precio")).toBeTruthy();
+    expect(within(items[2]).queryByText("Mejor precio")).toBeNull();
+  });
+
+  it("con orden=cerca y ubicación no marca Mejor precio", async () => {
+    vi.mocked(getEffectiveLocation).mockResolvedValueOnce({
+      location: { kind: "coords", lat: 10.18, lng: -68.0 },
+      name: "Tu ubicación actual",
+    });
+    vi.mocked(getProductOffers).mockResolvedValue(page([offer("abasto-la-esquina", "Abasto La Esquina")], []));
+
+    render(await ProductOffers({ product, searchParams: searchParams({ orden: "cerca" }) }));
+
+    expect(screen.queryByText("Mejor precio")).toBeNull();
+  });
+
+  it("en Fuera de tu zona no marca Mejor precio", async () => {
+    const far = offer("farmacia-altamira", "Farmacia Altamira", { outside_radius: true });
+    vi.mocked(getProductOffers).mockResolvedValue(page([far], []));
+
+    render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+    expect(screen.getByRole("list", { name: "Fuera de tu zona" })).toBeTruthy();
+    expect(screen.queryByText("Mejor precio")).toBeNull();
+  });
+
   it("con respuesta null pinta el texto de sin ofertas", async () => {
     vi.mocked(getProductOffers).mockResolvedValue(null);
 

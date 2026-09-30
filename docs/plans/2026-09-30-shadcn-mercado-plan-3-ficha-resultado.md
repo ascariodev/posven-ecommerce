@@ -21,8 +21,8 @@
 - **`ProductThumb`**: tamaño `detail` (cuadrado, `object-contain`, ícono `size-24` sin imagen).
 - **Tiendas en filas** (`OfferCard`): tienda, ciudad y distancia, insignias, precios a la derecha
   desde `sm`, antigüedad y contactos abajo; con `best`, borde y anillo `best-foreground`.
-- **"Mejor precio"** (`ProductOffers`, `RN-PRODUCT-05`): sólo la primera oferta normal y sólo con
-  orden por precio; tokens `--best` y `--best-foreground` y variante `best` de `Badge`.
+- **"Mejor precio"** (`ProductOffers`, `RN-PRODUCT-05`): sólo la primera oferta normal, sólo con
+  orden por precio y sólo sin destacadas (arreglo de la revisión final); tokens `--best` y `--best-foreground` y variante `best` de `Badge`.
 - **Orden**: `SortLinks` con `toggleVariants` outline `sm` y `rounded-full` sobre `<Link>`, con
   `data-state` y `aria-current`.
 - **Documentación**: spec §4 (fila de la ficha y las cuatro precisiones) y §6 (plan 3 cerrado);
@@ -35,7 +35,8 @@
 Decididas al planificar (quien coordina, 2026-09-30) y escritas en la spec §4:
 
 1. Panel fijo sólo con el resumen; la lista de tiendas va debajo, a todo el ancho.
-2. "Mejor precio" sólo con orden por precio y en la primera oferta normal; el frontend no compara.
+2. "Mejor precio" sólo con orden por precio, en la primera oferta normal y sin destacadas; el
+   frontend no compara.
 3. Rango del panel sólo en dólares, de `offers_summary`.
 4. Migas con las categorías como texto; el JSON-LD lleva sólo Inicio y el producto.
 
@@ -87,6 +88,13 @@ De la revisión de la Task 2:
 Heredada del plan 2: las que siguen abiertas de su "Deuda declarada" (sombra de `SelectContent`,
 bordes y animaciones de `Sheet`, `ToggleGroup` sin `orientation`, `AddressForm` con `<select>`
 nativo, `cn` con sombras de token propio).
+
+- Revisión final de la rama: CHANGES_REQUIRED por un Important, ya corregido: "Mejor precio" podía
+  caer en una oferta más cara que una destacada de encima (en el simulado,
+  `/p/alcohol-isopropilico-250-ml`: destacada a $1,60 y marcada a $1,75), porque la API saca las
+  destacadas de `offers`. Ahora sólo se marca si no hay destacadas, con su prueba. Quedan de esa
+  revisión: el panel `md:sticky` apenas se mueve (su bloque es la celda del grid y la lista va
+  fuera), y 11 `buttonVariants` sin `cn` y sin clases extra, anteriores a esta rama.
 
 ## Pasos de deploy
 

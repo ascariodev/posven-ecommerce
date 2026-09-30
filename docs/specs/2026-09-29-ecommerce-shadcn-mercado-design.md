@@ -80,9 +80,11 @@ decididas al planificarlo y ya en el código:
    resumen (categoría, nombre, marca, récipe, rango de precio, favoritos, atributos). La lista
    completa de tiendas va debajo, a todo el ancho, con el orden, las destacadas y "Fuera de tu
    zona". En móvil todo se apila.
-2. **"Mejor precio" sólo con orden por precio, en la primera oferta normal** (la primera de
-   `offers` dentro del radio). Ni las destacadas ni la vista "Más cerca" la llevan. El frontend no
-   compara precios: la marca sale del orden de la API.
+2. **"Mejor precio" sólo con orden por precio, en la primera oferta normal y sin destacadas** (la
+   primera de `offers` dentro del radio). La API saca las destacadas de `offers` y una puede ser
+   más barata, así que con destacadas no se marca ninguna (revisión final del plan 3). Ni las
+   destacadas ni la vista "Más cerca" la llevan. El frontend no compara precios: la marca sale
+   del orden de la API; marcar siempre exigiría un campo como `is_best_price` en el contrato.
 3. **Rango del panel sólo en dólares**, de `offers_summary`: "Desde $X", "hasta $Y" cuando la
    cadena del máximo es distinta de la del mínimo, "en N tiendas" y "Precio en todo el país". Los
    bolívares aparecen en cada tienda de la lista.

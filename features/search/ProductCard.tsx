@@ -13,7 +13,7 @@ export function ProductCard({ item }: { item: SearchItem }) {
   return (
     <Link
       href={`/p/${item.slug}`}
-      className="flex h-full gap-4 rounded-2xl border border-border bg-surface p-4 shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+      className="flex h-full gap-4 rounded-lg border border-border bg-surface p-4 shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
     >
       <ProductThumb imageUrl={item.image_url} category={item.category} size="md" />
       <div className="flex min-w-0 flex-col gap-1">

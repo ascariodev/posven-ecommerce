@@ -132,7 +132,7 @@ export function AddressForm({ address, cities }: { address: Address | null; citi
           defaultValue={value("city_slug", address?.city.slug ?? "")}
           aria-invalid={hasError("city_slug") || undefined}
           aria-describedby={describedBy("city_slug")}
-          className="h-11 w-full rounded-xl border border-input-border bg-surface px-3 text-base text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          className="h-11 w-full rounded-md border border-input-border bg-surface px-3 text-base text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
         >
           <option value="">Elige tu ciudad</option>
           {groups.map((group) => (

@@ -16,7 +16,7 @@ const MENU_LINKS = [
 ];
 
 const menuItemClasses =
-  "block w-full rounded-xl px-3 py-2 text-left text-sm text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
+  "block w-full rounded-md px-3 py-2 text-left text-sm text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
 
 // app/error.tsx no cubre el layout raíz (L-02): sin API, la cabecera degrada a invitado.
 async function currentCustomerOrGuest(): Promise<Customer | null> {
@@ -44,7 +44,7 @@ export async function AccountSlot() {
         <User aria-hidden="true" className="size-4" />
         Mi cuenta
       </summary>
-      <ul className="absolute right-0 top-full z-50 mt-2 flex w-52 flex-col gap-1 rounded-2xl border border-border bg-surface p-2 shadow-raised">
+      <ul className="absolute right-0 top-full z-50 mt-2 flex w-52 flex-col gap-1 rounded-lg border border-border bg-surface p-2 shadow-raised">
         {MENU_LINKS.map((link) => (
           <li key={link.href}>
             <Link href={link.href} className={menuItemClasses}>

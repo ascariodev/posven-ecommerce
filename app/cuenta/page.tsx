@@ -20,7 +20,7 @@ const SHORTCUTS = [
 ];
 
 const shortcutClasses =
-  "rounded-2xl border border-border bg-surface p-4 shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
+  "rounded-lg border border-border bg-surface p-4 shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
 
 async function AccountSummary() {
   const { customer } = await requireCustomer("/cuenta");

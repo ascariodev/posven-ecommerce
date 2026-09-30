@@ -18,7 +18,7 @@ export function SearchForm({
       role="search"
       className={cn(
         "flex w-full gap-2",
-        large ? "rounded-2xl border border-glass-border bg-glass p-2 shadow-card backdrop-blur-md" : "items-center",
+        large ? "rounded-lg border border-glass-border bg-glass p-2 shadow-card backdrop-blur-md" : "items-center",
       )}
     >
       <Input

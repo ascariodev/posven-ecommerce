@@ -9,7 +9,7 @@ import { clearLocation, setLocationCity, setLocationFromCoords } from "./actions
 type Mode = "summary" | "choose" | "select";
 
 const selectClasses =
-  "h-11 w-full rounded-xl border border-input-border bg-surface px-3 text-base text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-50";
+  "h-11 w-full rounded-md border border-input-border bg-surface px-3 text-base text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-50";
 
 export function LocationPicker({ label, states }: { label: string | null; states: LocationState[] }) {
   const router = useRouter();

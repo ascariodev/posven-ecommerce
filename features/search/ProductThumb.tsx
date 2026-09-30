@@ -31,7 +31,7 @@ export function ProductThumb({
         width={px}
         height={px}
         preload={preload}
-        className={cn(box, "shrink-0 rounded-xl object-contain")}
+        className={cn(box, "shrink-0 rounded-md object-contain")}
       />
     );
   }
@@ -40,7 +40,7 @@ export function ProductThumb({
       aria-hidden="true"
       className={cn(
         box,
-        "flex shrink-0 items-center justify-center rounded-xl bg-primary-soft text-warning",
+        "flex shrink-0 items-center justify-center rounded-md bg-primary-soft text-warning",
       )}
     >
       {createElement(categoryIcon(category), { "aria-hidden": true, className: icon })}

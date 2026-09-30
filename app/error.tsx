@@ -9,7 +9,7 @@ export default function ErrorPage({
   retry: () => void;
 }) {
   return (
-    <section className="flex flex-col items-start gap-4 rounded-2xl border border-border bg-surface p-8 shadow-card">
+    <section className="flex flex-col items-start gap-4 rounded-lg border border-border bg-surface p-8 shadow-card">
       <meta name="robots" content="noindex" />
       <h1 className="text-3xl font-bold tracking-tight">No pudimos cargar esta página</h1>
       <p className="text-muted-foreground">

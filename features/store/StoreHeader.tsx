@@ -16,7 +16,7 @@ export function StoreHeader({ store }: { store: Store }) {
           width={1200}
           height={300}
           preload
-          className="h-40 w-full rounded-2xl object-cover sm:h-56"
+          className="h-40 w-full rounded-lg object-cover sm:h-56"
         />
       )}
       <div className="flex items-center gap-4">

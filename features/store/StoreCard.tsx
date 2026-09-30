@@ -12,7 +12,7 @@ export function StoreCard({ store, featured }: { store: NearbyStore; featured?: 
     <Link
       href={`/tienda/${store.slug}`}
       className={cn(
-        "flex h-full items-center gap-4 rounded-2xl border border-border p-4 shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+        "flex h-full items-center gap-4 rounded-lg border border-border p-4 shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
         featured ? "bg-featured" : "bg-surface",
       )}
     >

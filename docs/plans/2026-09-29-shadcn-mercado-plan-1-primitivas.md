@@ -285,11 +285,10 @@ bloqueado `.next`, se le pide detenerlo y no se borra nada):
 ```bash
 MARKETPLACE_MODE=mock SITE_URL=http://localhost:3000 "C:/Users/Windows 11/Documents/Development/posven/posven-ecommerce/node_modules/.bin/next" build "C:/Users/Windows 11/Documents/Development/posven/posven-ecommerce"
 ls "C:/Users/Windows 11/Documents/Development/posven/posven-ecommerce/.next/standalone/server.js"
-ls "C:/Users/Windows 11/Documents/Development/posven/posven-ecommerce/.next/standalone/node_modules" | grep -E "radix|class-variance-authority|^cn$"
 ```
 
 Esperado: la build termina sin errores ni el aviso `blocking-route`, `server.js` existe y el
-standalone incluye `radix-ui` (o sus paquetes `@radix-ui`), `class-variance-authority` y `cn`. El
+standalone, levantado con `node .next/standalone/server.js` en un puerto libre, responde 200 en `/entrar`, `/p/<slug>` y `/tienda/<slug>` (Turbopack empaqueta `radix-ui`, `class-variance-authority` y `cn` en los chunks, no en `node_modules`). El
 e2e de Playwright lo corre el usuario con el puerto 3000 libre; se declara "no corrido" si no.
 
 **Terminada cuando** `ui.md` ya no cita `cx`, `buttonClasses` ni prohíbe shadcn, `L-01` no existe,

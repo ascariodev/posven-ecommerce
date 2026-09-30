@@ -54,7 +54,7 @@ tamaño por defecto ajustado en el propio archivo). El contraste AA y el foco vi
 |---|---|---|
 | Inicio | Título, píldora de dos segmentos (qué y dónde), carril de categorías con icono, rejilla "Cerca de ti" con tarjetas de imagen, tiendas con portada | `input`, `button`, `tabs`, `card`, `badge` |
 | Búsqueda | Píldora compacta, chips de categoría, botón de filtros, orden y rejilla de tarjetas con "Desde" y número de tiendas | `sheet` (filtros en móvil), `select`, `badge`, `toggle-group` |
-| Ficha | Imagen a la izquierda; a la derecha un panel fijo con el producto, "Desde" y las tiendas ordenadas por precio, con "Mejor precio", Llamar y Ver ruta | `card`, `badge`, `button` |
+| Ficha | Imagen a la izquierda; a la derecha un panel fijo con el resumen del producto y su rango de precio; debajo, a todo el ancho, las tiendas en filas con "Mejor precio", Llamar y Ver ruta (precisiones del plan 3 abajo) | `card`, `badge`, `button`, `toggle` |
 
 Diferencias del plan 2 (`docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda.md`) contra
 la tabla anterior, decididas al planificarlo y ya en el código:
@@ -73,10 +73,26 @@ la tabla anterior, decididas al planificarlo y ya en el código:
 6. **Tarjeta de tienda con banda de color por token** y el logo o las iniciales encima; la portada
    real exige `cover_url` en las tiendas cercanas, que se declara en §7.
 
+Precisiones del plan 3 (`docs/plans/2026-09-30-shadcn-mercado-plan-3-ficha.md`) sobre la ficha,
+decididas al planificarlo y ya en el código:
+
+1. **Panel fijo sólo con el resumen.** Imagen a la izquierda; a la derecha, fijo en escritorio, el
+   resumen (categoría, nombre, marca, récipe, rango de precio, favoritos, atributos). La lista
+   completa de tiendas va debajo, a todo el ancho, con el orden, las destacadas y "Fuera de tu
+   zona". En móvil todo se apila.
+2. **"Mejor precio" sólo con orden por precio, en la primera oferta normal** (la primera de
+   `offers` dentro del radio). Ni las destacadas ni la vista "Más cerca" la llevan. El frontend no
+   compara precios: la marca sale del orden de la API.
+3. **Rango del panel sólo en dólares**, de `offers_summary`: "Desde $X", "hasta $Y" cuando la
+   cadena del máximo es distinta de la del mínimo, "en N tiendas" y "Precio en todo el país". Los
+   bolívares aparecen en cada tienda de la lista.
+4. **Migas de pan con las categorías como texto.** Sólo "Inicio" es enlace; `/categoria/<slug>`
+   no existe (hoy da 404). El JSON-LD `BreadcrumbList` lleva sólo Inicio y el producto.
+
 Sin imagen, una tarjeta muestra el icono de su categoría raíz sobre un tinte por categoría (el
 comportamiento actual de `ProductThumb`, con los tintes del prototipo). "Mejor precio" marca la
-oferta de menor precio de la ficha; el frontend no calcula montos, usa el orden y los importes
-que entrega la API.
+oferta de menor precio de la ficha (precisión 2 arriba); el frontend no calcula montos, usa el
+orden y los importes que entrega la API.
 
 ## 5. Estrategia de migración
 
@@ -98,7 +114,7 @@ Modo ligero (pantallas contra un simulado y datos locales), un solo repo. Razone
 |---|---|---|---|
 | 1 | Reemplazo de primitivas y migración de usos (§5) | Mecánico, diff que se revisa aparte | ~42 archivos, advertencia de tamaño |
 | 2 | Inicio y búsqueda en dirección C (§4) | Depende de 1; juicio visual | ~10 archivos |
-| 3 | Ficha en dirección C (§4) | Otra pantalla; se puede revisar sola | ~5 archivos |
+| 3 | Ficha en dirección C (§4). **Cerrado** (2026-09-30) | Otra pantalla; se puede revisar sola | ~5 archivos |
 
 El plan 1 se parte en dos tareas por área (cuenta y formularios frente a búsqueda, producto y
 tienda) si el diff no se revisa en una pasada. Antes de ejecutar 2 y 3 se instalan solo las piezas

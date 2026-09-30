@@ -28,7 +28,7 @@ capabilities:
     entrypoint: "<ProductOffers />"
     file: "features/product/ProductOffers.tsx"
     input: "product: { slug, name, restriction }; searchParams con orden=cerca opcional; lee la cookie loc; se monta en <Suspense fallback={<ProductOffersSkeleton />}>"
-    output: "sección 'Dónde comprarlo': tasa, SortLinks con ubicación, destacadas y ofertas del radio en un OfferCard cada una (con orden por precio, la primera oferta normal lleva 'Mejor precio'), las de outside_radius bajo 'Fuera de tu zona'; sin ofertas, 'No hay ofertas cerca. Prueba con otra ciudad.'"
+    output: "sección 'Dónde comprarlo': tasa, SortLinks con ubicación, destacadas y ofertas del radio en un OfferCard cada una (con orden por precio y sin destacadas, la primera oferta lleva 'Mejor precio'), las de outside_radius bajo 'Fuera de tu zona'; sin ofertas, 'No hay ofertas cerca. Prueba con otra ciudad.'"
     source: "getProductOffers() de lib/marketplace con geo de getEffectiveLocation() y DEFAULT_RADIUS_KM"
     rules: ["RN-PRODUCT-03", "RN-PRODUCT-04", "RN-PRODUCT-05"]
 ---
@@ -49,7 +49,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 | `RN-PRODUCT-02` | Un producto sin ofertas en el país muestra "Sin disponibilidad ahora." y lleva `noindex`. | `features/product/metadata.test.ts` ("sin ofertas lleva noindex y la descripción de sin disponibilidad"); `e2e/product.spec.ts` ("un producto sin ofertas muestra sin disponibilidad y lleva noindex") |
 | `RN-PRODUCT-03` | Las ofertas destacadas, dos como máximo, van primero y no se repiten; las de fuera del radio van bajo "Fuera de tu zona". | `features/product/ProductOffers.test.tsx` ("las destacadas van primero con Destacado y las de fuera del radio bajo Fuera de tu zona") |
 | `RN-PRODUCT-04` | "Más cerca" sólo se ofrece con ubicación; sin ella el orden es por precio. | `features/product/ProductOffers.test.tsx` ("sin ubicación no ofrece Más cerca y pide sort price aunque venga orden=cerca", "con coordenadas y orden=cerca pide sort distance y radiusKm 10") |
-| `RN-PRODUCT-05` | "Mejor precio" va sólo en la primera oferta normal (la primera de `offers` dentro del radio) y sólo con orden por precio; ni las destacadas, ni "Fuera de tu zona", ni la vista "Más cerca" la llevan. El frontend no compara precios: la marca sale del orden de la API. | `features/product/ProductOffers.test.tsx` ("con orden por precio marca Mejor precio una sola vez, en la primera oferta normal y no en una destacada", "con orden=cerca y ubicación no marca Mejor precio", "en Fuera de tu zona no marca Mejor precio") |
+| `RN-PRODUCT-05` | "Mejor precio" va sólo en la primera oferta normal (la primera de `offers` dentro del radio), sólo con orden por precio y sólo si no hay destacadas: la API saca las destacadas de `offers` y una puede ser más barata que la primera normal. Ni las destacadas, ni "Fuera de tu zona", ni la vista "Más cerca" la llevan. El frontend no compara precios: la marca sale del orden de la API. | `features/product/ProductOffers.test.tsx` ("con orden por precio y sin destacadas marca Mejor precio una sola vez, en la primera oferta", "con destacadas no marca Mejor precio, porque una destacada puede ser más barata", "con orden=cerca y ubicación no marca Mejor precio", "en Fuera de tu zona no marca Mejor precio") |
 
 ## 3. Dónde hacer cambios
 
@@ -127,5 +127,5 @@ const { data: product } = await loadProduct(slug);
 - Comando: `npx vitest run features/product`; los códigos 404 y 308, con `next build` y `next start`.
 - `features/product/metadata.test.ts`: canónica, descripción en plural y singular, `noindex` sin ofertas.
 - `features/product/jsonld.test.ts`: `AggregateOffer` desde `offers_summary`, sin `offers` ni `gtin` cuando faltan.
-- `features/product/ProductOffers.test.tsx`: destacadas primero, "Fuera de tu zona", orden y radio según ubicación, respuesta `null` y "Mejor precio" (tres casos de RN-PRODUCT-05).
+- `features/product/ProductOffers.test.tsx`: destacadas primero, "Fuera de tu zona", orden y radio según ubicación, respuesta `null` y "Mejor precio" (cuatro casos de RN-PRODUCT-05).
 - `features/product/PriceSummary.test.tsx`: rango con y sin máximo distinto, "en 1 tienda" y "en N tiendas", sin precio mínimo no pinta nada.

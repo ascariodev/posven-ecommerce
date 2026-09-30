@@ -122,20 +122,28 @@ describe("ProductOffers", () => {
     expect(screen.getByRole("link", { name: "Más cerca" }).getAttribute("aria-current")).toBe("true");
   });
 
-  it("con orden por precio marca Mejor precio una sola vez, en la primera oferta normal y no en una destacada", async () => {
-    const premium = offer("farmacia-central-valencia", "Farmacia Central");
+  it("con orden por precio y sin destacadas marca Mejor precio una sola vez, en la primera oferta", async () => {
     const first = offer("abasto-la-esquina", "Abasto La Esquina");
     const second = offer("farmacia-altamira", "Farmacia Altamira");
-    vi.mocked(getProductOffers).mockResolvedValue(page([first, second], [premium]));
+    vi.mocked(getProductOffers).mockResolvedValue(page([first, second], []));
 
     render(await ProductOffers({ product, searchParams: searchParams({}) }));
 
     expect(screen.getAllByText("Mejor precio")).toHaveLength(1);
     const items = within(screen.getByRole("list", { name: "Ofertas" })).getAllByRole("listitem");
-    expect(within(items[0]).queryByText("Mejor precio")).toBeNull();
-    expect(within(items[1]).getByText("Abasto La Esquina")).toBeTruthy();
-    expect(within(items[1]).getByText("Mejor precio")).toBeTruthy();
-    expect(within(items[2]).queryByText("Mejor precio")).toBeNull();
+    expect(within(items[0]).getByText("Abasto La Esquina")).toBeTruthy();
+    expect(within(items[0]).getByText("Mejor precio")).toBeTruthy();
+    expect(within(items[1]).queryByText("Mejor precio")).toBeNull();
+  });
+
+  it("con destacadas no marca Mejor precio, porque una destacada puede ser más barata", async () => {
+    const premium = offer("farmacia-central-valencia", "Farmacia Central", { price_usd: "1.60" });
+    const first = offer("abasto-la-esquina", "Abasto La Esquina", { price_usd: "1.75" });
+    vi.mocked(getProductOffers).mockResolvedValue(page([first], [premium]));
+
+    render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+    expect(screen.queryByText("Mejor precio")).toBeNull();
   });
 
   it("con orden=cerca y ubicación no marca Mejor precio", async () => {

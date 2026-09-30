@@ -54,7 +54,7 @@ export async function ProductOffers({
           ))}
           {inside.map((offer, index) => (
             <li key={offer.store.slug}>
-              <OfferCard offer={offer} product={product} featured={false} best={sort === "price" && index === 0} now={now} />
+              <OfferCard offer={offer} product={product} featured={false} best={sort === "price" && page.featured.length === 0 && index === 0} now={now} />
             </li>
           ))}
         </ul>

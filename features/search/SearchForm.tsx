@@ -27,7 +27,7 @@ export function SearchForm({
         aria-label="Buscar productos"
         placeholder="Busca un producto, marca o código de barras"
         defaultValue={defaultQuery}
-        className={large ? undefined : "h-9 text-sm"}
+        className={large ? undefined : "h-11 text-sm md:h-9"}
       />
       <Button type="submit" size={large ? "default" : "sm"}>
         <Search aria-hidden="true" className="size-4" />

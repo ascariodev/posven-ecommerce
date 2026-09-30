@@ -9,11 +9,18 @@ import { productJsonLd } from "@/features/product/jsonld";
 import { loadProduct } from "@/features/product/load";
 import { productMetadata } from "@/features/product/metadata";
 import { PriceSummary } from "@/features/product/PriceSummary";
+import { cartEnabled } from "@/features/cart/flag";
 import { ProductOffers, ProductOffersSkeleton } from "@/features/product/ProductOffers";
 import { ProductThumb } from "@/features/search/ProductThumb";
 import { breadcrumbListJsonLd, serializeJsonLd } from "@/lib/jsonld";
 import { listCategories, listSitemap } from "@/lib/marketplace/client";
 import type { CategoryNode, ProductDetail } from "@/lib/marketplace/schemas";
+
+// Productos que no se venden en línea (enmienda E de cuentas-y-compras): sin botón de agregar.
+const RESTRICTED_NOTE = {
+  recipe: "Requiere récipe, consúltalo en la tienda.",
+  controlled: "Venta controlada, consúltalo en la tienda.",
+} as const;
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -115,6 +122,9 @@ export default async function ProductPage({
             {product.brand !== null && <p className="text-muted-foreground">{product.brand}</p>}
             {product.restriction === "recipe" && <Badge variant="warning">Requiere récipe</Badge>}
             <PriceSummary summary={product.offers_summary} />
+            {cartEnabled() && product.restriction !== "none" && (
+              <p className="text-sm text-muted-foreground">{RESTRICTED_NOTE[product.restriction]}</p>
+            )}
             <Suspense fallback={<FavoriteButtonSkeleton />}>
               <FavoriteButton target={{ kind: "product", slug: product.slug }} returnTo={`/p/${product.slug}`} />
             </Suspense>

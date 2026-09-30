@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getStore } from "@/lib/marketplace/client";
 import type { StoreProduct, StoreResponse } from "@/lib/marketplace/schemas";
 import { StoreProducts } from "./StoreProducts";
@@ -7,6 +7,8 @@ import { StoreProducts } from "./StoreProducts";
 vi.mock("@/lib/marketplace/client", () => ({
   getStore: vi.fn(),
 }));
+
+vi.mock("@/features/cart/actions", () => ({ addToCart: vi.fn() }));
 
 const SLUG = "farmacia-central-valencia";
 
@@ -29,7 +31,7 @@ function product(slug: string, name: string, overrides: Partial<StoreProduct> = 
   };
 }
 
-function response(products: StoreProduct[], meta: StoreResponse["meta"]): StoreResponse {
+function response(products: StoreProduct[], meta: StoreResponse["meta"], acceptsOrders = false): StoreResponse {
   return {
     data: {
       slug: SLUG,
@@ -44,7 +46,7 @@ function response(products: StoreProduct[], meta: StoreResponse["meta"]): StoreR
       phone: null,
       whatsapp: null,
       is_premium: false,
-      accepts_orders: false,
+      accepts_orders: acceptsOrders,
       schedule: [],
     },
     products,
@@ -109,5 +111,51 @@ describe("StoreProducts", () => {
     render(await StoreProducts({ slug: SLUG, searchParams: searchParams({ pagina: "abc" }) }));
 
     expect(getStore).toHaveBeenCalledWith({ slug: SLUG, page: 1 });
+  });
+});
+
+describe("botón Agregar al carrito en la tienda (RN-CART-03)", () => {
+  const meta = { page: 1, per_page: 20, total: 3 };
+  const products = [
+    product("acetaminofen-500-mg-20-tabletas", "Acetaminofén 500 mg x 20 tabletas"),
+    product("amoxicilina-500-mg-21-capsulas", "Amoxicilina 500 mg", { restriction: "recipe" }),
+    product("clonazepam-0-5-mg-30-tabletas", "Clonazepam 0,5 mg", { restriction: "controlled" }),
+  ];
+  const addButtons = () => screen.queryAllByRole("button", { name: /^Agregar al carrito:/ });
+
+  beforeEach(() => {
+    vi.stubEnv("MARKETPLACE_MODE", "mock");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("sale sólo en los productos sin restricción de una tienda que vende", async () => {
+    vi.mocked(getStore).mockResolvedValue(response(products, meta, true));
+
+    render(await StoreProducts({ slug: SLUG, searchParams: searchParams({}) }));
+
+    expect(addButtons().map((button) => button.getAttribute("aria-label"))).toEqual([
+      "Agregar al carrito: Acetaminofén 500 mg x 20 tabletas de Farmacia Central",
+    ]);
+  });
+
+  it("no sale en una tienda sin venta en línea", async () => {
+    vi.mocked(getStore).mockResolvedValue(response(products, meta, false));
+
+    render(await StoreProducts({ slug: SLUG, searchParams: searchParams({}) }));
+
+    expect(addButtons()).toHaveLength(0);
+  });
+
+  it("no sale con el interruptor apagado", async () => {
+    vi.stubEnv("MARKETPLACE_MODE", "api");
+    vi.stubEnv("MARKETPLACE_CART_ENABLED", undefined);
+    vi.mocked(getStore).mockResolvedValue(response(products, meta, true));
+
+    render(await StoreProducts({ slug: SLUG, searchParams: searchParams({}) }));
+
+    expect(addButtons()).toHaveLength(0);
   });
 });

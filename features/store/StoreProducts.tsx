@@ -3,9 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AddToCartButton } from "@/features/cart/AddToCartButton";
+import { cartEnabled } from "@/features/cart/flag";
 import { formatRate, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
 import { getStore } from "@/lib/marketplace/client";
-import type { StoreProduct } from "@/lib/marketplace/schemas";
+import type { Store, StoreProduct } from "@/lib/marketplace/schemas";
 
 const POSITIVE_INTEGER = /^\d+$/;
 
@@ -16,7 +18,7 @@ function parsePage(value: string | string[] | undefined): number {
   return Number.isSafeInteger(page) && page >= 1 ? page : 1;
 }
 
-function StoreProductCard({ product, now }: { product: StoreProduct; now: Date }) {
+function StoreProductCard({ product, store, now }: { product: StoreProduct; store: Store; now: Date }) {
   return (
     <Card className="h-full">
       <CardContent className="flex-1 flex flex-col gap-2">
@@ -37,6 +39,14 @@ function StoreProductCard({ product, now }: { product: StoreProduct; now: Date }
           <p className="text-sm text-foreground">{formatVes(product.price_ves)}</p>
           <p className="text-sm text-muted-foreground">{formatUpdatedAgo(product.updated_at, now)}</p>
         </div>
+        {cartEnabled() && store.accepts_orders && product.restriction === "none" && (
+          <AddToCartButton
+            storeSlug={store.slug}
+            storeName={store.name}
+            productSlug={product.slug}
+            productName={product.name}
+          />
+        )}
       </CardContent>
     </Card>
   );
@@ -75,7 +85,7 @@ export async function StoreProducts({
         <ul aria-label="Productos" className="grid gap-4 sm:grid-cols-2">
           {response.products.map((product) => (
             <li key={product.slug}>
-              <StoreProductCard product={product} now={now} />
+              <StoreProductCard product={product} store={response.data} now={now} />
             </li>
           ))}
         </ul>

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { AddToCartButton } from "@/features/cart/AddToCartButton";
+import { cartEnabled } from "@/features/cart/flag";
 import { ContactButtons } from "@/features/events/ContactButtons";
 import { formatDistance, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
 import type { ProductOffer, Restriction } from "@/lib/marketplace/schemas";
@@ -47,6 +49,14 @@ export function OfferCard({
           </div>
         </div>
         <p className="text-sm text-muted-foreground">{formatUpdatedAgo(offer.updated_at, now)}</p>
+        {cartEnabled() && store.accepts_orders && product.restriction === "none" && (
+          <AddToCartButton
+            storeSlug={store.slug}
+            storeName={store.name}
+            productSlug={product.slug}
+            productName={product.name}
+          />
+        )}
         <ContactButtons store={store} product={product} />
       </CardContent>
     </Card>

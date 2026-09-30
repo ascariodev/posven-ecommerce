@@ -1,5 +1,5 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getEffectiveLocation } from "@/features/location/server";
 import { getProductOffers } from "@/lib/marketplace/client";
 import type { ProductOffer, ProductPage } from "@/lib/marketplace/schemas";
@@ -8,6 +8,8 @@ import { ProductOffers } from "./ProductOffers";
 vi.mock("@/lib/marketplace/client", () => ({
   getProductOffers: vi.fn(),
 }));
+
+vi.mock("@/features/cart/actions", () => ({ addToCart: vi.fn() }));
 
 vi.mock("@/features/location/server", () => ({
   getEffectiveLocation: vi.fn(async () => ({ location: null, name: null })),
@@ -175,5 +177,55 @@ describe("ProductOffers", () => {
     render(await ProductOffers({ product, searchParams: searchParams({}) }));
 
     expect(screen.getByText("No hay ofertas cerca. Prueba con otra ciudad.")).toBeTruthy();
+  });
+});
+
+describe("botón Agregar al carrito en las ofertas (RN-CART-03)", () => {
+  const seller = (overrides: Partial<ProductOffer> = {}) => {
+    const base = offer("farmacia-central-valencia", "Farmacia Central", overrides);
+    return { ...base, store: { ...base.store, accepts_orders: true } };
+  };
+  const addButtons = () => screen.queryAllByRole("button", { name: /^Agregar al carrito:/ });
+
+  beforeEach(() => {
+    vi.stubEnv("MARKETPLACE_MODE", "mock");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("sale en una tienda que vende y un producto sin restricción, también en destacadas y fuera de zona", async () => {
+    vi.mocked(getProductOffers).mockResolvedValue(page([seller(), seller({ outside_radius: true })], [seller()]));
+
+    render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+    expect(addButtons()).toHaveLength(3);
+  });
+
+  it("no sale en una tienda sin venta en línea", async () => {
+    vi.mocked(getProductOffers).mockResolvedValue(page([offer("farmacia-naguanagua", "Farmacia Naguanagua")], []));
+
+    render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+    expect(addButtons()).toHaveLength(0);
+  });
+
+  it.each(["recipe", "controlled"] as const)("no sale con un producto %s", async (restriction) => {
+    vi.mocked(getProductOffers).mockResolvedValue(page([seller()], []));
+
+    render(await ProductOffers({ product: { ...product, restriction }, searchParams: searchParams({}) }));
+
+    expect(addButtons()).toHaveLength(0);
+  });
+
+  it("no sale con el interruptor apagado", async () => {
+    vi.stubEnv("MARKETPLACE_MODE", "api");
+    vi.stubEnv("MARKETPLACE_CART_ENABLED", undefined);
+    vi.mocked(getProductOffers).mockResolvedValue(page([seller()], []));
+
+    render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+    expect(addButtons()).toHaveLength(0);
   });
 });

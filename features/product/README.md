@@ -3,7 +3,7 @@ module: "product"
 path: "features/product"
 type: "feature"
 exports: ["loadProduct", "productMetadata", "productJsonLd", "PriceSummary", "SortLinks", "OfferCard", "ProductOffers", "ProductOffersSkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/events/ContactButtons.tsx", "features/events/ViewBeacon.tsx", "features/search/ProductThumb.tsx", "lib/jsonld.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/events/ContactButtons.tsx", "features/events/ViewBeacon.tsx", "features/search/ProductThumb.tsx", "lib/jsonld.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx", "features/cart/AddToCartButton.tsx", "features/cart/flag.ts"]
 tests: "features/product/*.test.{ts,tsx}"
 verified_against: ["features/product/load.ts", "features/product/metadata.ts", "features/product/jsonld.ts", "features/product/PriceSummary.tsx", "features/product/SortLinks.tsx", "features/product/OfferCard.tsx", "features/product/ProductOffers.tsx", "app/p/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/events/ContactButtons.tsx", "features/events/ViewBeacon.tsx", "features/search/ProductThumb.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx"]
 capabilities:
@@ -84,7 +84,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 | JSON-LD | `jsonld.ts` | `Product` con URL absoluta por `SITE_URL`, `Brand`, `gtin`, categoría y `AggregateOffer` |
 | Resumen de precio | `PriceSummary.tsx` | "Desde $X", "hasta $Y" si la cadena del máximo difiere de la del mínimo, "en N tiendas" y "Precio en todo el país"; nada si `low_price_usd` es `null` |
 | Orden | `SortLinks.tsx` | enlaces "Menor precio" y "Más cerca" con `toggleVariants` (`data-state`) y `aria-current="true"` en el activo |
-| Oferta | `OfferCard.tsx` | fila con enlace a `/tienda/{slug}`, ciudad, distancia, precios, "Mejor precio" (`best`), "Destacado", "Pocas unidades", antigüedad y `ContactButtons` |
+| Oferta | `OfferCard.tsx` | fila con enlace a `/tienda/{slug}`, ciudad, distancia, precios, "Mejor precio" (`best`), "Destacado", "Pocas unidades", antigüedad, `AddToCartButton` (con el carrito encendido, tienda con `accepts_orders` y producto sin restricción, `RN-CART-03`) y `ContactButtons` |
 | Ofertas | `ProductOffers.tsx` | ubicación efectiva, `sort` y radio, la llamada a `getProductOffers`, el reparto en destacadas, radio y "Fuera de tu zona"; `best` sólo en la primera del radio con orden por precio |
 | Página | `app/p/[slug]/page.tsx` | `generateStaticParams` (20 slugs o `__vacio`), `generateMetadata`, migas (sólo "Inicio" es enlace; `BreadcrumbList` Inicio y producto), ficha en dos columnas (imagen y panel con `PriceSummary`, sin `sticky`), `ViewBeacon` y `ProductOffers` en `<Suspense>` |
 
@@ -113,6 +113,8 @@ const { data: product } = await loadProduct(slug);
 ```
 
 ## 8. Restricciones
+
+- "Agregar al carrito" sale en las tres listas de ofertas (destacadas, del radio y "Fuera de tu zona") sólo si `cartEnabled()`, `store.accepts_orders` y `restriction: "none"`; con el carrito encendido, el panel de la ficha muestra "Requiere récipe, consúltalo en la tienda." o "Venta controlada, consúltalo en la tienda." en lugar de la insignia "Requiere récipe" (`RN-CART-03`, enmienda E de cuentas-y-compras).
 
 - `loadProduct` corre fuera de `<Suspense>` en la página para que `notFound()` dé 404 y `permanentRedirect()` dé 308 antes del primer byte; `app/p/` no lleva `loading.tsx`.
 - `generateStaticParams` devuelve al menos un slug: con Cache Components un arreglo vacío rompe el build.

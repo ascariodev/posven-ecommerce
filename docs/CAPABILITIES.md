@@ -87,3 +87,4 @@ README: `lib/marketplace/README.md`
 | leer y cambiar el perfil, la contraseña y la configuración del comprador, o eliminar su cuenta | `getMe()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-06, RN-MARKETPLACE-07 |
 | listar, crear, editar y borrar las direcciones del comprador | `listAddresses()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07 |
 | listar, marcar y desmarcar los productos y las tiendas favoritas del comprador | `listFavorites()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07 |
+| cotizar el carrito de invitado y leer, cambiar o fusionar el carrito del comprador | `getCart()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07, RN-MARKETPLACE-08 |

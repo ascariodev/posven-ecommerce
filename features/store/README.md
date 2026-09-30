@@ -3,7 +3,7 @@ module: "store"
 path: "features/store"
 type: "feature"
 exports: ["StoreCard", "NearbyStores", "NearbyStoresSkeleton", "storeInitials", "formatSchedule", "openingHoursJsonLd", "storeJsonLd", "StoreHeader", "StoreProducts", "StoreProductsSkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/events/ContactButtons.tsx", "features/events/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/events/ContactButtons.tsx", "features/events/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "features/cart/AddToCartButton.tsx", "features/cart/flag.ts"]
 tests: "features/store/*.test.{ts,tsx}"
 verified_against: ["features/store/StoreCard.tsx", "features/store/NearbyStores.tsx", "features/store/initials.ts", "features/store/schedule.ts", "features/store/jsonld.ts", "features/store/StoreHeader.tsx", "features/store/StoreProducts.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/events/ContactButtons.tsx", "features/events/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx"]
 capabilities:
@@ -104,7 +104,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 | Horario | `schedule.ts` | `Lun`...`Dom`; tres o más días seguidos como `Lun a Sáb`, el resto separados por `, `; sin tramos, "Horario no informado"; días en inglés para `OpeningHoursSpecification` |
 | JSON-LD | `jsonld.ts` | `Store` con URL absoluta por `SITE_URL`, `PostalAddress` con `addressCountry: "VE"` y `GeoCoordinates` |
 | Cabecera | `StoreHeader.tsx` | portada y logo sólo para premium, `h1`, razón social, dirección, `h2` "Horario" y `ContactButtons` con `product: null` |
-| Productos | `StoreProducts.tsx` | `pagina` a entero, `getStore({ slug, page })`, tasa, tarjetas, "Anterior" y "Siguiente" |
+| Productos | `StoreProducts.tsx` | `pagina` a entero, `getStore({ slug, page })`, tasa, tarjetas (con `AddToCartButton` si el carrito está encendido, la tienda tiene `accepts_orders` y el producto no tiene restricción, `RN-CART-03`), "Anterior" y "Siguiente" |
 | Página | `app/tienda/[slug]/page.tsx` | `generateStaticParams` (20 slugs de `listSitemap` o `__vacio`), `generateMetadata`, JSON-LD, `StoreHeader`, `ViewBeacon` con `store_view` y `StoreProducts` en `<Suspense>` |
 
 ## 6. Dependencias

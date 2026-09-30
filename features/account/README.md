@@ -3,7 +3,7 @@ module: "account"
 path: "features/account"
 type: "feature"
 exports: ["safeReturnPath", "loginHref", "FormState", "INITIAL_FORM_STATE", "formStateFromError", "SESSION_COOKIE", "sessionCookieOptions", "readSession", "clientIpFrom", "clientIp", "accountContext", "getCurrentCustomer", "requireCustomer", "withSession", "endSession", "login", "register", "logout", "forgotPassword", "resetPasswordAction", "verifyEmailAction", "resendVerificationAction", "FormNotice", "FieldError", "LoginForm", "RegisterForm", "ForgotPasswordForm", "ResetPasswordForm", "VerifyEmailForm", "ResendVerificationForm", "updateProfile", "changePasswordAction", "updateSettingsAction", "deleteAccountAction", "saveAddress", "deleteAddressAction", "setDefaultAddress", "toggleFavorite", "AccountSlot", "AccountSlotSkeleton", "AccountDropdown", "FavoriteButton", "FavoriteButtonSkeleton", "ProfileForm", "AddressForm", "PasswordChangeForm", "NotificationsForm", "DeleteAccountForm"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/badge.tsx", "components/ui/select.tsx", "components/ui/dropdown-menu.tsx", "features/location/cookie.ts", "features/search/ProductThumb.tsx"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/badge.tsx", "components/ui/select.tsx", "components/ui/dropdown-menu.tsx", "features/location/cookie.ts", "features/search/ProductThumb.tsx", "features/cart/flag.ts", "features/cart/server.ts"]
 tests: "features/account/*.test.{ts,tsx}"
 verified_against: ["features/account/returnPath.ts", "features/account/formState.ts", "features/account/session.ts", "features/account/actions.ts", "features/account/FormFeedback.tsx", "features/account/LoginForm.tsx", "features/account/RegisterForm.tsx", "features/account/RecoveryForms.tsx", "features/account/VerifyEmailForm.tsx", "features/account/returnPath.test.ts", "features/account/session.test.ts", "features/account/actions.test.ts", "features/account/accountActions.ts", "features/account/AccountMenu.tsx", "features/account/AccountDropdown.tsx", "features/account/FavoriteButton.tsx", "features/account/ProfileForm.tsx", "features/account/AddressForm.tsx", "features/account/SettingsForms.tsx", "features/account/accountActions.test.ts", "features/account/AccountMenu.test.tsx", "features/account/AddressForm.test.tsx", "app/cuenta/layout.tsx", "app/cuenta/page.tsx", "app/cuenta/perfil/page.tsx", "app/cuenta/direcciones/page.tsx", "app/cuenta/favoritos/page.tsx", "app/cuenta/configuracion/page.tsx", "app/layout.tsx", "app/p/[slug]/page.tsx", "app/tienda/[slug]/page.tsx", "e2e/account.spec.ts", "app/entrar/page.tsx", "app/registro/page.tsx", "app/recuperar/page.tsx", "app/restablecer/[token]/page.tsx", "app/verificar/[token]/page.tsx", "app/api/sesion/vencida/route.ts", "proxy.ts", "app/robots.ts", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts"]
 capabilities:
@@ -114,7 +114,7 @@ Sesión, `features/account/session.ts` (`import "server-only"`):
 
 Acciones de servidor, `features/account/actions.ts` (`"use server"`), `(prev: FormState, formData: FormData) => Promise<FormState>` salvo `logout`:
 
-- `login`: `email`, `password`, `volver`; éxito, fija `mp_session` y `redirect(safeReturnPath(volver))`
+- `login`: `email`, `password`, `volver`; éxito, fija `mp_session`, fusiona el carrito de invitado (`mergeGuestCart` de `features/cart/server.ts` con el token nuevo, si el carrito está encendido; `RN-CART-02`) y `redirect(safeReturnPath(volver))`
 - `register`: `name`, `email`, `phone`, `password`, `volver`; éxito, igual que `login`
 - `logout(): Promise<void>`: `logoutCustomer` si hay sesión, ignorando `MarketplaceUnavailableError` y `MarketplaceAccountError`; después `endSession("/")`
 - `forgotPassword`: `email`; éxito, el mismo mensaje para cualquier correo
@@ -157,7 +157,7 @@ Formularios `"use client"` con `useActionState`:
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| `startSession` | `features/account/actions.ts` | escribe `mp_session` con `sessionCookieOptions()` tras `login` o `register` |
+| `startSession` | `features/account/actions.ts` | escribe `mp_session` con `sessionCookieOptions()` tras `login` o `register` y fusiona `mp_cart` (`RN-CART-02`) |
 | `pick` | `features/account/actions.ts` | arma `values` sólo con los campos nombrados, así las contraseñas nunca vuelven al formulario |
 | Guardia de `/cuenta` | `proxy.ts` | sin la cookie `mp_session` redirige a `loginHref(pathname)`; con cookie sigue y la validez la resuelve `requireCustomer` |
 | Sesión vencida | `app/api/sesion/vencida/route.ts` | `GET` borra `mp_session` y responde 303 a `/entrar?volver=<safeReturnPath(volver)>&aviso=sesion` |

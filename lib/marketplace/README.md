@@ -2,10 +2,10 @@
 module: "marketplace"
 path: "lib/marketplace"
 type: "integration"
-exports: ["searchProducts", "listNearbyStores", "listCategories", "listLocations", "getProduct", "getProductOffers", "getStore", "listSitemap", "sendEvent", "registerCustomer", "loginCustomer", "logoutCustomer", "requestPasswordReset", "resetPassword", "verifyEmail", "resendVerification", "getMe", "updateMe", "changePassword", "updateSettings", "deleteAccount", "listAddresses", "createAddress", "updateAddress", "deleteAddress", "listFavorites", "addFavorite", "removeFavorite", "MarketplaceUnavailableError", "MarketplaceAccountError", "RADIUS_OPTIONS", "RadiusKm", "DEFAULT_RADIUS_KM", "GeoFilter", "OfferSort", "searchQuery", "storesQuery", "productQuery", "pageQuery", "AccountContext", "FavoriteTarget", "moneySchema", "Money", "rateSchema", "Rate", "availabilitySchema", "restrictionSchema", "Restriction", "categorySchema", "Category", "categoryNodeSchema", "CategoryNode", "cityRefSchema", "CityRef", "locationStateSchema", "LocationState", "storeSummarySchema", "StoreSummary", "productSchema", "Product", "offerSchema", "Offer", "searchItemSchema", "SearchItem", "pageMetaSchema", "PageMeta", "searchResponseSchema", "SearchResponse", "FeaturedProduct", "nearbyStoreSchema", "NearbyStore", "storesResponseSchema", "StoresResponse", "categoriesResponseSchema", "locationsResponseSchema", "scheduleEntrySchema", "ScheduleEntry", "storeSchema", "Store", "storeProductSchema", "StoreProduct", "storeResponseSchema", "StoreResponse", "productOfferSchema", "ProductOffer", "offersSummarySchema", "OffersSummary", "productDetailSchema", "ProductDetail", "productRedirectSchema", "productPageSchema", "ProductPage", "productResponseSchema", "ProductResponse", "sitemapTypeSchema", "SitemapType", "sitemapResponseSchema", "SitemapResponse", "eventTypeSchema", "EventType", "eventInputSchema", "EventInput", "marketplaceEventSchema", "MarketplaceEvent", "accountErrorCodeSchema", "AccountErrorCode", "accountErrorBodySchema", "customerSchema", "Customer", "customerEnvelopeSchema", "authResponseSchema", "AuthResponse", "addressSchema", "Address", "addressEnvelopeSchema", "addressListSchema", "addressInputSchema", "AddressInput", "addressPatchSchema", "AddressPatch", "registerInputSchema", "RegisterInput", "profilePatchSchema", "ProfilePatch", "favoritesResponseSchema", "FavoritesResponse"]
+exports: ["searchProducts", "listNearbyStores", "listCategories", "listLocations", "getProduct", "getProductOffers", "getStore", "listSitemap", "sendEvent", "registerCustomer", "loginCustomer", "logoutCustomer", "requestPasswordReset", "resetPassword", "verifyEmail", "resendVerification", "getMe", "updateMe", "changePassword", "updateSettings", "deleteAccount", "listAddresses", "createAddress", "updateAddress", "deleteAddress", "listFavorites", "addFavorite", "removeFavorite", "quoteGuestCart", "getCart", "setCartItem", "mergeCart", "MarketplaceUnavailableError", "MarketplaceAccountError", "RADIUS_OPTIONS", "RadiusKm", "DEFAULT_RADIUS_KM", "GeoFilter", "OfferSort", "searchQuery", "storesQuery", "productQuery", "pageQuery", "AccountContext", "FavoriteTarget", "moneySchema", "Money", "rateSchema", "Rate", "availabilitySchema", "restrictionSchema", "Restriction", "categorySchema", "Category", "categoryNodeSchema", "CategoryNode", "cityRefSchema", "CityRef", "locationStateSchema", "LocationState", "storeSummarySchema", "StoreSummary", "productSchema", "Product", "offerSchema", "Offer", "searchItemSchema", "SearchItem", "pageMetaSchema", "PageMeta", "searchResponseSchema", "SearchResponse", "FeaturedProduct", "nearbyStoreSchema", "NearbyStore", "storesResponseSchema", "StoresResponse", "categoriesResponseSchema", "locationsResponseSchema", "scheduleEntrySchema", "ScheduleEntry", "storeSchema", "Store", "storeProductSchema", "StoreProduct", "storeResponseSchema", "StoreResponse", "productOfferSchema", "ProductOffer", "offersSummarySchema", "OffersSummary", "productDetailSchema", "ProductDetail", "productRedirectSchema", "productPageSchema", "ProductPage", "productResponseSchema", "ProductResponse", "sitemapTypeSchema", "SitemapType", "sitemapResponseSchema", "SitemapResponse", "eventTypeSchema", "EventType", "eventInputSchema", "EventInput", "marketplaceEventSchema", "MarketplaceEvent", "accountErrorCodeSchema", "AccountErrorCode", "accountErrorBodySchema", "customerSchema", "Customer", "customerEnvelopeSchema", "authResponseSchema", "AuthResponse", "addressSchema", "Address", "addressEnvelopeSchema", "addressListSchema", "addressInputSchema", "AddressInput", "addressPatchSchema", "AddressPatch", "registerInputSchema", "RegisterInput", "profilePatchSchema", "ProfilePatch", "favoritesResponseSchema", "FavoritesResponse", "cartItemSchema", "CartItem", "cartItemsSchema", "cartItemPutSchema", "CartItemPut", "unavailableReasonSchema", "UnavailableReason", "cartLineSchema", "CartLine", "cartStoreSchema", "CartStore", "cartSchema", "Cart"]
 depends_on: ["package.json", "next.config.ts", "vitest.config.mts", ".env.example"]
 tests: "lib/marketplace/**/*.test.ts"
-verified_against: ["lib/marketplace/schemas.ts", "lib/marketplace/params.ts", "lib/marketplace/errors.ts", "lib/marketplace/http.ts", "lib/marketplace/client.ts", "lib/marketplace/mock/fixtures.ts", "lib/marketplace/mock/adapter.ts", "lib/marketplace/mock/accounts.ts", "next.config.ts", "vitest.config.mts", ".env.example"]
+verified_against: ["lib/marketplace/schemas.ts", "lib/marketplace/params.ts", "lib/marketplace/errors.ts", "lib/marketplace/http.ts", "lib/marketplace/client.ts", "lib/marketplace/mock/fixtures.ts", "lib/marketplace/mock/adapter.ts", "lib/marketplace/mock/accounts.ts", "lib/marketplace/mock/cart.ts", "lib/marketplace/mock/money.ts", "next.config.ts", "vitest.config.mts", ".env.example"]
 capabilities:
   - intent: "buscar productos por texto, categoría y ubicación con su precio mínimo y los destacados"
     intent_aliases: ["buscar productos", "resultados de busqueda", "search de posveapi", "productos cerca"]
@@ -111,6 +111,14 @@ capabilities:
     output: "listFavorites: FavoritesResponse { products: Product[], stores: StoreSummary[] }, del más reciente al más antiguo; addFavorite y removeFavorite: void"
     source: "GET /me/favorites, PUT y DELETE /me/favorites/products/{slug} y /me/favorites/stores/{slug} de posveapi vía BFF, o el simulado; sin caché"
     rules: ["RN-MARKETPLACE-02", "RN-MARKETPLACE-05", "RN-MARKETPLACE-07"]
+  - intent: "cotizar el carrito de invitado y leer, cambiar o fusionar el carrito del comprador"
+    intent_aliases: ["carrito", "cesta", "agregar al carrito", "cotizar carrito", "fusionar carrito"]
+    entrypoint: "getCart()"
+    file: "lib/marketplace/client.ts"
+    input: "ctx: AccountContext en todas; quoteGuestCart y mergeCart: CartItem[] { store_slug, product_slug, quantity 1 a 99 } (hasta 20, sin repetidos); setCartItem: CartItemPut (quantity 0 a 99; 0 borra)"
+    output: "Cart { stores: CartStore[] { store, is_open, accepts_orders, offers_delivery, lines: CartLine[], subtotal_usd, subtotal_ves }, total_usd, total_ves, line_count, rate }; los totales suman sólo las líneas ok; un error llega como MarketplaceAccountError (not_orderable, product_restricted, cart_full, validation_failed, unauthenticated)"
+    source: "POST /cart/quote, GET /me/cart, PUT /me/cart/items y POST /me/cart/merge de posveapi vía BFF, o el simulado (mock/cart.ts); sin caché"
+    rules: ["RN-MARKETPLACE-02", "RN-MARKETPLACE-05", "RN-MARKETPLACE-07", "RN-MARKETPLACE-08"]
 ---
 
 # Módulo `marketplace`
@@ -133,6 +141,7 @@ contra un adaptador simulado. No renderiza, no lee cookies ni `searchParams` (la
 | `RN-MARKETPLACE-05` | Un 401, 404, 422 o 429 con cuerpo `{ error: { code, message } }` llega como `MarketplaceAccountError`; un 401 sin esa forma o cualquier otro estado no 2xx es API caída. | `lib/marketplace/http.test.ts` ("un 422 con fields...", "un 401 unauthenticated...", "un 401 sin el cuerpo de error...", "un estado %i lanza...") |
 | `RN-MARKETPLACE-06` | Un 429 da los segundos de `retry_after`; sin cuerpo de error, los del encabezado `Retry-After`; sin encabezado, 60. | `lib/marketplace/http.test.ts` ("un 429 con retry_after...", "un 429 sin cuerpo de error toma Retry-After...", "un 429 sin cuerpo de error ni Retry-After da 60...") |
 | `RN-MARKETPLACE-07` | Las llamadas de cuenta mandan `X-Marketplace-Customer` sólo con sesión y `X-Client-IP` sólo con IP; las de catálogo no mandan ninguno de los dos. | `lib/marketplace/http.test.ts` ("con sesión e IP manda...", "sin sesión ni IP no manda...", "envía Bearer...") |
+| `RN-MARKETPLACE-08` | `accepts_orders` de `StoreSummary` se lee opcional mientras posveapi no lo envíe: ausente es `false` (plan 4a de cuentas, decisión 3). | `lib/marketplace/schemas.test.ts` ("sin accepts_orders (posveapi aún no lo envía) lo lee como false") |
 
 ## 3. Dónde hacer cambios
 
@@ -146,6 +155,7 @@ contra un adaptador simulado. No renderiza, no lee cookies ni `searchParams` (la
 | Tipo de evento nuevo | la spec §3.4 primero, después `eventTypeSchema` y `hasSlugsForType` en `schemas.ts` | su caso en `schemas.test.ts` si cambia qué slug exige |
 | Radios elegibles | `RADIUS_OPTIONS` y `DEFAULT_RADIUS_KM` en `params.ts` | cambiar antes la spec §5.1 |
 | Datos simulados | `mock/fixtures.ts` | montos, `nearest_km` y `distance_km` como literales, nunca calculados |
+| Carrito simulado | `mock/cart.ts` (reglas de la enmienda C, D, E, G, J y K de cuentas-y-compras) | los montos del carrito sólo por `mock/money.ts`; su caso en `mock/cart.test.ts` y en `schemas.test.ts` |
 
 ## 4. API pública
 
@@ -182,6 +192,10 @@ Cuentas del comprador, `lib/marketplace/client.ts`, sin caché; cada una lanza `
 - `listFavorites(ctx: AccountContext): Promise<FavoritesResponse>`: `GET /me/favorites`.
 - `addFavorite(ctx: AccountContext, target: FavoriteTarget): Promise<void>`: `PUT /me/favorites/products/{slug}` o `/me/favorites/stores/{slug}`.
 - `removeFavorite(ctx: AccountContext, target: FavoriteTarget): Promise<void>`: `DELETE` en la misma ruta.
+- `quoteGuestCart(ctx: AccountContext, items: CartItem[]): Promise<Cart>`: `POST /cart/quote` con `{ items }`.
+- `getCart(ctx: AccountContext): Promise<Cart>`: `GET /me/cart`.
+- `setCartItem(ctx: AccountContext, item: CartItemPut): Promise<Cart>`: `PUT /me/cart/items` con la entrada sola; `quantity: 0` borra siempre (enmienda J).
+- `mergeCart(ctx: AccountContext, items: CartItem[]): Promise<Cart>`: `POST /me/cart/merge` con `{ items }`; suma repetidas con techo de stock y topa en 20 líneas sin error (enmienda K).
 
 Errores, `lib/marketplace/errors.ts`:
 
@@ -217,12 +231,16 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 - `productRedirectSchema`; `productPageSchema` / `ProductPage`; `productResponseSchema` / `ProductResponse` (unión de redirección y página)
 - `sitemapTypeSchema` / `SitemapType`; `sitemapResponseSchema` / `SitemapResponse`
 - `eventTypeSchema` / `EventType`; `eventInputSchema` / `EventInput` (`product_view` exige `product_slug` y `store_slug` nulo; los demás, `store_slug`); `marketplaceEventSchema` / `MarketplaceEvent` (más `session_id` uuid)
-- `accountErrorCodeSchema` / `AccountErrorCode` (`unauthenticated`, `not_found`, `validation_failed`, `invalid_credentials`, `token_invalid`, `token_expired`, `too_many_attempts`); `accountErrorBodySchema` (`{ error: { code, message, fields?, retry_after? } }`)
+- `accountErrorCodeSchema` / `AccountErrorCode` (`unauthenticated`, `not_found`, `validation_failed`, `invalid_credentials`, `token_invalid`, `token_expired`, `too_many_attempts`, `not_orderable`, `product_restricted`, `cart_full`); `accountErrorBodySchema` (`{ error: { code, message, fields?, retry_after? } }`)
 - `customerSchema` / `Customer`; `customerEnvelopeSchema` (`{ data: Customer }`); `authResponseSchema` / `AuthResponse` (`token` con `^\d{1,18}\|.+$`)
 - `addressSchema` / `Address`; `addressEnvelopeSchema` (`{ data: Address }`); `addressListSchema` (`{ data: Address[] }`)
 - `addressInputSchema` / `AddressInput`; `addressPatchSchema` / `AddressPatch` (`AddressInput` parcial)
 - `registerInputSchema` / `RegisterInput`; `profilePatchSchema` / `ProfilePatch`
 - `favoritesResponseSchema` / `FavoritesResponse`
+- `storeSummarySchema.accepts_orders` (`default(false)`, RN-MARKETPLACE-08)
+- `cartItemSchema` / `CartItem` (`strictObject`, slugs de 1 a 120, cantidad 1 a 99); `cartItemsSchema` (hasta 20, sin repetidos); `cartItemPutSchema` / `CartItemPut` (cantidad 0 a 99)
+- `unavailableReasonSchema` / `UnavailableReason` (`out_of_stock`, `store_not_selling`, `offer_gone`, `restricted`)
+- `cartLineSchema` / `CartLine`; `cartStoreSchema` / `CartStore`; `cartSchema` / `Cart`
 
 ## 5. Estructura interna
 
@@ -237,6 +255,8 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 | Adaptador simulado | `lib/marketplace/mock/adapter.ts` | las funciones de `client.ts` con la misma firma; interpreta la consulta de `params.ts` como la API y reexporta las de cuenta de `mock/accounts.ts` |
 | Simulado de cuentas | `lib/marketplace/mock/accounts.ts` | compradores, tokens, direcciones y favoritos en `globalThis[Symbol.for("posven.mockAccounts")]`, sembrados desde `MOCK_ACCOUNT_SEED`; imita la validación, los errores y el orden de posveapi; `resetMockAccounts` sólo para pruebas |
 | Ofertas simuladas | `productPage` en `lib/marketplace/mock/adapter.ts` | redirección, producto sin ofertas, orden por precio o distancia, hasta dos premium destacadas y relleno hasta tres con `outside_radius` |
+| Simulado del carrito | `lib/marketplace/mock/cart.ts` | carritos por comprador en `globalThis[Symbol.for("posven.mockCarts")]`; cotiza entradas agrupando por tienda en el orden de llegada, omite inexistentes, marca `unavailable` con prioridad restringido > tienda que no vende > oferta desaparecida (`out_of_stock` no se produce: el stock sale de `availability`, `low` 3 y `available` 50), topa la cantidad al stock también al cotizar y suma sólo las `ok`; `resetMockCarts` sólo para pruebas |
+| Montos del simulado | `lib/marketplace/mock/money.ts` | `toCents`, `fromCents`, `multiply` y `sum` en céntimos enteros; único lugar del repo que multiplica o suma montos |
 | Datos simulados | `lib/marketplace/mock/fixtures.ts` | tasa, ubicaciones, categorías con raíces de la taxonomía de posveapi (`salud-y-medicamentos`, `alimentos`, `bebidas`, `ferreteria`), seis tiendas con `distance_km` fijo y sus detalles (`MOCK_STORE_DETAILS`), productos con sus ofertas, `MOCK_REDIRECTS`, `MOCK_UNAVAILABLE_PRODUCTS`, el comprador sembrado (`MOCK_ACCOUNT_SEED`) y los tokens y el correo especiales del simulado de cuentas |
 | Selección de modo | `usesMock` en `lib/marketplace/client.ts` | `MARKETPLACE_MODE` ausente o `mock`: simulado; `api`: las funciones de `http.ts` (`requestJson`, `requestJsonOrNull`, `postJson`, `accountRequest`, `accountCommand`); otro valor: `Error` |
 
@@ -284,14 +304,17 @@ const newSlug = "redirect_to" in product ? product.redirect_to : null;
 - `getProductOffers` y `getStore` usan `cacheLife("minutes")` porque traen precios por tienda; `getProduct` y `listSitemap`, `"hours"`.
 - Los slugs van en la ruta con `encodeURIComponent`.
 - `offers_summary` cubre todo el país, sin depender de la ubicación.
-- La única excepción a "sin cálculo": `mock/adapter.ts` compara montos con `Number()` para ordenar y elegir mínimo y máximo, porque simula lo que calcula la API.
+- Dos excepciones a "sin cálculo", porque simulan lo que calcula la API: `mock/adapter.ts` compara montos con `Number()` para ordenar y elegir mínimo y máximo, y `mock/money.ts` multiplica y suma los montos del carrito en céntimos enteros.
+- Las funciones del carrito no se cachean: dependen del comprador o de su cookie.
 - El simulado pagina de a 20 productos (búsqueda y tienda), 12 tiendas y 50000 entradas de sitemap, y sólo devuelve `featured` de la búsqueda y de las tiendas en la página 1.
 
 ## 9. Pruebas
 
 - Comando: `npx vitest run lib/marketplace`
-- `lib/marketplace/schemas.test.ts`: cada respuesta del simulado pasa su esquema (producto con ofertas, sin ofertas y redirección, tienda, sitemap, login, registro, perfil, direcciones y favoritos); el cuerpo de error de cuenta, `moneySchema`, el tope de dos destacados y los slugs que exige cada evento.
+- `lib/marketplace/schemas.test.ts`: cada respuesta del simulado pasa su esquema (producto con ofertas, sin ofertas y redirección, tienda, sitemap, login, registro, perfil, direcciones, favoritos y carrito); `accepts_orders` ausente como `false`; `cartItemsSchema` y sus rechazos; el cuerpo de error de cuenta, `moneySchema`, el tope de dos destacados y los slugs que exige cada evento.
 - `lib/marketplace/params.test.ts`: claves de consulta según ubicación y radio, también en `productQuery`.
 - `lib/marketplace/http.test.ts`: Bearer, URL, tope de 5 s, errores de red, estado y esquema, falta de configuración, 404 como `null` y `POST` JSON; en cuenta, encabezados según `AccountContext`, 422, 401 con y sin cuerpo de error, `retryAfter` del cuerpo, del encabezado y 60, 500 y 409 como API caída y 204 en `accountCommand`.
 - `lib/marketplace/mock/accounts.test.ts`: correo repetido, login errado, verificación, enlace vencido e inválido, restablecer revoca la sesión, límite con `retryAfter` 42, cambio de correo sin contraseña actual, predeterminada de las direcciones y su orden, orden y 404 de favoritos y sesión desconocida.
+- `lib/marketplace/mock/money.test.ts`: ida y vuelta en céntimos, multiplicar y sumar sin error de coma flotante, céntimos negativos o no enteros.
+- `lib/marketplace/mock/cart.test.ts`: carrito vacío, totales sólo de `ok`, `offer_gone` con montos nulos, restringido en la cotización, inexistentes omitidos, más de 20 entradas, techo de stock (50 y 3), errores por campo, `product_restricted` (`recipe` y `controlled`), `not_orderable`, fusión que topa en 20 y conserva el orden con `cart_full` en la línea 21, `quantity: 0` que borra líneas no comprables y fusión que suma con techo.
 - `lib/marketplace/mock/adapter.test.ts`: búsqueda sin mayúsculas ni acentos, `featured` fuera de la página 1, filtro por ciudad, resumen y orden de ofertas, relleno fuera del radio, redirección y slugs desconocidos.

@@ -14,7 +14,7 @@ import type {
   StoreSummary,
 } from "../schemas";
 
-export type MockStore = { summary: StoreSummary; distance_km: number };
+export type MockStore = { summary: StoreSummary; distance_km: number; offers_delivery: boolean };
 
 export type MockOffer = {
   store_slug: string;
@@ -102,8 +102,10 @@ export const MOCK_STORES: MockStore[] = [
       phone: "+582418250011",
       whatsapp: "+584141250011",
       is_premium: true,
+      accepts_orders: true,
     },
     distance_km: 1.2,
+    offers_delivery: true,
   },
   {
     summary: {
@@ -117,8 +119,10 @@ export const MOCK_STORES: MockStore[] = [
       phone: "+582418570022",
       whatsapp: null,
       is_premium: false,
+      accepts_orders: false,
     },
     distance_km: 4.8,
+    offers_delivery: false,
   },
   {
     summary: {
@@ -132,8 +136,10 @@ export const MOCK_STORES: MockStore[] = [
       phone: null,
       whatsapp: "+584244410033",
       is_premium: false,
+      accepts_orders: true,
     },
     distance_km: 7.5,
+    offers_delivery: false,
   },
   {
     summary: {
@@ -147,8 +153,10 @@ export const MOCK_STORES: MockStore[] = [
       phone: "+582418660044",
       whatsapp: "+584124460044",
       is_premium: false,
+      accepts_orders: false,
     },
     distance_km: 9.3,
+    offers_delivery: false,
   },
   {
     summary: {
@@ -162,8 +170,10 @@ export const MOCK_STORES: MockStore[] = [
       phone: "+582122630055",
       whatsapp: "+584142630055",
       is_premium: true,
+      accepts_orders: true,
     },
     distance_km: 165.4,
+    offers_delivery: true,
   },
   {
     summary: {
@@ -177,8 +187,10 @@ export const MOCK_STORES: MockStore[] = [
       phone: "+582122850066",
       whatsapp: "+584242850066",
       is_premium: false,
+      accepts_orders: false,
     },
     distance_km: 168.0,
+    offers_delivery: false,
   },
 ];
 

@@ -19,6 +19,7 @@ function store(overrides: Partial<StoreSummary> = {}): StoreSummary {
     phone: "+58 241-555-0101",
     whatsapp: "+58 414-555-0101",
     is_premium: false,
+    accepts_orders: false,
     ...overrides,
   };
 }

@@ -24,6 +24,7 @@ function store(slug: string, name: string, overrides: Partial<NearbyStore> = {})
     phone: null,
     whatsapp: null,
     is_premium: false,
+    accepts_orders: false,
     distance_km: null,
     outside_radius: false,
     ...overrides,

@@ -16,6 +16,7 @@ import {
   registerCustomer,
   searchProducts,
 } from "./mock/adapter";
+import { MOCK_STORES } from "./mock/fixtures";
 import {
   accountErrorBodySchema,
   addressSchema,
@@ -31,6 +32,7 @@ import {
   sitemapResponseSchema,
   storeResponseSchema,
   storesResponseSchema,
+  storeSummarySchema,
 } from "./schemas";
 
 const noFilters = { category: null, geo: null, radiusKm: null, page: 1 } as const;
@@ -117,6 +119,19 @@ describe("moneySchema", () => {
 
   it.each(["12.5", "12,50", "12", "-1.00"])("rechaza %s", (value) => {
     expect(moneySchema.safeParse(value).success).toBe(false);
+  });
+});
+
+describe("storeSummarySchema", () => {
+  const withoutField: Record<string, unknown> = { ...MOCK_STORES[0].summary };
+  delete withoutField.accepts_orders;
+
+  it("sin accepts_orders (posveapi aún no lo envía) lo lee como false", () => {
+    expect(storeSummarySchema.parse(withoutField).accepts_orders).toBe(false);
+  });
+
+  it("con accepts_orders conserva su valor", () => {
+    expect(storeSummarySchema.parse({ ...withoutField, accepts_orders: true }).accepts_orders).toBe(true);
   });
 });
 

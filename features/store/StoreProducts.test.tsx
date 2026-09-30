@@ -44,6 +44,7 @@ function response(products: StoreProduct[], meta: StoreResponse["meta"]): StoreR
       phone: null,
       whatsapp: null,
       is_premium: false,
+      accepts_orders: false,
       schedule: [],
     },
     products,

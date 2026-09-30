@@ -16,6 +16,7 @@ function store(overrides: Partial<Store> = {}): Store {
     phone: "+582410000000",
     whatsapp: null,
     is_premium: true,
+    accepts_orders: false,
     schedule: [],
     ...overrides,
   };

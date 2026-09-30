@@ -32,6 +32,7 @@ function offer(slug: string, name: string, overrides: Partial<ProductOffer> = {}
       phone: null,
       whatsapp: null,
       is_premium: false,
+      accepts_orders: false,
     },
     price_usd: "2.50",
     price_ves: "91.25",

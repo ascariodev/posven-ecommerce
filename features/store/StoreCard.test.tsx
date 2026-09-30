@@ -15,6 +15,7 @@ function store(overrides: Partial<NearbyStore> = {}): NearbyStore {
     phone: null,
     whatsapp: null,
     is_premium: false,
+    accepts_orders: false,
     distance_km: 1.2,
     outside_radius: false,
     ...overrides,

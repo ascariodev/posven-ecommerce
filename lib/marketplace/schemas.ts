@@ -57,6 +57,9 @@ export const storeSummarySchema = z.object({
   phone: z.string().nullable(),
   whatsapp: z.string().nullable(),
   is_premium: z.boolean(),
+  // Opcional mientras posveapi no lo envíe (plan 4a de cuentas, decisión 3): ausente = false.
+  // Pasa a obligatorio al desplegar el plan 3 de posveapi.
+  accepts_orders: z.boolean().default(false),
 });
 export type StoreSummary = z.infer<typeof storeSummarySchema>;
 

@@ -11,6 +11,7 @@ const thumbSizes = {
 } as const;
 
 const CARD_BOX = "relative aspect-[4/3] w-full overflow-hidden rounded-lg";
+const DETAIL_BOX = "relative aspect-square w-full overflow-hidden rounded-lg";
 
 export function ProductThumb({
   imageUrl,
@@ -22,11 +23,36 @@ export function ProductThumb({
 }: {
   imageUrl: string | null;
   category: Category | null;
-  size: "md" | "lg" | "card";
+  size: "md" | "lg" | "card" | "detail";
   alt?: string;
   preload?: boolean;
   className?: string;
 }) {
+  if (size === "detail") {
+    if (imageUrl !== null) {
+      return (
+        <div className={cn(DETAIL_BOX, "bg-muted", className)}>
+          <Image
+            src={imageUrl}
+            alt={alt}
+            fill
+            preload={preload}
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="object-contain p-6"
+          />
+        </div>
+      );
+    }
+    const tint = categoryTint(category);
+    return (
+      <div
+        aria-hidden="true"
+        className={cn(DETAIL_BOX, "flex items-center justify-center", tint.bg, tint.fg, className)}
+      >
+        {createElement(categoryIcon(category), { "aria-hidden": true, className: "size-24" })}
+      </div>
+    );
+  }
   if (size === "card") {
     if (imageUrl !== null) {
       return (

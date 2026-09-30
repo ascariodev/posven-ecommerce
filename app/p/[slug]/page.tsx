@@ -8,6 +8,7 @@ import { ViewBeacon } from "@/features/events/ViewBeacon";
 import { productJsonLd } from "@/features/product/jsonld";
 import { loadProduct } from "@/features/product/load";
 import { productMetadata } from "@/features/product/metadata";
+import { PriceSummary } from "@/features/product/PriceSummary";
 import { ProductOffers, ProductOffersSkeleton } from "@/features/product/ProductOffers";
 import { ProductThumb } from "@/features/search/ProductThumb";
 import { breadcrumbListJsonLd, serializeJsonLd } from "@/lib/jsonld";
@@ -16,7 +17,6 @@ import type { CategoryNode, ProductDetail } from "@/lib/marketplace/schemas";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
-type Crumb = { name: string; path: string };
 
 const STATIC_PRODUCT_COUNT = 20;
 
@@ -40,16 +40,16 @@ function findCategory(nodes: CategoryNode[], slug: string): CategoryNode | null 
   return null;
 }
 
-async function breadcrumbsFor(product: ProductDetail): Promise<Crumb[]> {
-  const crumbs: Crumb[] = [{ name: "Inicio", path: "/" }];
+async function categoryTrail(product: ProductDetail): Promise<{ slug: string; name: string }[]> {
   const category = product.category;
-  if (category === null) return crumbs;
+  if (category === null) return [];
+  const trail: { slug: string; name: string }[] = [];
   if (category.parent_slug !== null) {
     const parent = findCategory(await listCategories(), category.parent_slug);
-    if (parent !== null) crumbs.push({ name: parent.name, path: `/categoria/${parent.slug}` });
+    if (parent !== null) trail.push({ slug: parent.slug, name: parent.name });
   }
-  crumbs.push({ name: category.name, path: `/categoria/${category.slug}` });
-  return crumbs;
+  trail.push({ slug: category.slug, name: category.name });
+  return trail;
 }
 
 function JsonLdScript({ data }: { data: object }) {
@@ -67,7 +67,11 @@ export default async function ProductPage({
 }) {
   const { slug } = await params;
   const { data: product } = await loadProduct(slug);
-  const crumbs = await breadcrumbsFor(product);
+  const trail = await categoryTrail(product);
+  const crumbs = [
+    { name: "Inicio", path: "/" },
+    { name: product.name, path: `/p/${product.slug}` },
+  ];
 
   return (
     <article className="flex flex-col gap-6">
@@ -76,38 +80,46 @@ export default async function ProductPage({
       <ViewBeacon event={{ type: "product_view", store_slug: null, product_slug: slug }} />
       <nav aria-label="Migas de pan">
         <ol className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
-          {crumbs.map((crumb, index) => (
-            <li key={crumb.path} className="flex items-center gap-1">
-              {index > 0 && <span aria-hidden="true">›</span>}
-              <Link href={crumb.path} className="hover:text-foreground hover:underline">
-                {crumb.name}
-              </Link>
+          <li className="flex items-center gap-1">
+            <Link
+              href="/"
+              className="hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+            >
+              Inicio
+            </Link>
+          </li>
+          {trail.map((category) => (
+            <li key={category.slug} className="flex items-center gap-1">
+              <span aria-hidden="true">›</span>
+              <span>{category.name}</span>
             </li>
           ))}
         </ol>
       </nav>
-      <div className="flex flex-col gap-6 sm:flex-row">
+      <div className="grid items-start gap-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <ProductThumb
           imageUrl={product.image_url}
           category={product.category}
-          size="lg"
+          size="detail"
           alt={product.name}
           preload
         />
-        <div className="flex min-w-0 flex-col gap-3">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">{product.name}</h1>
-          {product.brand !== null && <p className="text-muted-foreground">{product.brand}</p>}
-          <Suspense fallback={<FavoriteButtonSkeleton />}>
-            <FavoriteButton target={{ kind: "product", slug: product.slug }} returnTo={`/p/${product.slug}`} />
-          </Suspense>
-          {product.restriction === "recipe" && (
-            <Badge variant="warning" className="self-start">
-              Requiere récipe
-            </Badge>
-          )}
-          {product.attributes.length > 0 && (
-            <Card>
-              <CardContent>
+        <Card className="md:sticky md:top-24">
+          <CardContent className="flex flex-col gap-3">
+            {product.category !== null && (
+              <Badge variant="secondary">{product.category.name}</Badge>
+            )}
+            <h1 className="text-2xl font-extrabold tracking-tight text-balance sm:text-3xl">
+              {product.name}
+            </h1>
+            {product.brand !== null && <p className="text-muted-foreground">{product.brand}</p>}
+            {product.restriction === "recipe" && <Badge variant="warning">Requiere récipe</Badge>}
+            <PriceSummary summary={product.offers_summary} />
+            <Suspense fallback={<FavoriteButtonSkeleton />}>
+              <FavoriteButton target={{ kind: "product", slug: product.slug }} returnTo={`/p/${product.slug}`} />
+            </Suspense>
+            {product.attributes.length > 0 && (
+              <div className="border-t border-border pt-4">
                 <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
                   {product.attributes.map((attribute) => (
                     <div key={attribute.name} className="contents">
@@ -116,10 +128,10 @@ export default async function ProductPage({
                     </div>
                   ))}
                 </dl>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
       {product.offers_summary.offer_count === 0 ? (
         <p className="text-muted-foreground">Sin disponibilidad ahora.</p>

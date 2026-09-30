@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ResetPasswordForm } from "@/features/account/RecoveryForms";
 
@@ -15,7 +15,9 @@ async function ResetPanel({ params }: { params: Params }) {
   const { token } = await params;
   return (
     <Card>
-      <ResetPasswordForm token={token} />
+      <CardContent>
+        <ResetPasswordForm token={token} />
+      </CardContent>
     </Card>
   );
 }

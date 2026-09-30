@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/session";
@@ -29,17 +29,21 @@ async function AccountSummary() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight text-foreground">Hola, {customer.name}</h1>
       {!customer.email_verified && (
-        <Card className="flex flex-col gap-3">
-          <p className="text-foreground">Tu correo {customer.email} no está verificado.</p>
-          <ResendVerificationForm />
+        <Card>
+          <CardContent className="flex flex-col gap-3">
+            <p className="text-foreground">Tu correo {customer.email} no está verificado.</p>
+            <ResendVerificationForm />
+          </CardContent>
         </Card>
       )}
       {customer.pending_email !== null && (
-        <Card className="flex flex-col gap-3">
-          <p className="text-foreground">
-            Confirma tu correo nuevo {customer.pending_email} con el enlace que te enviamos.
-          </p>
-          <ResendVerificationForm />
+        <Card>
+          <CardContent className="flex flex-col gap-3">
+            <p className="text-foreground">
+              Confirma tu correo nuevo {customer.pending_email} con el enlace que te enviamos.
+            </p>
+            <ResendVerificationForm />
+          </CardContent>
         </Card>
       )}
       <ul className="grid gap-4 sm:grid-cols-2">

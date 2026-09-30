@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoginForm } from "@/features/account/LoginForm";
 import { safeReturnPath } from "@/features/account/returnPath";
@@ -33,7 +33,9 @@ async function LoginPanel({ searchParams }: { searchParams: SearchParams }) {
         </p>
       )}
       <Card>
-        <LoginForm volver={volver} />
+        <CardContent>
+          <LoginForm volver={volver} />
+        </CardContent>
       </Card>
       <Link href="/recuperar" className={linkClasses}>
         ¿Olvidaste tu contraseña?

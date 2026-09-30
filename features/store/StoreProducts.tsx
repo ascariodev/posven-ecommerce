@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatRate, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
 import { getStore } from "@/lib/marketplace/client";
@@ -18,24 +18,26 @@ function parsePage(value: string | string[] | undefined): number {
 
 function StoreProductCard({ product, now }: { product: StoreProduct; now: Date }) {
   return (
-    <Card className="flex h-full flex-col gap-2">
-      <Link
-        href={`/p/${product.slug}`}
-        className="font-medium text-foreground underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-      >
-        {product.name}
-      </Link>
-      {(product.availability === "low" || product.restriction === "recipe") && (
-        <div className="flex flex-wrap gap-1">
-          {product.availability === "low" && <Badge variant="warning">Pocas unidades</Badge>}
-          {product.restriction === "recipe" && <Badge variant="warning">Requiere récipe</Badge>}
+    <Card className="h-full">
+      <CardContent className="flex-1 flex flex-col gap-2">
+        <Link
+          href={`/p/${product.slug}`}
+          className="font-medium text-foreground underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+        >
+          {product.name}
+        </Link>
+        {(product.availability === "low" || product.restriction === "recipe") && (
+          <div className="flex flex-wrap gap-1">
+            {product.availability === "low" && <Badge variant="warning">Pocas unidades</Badge>}
+            {product.restriction === "recipe" && <Badge variant="warning">Requiere récipe</Badge>}
+          </div>
+        )}
+        <div>
+          <p className="text-xl font-bold text-foreground">{formatUsd(product.price_usd)}</p>
+          <p className="text-sm text-foreground">{formatVes(product.price_ves)}</p>
+          <p className="text-sm text-muted-foreground">{formatUpdatedAgo(product.updated_at, now)}</p>
         </div>
-      )}
-      <div>
-        <p className="text-xl font-bold text-foreground">{formatUsd(product.price_usd)}</p>
-        <p className="text-sm text-foreground">{formatVes(product.price_ves)}</p>
-        <p className="text-sm text-muted-foreground">{formatUpdatedAgo(product.updated_at, now)}</p>
-      </div>
+      </CardContent>
     </Card>
   );
 }

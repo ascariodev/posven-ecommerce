@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ContactButtons } from "@/features/events/ContactButtons";
 import { formatDistance, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
 import type { ProductOffer, Restriction } from "@/lib/marketplace/schemas";
@@ -18,31 +18,33 @@ export function OfferCard({
 }) {
   const { store } = offer;
   return (
-    <Card className="flex h-full flex-col gap-3">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="flex min-w-0 flex-col gap-1">
-          <Link
-            href={`/tienda/${store.slug}`}
-            className="font-medium text-foreground underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-          >
-            {store.name}
-          </Link>
-          <p className="text-sm text-muted-foreground">
-            {store.city.name}
-            {offer.distance_km !== null && ` · ${formatDistance(offer.distance_km)}`}
-          </p>
+    <Card className="h-full">
+      <CardContent className="flex-1 flex flex-col gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div className="flex min-w-0 flex-col gap-1">
+            <Link
+              href={`/tienda/${store.slug}`}
+              className="font-medium text-foreground underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+            >
+              {store.name}
+            </Link>
+            <p className="text-sm text-muted-foreground">
+              {store.city.name}
+              {offer.distance_km !== null && ` · ${formatDistance(offer.distance_km)}`}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {featured && <Badge variant="default">Destacado</Badge>}
+            {offer.availability === "low" && <Badge variant="warning">Pocas unidades</Badge>}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-1">
-          {featured && <Badge variant="default">Destacado</Badge>}
-          {offer.availability === "low" && <Badge variant="warning">Pocas unidades</Badge>}
+        <div>
+          <p className="text-xl font-bold text-foreground">{formatUsd(offer.price_usd)}</p>
+          <p className="text-sm text-foreground">{formatVes(offer.price_ves)}</p>
+          <p className="text-sm text-muted-foreground">{formatUpdatedAgo(offer.updated_at, now)}</p>
         </div>
-      </div>
-      <div>
-        <p className="text-xl font-bold text-foreground">{formatUsd(offer.price_usd)}</p>
-        <p className="text-sm text-foreground">{formatVes(offer.price_ves)}</p>
-        <p className="text-sm text-muted-foreground">{formatUpdatedAgo(offer.updated_at, now)}</p>
-      </div>
-      <ContactButtons store={store} product={product} />
+        <ContactButtons store={store} product={product} />
+      </CardContent>
     </Card>
   );
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileForm } from "@/features/account/ProfileForm";
 import { requireCustomer } from "@/features/account/session";
@@ -17,7 +17,9 @@ async function ProfilePanel() {
     <div className="flex max-w-md flex-col gap-4">
       <h1 className="text-3xl font-bold tracking-tight text-foreground">Perfil</h1>
       <Card>
-        <ProfileForm customer={customer} />
+        <CardContent>
+          <ProfileForm customer={customer} />
+        </CardContent>
       </Card>
     </div>
   );

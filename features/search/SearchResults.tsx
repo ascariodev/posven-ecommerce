@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { toGeoFilter } from "@/features/location/cookie";
 import { getEffectiveLocation } from "@/features/location/server";
 import { formatRate } from "@/lib/format";
@@ -19,7 +19,9 @@ export async function SearchResults({
   if (query.q === "" && query.categoria === null) {
     return (
       <Card>
-        <p className="text-muted-foreground">Escribe qué buscas o elige una categoría.</p>
+        <CardContent>
+          <p className="text-muted-foreground">Escribe qué buscas o elige una categoría.</p>
+        </CardContent>
       </Card>
     );
   }

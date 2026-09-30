@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toggleFavorite } from "@/features/account/accountActions";
 import { requireCustomer } from "@/features/account/session";
@@ -55,14 +55,16 @@ async function FavoritesPanel() {
           <ul className="flex flex-col gap-3">
             {products.map((product) => (
               <li key={product.slug}>
-                <Card className="flex items-center gap-4">
-                  <ProductThumb imageUrl={product.image_url} category={product.category} size="md" />
-                  <div className="flex min-w-0 flex-1 flex-col gap-2">
-                    <Link href={`/p/${product.slug}`} className="font-medium text-foreground hover:underline">
-                      {product.name}
-                    </Link>
-                    <RemoveFavoriteForm target={{ kind: "product", slug: product.slug }} name={product.name} />
-                  </div>
+                <Card>
+                  <CardContent className="flex items-center gap-4">
+                    <ProductThumb imageUrl={product.image_url} category={product.category} size="md" />
+                    <div className="flex min-w-0 flex-1 flex-col gap-2">
+                      <Link href={`/p/${product.slug}`} className="font-medium text-foreground hover:underline">
+                        {product.name}
+                      </Link>
+                      <RemoveFavoriteForm target={{ kind: "product", slug: product.slug }} name={product.name} />
+                    </div>
+                  </CardContent>
                 </Card>
               </li>
             ))}
@@ -77,14 +79,16 @@ async function FavoritesPanel() {
           <ul className="flex flex-col gap-3">
             {stores.map((store) => (
               <li key={store.slug}>
-                <Card className="flex items-center gap-4">
-                  <div className="flex min-w-0 flex-1 flex-col gap-2">
-                    <Link href={`/tienda/${store.slug}`} className="font-medium text-foreground hover:underline">
-                      {store.name}
-                    </Link>
-                    <p className="text-sm text-muted-foreground">{store.city.name}</p>
-                    <RemoveFavoriteForm target={{ kind: "store", slug: store.slug }} name={store.name} />
-                  </div>
+                <Card>
+                  <CardContent className="flex items-center gap-4">
+                    <div className="flex min-w-0 flex-1 flex-col gap-2">
+                      <Link href={`/tienda/${store.slug}`} className="font-medium text-foreground hover:underline">
+                        {store.name}
+                      </Link>
+                      <p className="text-sm text-muted-foreground">{store.city.name}</p>
+                      <RemoveFavoriteForm target={{ kind: "store", slug: store.slug }} name={store.name} />
+                    </div>
+                  </CardContent>
                 </Card>
               </li>
             ))}

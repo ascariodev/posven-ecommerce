@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { deleteAddressAction, setDefaultAddress } from "@/features/account/accountActions";
 import { AddressForm } from "@/features/account/AddressForm";
@@ -42,57 +42,61 @@ async function AddressesPanel() {
         <ul className="flex flex-col gap-4">
           {addresses.map((address) => (
             <li key={address.id}>
-              <Card className="flex flex-col gap-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-lg font-bold tracking-tight text-foreground">{address.label}</h2>
-                  {address.is_default && <Badge variant="secondary">Predeterminada</Badge>}
-                </div>
-                <div className="flex flex-col text-sm text-foreground">
-                  <p>{address.line}</p>
-                  <p>{address.city.name}</p>
-                  <p>{address.recipient_name}</p>
-                  <p>{address.phone}</p>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {!address.is_default && (
-                    <form action={setDefaultAddress}>
+              <Card>
+                <CardContent className="flex flex-col gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-lg font-bold tracking-tight text-foreground">{address.label}</h2>
+                    {address.is_default && <Badge variant="secondary">Predeterminada</Badge>}
+                  </div>
+                  <div className="flex flex-col text-sm text-foreground">
+                    <p>{address.line}</p>
+                    <p>{address.city.name}</p>
+                    <p>{address.recipient_name}</p>
+                    <p>{address.phone}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {!address.is_default && (
+                      <form action={setDefaultAddress}>
+                        <input type="hidden" name="address_id" value={address.id} />
+                        <Button
+                          type="submit"
+                          variant="outline"
+                          size="sm"
+                          aria-label={`Marcar como predeterminada: ${address.label}`}
+                        >
+                          Marcar como predeterminada
+                        </Button>
+                      </form>
+                    )}
+                    <form action={deleteAddressAction}>
                       <input type="hidden" name="address_id" value={address.id} />
-                      <Button
-                        type="submit"
-                        variant="outline"
-                        size="sm"
-                        aria-label={`Marcar como predeterminada: ${address.label}`}
-                      >
-                        Marcar como predeterminada
+                      <Button type="submit" variant="outline" size="sm" aria-label={`Eliminar ${address.label}`}>
+                        Eliminar
                       </Button>
                     </form>
-                  )}
-                  <form action={deleteAddressAction}>
-                    <input type="hidden" name="address_id" value={address.id} />
-                    <Button type="submit" variant="outline" size="sm" aria-label={`Eliminar ${address.label}`}>
-                      Eliminar
-                    </Button>
-                  </form>
-                </div>
-                <details>
-                  <summary className="cursor-pointer text-sm font-medium text-foreground underline underline-offset-4">
-                    Editar
-                  </summary>
-                  <div className="pt-4">
-                    <AddressForm address={address} cities={cities} />
                   </div>
-                </details>
+                  <details>
+                    <summary className="cursor-pointer text-sm font-medium text-foreground underline underline-offset-4">
+                      Editar
+                    </summary>
+                    <div className="pt-4">
+                      <AddressForm address={address} cities={cities} />
+                    </div>
+                  </details>
+                </CardContent>
               </Card>
             </li>
           ))}
         </ul>
       )}
       <section aria-labelledby={NEW_ADDRESS_HEADING_ID}>
-        <Card className="flex flex-col gap-4">
-          <h2 id={NEW_ADDRESS_HEADING_ID} className="text-xl font-bold tracking-tight text-foreground">
-            Agregar dirección
-          </h2>
-          <AddressForm address={null} cities={cities} />
+        <Card>
+          <CardContent className="flex flex-col gap-4">
+            <h2 id={NEW_ADDRESS_HEADING_ID} className="text-xl font-bold tracking-tight text-foreground">
+              Agregar dirección
+            </h2>
+            <AddressForm address={null} cities={cities} />
+          </CardContent>
         </Card>
       </section>
     </div>

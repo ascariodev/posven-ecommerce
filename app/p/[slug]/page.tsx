@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/FavoriteButton";
 import { ViewBeacon } from "@/features/events/ViewBeacon";
 import { productJsonLd } from "@/features/product/jsonld";
@@ -107,14 +107,16 @@ export default async function ProductPage({
           )}
           {product.attributes.length > 0 && (
             <Card>
-              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-                {product.attributes.map((attribute) => (
-                  <div key={attribute.name} className="contents">
-                    <dt className="text-muted-foreground">{attribute.name}</dt>
-                    <dd className="text-foreground">{attribute.value}</dd>
-                  </div>
-                ))}
-              </dl>
+              <CardContent>
+                <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                  {product.attributes.map((attribute) => (
+                    <div key={attribute.name} className="contents">
+                      <dt className="text-muted-foreground">{attribute.name}</dt>
+                      <dd className="text-foreground">{attribute.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </CardContent>
             </Card>
           )}
         </div>

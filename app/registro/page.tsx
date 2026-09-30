@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RegisterForm } from "@/features/account/RegisterForm";
 import { safeReturnPath } from "@/features/account/returnPath";
@@ -19,7 +19,9 @@ async function RegisterPanel({ searchParams }: { searchParams: SearchParams }) {
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <RegisterForm volver={volver} />
+        <CardContent>
+          <RegisterForm volver={volver} />
+        </CardContent>
       </Card>
       <Link
         href={`/entrar?volver=${encodeURIComponent(volver)}`}

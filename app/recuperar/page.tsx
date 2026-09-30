@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ForgotPasswordForm } from "@/features/account/RecoveryForms";
 
 export const metadata: Metadata = {
@@ -12,7 +12,9 @@ export default function ForgotPasswordPage() {
     <div className="mx-auto flex w-full max-w-md flex-col gap-6">
       <h1 className="text-3xl font-bold tracking-tight text-foreground">Recuperar contraseña</h1>
       <Card>
-        <ForgotPasswordForm />
+        <CardContent>
+          <ForgotPasswordForm />
+        </CardContent>
       </Card>
     </div>
   );

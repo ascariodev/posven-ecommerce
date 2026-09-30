@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { VerifyEmailForm } from "@/features/account/VerifyEmailForm";
 
@@ -15,7 +15,9 @@ async function VerifyPanel({ params }: { params: Params }) {
   const { token } = await params;
   return (
     <Card>
-      <VerifyEmailForm token={token} />
+      <CardContent>
+        <VerifyEmailForm token={token} />
+      </CardContent>
     </Card>
   );
 }

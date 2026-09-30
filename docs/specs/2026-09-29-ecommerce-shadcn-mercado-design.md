@@ -21,7 +21,7 @@ de posveapi y cualquier campo nuevo del contrato (§7).
 
 | Tema | Decisión |
 |---|---|
-| Dirección visual | C "Mercado": para explorar, píldora de búsqueda, carril de categorías y tarjetas con imagen; para decidir, panel fijo de tiendas ordenadas por precio en la ficha |
+| Dirección visual | C "Mercado": para explorar, píldora de búsqueda, carril de categorías y tarjetas con imagen; para decidir, la ficha con el resumen y las tiendas ordenadas por precio |
 | Librería | shadcn/ui estilo `radix-nova`, ya instalada (`components.json`, `lib/utils.ts`) |
 | Primitivas propias | Se reemplazan por las de shadcn (`badge`, `button`, `card`, `input`, `skeleton`) y se eliminan `components/ui/cx.ts` y las funciones `buttonClasses` e `inputSize` |
 | Paleta | Se define en las variables CSS de `app/globals.css`, que es la configuración de tema de shadcn; ningún componente lleva un color literal |
@@ -66,8 +66,8 @@ la tabla anterior, decididas al planificarlo y ya en el código:
 1. **Inicio sin rejilla "Cerca de ti" de productos.** El contrato no tiene un endpoint de
    productos destacados o cercanos (la vista previa lo simulaba con `q: "a"`); se declara en §7.
 2. **Búsqueda sin selector de orden.** `/search` no acepta `sort` y ordenar una página en el
-   navegador mentiría sobre el conjunto; se declara en §7. `select` sólo se usa en el selector de
-   ubicación.
+   navegador mentiría sobre el conjunto; se declara en §7. `select` se usa en el selector de
+   ubicación y, desde el plan 4, en la ciudad de `AddressForm`.
 3. **Inicio sin `tabs`.** No se instala; el carril de categorías son enlaces a `/buscar`.
 4. **Filtro de distancia con la forma de `toggle-group`, hecho de enlaces.** `RadiusFilter` usa
    `toggleVariants` por `cn` sobre `<Link>` y conserva sus URL, `aria-current` y el funcionamiento

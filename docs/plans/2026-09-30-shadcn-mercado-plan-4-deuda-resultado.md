@@ -108,6 +108,18 @@ De la revisión de la Task 4:
   porque la `key` monta un nodo nuevo. Sólo pasa si se tabula hasta Ciudad mientras la acción está
   pendiente.
 
+De la revisión final de la rama (APPROVED, sin Critical ni Important):
+
+- Enviar una dirección nueva sin ciudad lleva el foco al `<select>` oculto que genera Radix
+  (`aria-hidden`, `tabIndex=-1`), donde está el `required`; un lector de pantalla no lo anuncia
+  bien. Antes el `<select>` nativo recibía el foco con su nombre. Queda por confirmar en la
+  revisión visual; si se confirma, apoyarse en el `FieldError` del servidor.
+- Sus otros tres Minor se corrigieron en el commit de ajustes de la revisión final: dos frases de
+  la spec (§2 "panel fijo" y la diferencia 2 del plan 2, "`select` sólo en ubicación") y las
+  lecciones L-03 (movimiento reducido con variantes apiladas) y L-04 (`key` del `Select` en un
+  formulario con acción) en `docs/conventions/lessons.md`. La regla `lessons-authoring` de
+  `posven` no está en la nube; se siguió el formato de L-02.
+
 Fuera del plan, siguen abiertas: la barra de desplazamiento de `CategoryRail` en escritorio; el
 comportamiento de `/buscar` (filtro de distancia sin JavaScript en móvil, pantalla vacía sin chips,
 subcategoría sin chip activo); las migas visibles frente al JSON-LD (decisión 4 del plan 3); y las
@@ -123,7 +135,8 @@ Ninguno propio de este plan: no cambia contrato, rutas ni variables de entorno. 
 1. Revisión visual en móvil y escritorio: controles `sm` a 44 px en móvil (cabecera con el menú de
    cuenta y el buscador, chips, "Filtros", ubicación compacta, orden de la ficha, paginación),
    `Sheet` con borde claro y altura máxima (móvil apaisado), ficha sin `sticky` y formulario de
-   dirección con el `Select` de ciudad.
+   dirección con el `Select` de ciudad, incluido enviar una dirección nueva sin ciudad (ver la
+   deuda de la revisión final).
 2. Plan propio: la cabecera en dirección C (el buscador compacto sigue con su estilo anterior).
 3. Plan propio: comportamiento de `/buscar` y barra de `CategoryRail`.
 4. Plan propio: páginas `/comercios`, `/terminos` y `/privacidad` del pie (hoy 404).

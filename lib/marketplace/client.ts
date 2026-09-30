@@ -19,10 +19,14 @@ import {
   authResponseSchema,
   cartSchema,
   categoriesResponseSchema,
+  checkoutStartSchema,
   customerEnvelopeSchema,
   favoritesResponseSchema,
   locationsResponseSchema,
   productResponseSchema,
+  purchasePageSchema,
+  purchaseSchema,
+  quoteSchema,
   searchResponseSchema,
   sitemapResponseSchema,
   storeResponseSchema,
@@ -35,12 +39,18 @@ import {
   type CartItem,
   type CartItemPut,
   type CategoryNode,
+  type CheckoutInput,
+  type CheckoutQuoteInput,
+  type CheckoutStart,
   type Customer,
   type FavoritesResponse,
   type LocationState,
   type MarketplaceEvent,
   type ProductResponse,
   type ProfilePatch,
+  type Purchase,
+  type PurchasePage,
+  type Quote,
   type RegisterInput,
   type SearchResponse,
   type SitemapResponse,
@@ -308,4 +318,31 @@ export async function setCartItem(ctx: AccountContext, item: CartItemPut): Promi
 export async function mergeCart(ctx: AccountContext, items: CartItem[]): Promise<Cart> {
   if (usesMock()) return mock.mergeCart(ctx, items);
   return accountRequest({ method: "POST", path: "/me/cart/merge", ctx, body: { items } }, cartSchema);
+}
+
+// Checkout y compras (spec cuentas-y-compras §4.2 con la enmienda G y H): sin 'use cache'.
+export async function quoteCheckout(ctx: AccountContext, input: CheckoutQuoteInput): Promise<Quote> {
+  if (usesMock()) return mock.quoteCheckout(ctx, input);
+  return accountRequest({ method: "POST", path: "/checkout/quote", ctx, body: input }, quoteSchema);
+}
+
+export async function startCheckout(ctx: AccountContext, input: CheckoutInput): Promise<CheckoutStart> {
+  if (usesMock()) return mock.startCheckout(ctx, input);
+  return accountRequest({ method: "POST", path: "/checkout", ctx, body: input }, checkoutStartSchema);
+}
+
+export async function listPurchases(ctx: AccountContext, page: number): Promise<PurchasePage> {
+  if (usesMock()) return mock.listPurchases(ctx, page);
+  return accountRequest(
+    { method: "GET", path: "/me/purchases", ctx, query: new URLSearchParams({ page: String(page) }) },
+    purchasePageSchema,
+  );
+}
+
+export async function getPurchase(ctx: AccountContext, code: string): Promise<Purchase> {
+  if (usesMock()) return mock.getPurchase(ctx, code);
+  return accountRequest(
+    { method: "GET", path: `/me/purchases/${encodeURIComponent(code)}`, ctx },
+    purchaseSchema,
+  );
 }

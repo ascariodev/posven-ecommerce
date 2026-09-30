@@ -274,7 +274,66 @@ describe("accountRequest", () => {
     expect((error as MarketplaceAccountError).retryAfter).toBe(60);
   });
 
-  it.each([500, 409])("un estado %i lanza MarketplaceUnavailableError (RN-MARKETPLACE-05)", async (status) => {
+  it("un 409 quote_changed lanza MarketplaceAccountError con la Quote nueva (RN-MARKETPLACE-05)", async () => {
+    const quote = {
+      quote_hash: "hash-nuevo",
+      stores: [
+        {
+          store_slug: "farmacia-central-valencia",
+          fulfillment: "pickup",
+          delivery_available: false,
+          delivery_unavailable_reason: "no_address",
+          subtotal_usd: "2.60",
+          subtotal_ves: "94.90",
+          delivery_fee_usd: "0.00",
+          delivery_fee_ves: "0.00",
+          total_usd: "2.60",
+          total_ves: "94.90",
+        },
+      ],
+      total_usd: "2.60",
+      total_ves: "94.90",
+      charge: { currency: "VES", amount: "94.90" },
+      rate: { usd_ves: "36.50", valid_on: "2026-09-26" },
+    };
+    fetchMock.mockResolvedValue(
+      jsonResponse({ error: { code: "quote_changed", message: "Tu compra cambió. Revisa los precios y la entrega.", quote } }, 409),
+    );
+
+    const error = await captureError(
+      accountRequest({ method: "POST", path: "/checkout", ctx: anonymous, body: {} }, schema),
+    );
+
+    expect(error).toBeInstanceOf(MarketplaceAccountError);
+    expect((error as MarketplaceAccountError).status).toBe(409);
+    expect((error as MarketplaceAccountError).quote?.quote_hash).toBe("hash-nuevo");
+  });
+
+  it("un 403 email_unverified lanza MarketplaceAccountError sin Quote (RN-MARKETPLACE-05)", async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse({ error: { code: "email_unverified", message: "Verifica tu correo para comprar." } }, 403),
+    );
+
+    const error = await captureError(
+      accountRequest({ method: "POST", path: "/checkout", ctx: anonymous, body: {} }, schema),
+    );
+
+    expect((error as MarketplaceAccountError).code).toBe("email_unverified");
+    expect((error as MarketplaceAccountError).quote).toBeNull();
+  });
+
+  it("la consulta de accountRequest va en la URL", async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ data: [] }));
+
+    await accountRequest(
+      { method: "GET", path: "/me/purchases", ctx: anonymous, query: new URLSearchParams({ page: "2" }) },
+      schema,
+    );
+
+    expect(String(fetchMock.mock.calls[0][0])).toBe("https://api.test/api/marketplace/v1/me/purchases?page=2");
+  });
+
+  it.each([500, 503])("un estado %i lanza MarketplaceUnavailableError (RN-MARKETPLACE-05)", async (status) => {
     fetchMock.mockResolvedValue(
       jsonResponse({ error: { code: "not_found", message: "No encontrado." } }, status),
     );

@@ -5,7 +5,7 @@ import type { AccountContext } from "./params";
 import { accountErrorBodySchema } from "./schemas";
 
 const TIMEOUT_MS = 5000;
-const ACCOUNT_ERROR_STATUSES = new Set([401, 404, 422, 429]);
+const ACCOUNT_ERROR_STATUSES = new Set([401, 403, 404, 409, 422, 429]);
 const DEFAULT_RETRY_AFTER_S = 60;
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -108,6 +108,7 @@ export type AccountRequest = {
   path: string;
   ctx: AccountContext;
   body?: unknown;
+  query?: URLSearchParams;
 };
 
 function retryAfterHeader(response: Response): number {
@@ -129,13 +130,14 @@ async function readAccountError(path: string, response: Response): Promise<Error
   const isRateLimit = response.status === 429;
 
   if (parsed.success) {
-    const { code, message, fields, retry_after } = parsed.data.error;
+    const { code, message, fields, retry_after, quote } = parsed.data.error;
     return new MarketplaceAccountError({
       status: response.status,
       code,
       message,
       fields: fields ?? null,
       retryAfter: retry_after ?? (isRateLimit ? retryAfterHeader(response) : null),
+      quote: quote ?? null,
     });
   }
 
@@ -160,7 +162,7 @@ function sendAccount<R>(req: AccountRequest, onOk: (response: Response) => Promi
 
   return exchange(
     req.path,
-    new URLSearchParams(),
+    req.query ?? new URLSearchParams(),
     {
       method: req.method,
       headers,

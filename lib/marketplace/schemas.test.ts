@@ -25,12 +25,17 @@ import {
   cartItemsSchema,
   cartSchema,
   categoriesResponseSchema,
+  checkoutInputSchema,
+  checkoutStartSchema,
   customerSchema,
   eventInputSchema,
   favoritesResponseSchema,
   locationsResponseSchema,
   moneySchema,
   productResponseSchema,
+  purchasePageSchema,
+  purchaseSchema,
+  quoteSchema,
   searchResponseSchema,
   sitemapResponseSchema,
   storeResponseSchema,
@@ -268,5 +273,159 @@ describe("cartItemsSchema", () => {
     ["21 entradas", Array.from({ length: 21 }, (_, index) => ({ ...line, product_slug: `producto-${index}` }))],
   ])("rechaza %s", (_name, items) => {
     expect(cartItemsSchema.safeParse(items).success).toBe(false);
+  });
+});
+
+// Checkout y compras (enmienda F, G y H), escritos a mano: el simulado llega con la Task 2 del 4b.
+const rate = { usd_ves: "36.50", valid_on: "2026-09-26" };
+const storeSummary = MOCK_STORES[0].summary;
+
+const quote = {
+  quote_hash: "hash-opaco",
+  stores: [
+    {
+      store_slug: "farmacia-central-valencia",
+      fulfillment: "delivery",
+      delivery_available: true,
+      delivery_unavailable_reason: null,
+      subtotal_usd: "5.00",
+      subtotal_ves: "182.50",
+      delivery_fee_usd: "1.50",
+      delivery_fee_ves: "54.75",
+      total_usd: "6.50",
+      total_ves: "237.25",
+    },
+    {
+      store_slug: "abasto-la-esquina",
+      fulfillment: "pickup",
+      delivery_available: false,
+      delivery_unavailable_reason: "no_delivery",
+      subtotal_usd: "1.20",
+      subtotal_ves: "43.80",
+      delivery_fee_usd: "0.00",
+      delivery_fee_ves: "0.00",
+      total_usd: "1.20",
+      total_ves: "43.80",
+    },
+  ],
+  total_usd: "7.70",
+  total_ves: "281.05",
+  charge: { currency: "VES", amount: "281.05" },
+  rate,
+};
+
+const orderLine = {
+  product: { slug: "acetaminofen-500-mg-20-tabletas", name: "Acetaminofén", image_url: null, category: null },
+  quantity: 2,
+  accepted_quantity: 2,
+  unit_usd: "2.50",
+  unit_ves: "91.25",
+  line_usd: "5.00",
+  line_ves: "182.50",
+  missing: false,
+};
+
+const noTimeline = { paid_at: null, ready_at: null, dispatched_at: null, delivered_at: null, cancelled_at: null };
+
+const paidPurchase = {
+  code: "PV-7K2Q9M",
+  status: "paid",
+  created_at: "2026-09-30T14:00:00-04:00",
+  paid_at: "2026-09-30T14:00:05-04:00",
+  total_usd: "7.70",
+  total_ves: "281.05",
+  charge: { currency: "VES", amount: "281.05" },
+  rate,
+  orders: [
+    {
+      store: storeSummary,
+      status: "ready_for_pickup",
+      fulfillment: "pickup",
+      pickup_code: "482913",
+      address: null,
+      lines: [orderLine, { ...orderLine, accepted_quantity: 0, missing: true }],
+      subtotal_usd: "10.00",
+      subtotal_ves: "365.00",
+      delivery_fee_usd: "0.00",
+      delivery_fee_ves: "0.00",
+      refunded_usd: "5.00",
+      refunded_ves: "182.50",
+      timeline: { ...noTimeline, paid_at: "2026-09-30T14:00:05-04:00", ready_at: "2026-09-30T14:20:00-04:00" },
+    },
+    {
+      store: storeSummary,
+      status: "out_for_delivery",
+      fulfillment: "delivery",
+      pickup_code: null,
+      address: {
+        label: "Casa",
+        recipient_name: "Comprador",
+        phone: "+584141234567",
+        city: { slug: "valencia", name: "Valencia" },
+        line: "Av. Bolívar Norte",
+        reference: null,
+      },
+      lines: [orderLine],
+      subtotal_usd: "5.00",
+      subtotal_ves: "182.50",
+      delivery_fee_usd: "1.50",
+      delivery_fee_ves: "54.75",
+      refunded_usd: "0.00",
+      refunded_ves: "0.00",
+      timeline: { ...noTimeline, paid_at: "2026-09-30T14:00:05-04:00", dispatched_at: "2026-09-30T14:25:00Z" },
+    },
+  ],
+};
+
+describe("contrato de checkout y compras", () => {
+  it("una Quote, una compra pagada y una página de compras pasan sus esquemas", () => {
+    expect(quoteSchema.safeParse(quote).success).toBe(true);
+    expect(purchaseSchema.safeParse(paidPurchase).success).toBe(true);
+    expect(
+      purchasePageSchema.safeParse({ data: [paidPurchase], meta: { page: 1, per_page: 10, total: 1 } }).success,
+    ).toBe(true);
+  });
+
+  it("una fecha sin zona no pasa", () => {
+    expect(purchaseSchema.safeParse({ ...paidPurchase, created_at: "2026-09-30T14:00:00" }).success).toBe(false);
+  });
+
+  const start = (payment: { redirect_url: string | null; instructions: string | null }) =>
+    checkoutStartSchema.safeParse({ purchase_code: "PV-7K2Q9M", payment: { provider: "fake", ...payment } }).success;
+
+  it("el inicio del pago trae redirect_url o instructions, uno solo", () => {
+    expect(start({ redirect_url: "https://ecom.test/checkout/resultado?compra=PV-7K2Q9M", instructions: null })).toBe(true);
+    expect(start({ redirect_url: null, instructions: "Transfiere a la cuenta 0102." })).toBe(true);
+    expect(start({ redirect_url: null, instructions: null })).toBe(false);
+    expect(start({ redirect_url: "https://ecom.test/x", instructions: "y" })).toBe(false);
+    expect(start({ redirect_url: "javascript:alert(1)", instructions: null })).toBe(false);
+  });
+
+  const checkoutInput = {
+    stores: [{ store_slug: "farmacia-central-valencia", fulfillment: "pickup" }],
+    address_id: null,
+    quote_hash: "hash-opaco",
+    idempotency_key: "3f1c2a9e-8b7d-4c6a-9e2f-1a2b3c4d5e6f",
+  };
+
+  it("la entrada del checkout acepta una clave UUID v4", () => {
+    expect(checkoutInputSchema.safeParse(checkoutInput).success).toBe(true);
+  });
+
+  it.each([
+    ["una clave que no es UUID v4", { ...checkoutInput, idempotency_key: "3f1c2a9e-8b7d-1c6a-9e2f-1a2b3c4d5e6f" }],
+    ["tiendas repetidas", { ...checkoutInput, stores: [...checkoutInput.stores, ...checkoutInput.stores] }],
+    ["claves de más", { ...checkoutInput, extra: true }],
+    ["sin tiendas", { ...checkoutInput, stores: [] }],
+  ])("la entrada del checkout rechaza %s", (_name, input) => {
+    expect(checkoutInputSchema.safeParse(input).success).toBe(false);
+  });
+
+  it("el cuerpo de error quote_changed trae la Quote nueva", () => {
+    const parsed = accountErrorBodySchema.safeParse({
+      error: { code: "quote_changed", message: "Tu compra cambió. Revisa los precios y la entrega.", quote },
+    });
+    expect(parsed.success).toBe(true);
+    expect(parsed.data?.error.quote?.total_usd).toBe("7.70");
   });
 });

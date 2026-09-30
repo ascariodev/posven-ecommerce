@@ -1,4 +1,4 @@
-import type { AccountErrorCode } from "./schemas";
+import type { AccountErrorCode, Quote } from "./schemas";
 
 export class MarketplaceUnavailableError extends Error {
   readonly endpoint: string;
@@ -15,6 +15,7 @@ export class MarketplaceAccountError extends Error {
   readonly code: AccountErrorCode;
   readonly fields: Record<string, string> | null;
   readonly retryAfter: number | null;
+  readonly quote: Quote | null;
 
   constructor(p: {
     status: number;
@@ -22,6 +23,7 @@ export class MarketplaceAccountError extends Error {
     message: string;
     fields?: Record<string, string> | null;
     retryAfter?: number | null;
+    quote?: Quote | null;
   }) {
     super(p.message);
     this.name = "MarketplaceAccountError";
@@ -29,5 +31,6 @@ export class MarketplaceAccountError extends Error {
     this.code = p.code;
     this.fields = p.fields ?? null;
     this.retryAfter = p.retryAfter ?? null;
+    this.quote = p.quote ?? null;
   }
 }

@@ -77,6 +77,10 @@ const ERROR_MESSAGES: Record<SimpleErrorCode, string> = {
   not_orderable: "Esta tienda no vende este producto en línea.",
   product_restricted: "Este producto no se vende en línea: consúltalo en la tienda.",
   cart_full: "Tu carrito admite hasta 20 productos.",
+  email_unverified: "Verifica tu correo para comprar.",
+  quote_changed: "Tu compra cambió. Revisa los precios y la entrega.",
+  cart_empty: "Tu carrito no tiene productos disponibles.",
+  open_orders: "Tienes pedidos en curso. Podrás eliminar tu cuenta cuando se entreguen.",
 };
 
 export function accountError(

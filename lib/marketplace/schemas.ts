@@ -257,17 +257,12 @@ export const accountErrorCodeSchema = z.enum([
   "not_orderable",
   "product_restricted",
   "cart_full",
+  "email_unverified",
+  "quote_changed",
+  "cart_empty",
+  "open_orders",
 ]);
 export type AccountErrorCode = z.infer<typeof accountErrorCodeSchema>;
-
-export const accountErrorBodySchema = z.object({
-  error: z.object({
-    code: accountErrorCodeSchema,
-    message: z.string(),
-    fields: z.record(z.string(), z.string()).optional(),
-    retry_after: z.int().min(0).optional(),
-  }),
-});
 
 export const customerSchema = z.object({
   name: z.string(),
@@ -384,13 +379,16 @@ export type CartItemPut = z.infer<typeof cartItemPutSchema>;
 export const unavailableReasonSchema = z.enum(["out_of_stock", "store_not_selling", "offer_gone", "restricted"]);
 export type UnavailableReason = z.infer<typeof unavailableReasonSchema>;
 
+// Producto de la línea del carrito y del pedido (enmienda D y H).
+export const lineProductSchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  image_url: z.url().nullable(),
+  category: categorySchema.nullable(),
+});
+
 export const cartLineSchema = z.object({
-  product: z.object({
-    slug: z.string(),
-    name: z.string(),
-    image_url: z.url().nullable(),
-    category: categorySchema.nullable(),
-  }),
+  product: lineProductSchema,
   quantity: z.int().min(1).max(CART_MAX_QUANTITY),
   price_usd: moneySchema.nullable(),
   price_ves: moneySchema.nullable(),
@@ -421,3 +419,165 @@ export const cartSchema = z.object({
   rate: rateSchema,
 });
 export type Cart = z.infer<typeof cartSchema>;
+
+// Checkout y compras (spec cuentas-y-compras §4.1 Quote, Purchase y StoreOrder; §4.2; enmienda F,
+// G y H).
+export const fulfillmentSchema = z.enum(["pickup", "delivery"]);
+export type Fulfillment = z.infer<typeof fulfillmentSchema>;
+
+export const deliveryUnavailableReasonSchema = z.enum(["no_delivery", "out_of_radius", "no_address"]);
+export type DeliveryUnavailableReason = z.infer<typeof deliveryUnavailableReasonSchema>;
+
+export const quoteStoreSchema = z.object({
+  store_slug: z.string(),
+  fulfillment: fulfillmentSchema,
+  delivery_available: z.boolean(),
+  delivery_unavailable_reason: deliveryUnavailableReasonSchema.nullable(),
+  subtotal_usd: moneySchema,
+  subtotal_ves: moneySchema,
+  delivery_fee_usd: moneySchema,
+  delivery_fee_ves: moneySchema,
+  total_usd: moneySchema,
+  total_ves: moneySchema,
+});
+export type QuoteStore = z.infer<typeof quoteStoreSchema>;
+
+export const chargeSchema = z.object({
+  currency: z.enum(["VES", "USD"]),
+  amount: moneySchema,
+});
+export type Charge = z.infer<typeof chargeSchema>;
+
+export const quoteSchema = z.object({
+  quote_hash: z.string().min(1),
+  stores: z.array(quoteStoreSchema).min(1),
+  total_usd: moneySchema,
+  total_ves: moneySchema,
+  charge: chargeSchema,
+  rate: rateSchema,
+});
+export type Quote = z.infer<typeof quoteSchema>;
+
+const checkoutStoresSchema = z
+  .array(z.strictObject({ store_slug: cartSlugSchema, fulfillment: fulfillmentSchema }))
+  .min(1)
+  .max(CART_MAX_LINES)
+  .refine((stores) => new Set(stores.map((store) => store.store_slug)).size === stores.length, {
+    message: "Hay tiendas repetidas en el checkout.",
+  });
+
+export const checkoutQuoteInputSchema = z.strictObject({
+  stores: checkoutStoresSchema,
+  address_id: z.int().min(1).nullable(),
+});
+export type CheckoutQuoteInput = z.infer<typeof checkoutQuoteInputSchema>;
+
+export const checkoutInputSchema = checkoutQuoteInputSchema.extend({
+  quote_hash: z.string().min(1).max(200),
+  idempotency_key: z.uuid({ version: "v4" }),
+});
+export type CheckoutInput = z.infer<typeof checkoutInputSchema>;
+
+// Exactamente uno de redirect_url e instructions no es nulo (enmienda F).
+export const checkoutStartSchema = z.object({
+  purchase_code: z.string().min(1),
+  payment: z
+    .object({
+      provider: z.string(),
+      redirect_url: z.url({ protocol: /^https?$/ }).nullable(),
+      instructions: z.string().nullable(),
+    })
+    .refine((payment) => (payment.redirect_url === null) !== (payment.instructions === null), {
+      message: "El pago trae redirect_url o instructions, uno solo.",
+    }),
+});
+export type CheckoutStart = z.infer<typeof checkoutStartSchema>;
+
+export const purchaseStatusSchema = z.enum(["pending_payment", "paid", "expired", "failed"]);
+export type PurchaseStatus = z.infer<typeof purchaseStatusSchema>;
+
+export const storeOrderStatusSchema = z.enum([
+  "accepted",
+  "ready_for_pickup",
+  "out_for_delivery",
+  "delivered",
+  "cancelled",
+]);
+export type StoreOrderStatus = z.infer<typeof storeOrderStatusSchema>;
+
+const dateTimeSchema = z.iso.datetime({ offset: true });
+
+export const orderAddressSchema = z.object({
+  label: z.string(),
+  recipient_name: z.string(),
+  phone: z.string(),
+  city: cityRefSchema,
+  line: z.string(),
+  reference: z.string().nullable(),
+});
+export type OrderAddress = z.infer<typeof orderAddressSchema>;
+
+export const storeOrderLineSchema = z.object({
+  product: lineProductSchema,
+  quantity: z.int().min(1),
+  accepted_quantity: z.int().min(0),
+  unit_usd: moneySchema,
+  unit_ves: moneySchema,
+  line_usd: moneySchema,
+  line_ves: moneySchema,
+  missing: z.boolean(),
+});
+export type StoreOrderLine = z.infer<typeof storeOrderLineSchema>;
+
+export const storeOrderSchema = z.object({
+  store: storeSummarySchema,
+  status: storeOrderStatusSchema,
+  fulfillment: fulfillmentSchema,
+  pickup_code: z.string().nullable(),
+  address: orderAddressSchema.nullable(),
+  lines: z.array(storeOrderLineSchema).min(1),
+  subtotal_usd: moneySchema,
+  subtotal_ves: moneySchema,
+  delivery_fee_usd: moneySchema,
+  delivery_fee_ves: moneySchema,
+  refunded_usd: moneySchema,
+  refunded_ves: moneySchema,
+  timeline: z.object({
+    paid_at: dateTimeSchema.nullable(),
+    ready_at: dateTimeSchema.nullable(),
+    dispatched_at: dateTimeSchema.nullable(),
+    delivered_at: dateTimeSchema.nullable(),
+    cancelled_at: dateTimeSchema.nullable(),
+  }),
+});
+export type StoreOrder = z.infer<typeof storeOrderSchema>;
+
+export const purchaseSchema = z.object({
+  code: z.string().min(1),
+  status: purchaseStatusSchema,
+  created_at: dateTimeSchema,
+  paid_at: dateTimeSchema.nullable(),
+  total_usd: moneySchema,
+  total_ves: moneySchema,
+  charge: chargeSchema,
+  rate: rateSchema,
+  orders: z.array(storeOrderSchema),
+});
+export type Purchase = z.infer<typeof purchaseSchema>;
+
+export const purchasePageSchema = z.object({
+  data: z.array(purchaseSchema),
+  meta: pageMetaSchema,
+});
+export type PurchasePage = z.infer<typeof purchasePageSchema>;
+
+// Cuerpo de error de cuenta, carrito y checkout; `quote` sólo viene en `quote_changed` (enmienda G).
+export const accountErrorBodySchema = z.object({
+  error: z.object({
+    code: accountErrorCodeSchema,
+    message: z.string(),
+    fields: z.record(z.string(), z.string()).optional(),
+    retry_after: z.int().min(0).optional(),
+    quote: quoteSchema.optional(),
+  }),
+});

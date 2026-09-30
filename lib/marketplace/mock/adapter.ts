@@ -2,12 +2,17 @@ import {
   productQuery,
   searchQuery,
   storesQuery,
+  type AccountContext,
   type GeoFilter,
   type OfferSort,
   type RadiusKm,
 } from "../params";
+import { MarketplaceUnavailableError } from "../errors";
 import type {
   CategoryNode,
+  CheckoutInput,
+  CheckoutQuoteInput,
+  CheckoutStart,
   FeaturedProduct,
   LocationState,
   MarketplaceEvent,
@@ -16,6 +21,9 @@ import type {
   OffersSummary,
   ProductOffer,
   ProductResponse,
+  Purchase,
+  PurchasePage,
+  Quote,
   SearchItem,
   SearchResponse,
   SitemapResponse,
@@ -369,3 +377,17 @@ export {
 } from "./accounts";
 
 export { getCart, mergeCart, quoteGuestCart, setCartItem } from "./cart";
+
+// Checkout y compras: el simulado llega con la Task 2 del plan 4b; hasta entonces responde como API caída.
+function notYetSimulated(endpoint: string): Promise<never> {
+  return Promise.reject(new MarketplaceUnavailableError(endpoint));
+}
+
+export const quoteCheckout: (ctx: AccountContext, input: CheckoutQuoteInput) => Promise<Quote> = () =>
+  notYetSimulated("/checkout/quote");
+export const startCheckout: (ctx: AccountContext, input: CheckoutInput) => Promise<CheckoutStart> = () =>
+  notYetSimulated("/checkout");
+export const listPurchases: (ctx: AccountContext, page: number) => Promise<PurchasePage> = () =>
+  notYetSimulated("/me/purchases");
+export const getPurchase: (ctx: AccountContext, code: string) => Promise<Purchase> = () =>
+  notYetSimulated("/me/purchases/{code}");

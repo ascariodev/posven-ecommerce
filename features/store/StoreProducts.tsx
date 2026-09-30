@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { buttonClasses } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatRate, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
@@ -81,7 +81,7 @@ export async function StoreProducts({
       {lastPage > 1 && (
         <nav aria-label="Paginación" className="flex items-center justify-between gap-4">
           {meta.page > 1 ? (
-            <Link href={pageHref(meta.page - 1)} className={buttonClasses("secondary", "sm")}>
+            <Link href={pageHref(meta.page - 1)} className={buttonVariants({ variant: "outline", size: "sm" })}>
               Anterior
             </Link>
           ) : (
@@ -91,7 +91,7 @@ export async function StoreProducts({
             Página {meta.page} de {lastPage}
           </p>
           {meta.page < lastPage ? (
-            <Link href={pageHref(meta.page + 1)} className={buttonClasses("secondary", "sm")}>
+            <Link href={pageHref(meta.page + 1)} className={buttonVariants({ variant: "outline", size: "sm" })}>
               Siguiente
             </Link>
           ) : (

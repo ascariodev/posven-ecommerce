@@ -82,7 +82,7 @@ export function LocationPicker({ label, states }: { label: string | null; states
       {showSummary ? (
         <div className="flex flex-wrap items-center gap-3">
           <p className="text-foreground">Cerca de: {label}</p>
-          <Button variant="secondary" size="sm" onClick={() => setMode("choose")}>
+          <Button variant="outline" size="sm" onClick={() => setMode("choose")}>
             Cambiar
           </Button>
         </div>
@@ -91,7 +91,7 @@ export function LocationPicker({ label, states }: { label: string | null; states
           <Button size="sm" onClick={requestCurrentPosition} disabled={isPending}>
             Usar mi ubicación
           </Button>
-          <Button variant="secondary" size="sm" onClick={() => showCitySelector(null)} disabled={isPending}>
+          <Button variant="outline" size="sm" onClick={() => showCitySelector(null)} disabled={isPending}>
             Elegir ciudad
           </Button>
         </div>

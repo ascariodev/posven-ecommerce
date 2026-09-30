@@ -45,7 +45,7 @@ async function AddressesPanel() {
               <Card className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-lg font-bold tracking-tight text-foreground">{address.label}</h2>
-                  {address.is_default && <Badge>Predeterminada</Badge>}
+                  {address.is_default && <Badge variant="secondary">Predeterminada</Badge>}
                 </div>
                 <div className="flex flex-col text-sm text-foreground">
                   <p>{address.line}</p>
@@ -59,7 +59,7 @@ async function AddressesPanel() {
                       <input type="hidden" name="address_id" value={address.id} />
                       <Button
                         type="submit"
-                        variant="secondary"
+                        variant="outline"
                         size="sm"
                         aria-label={`Marcar como predeterminada: ${address.label}`}
                       >
@@ -69,7 +69,7 @@ async function AddressesPanel() {
                   )}
                   <form action={deleteAddressAction}>
                     <input type="hidden" name="address_id" value={address.id} />
-                    <Button type="submit" variant="secondary" size="sm" aria-label={`Eliminar ${address.label}`}>
+                    <Button type="submit" variant="outline" size="sm" aria-label={`Eliminar ${address.label}`}>
                       Eliminar
                     </Button>
                   </form>

@@ -1,7 +1,6 @@
 import { User } from "lucide-react";
 import Link from "next/link";
-import { buttonClasses } from "@/components/ui/button";
-import { cx } from "@/components/ui/cx";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Customer } from "@/lib/marketplace/schemas";
@@ -33,7 +32,7 @@ export async function AccountSlot() {
   const customer = await currentCustomerOrGuest();
   if (customer === null) {
     return (
-      <Link href="/entrar" rel="nofollow" className={buttonClasses("secondary", "sm")}>
+      <Link href="/entrar" rel="nofollow" className={buttonVariants({ variant: "outline", size: "sm" })}>
         <User aria-hidden="true" className="size-4" />
         Entrar
       </Link>
@@ -41,7 +40,7 @@ export async function AccountSlot() {
   }
   return (
     <details className="relative">
-      <summary className={cx(buttonClasses("secondary", "sm"), "cursor-pointer list-none [&::-webkit-details-marker]:hidden")}>
+      <summary className={buttonVariants({ variant: "outline", size: "sm", className: "cursor-pointer list-none [&::-webkit-details-marker]:hidden" })}>
         <User aria-hidden="true" className="size-4" />
         Mi cuenta
       </summary>

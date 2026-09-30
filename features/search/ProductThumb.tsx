@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { createElement } from "react";
-import { cx } from "@/components/ui/cx";
+import { cn } from "@/lib/utils";
 import type { Category } from "@/lib/marketplace/schemas";
 import { categoryIcon } from "./categoryIcon";
 
@@ -31,14 +31,14 @@ export function ProductThumb({
         width={px}
         height={px}
         preload={preload}
-        className={cx(box, "shrink-0 rounded-xl object-contain")}
+        className={cn(box, "shrink-0 rounded-xl object-contain")}
       />
     );
   }
   return (
     <div
       aria-hidden="true"
-      className={cx(
+      className={cn(
         box,
         "flex shrink-0 items-center justify-center rounded-xl bg-primary-soft text-warning",
       )}

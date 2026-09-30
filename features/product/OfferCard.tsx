@@ -33,7 +33,7 @@ export function OfferCard({
           </p>
         </div>
         <div className="flex flex-wrap gap-1">
-          {featured && <Badge variant="featured">Destacado</Badge>}
+          {featured && <Badge variant="default">Destacado</Badge>}
           {offer.availability === "low" && <Badge variant="warning">Pocas unidades</Badge>}
         </div>
       </div>

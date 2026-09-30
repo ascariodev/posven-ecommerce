@@ -1,7 +1,7 @@
 import { Heart } from "lucide-react";
 import Link from "next/link";
-import { Button, buttonClasses } from "@/components/ui/button";
-import { cx } from "@/components/ui/cx";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { listFavorites } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
@@ -21,7 +21,7 @@ function isSaved(favorites: FavoritesResponse, target: FavoriteTarget): boolean 
 
 function LoginLink({ returnTo }: { returnTo: string }) {
   return (
-    <Link href={loginHref(returnTo)} rel="nofollow" className={cx(buttonClasses("secondary", "sm"), "self-start")}>
+    <Link href={loginHref(returnTo)} rel="nofollow" className={buttonVariants({ variant: "outline", size: "sm", className: "self-start" })}>
       <Heart aria-hidden="true" className="size-4" />
       {SAVE_LABEL}
     </Link>
@@ -50,8 +50,8 @@ export async function FavoriteButton({ target, returnTo }: { target: FavoriteTar
       <input type="hidden" name="slug" value={target.slug} />
       <input type="hidden" name="mode" value={saved ? "remove" : "add"} />
       <input type="hidden" name="volver" value={returnTo} />
-      <Button type="submit" variant="secondary" size="sm" aria-pressed={saved}>
-        <Heart aria-hidden="true" className={cx("size-4", saved && "fill-current")} />
+      <Button type="submit" variant="outline" size="sm" aria-pressed={saved}>
+        <Heart aria-hidden="true" className={cn("size-4", saved && "fill-current")} />
         {saved ? REMOVE_LABEL : SAVE_LABEL}
       </Button>
     </form>

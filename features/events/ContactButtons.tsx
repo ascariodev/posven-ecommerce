@@ -1,7 +1,7 @@
 "use client";
 
 import { MessageCircle, Navigation, Phone } from "lucide-react";
-import { buttonClasses } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import type { EventType, Restriction, StoreSummary } from "@/lib/marketplace/schemas";
 import { SITE_NAME } from "@/lib/site";
 import { sendBeaconEvent } from "./beacon";
@@ -28,7 +28,7 @@ export function ContactButtons({ store, product }: { store: StoreSummary; produc
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`WhatsApp de ${store.name}`}
-          className={buttonClasses("primary")}
+          className={buttonVariants()}
           onClick={track("click_whatsapp")}
         >
           <MessageCircle aria-hidden="true" className="size-4" />
@@ -39,7 +39,7 @@ export function ContactButtons({ store, product }: { store: StoreSummary; produc
         <a
           href={`tel:${store.phone}`}
           aria-label={`Llamar a ${store.name}`}
-          className={buttonClasses("secondary")}
+          className={buttonVariants({ variant: "outline" })}
           onClick={track("click_call")}
         >
           <Phone aria-hidden="true" className="size-4" />
@@ -51,7 +51,7 @@ export function ContactButtons({ store, product }: { store: StoreSummary; produc
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`Ver ruta a ${store.name}`}
-        className={buttonClasses("secondary")}
+        className={buttonVariants({ variant: "outline" })}
         onClick={track("click_route")}
       >
         <Navigation aria-hidden="true" className="size-4" />

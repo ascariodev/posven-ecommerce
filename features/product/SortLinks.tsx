@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buttonClasses } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import type { OfferSort } from "@/lib/marketplace/params";
 
 export function SortLinks({ slug, sort }: { slug: string; sort: OfferSort }) {
@@ -16,7 +16,7 @@ export function SortLinks({ slug, sort }: { slug: string; sort: OfferSort }) {
             <Link
               href={option.href}
               aria-current={option.sort === sort ? "true" : undefined}
-              className={buttonClasses(option.sort === sort ? "primary" : "secondary", "sm")}
+              className={buttonVariants({ variant: option.sort === sort ? "default" : "outline", size: "sm" })}
             >
               {option.label}
             </Link>

@@ -13,7 +13,7 @@ export function FeaturedCard({ item }: { item: FeaturedProduct }) {
     >
       <ProductThumb imageUrl={product.image_url} category={product.category} size="md" />
       <div className="flex min-w-0 flex-col gap-1">
-        <Badge variant="featured" className="self-start">
+        <Badge variant="default" className="self-start">
           Destacado
         </Badge>
         <h3 className="font-medium text-foreground">{product.name}</h3>

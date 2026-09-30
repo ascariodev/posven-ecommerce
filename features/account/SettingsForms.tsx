@@ -102,7 +102,7 @@ export function DeleteAccountForm() {
         />
         <FieldError id={`${prefijo}-password-error`} state={state} name="password" />
       </div>
-      <Button type="submit" variant="secondary" disabled={pending}>
+      <Button type="submit" variant="outline" disabled={pending}>
         {pending ? "Eliminando..." : "Eliminar mi cuenta"}
       </Button>
     </form>

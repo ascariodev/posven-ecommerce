@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buttonClasses } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -21,7 +21,7 @@ export default function AccountLayout({ children }: LayoutProps<"/cuenta">) {
         <ul className="flex flex-wrap gap-2">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
-              <Link href={link.href} className={buttonClasses("secondary", "sm")}>
+              <Link href={link.href} className={buttonVariants({ variant: "outline", size: "sm" })}>
                 {link.label}
               </Link>
             </li>

@@ -45,7 +45,7 @@ export function ResendVerificationForm() {
   return (
     <form action={formAction} className="flex flex-col gap-2">
       <FormNotice state={state} />
-      <Button type="submit" variant="secondary" disabled={pending}>
+      <Button type="submit" variant="outline" disabled={pending}>
         {pending ? "Enviando..." : "Reenviar verificación"}
       </Button>
     </form>

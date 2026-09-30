@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import Form from "next/form";
 import { Button } from "@/components/ui/button";
-import { cx } from "@/components/ui/cx";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
 export function SearchForm({
@@ -16,7 +16,7 @@ export function SearchForm({
     <Form
       action="/buscar"
       role="search"
-      className={cx(
+      className={cn(
         "flex w-full gap-2",
         large ? "rounded-2xl border border-glass-border bg-glass p-2 shadow-card backdrop-blur-md" : "items-center",
       )}
@@ -27,9 +27,9 @@ export function SearchForm({
         aria-label="Buscar productos"
         placeholder="Busca un producto, marca o código de barras"
         defaultValue={defaultQuery}
-        inputSize={large ? "md" : "sm"}
+        className={large ? undefined : "h-9 text-sm"}
       />
-      <Button type="submit" size={large ? "md" : "sm"}>
+      <Button type="submit" size={large ? "default" : "sm"}>
         <Search aria-hidden="true" className="size-4" />
         Buscar
       </Button>

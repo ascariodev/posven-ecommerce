@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buttonClasses } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import type { PageMeta } from "@/lib/marketplace/schemas";
 import { searchHref, type SearchQuery } from "./query";
 
@@ -8,7 +8,7 @@ export function Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta
   return (
     <nav aria-label="Paginación" className="flex items-center justify-between gap-4">
       {meta.page > 1 ? (
-        <Link href={searchHref({ ...query, pagina: meta.page - 1 })} className={buttonClasses("secondary", "sm")}>
+        <Link href={searchHref({ ...query, pagina: meta.page - 1 })} className={buttonVariants({ variant: "outline", size: "sm" })}>
           Anterior
         </Link>
       ) : (
@@ -18,7 +18,7 @@ export function Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta
         Página {meta.page} de {lastPage}
       </p>
       {meta.page < lastPage ? (
-        <Link href={searchHref({ ...query, pagina: meta.page + 1 })} className={buttonClasses("secondary", "sm")}>
+        <Link href={searchHref({ ...query, pagina: meta.page + 1 })} className={buttonVariants({ variant: "outline", size: "sm" })}>
           Siguiente
         </Link>
       ) : (

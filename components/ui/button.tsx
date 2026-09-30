@@ -1,36 +1,60 @@
-import type { ComponentProps } from "react";
-import { cx } from "./cx";
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Slot } from "radix-ui";
+import { cn } from "@/lib/utils";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
-export type ButtonSize = "md" | "sm";
+const buttonVariants = cva(
+  "group/button inline-flex shrink-0 items-center justify-center rounded-xl border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-none active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground shadow-card hover:bg-primary-hover",
+        outline: "border-border bg-surface text-foreground hover:bg-muted",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+        ghost:
+          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        destructive:
+          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-11 gap-2 px-4 text-base",
+        sm: "h-9 gap-1.5 px-3 text-sm",
+        lg: "h-12 gap-2 px-6 text-base",
+        icon: "size-11",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  },
+);
 
-const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-primary text-primary-foreground shadow-card hover:bg-primary-hover",
-  secondary: "border border-border bg-surface text-foreground hover:bg-muted",
-  ghost: "text-foreground hover:bg-muted",
-};
+function Button({
+  className,
+  variant = "default",
+  size = "default",
+  asChild = false,
+  type = "button",
+  ...props
+}: React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+  }) {
+  const Comp = asChild ? Slot.Root : "button";
 
-const sizeClasses: Record<ButtonSize, string> = {
-  md: "h-11 px-4 text-base",
-  sm: "h-9 px-3 text-sm",
-};
-
-export function buttonClasses(variant: ButtonVariant = "primary", size: ButtonSize = "md"): string {
-  return cx(
-    "inline-flex items-center justify-center gap-2 rounded-xl font-medium",
-    "transition duration-150 ease-out motion-reduce:transition-none",
-    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
-    "disabled:pointer-events-none disabled:opacity-50",
-    variantClasses[variant],
-    sizeClasses[size],
+  return (
+    <Comp
+      data-slot="button"
+      data-variant={variant}
+      data-size={size}
+      type={asChild ? undefined : type}
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
   );
 }
 
-export type ButtonProps = ComponentProps<"button"> & {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-};
-
-export function Button({ variant, size, className, type = "button", ...props }: ButtonProps) {
-  return <button type={type} className={cx(buttonClasses(variant, size), className)} {...props} />;
-}
+export { Button, buttonVariants };

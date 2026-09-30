@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { cx } from "@/components/ui/cx";
+import { cn } from "@/lib/utils";
 import { formatDistance } from "@/lib/format";
 import type { NearbyStore } from "@/lib/marketplace/schemas";
 import { storeInitials } from "./initials";
@@ -11,7 +11,7 @@ export function StoreCard({ store, featured }: { store: NearbyStore; featured?: 
   return (
     <Link
       href={`/tienda/${store.slug}`}
-      className={cx(
+      className={cn(
         "flex h-full items-center gap-4 rounded-2xl border border-border p-4 shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
         featured ? "bg-featured" : "bg-surface",
       )}
@@ -35,8 +35,8 @@ export function StoreCard({ store, featured }: { store: NearbyStore; featured?: 
       <div className="flex min-w-0 flex-col gap-1">
         {(featured || store.outside_radius) && (
           <div className="flex flex-wrap gap-1">
-            {featured && <Badge variant="featured">Destacado</Badge>}
-            {store.outside_radius && <Badge>Fuera de tu zona</Badge>}
+            {featured && <Badge variant="default">Destacado</Badge>}
+            {store.outside_radius && <Badge variant="secondary">Fuera de tu zona</Badge>}
           </div>
         )}
         <h3 className="font-medium text-foreground">{store.name}</h3>

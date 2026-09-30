@@ -1,10 +1,10 @@
 import type { ComponentProps } from "react";
-import { cx } from "./cx";
+import { cn } from "@/lib/utils";
 
 export function Card({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
-      className={cx("rounded-2xl border border-border bg-surface p-4 shadow-card", className)}
+      className={cn("rounded-2xl border border-border bg-surface p-4 shadow-card", className)}
       {...props}
     />
   );

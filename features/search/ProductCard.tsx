@@ -21,7 +21,7 @@ export function ProductCard({ item }: { item: SearchItem }) {
         {item.brand !== null && <p className="text-sm text-muted-foreground">{item.brand}</p>}
         <div className="flex flex-wrap gap-1">
           {item.restriction === "recipe" && <Badge variant="warning">Requiere récipe</Badge>}
-          {item.outside_radius && <Badge>Fuera de tu zona</Badge>}
+          {item.outside_radius && <Badge variant="secondary">Fuera de tu zona</Badge>}
         </div>
         <p className="text-xl font-bold text-foreground">
           {pricePrefix}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buttonClasses } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { RADIUS_OPTIONS } from "@/lib/marketplace/params";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
 import { SITE_NAME } from "@/lib/site";
@@ -53,13 +53,13 @@ export function EmptyState({
           {widerRadius !== undefined && (
             <Link
               href={searchHref({ ...query, radio: widerRadius, pagina: 1 })}
-              className={buttonClasses("primary", "sm")}
+              className={buttonVariants({ size: "sm" })}
             >
               Ampliar a {widerRadius} km
             </Link>
           )}
           {offerNationwide && (
-            <Link href={searchHref({ ...query, radio: null, pagina: 1 })} className={buttonClasses("secondary", "sm")}>
+            <Link href={searchHref({ ...query, radio: null, pagina: 1 })} className={buttonVariants({ variant: "outline", size: "sm" })}>
               Buscar en todo el país
             </Link>
           )}

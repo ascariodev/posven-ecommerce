@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buttonClasses } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { DEFAULT_RADIUS_KM, RADIUS_OPTIONS, type RadiusKm } from "@/lib/marketplace/params";
 import { searchHref, type SearchQuery } from "./query";
 
@@ -35,7 +35,7 @@ export function RadiusFilter({
             <Link
               href={searchHref({ ...query, radio: option.radio, pagina: 1 })}
               aria-current={option.current ? "true" : undefined}
-              className={buttonClasses(option.current ? "primary" : "secondary", "sm")}
+              className={buttonVariants({ variant: option.current ? "default" : "outline", size: "sm" })}
             >
               {option.label}
             </Link>

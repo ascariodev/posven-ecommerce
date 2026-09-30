@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Card } from "@/components/ui/card";
-import { cx } from "@/components/ui/cx";
+import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/session";
 import { ResendVerificationForm } from "@/features/account/VerifyEmailForm";
@@ -45,7 +45,7 @@ async function AccountSummary() {
       <ul className="grid gap-4 sm:grid-cols-2">
         {SHORTCUTS.map((shortcut) => (
           <li key={shortcut.href} className="flex">
-            <Link href={shortcut.href} className={cx(shortcutClasses, "flex w-full flex-col gap-1")}>
+            <Link href={shortcut.href} className={cn(shortcutClasses, "flex w-full flex-col gap-1")}>
               <span className="text-lg font-bold tracking-tight text-foreground">{shortcut.title}</span>
               <span className="text-sm text-muted-foreground">{shortcut.description}</span>
             </Link>

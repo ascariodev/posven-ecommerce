@@ -178,7 +178,7 @@ export function AddressForm({ address, cities }: { address: Address | null; citi
         <FieldError id={`${prefijo}-reference-error`} state={state} name="reference" />
       </div>
       <div className="flex flex-col items-start gap-2">
-        <Button type="button" variant="secondary" size="sm" onClick={requestPosition}>
+        <Button type="button" variant="outline" size="sm" onClick={requestPosition}>
           <MapPin aria-hidden="true" className="size-4" />
           Usar mi ubicación
         </Button>

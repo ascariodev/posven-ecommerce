@@ -24,7 +24,7 @@ function RemoveFavoriteForm({ target, name }: { target: FavoriteTarget; name: st
       <input type="hidden" name="slug" value={target.slug} />
       <input type="hidden" name="mode" value="remove" />
       <input type="hidden" name="volver" value="/cuenta/favoritos" />
-      <Button type="submit" variant="secondary" size="sm" aria-label={`Quitar ${name} de favoritos`}>
+      <Button type="submit" variant="outline" size="sm" aria-label={`Quitar ${name} de favoritos`}>
         Quitar
       </Button>
     </form>

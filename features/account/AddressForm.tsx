@@ -4,6 +4,15 @@ import { MapPin } from "lucide-react";
 import { useActionState, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Address } from "@/lib/marketplace/schemas";
 import { saveAddress } from "./accountActions";
 import { FieldError, FormNotice } from "./FormFeedback";
@@ -33,8 +42,13 @@ export function AddressForm({ address, cities }: { address: Address | null; citi
   const [coords, setCoords] = useState<Coords | null>(null);
   const [geoFailed, setGeoFailed] = useState(false);
   const [seenState, setSeenState] = useState(state);
+  // Radix devuelve el Select al valor con que se montó cuando React resetea el formulario tras la
+  // acción; montarlo de nuevo con cada respuesta le da el valor de la respuesta, como el
+  // `defaultValue` de un campo nativo.
+  const [responses, setResponses] = useState(0);
   if (seenState !== state) {
     setSeenState(state);
+    setResponses((count) => count + 1);
     // Una dirección nueva guardada deja el formulario listo para la siguiente: pide la ubicación otra vez.
     if (state.status === "success" && address === null) {
       setCoords(null);
@@ -125,26 +139,33 @@ export function AddressForm({ address, cities }: { address: Address | null; citi
         <label htmlFor={`${prefijo}-city`} className="text-sm font-medium text-foreground">
           Ciudad
         </label>
-        <select
-          id={`${prefijo}-city`}
+        <Select
+          key={responses}
           name="city_slug"
           required
-          defaultValue={value("city_slug", address?.city.slug ?? "")}
-          aria-invalid={hasError("city_slug") || undefined}
-          aria-describedby={describedBy("city_slug")}
-          className="h-11 w-full rounded-md border border-input-border bg-surface px-3 text-base text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          defaultValue={value("city_slug", address?.city.slug ?? "") || undefined}
         >
-          <option value="">Elige tu ciudad</option>
-          {groups.map((group) => (
-            <optgroup key={group.state} label={group.state}>
-              {group.cities.map((city) => (
-                <option key={city.slug} value={city.slug}>
-                  {city.name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
+          <SelectTrigger
+            id={`${prefijo}-city`}
+            className="w-full"
+            aria-invalid={hasError("city_slug") || undefined}
+            aria-describedby={describedBy("city_slug")}
+          >
+            <SelectValue placeholder="Elige tu ciudad" />
+          </SelectTrigger>
+          <SelectContent>
+            {groups.map((group) => (
+              <SelectGroup key={group.state}>
+                <SelectLabel>{group.state}</SelectLabel>
+                {group.cities.map((city) => (
+                  <SelectItem key={city.slug} value={city.slug}>
+                    {city.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            ))}
+          </SelectContent>
+        </Select>
         <FieldError id={`${prefijo}-city_slug-error`} state={state} name="city_slug" />
       </div>
       <div className="flex flex-col gap-1">

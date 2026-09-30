@@ -88,7 +88,8 @@ test.describe("cuenta del comprador", () => {
     await newAddress.getByLabel("Nombre de la dirección").fill("Trabajo");
     await newAddress.getByLabel("Quién recibe").fill(name);
     await newAddress.getByLabel("Teléfono").fill(phone);
-    await newAddress.getByLabel("Ciudad").selectOption("valencia");
+    await newAddress.getByRole("combobox", { name: "Ciudad" }).click();
+    await page.getByRole("option", { name: "Valencia" }).click();
     await newAddress.getByLabel("Dirección", { exact: true }).fill("Calle 1");
     await newAddress.getByRole("button", { name: "Usar mi ubicación" }).click();
     await expect(newAddress.getByText("Ubicación lista")).toBeVisible();

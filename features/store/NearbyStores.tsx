@@ -32,7 +32,7 @@ export async function NearbyStores() {
       {stores.length === 0 ? (
         <p className="text-muted-foreground">Todavía no hay tiendas cerca. Prueba con otra ciudad.</p>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {stores.map(({ store, featured: isFeatured }) => (
             <li key={store.slug}>
               <StoreCard store={store} featured={isFeatured} />
@@ -46,9 +46,9 @@ export async function NearbyStores() {
 
 export function NearbyStoresSkeleton() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 4 }, (_, index) => (
-        <Skeleton key={index} className="h-24" />
+        <Skeleton key={index} className="h-40" />
       ))}
     </div>
   );

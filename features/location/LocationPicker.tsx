@@ -3,15 +3,21 @@
 import { useId, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { LocationState } from "@/lib/marketplace/schemas";
 import { clearLocation, setLocationCity, setLocationFromCoords } from "./actions";
 
 type Mode = "summary" | "choose" | "select";
 
-const selectClasses =
-  "h-11 w-full rounded-md border border-input-border bg-surface px-3 text-base text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-50";
-
-export function LocationPicker({ label, states }: { label: string | null; states: LocationState[] }) {
+export function LocationPicker({
+  label,
+  states,
+  onDone,
+}: {
+  label: string | null;
+  states: LocationState[];
+  onDone?: () => void;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [mode, setMode] = useState<Mode>("summary");
@@ -46,6 +52,7 @@ export function LocationPicker({ label, states }: { label: string | null; states
           setMessage(null);
           setMode("summary");
           router.refresh();
+          onDone?.();
         });
       },
       geolocationFailed,
@@ -63,6 +70,7 @@ export function LocationPicker({ label, states }: { label: string | null; states
       setMessage(null);
       setMode("summary");
       router.refresh();
+      onDone?.();
     });
   }
 
@@ -72,6 +80,7 @@ export function LocationPicker({ label, states }: { label: string | null; states
       setMessage(null);
       setMode("summary");
       router.refresh();
+      onDone?.();
     });
   }
 
@@ -105,7 +114,7 @@ export function LocationPicker({ label, states }: { label: string | null; states
 
       {!showSummary && mode === "select" && (
         <form
-          className="grid gap-3 sm:grid-cols-4 sm:items-end"
+          className="flex flex-col gap-3"
           onSubmit={(event) => {
             event.preventDefault();
             saveCity();
@@ -115,64 +124,66 @@ export function LocationPicker({ label, states }: { label: string | null; states
             <label htmlFor={`${fieldId}-state`} className="text-sm font-medium text-foreground">
               Estado
             </label>
-            <select
-              id={`${fieldId}-state`}
-              className={selectClasses}
+            <Select
               value={stateSlug}
-              onChange={(event) => {
-                setStateSlug(event.target.value);
+              onValueChange={(value) => {
+                setStateSlug(value);
                 setMunicipalitySlug("");
                 setCitySlug("");
               }}
             >
-              <option value="">Selecciona</option>
-              {states.map((state) => (
-                <option key={state.slug} value={state.slug}>
-                  {state.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger id={`${fieldId}-state`} className="w-full">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                {states.map((state) => (
+                  <SelectItem key={state.slug} value={state.slug}>
+                    {state.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex flex-col gap-1">
             <label htmlFor={`${fieldId}-municipality`} className="text-sm font-medium text-foreground">
               Municipio
             </label>
-            <select
-              id={`${fieldId}-municipality`}
-              className={selectClasses}
+            <Select
               value={municipalitySlug}
               disabled={municipalities.length === 0}
-              onChange={(event) => {
-                setMunicipalitySlug(event.target.value);
+              onValueChange={(value) => {
+                setMunicipalitySlug(value);
                 setCitySlug("");
               }}
             >
-              <option value="">Selecciona</option>
-              {municipalities.map((municipality) => (
-                <option key={municipality.slug} value={municipality.slug}>
-                  {municipality.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger id={`${fieldId}-municipality`} className="w-full">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                {municipalities.map((municipality) => (
+                  <SelectItem key={municipality.slug} value={municipality.slug}>
+                    {municipality.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex flex-col gap-1">
             <label htmlFor={`${fieldId}-city`} className="text-sm font-medium text-foreground">
               Ciudad
             </label>
-            <select
-              id={`${fieldId}-city`}
-              className={selectClasses}
-              value={citySlug}
-              disabled={cities.length === 0}
-              onChange={(event) => setCitySlug(event.target.value)}
-            >
-              <option value="">Selecciona</option>
-              {cities.map((city) => (
-                <option key={city.slug} value={city.slug}>
-                  {city.name}
-                </option>
-              ))}
-            </select>
+            <Select value={citySlug} disabled={cities.length === 0} onValueChange={setCitySlug}>
+              <SelectTrigger id={`${fieldId}-city`} className="w-full">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                {cities.map((city) => (
+                  <SelectItem key={city.slug} value={city.slug}>
+                    {city.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <Button type="submit" disabled={citySlug === "" || isPending}>
             Guardar

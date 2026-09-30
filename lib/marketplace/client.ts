@@ -333,10 +333,7 @@ export async function startCheckout(ctx: AccountContext, input: CheckoutInput): 
 
 export async function listPurchases(ctx: AccountContext, page: number): Promise<PurchasePage> {
   if (usesMock()) return mock.listPurchases(ctx, page);
-  return accountRequest(
-    { method: "GET", path: "/me/purchases", ctx, query: new URLSearchParams({ page: String(page) }) },
-    purchasePageSchema,
-  );
+  return accountRequest({ method: "GET", path: "/me/purchases", ctx, query: pageQuery(page) }, purchasePageSchema);
 }
 
 export async function getPurchase(ctx: AccountContext, code: string): Promise<Purchase> {

@@ -15,12 +15,16 @@ import type {
 } from "../schemas";
 
 // `offers_delivery` e `is_open` son del carrito (Cart), no de StoreSummary; `is_open` es fijo para que
-// el simulado no dependa de la hora.
+// el simulado no dependa de la hora. El radio y el envío no son contrato: sólo alimentan la Quote
+// simulada (nulos en una tienda sin reparto).
 export type MockStore = {
   summary: StoreSummary;
   distance_km: number;
   offers_delivery: boolean;
   is_open: boolean;
+  delivery_radius_km: number | null;
+  delivery_fee_usd: Money | null;
+  delivery_fee_ves: Money | null;
 };
 
 export type MockOffer = {
@@ -114,6 +118,9 @@ export const MOCK_STORES: MockStore[] = [
     distance_km: 1.2,
     offers_delivery: true,
     is_open: true,
+    delivery_radius_km: 5,
+    delivery_fee_usd: "1.50",
+    delivery_fee_ves: "54.75",
   },
   {
     summary: {
@@ -132,6 +139,9 @@ export const MOCK_STORES: MockStore[] = [
     distance_km: 4.8,
     offers_delivery: false,
     is_open: true,
+    delivery_radius_km: null,
+    delivery_fee_usd: null,
+    delivery_fee_ves: null,
   },
   {
     summary: {
@@ -150,6 +160,9 @@ export const MOCK_STORES: MockStore[] = [
     distance_km: 7.5,
     offers_delivery: false,
     is_open: true,
+    delivery_radius_km: null,
+    delivery_fee_usd: null,
+    delivery_fee_ves: null,
   },
   {
     summary: {
@@ -168,6 +181,9 @@ export const MOCK_STORES: MockStore[] = [
     distance_km: 9.3,
     offers_delivery: false,
     is_open: true,
+    delivery_radius_km: null,
+    delivery_fee_usd: null,
+    delivery_fee_ves: null,
   },
   {
     summary: {
@@ -186,6 +202,9 @@ export const MOCK_STORES: MockStore[] = [
     distance_km: 165.4,
     offers_delivery: true,
     is_open: false,
+    delivery_radius_km: 5,
+    delivery_fee_usd: "2.00",
+    delivery_fee_ves: "73.00",
   },
   {
     summary: {
@@ -204,6 +223,9 @@ export const MOCK_STORES: MockStore[] = [
     distance_km: 168.0,
     offers_delivery: false,
     is_open: true,
+    delivery_radius_km: null,
+    delivery_fee_usd: null,
+    delivery_fee_ves: null,
   },
 ];
 
@@ -724,6 +746,9 @@ export type MockAccount = {
   favorites: FavoriteTarget[];
 };
 
+// Pago simulado (enmienda F): este comprador recibe un pago fallido.
+export const MOCK_FAILED_PAYMENT_EMAIL = "pago-fallido@posven.test";
+
 export const MOCK_ACCOUNT_SEED: MockAccount[] = [
   {
     id: 1,
@@ -752,9 +777,56 @@ export const MOCK_ACCOUNT_SEED: MockAccount[] = [
     ],
     favorites: [],
   },
+  // Cuentas propias del e2e de checkout (plan 4b): los archivos del e2e corren en paralelo y
+  // account.spec.ts cambia la dirección predeterminada de comprador@posven.test.
+  {
+    id: 2,
+    customer: {
+      name: "Pago fallido",
+      email: MOCK_FAILED_PAYMENT_EMAIL,
+      phone: "+584141234568",
+      email_verified: true,
+      pending_email: null,
+      settings: { order_status_emails: true },
+    },
+    password: "clave-segura-3",
+    addresses: [],
+    favorites: [],
+  },
+  {
+    id: 3,
+    customer: {
+      name: "Comprador con entrega",
+      email: "entrega@posven.test",
+      phone: "+584141234569",
+      email_verified: true,
+      pending_email: null,
+      settings: { order_status_emails: true },
+    },
+    password: "clave-segura-3",
+    addresses: [
+      {
+        // A 1,2 km de farmacia-central-valencia y fuera del radio de farmacia-altamira (Caracas).
+        id: 2,
+        label: "Oficina",
+        recipient_name: "Comprador con entrega",
+        phone: "+584141234569",
+        city: valencia,
+        line: "Av. Bolívar Norte, torre Delta, piso 5",
+        reference: "Frente a la plaza",
+        lat: 10.17,
+        lng: -68.0,
+        is_default: true,
+      },
+    ],
+    favorites: [],
+  },
 ];
 
 export const MOCK_VERIFY_TOKEN = "verificacion-simulada";
 export const MOCK_RESET_TOKEN = "restablecer-simulado";
 export const MOCK_EXPIRED_TOKEN = "enlace-vencido";
 export const MOCK_RATE_LIMITED_EMAIL = "limite@posven.test";
+
+// Línea que sale faltante y reembolsada al pagarse (decisión 4 del plan 4b).
+export const MOCK_MISSING_LINE = { store_slug: "farmacia-central-valencia", product_slug: "alcohol-isopropilico-250-ml" };

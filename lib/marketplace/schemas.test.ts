@@ -17,6 +17,7 @@ import {
   searchProducts,
 } from "./mock/adapter";
 import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "./mock/cart";
+import { getPurchase, listPurchases, quoteCheckout, resetMockPurchases, startCheckout } from "./mock/checkout";
 import { MOCK_STORES } from "./mock/fixtures";
 import {
   accountErrorBodySchema,
@@ -427,5 +428,37 @@ describe("contrato de checkout y compras", () => {
     });
     expect(parsed.success).toBe(true);
     expect(parsed.data?.error.quote?.total_usd).toBe("7.70");
+  });
+});
+
+describe("el simulado de checkout y compras pasa los esquemas del contrato", () => {
+  beforeEach(() => {
+    resetMockAccounts();
+    resetMockCarts();
+    resetMockPurchases();
+  });
+
+  it("Quote, inicio del pago, compra en cada estado y página de compras", async () => {
+    const { token } = await loginCustomer(
+      { session: null, clientIp: null },
+      { email: "entrega@posven.test", password: "clave-segura-3" },
+    );
+    const ctx = { session: token, clientIp: null };
+    await setCartItem(ctx, { store_slug: "farmacia-central-valencia", product_slug: "acetaminofen-500-mg-20-tabletas", quantity: 1 });
+    await setCartItem(ctx, { store_slug: "farmacia-central-valencia", product_slug: "alcohol-isopropilico-250-ml", quantity: 1 });
+    const quoteInput = { stores: [{ store_slug: "farmacia-central-valencia", fulfillment: "delivery" as const }], address_id: 2 };
+
+    const quote = await quoteCheckout(ctx, quoteInput);
+    expect(quoteSchema.safeParse(quote).success).toBe(true);
+
+    const started = await startCheckout(ctx, { ...quoteInput, quote_hash: quote.quote_hash, idempotency_key: crypto.randomUUID() });
+    expect(checkoutStartSchema.safeParse(started).success).toBe(true);
+
+    for (const status of ["pending_payment", "paid", "paid"]) {
+      const purchase = await getPurchase(ctx, started.purchase_code);
+      expect(purchase.status).toBe(status);
+      expect(purchaseSchema.safeParse(purchase).success).toBe(true);
+    }
+    expect(purchasePageSchema.safeParse(await listPurchases(ctx, 1)).success).toBe(true);
   });
 });

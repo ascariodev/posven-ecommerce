@@ -11,6 +11,7 @@ import type {
   FavoritesResponse,
   Product,
   ProfilePatch,
+  Quote,
   RegisterInput,
   StoreSummary,
 } from "../schemas";
@@ -83,12 +84,21 @@ const ERROR_MESSAGES: Record<SimpleErrorCode, string> = {
   open_orders: "Tienes pedidos en curso. Podrás eliminar tu cuenta cuando se entreguen.",
 };
 
+const ERROR_STATUSES: Partial<Record<SimpleErrorCode, number>> = {
+  unauthenticated: 401,
+  email_unverified: 403,
+  not_found: 404,
+  quote_changed: 409,
+  open_orders: 409,
+};
+
 export function accountError(
   code: SimpleErrorCode,
   fields: Record<string, string> | null = null,
+  quote: Quote | null = null,
 ): MarketplaceAccountError {
-  const status = code === "unauthenticated" ? 401 : code === "not_found" ? 404 : 422;
-  return new MarketplaceAccountError({ status, code, message: ERROR_MESSAGES[code], fields });
+  const status = ERROR_STATUSES[code] ?? 422;
+  return new MarketplaceAccountError({ status, code, message: ERROR_MESSAGES[code], fields, quote });
 }
 
 function tooManyAttempts(): MarketplaceAccountError {
@@ -172,6 +182,11 @@ function authenticate(ctx: AccountContext): { account: MockAccount; token: strin
 
 export function customerIdFor(ctx: AccountContext): number {
   return authenticate(ctx).account.id;
+}
+
+// Copia del comprador de la sesión, para el checkout simulado (correo, verificación y direcciones).
+export function mockAccountFor(ctx: AccountContext): MockAccount {
+  return structuredClone(authenticate(ctx).account);
 }
 
 function issueToken(customerId: number): string {
@@ -372,7 +387,13 @@ export async function updateSettings(
   return toCustomer(account);
 }
 
-export async function deleteAccount(ctx: AccountContext, input: { password: string }): Promise<void> {
+// `beforeDelete` corre tras validar la contraseña y antes de borrar: el adaptador bloquea ahí con
+// pedidos abiertos (spec §5.8) sin que este archivo importe el checkout.
+export async function deleteAccount(
+  ctx: AccountContext,
+  input: { password: string },
+  beforeDelete: (customerId: number) => void = () => {},
+): Promise<void> {
   const { account } = authenticate(ctx);
 
   const errors: FieldErrors = {};
@@ -382,6 +403,7 @@ export async function deleteAccount(ctx: AccountContext, input: { password: stri
   if (input.password !== account.password) {
     throw accountError("validation_failed", { password: "La contraseña no es correcta." });
   }
+  beforeDelete(account.id);
   revokeTokens(account.id, null);
   state().accounts.delete(account.id);
 }

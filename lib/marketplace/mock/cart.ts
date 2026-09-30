@@ -92,8 +92,8 @@ function okAmounts(lines: CartLine[], field: "line_usd" | "line_ves"): Money[] {
 }
 
 // Cotiza entradas: agrupa por tienda en el orden de llegada, omite tiendas o productos inexistentes
-// y suma sólo las líneas `ok` (enmienda D).
-function quote(items: CartItem[]): Cart {
+// y suma sólo las líneas `ok` (enmienda D). La usa también el checkout simulado.
+export function quoteItems(items: CartItem[]): Cart {
   const stores: CartStore[] = [];
   for (const item of items) {
     const store = findStore(item.store_slug);
@@ -151,11 +151,29 @@ function parseItems(items: unknown): CartItem[] {
 }
 
 export async function quoteGuestCart(_ctx: AccountContext, items: CartItem[]): Promise<Cart> {
-  return quote(parseItems(items));
+  return quoteItems(parseItems(items));
 }
 
 export async function getCart(ctx: AccountContext): Promise<Cart> {
-  return quote(carts().get(customerIdFor(ctx)) ?? []);
+  return quoteItems(cartItemsFor(customerIdFor(ctx)));
+}
+
+export function cartItemsFor(customerId: number): CartItem[] {
+  return structuredClone(carts().get(customerId) ?? []);
+}
+
+// Al pagarse una compra se quitan del carrito las líneas compradas (spec §5.3 paso 4).
+export function removeCartLines(customerId: number, refs: { store_slug: string; product_slug: string }[]): void {
+  const lines = carts().get(customerId) ?? [];
+  carts().set(
+    customerId,
+    lines.filter((line) => !refs.some((ref) => sameLine(line, ref))),
+  );
+}
+
+// Al eliminar la cuenta se borra su carrito (spec §5.8).
+export function clearMockCart(customerId: number): void {
+  carts().delete(customerId);
 }
 
 export async function setCartItem(ctx: AccountContext, input: CartItemPut): Promise<Cart> {

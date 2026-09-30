@@ -7,12 +7,8 @@ import {
   type OfferSort,
   type RadiusKm,
 } from "../params";
-import { MarketplaceUnavailableError } from "../errors";
 import type {
   CategoryNode,
-  CheckoutInput,
-  CheckoutQuoteInput,
-  CheckoutStart,
   FeaturedProduct,
   LocationState,
   MarketplaceEvent,
@@ -21,9 +17,6 @@ import type {
   OffersSummary,
   ProductOffer,
   ProductResponse,
-  Purchase,
-  PurchasePage,
-  Quote,
   SearchItem,
   SearchResponse,
   SitemapResponse,
@@ -45,6 +38,9 @@ import {
   type MockProduct,
   type MockStore,
 } from "./fixtures";
+import { accountError, customerIdFor, deleteAccount as deleteMockAccount } from "./accounts";
+import { clearMockCart } from "./cart";
+import { hasOpenOrders } from "./checkout";
 
 const SEARCH_PER_PAGE = 20;
 const STORES_PER_PAGE = 12;
@@ -358,7 +354,6 @@ export {
   addFavorite,
   changePassword,
   createAddress,
-  deleteAccount,
   deleteAddress,
   getMe,
   listAddresses,
@@ -378,16 +373,14 @@ export {
 
 export { getCart, mergeCart, quoteGuestCart, setCartItem } from "./cart";
 
-// Checkout y compras: el simulado llega con la Task 2 del plan 4b; hasta entonces responde como API caída.
-function notYetSimulated(endpoint: string): Promise<never> {
-  return Promise.reject(new MarketplaceUnavailableError(endpoint));
+// Checkout y compras (plan 4b): eliminar la cuenta se bloquea con pedidos abiertos y borra el
+// carrito; las compras se conservan (spec §5.8).
+export async function deleteAccount(ctx: AccountContext, input: { password: string }): Promise<void> {
+  const id = customerIdFor(ctx);
+  await deleteMockAccount(ctx, input, (customerId) => {
+    if (hasOpenOrders(customerId)) throw accountError("open_orders");
+  });
+  clearMockCart(id);
 }
 
-export const quoteCheckout: (ctx: AccountContext, input: CheckoutQuoteInput) => Promise<Quote> = () =>
-  notYetSimulated("/checkout/quote");
-export const startCheckout: (ctx: AccountContext, input: CheckoutInput) => Promise<CheckoutStart> = () =>
-  notYetSimulated("/checkout");
-export const listPurchases: (ctx: AccountContext, page: number) => Promise<PurchasePage> = () =>
-  notYetSimulated("/me/purchases");
-export const getPurchase: (ctx: AccountContext, code: string) => Promise<Purchase> = () =>
-  notYetSimulated("/me/purchases/{code}");
+export { getPurchase, listPurchases, quoteCheckout, startCheckout } from "./checkout";

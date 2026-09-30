@@ -15,6 +15,17 @@ README: `features/account/README.md`
 | editar el perfil, la contraseña, los avisos, las direcciones del comprador o eliminar su cuenta | `updateProfile() / changePasswordAction() / updateSettingsAction() / deleteAccountAction() / saveAddress() / deleteAddressAction() / setDefaultAddress()` | `features/account/accountActions.ts` | RN-ACCOUNT-03, RN-ACCOUNT-06 |
 | marcar o quitar un producto o una tienda de favoritos | `<FavoriteButton /> / toggleFavorite()` | `features/account/FavoriteButton.tsx` | RN-ACCOUNT-03, RN-ACCOUNT-05 |
 
+## cart
+
+README: `features/cart/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| agregar un producto de una tienda al carrito | `<AddToCartButton />` | `features/cart/AddToCartButton.tsx` | RN-CART-01, RN-CART-03, RN-CART-04 |
+| leer el carrito de la petición | `getCurrentCart()` | `features/cart/server.ts` | RN-CART-01 |
+| mostrar el contador del carrito en la cabecera | `<CartLink />` | `features/cart/CartLink.tsx` | RN-CART-04 |
+| ver y cambiar el carrito | `<CartView />` | `features/cart/CartView.tsx` | RN-CART-01 |
+
 ## events
 
 README: `features/events/README.md`

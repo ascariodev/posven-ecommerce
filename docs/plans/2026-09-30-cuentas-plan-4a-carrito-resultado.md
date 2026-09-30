@@ -12,7 +12,8 @@
   APPROVED, con `7b08432`; Task 3 `53573a9`, revisión APPROVED, con `0540d8a`; Task 4 `5d7cd43`,
   revisión APPROVED, con `47cc962`; Task 5 `6166fa0`, revisión CHANGES_REQUIRED (dos Important de
   accesibilidad), corregida en `ba7be6b`; Task 6, el commit de cierre `docs(carrito): cierre del
-  plan 4a de cuentas y compras`
+  plan 4a de cuentas y compras`; revisión final CHANGES_REQUIRED (un Important, siete Minor),
+  corregida en `fix(carrito): arreglos de la revisión final del plan 4a`
 
 ## Qué queda hecho
 
@@ -27,7 +28,10 @@
   `controlled` (`clonazepam-0-5-mg-30-tabletas`).
 - **Carrito de invitado y acciones** (`features/cart/`): cookie `mp_cart` con sus límites
   (`RN-CART-01`), `getCurrentCart` y `getSessionCart` (una lectura por petición), `addToCart`
-  (suma 1), `setQuantity` y `removeLine`; un 401 borra la sesión y sigue como invitado.
+  (suma 1; con sesión, si la API topa al stock responde "Sólo hay N unidades disponibles." en
+  lugar de "Agregado"), `setQuantity` y `removeLine`; un 401 borra la sesión y sigue como
+  invitado. Los límites 20, 99 y 120 salen de `CART_MAX_LINES`, `CART_MAX_QUANTITY` y
+  `CART_SLUG_MAX_LENGTH`, exportados por `schemas.ts`.
 - **Fusión** al entrar y al registrarse (`RN-CART-02`): con la API caída o un 429 conserva
   `mp_cart`; ante otro error de la API la borra; nunca impide el acceso.
 - **"Agregar al carrito"** en las tres listas de ofertas de la ficha y en los productos de la
@@ -62,13 +66,23 @@
    (spec §6 dice "se ignora y se borra"): un Server Component no puede borrar cookies. La fusión sí
    la borra.
 7. **La API caída en "Quitar uno", "Agregar uno" y "Quitar" va a `error.tsx`** (precedente de
-   `deleteAddressAction`), no a un aviso en el formulario como dice §6.
+   `deleteAddressAction`), no a un aviso en el formulario como dice §6; un 429 en esos tres
+   controles también. En "Agregar" el 429 sí se avisa en el formulario: "Demasiados intentos.
+   Prueba de nuevo en N segundos.", con N de `retryAfter`.
 8. **Sin JavaScript no hay carrito en la práctica** (ver "Hallazgo" abajo): el caso e2e sin
    JavaScript que pedía la Task 5 quedó como `test.fixme`.
 9. **Pruebas no pedidas por el plan**, útiles y declaradas: en `mock/cart.test.ts`, más de 20
    entradas, inexistentes omitidas, sin sesión y errores por campo; en `schemas.test.ts`, 20
    entradas aceptadas y los rechazos de cantidad 0, 100 y 21 entradas; en `money.test.ts`, céntimos
-   negativos o no enteros; en `features/account/actions.test.ts`, la fusión ante un 429.
+   negativos o no enteros; en `features/account/actions.test.ts`, la fusión ante un 429 y la
+   ausencia de fusión con el carrito apagado.
+10. **Detalles de interfaz fuera del plan**: una línea no disponible sólo atenúa la imagen
+    (atenuar el texto bajaría su contraste); el número del contador es un `span` con las clases
+    de la píldora y no un `Badge`; el enlace del contador lleva `rel="nofollow"` (`/carrito` es
+    `noindex`).
+11. **Exports que el plan no pedía**: `writeGuestCart` (`cookie.ts`, lo usan las acciones),
+    `CartContent` (`CartView.tsx`, la parte síncrona que prueba `CartView.test.tsx`) y
+    `accountError` y `customerIdFor` (`mock/accounts.ts`, los reutiliza `mock/cart.ts`).
 
 ## Hallazgo para quien coordina: sin JavaScript no hay carrito
 
@@ -96,7 +110,12 @@ cookies y `searchParams` dentro de `<Suspense>`). Queda como `test.fixme` en `e2
   servidor y el e2e completo 24/24 dos veces seguidas: el e2e es repetible con el estado del
   simulado acumulado.
 - `CAPABILITIES.md` regenerado con la reproducción `gen-capabilities.mjs` del traspaso, validada
-  idéntica al archivo de `77ca74e` (el script real de `posven` no está en la nube).
+  idéntica al archivo de `77ca74e` (el script real de `posven` no está en la nube). En el cierre
+  el módulo `cart` faltaba: el script lee `git ls-files` y su README aún no estaba en git. Se
+  regeneró con los arreglos de la revisión final y ahora tiene la sección `## cart`.
+- Tras los arreglos de la revisión final: `tsc` y `eslint` sin salida; `vitest run` entero 47
+  archivos, 346 pruebas; `next build` exit 0 sin `blocking-route`; `playwright test` 24 pasan y
+  1 `fixme`.
 - **Sin comprobar**: el interruptor apagado en un build real en modo API (el build en modo API pide
   la API); lo cubren `flag.test.ts`, `CartLink.test.tsx`, `actions.test.ts` y las pruebas de ficha y
   tienda. La revisión visual en navegador la corre quien coordina.
@@ -110,6 +129,14 @@ cookies y `searchParams` dentro de `<Suspense>`). Queda como `test.fixme` en `e2
 - **Doble fusión**: si posveapi aplica el `merge` pero la respuesta pasa del tope de 5 s, la cookie
   se conserva y el siguiente login vuelve a sumar (con techo de stock). Pedir idempotencia al plan
   3 de posveapi.
+- **El contador cuenta distinto según haya sesión**: el invitado cuenta las entradas de `mp_cart`
+  (también las no disponibles y las fantasma); con sesión, `line_count` cuenta sólo las líneas
+  `ok`. Al entrar, el número puede bajar sin que el comprador haya quitado nada.
+- **Tope de stock del invitado**: sin sesión no se conoce el stock, así que "Agregar" responde
+  "Agregado" aunque la cotización luego muestre menos unidades (diferencia 1).
+- **Fusión fallida**: con la API caída o un 429, `mp_cart` se conserva pero no se ve mientras
+  dure la sesión (con sesión se lee el carrito de la API) y se fusiona en el próximo login. Ante
+  otro error de la API se borra y esas líneas se pierden.
 - **Líneas fantasma del invitado**: una entrada con un slug inexistente cuenta en el contador,
   ocupa cupo y no sale en `/carrito` (la cotización la omite) hasta el login.
 - **Motivos de `unavailable`**: la prioridad restringido > tienda que no vende > oferta

@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
-const buttonVariants = cva(
+const buttonStyles = cva(
   "group/button inline-flex shrink-0 items-center justify-center rounded-xl border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-none active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
@@ -32,6 +32,10 @@ const buttonVariants = cva(
   },
 );
 
+function buttonVariants(options?: Parameters<typeof buttonStyles>[0]): string {
+  return cn(buttonStyles(options));
+}
+
 function Button({
   className,
   variant = "default",
@@ -40,7 +44,7 @@ function Button({
   type = "button",
   ...props
 }: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
+  VariantProps<typeof buttonStyles> & {
     asChild?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : "button";
@@ -51,7 +55,7 @@ function Button({
       data-variant={variant}
       data-size={size}
       type={asChild ? undefined : type}
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={buttonVariants({ variant, size, className })}
       {...props}
     />
   );

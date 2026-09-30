@@ -81,6 +81,8 @@ describe("AddressForm", () => {
       "CaraboboValenciaNaguanagua",
       "Distrito CapitalCaracas",
     ]);
+    expect(screen.getByRole("group", { name: "Carabobo" })).toBe(groups[0]);
+    expect(screen.getByRole("group", { name: "Distrito Capital" })).toBe(groups[1]);
   });
 
   it("tras un envío con error conserva la ciudad elegida", async () => {

@@ -53,7 +53,6 @@ README: `features/search/README.md`
 |---|---|---|---|
 | buscar productos por texto o categoría cerca del usuario | `<SearchResults />` | `features/search/SearchResults.tsx` | RN-SEARCH-01, RN-SEARCH-03, RN-SEARCH-04 |
 | leer y escribir los parámetros de la URL de /buscar | `parseSearchQuery() / searchHref()` | `features/search/query.ts` | RN-SEARCH-02 |
-| mostrar el formulario de búsqueda | `<SearchForm />` | `features/search/SearchForm.tsx` |  |
 | mostrar la píldora de búsqueda con el segmento de ubicación | `<SearchPill />` | `features/search/SearchPill.tsx` |  |
 | mostrar el carril de categorías del inicio | `<CategoryRail />` | `features/search/CategoryRail.tsx` |  |
 

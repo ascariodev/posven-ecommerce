@@ -19,7 +19,8 @@ aplicada en: `.claude/rules/app-router.md` (regla 7), `features/location/Locatio
 variante `data-open` de `shadcn/tailwind.css`, que es `:where()` (especificidad cero), y Tailwind
 la emite después, así que gana. Se apila: `motion-reduce:data-open:animate-none
 motion-reduce:data-closed:animate-none`, que sale detrás.
-aplicada en: `components/ui/sheet.tsx`, `components/ui/select.tsx`
+aplicada en: `components/ui/sheet.tsx`, `components/ui/select.tsx`,
+`components/ui/dropdown-menu.tsx`
 
 ## L-04
 
@@ -27,3 +28,12 @@ Un `Select` de Radix dentro de un `<form action>` con `useActionState` vuelve al
 montó cuando React 19 resetea el formulario tras la acción, y pierde lo elegido. Se monta de nuevo
 con una `key` que cambia con cada respuesta, para que tome el `defaultValue` de la respuesta.
 aplicada en: `features/account/AddressForm.tsx`
+
+## L-05
+
+Un botón `submit` dentro del contenido de un menú de Radix no envía con movimiento reducido: al
+elegir el ítem, Radix cierra el menú y, sin animación de salida que retenga `Presence`, React
+desmonta el contenido antes de la acción por defecto del clic; el formulario queda desconectado.
+El formulario va fuera del menú, siempre montado, y el ítem lo envía con `requestSubmit()` en su
+`onSelect`.
+aplicada en: `features/account/AccountDropdown.tsx`

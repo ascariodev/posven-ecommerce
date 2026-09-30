@@ -59,6 +59,7 @@ las alturas escritas a mano en controles y esqueletos siguen la misma pareja.
 | Inicio | Título, píldora de dos segmentos (qué y dónde), carril de categorías con icono, rejilla "Cerca de ti" con tarjetas de imagen, tiendas con portada | `input`, `button`, `tabs`, `card`, `badge` |
 | Búsqueda | Píldora compacta, chips de categoría, botón de filtros, orden y rejilla de tarjetas con "Desde" y número de tiendas | `sheet` (filtros en móvil), `select`, `badge`, `toggle-group` |
 | Ficha | Imagen a la izquierda; a la derecha un panel con el resumen del producto y su rango de precio; debajo, a todo el ancho, las tiendas en filas con "Mejor precio", Llamar y Ver ruta (precisiones del plan 3 abajo) | `card`, `badge`, `button`, `toggle` |
+| Cabecera | Marca, píldora compacta de dos segmentos (qué y dónde) y cuenta; en `/` y `/buscar` sin píldora, que ya va en la página (precisiones del plan 5 abajo) | `input`, `button`, `sheet`, `select`, `dropdown-menu` |
 
 Diferencias del plan 2 (`docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda.md`) contra
 la tabla anterior, decididas al planificarlo y ya en el código:
@@ -96,6 +97,20 @@ decididas al planificarlo y ya en el código:
 4. **Migas de pan con las categorías como texto.** Sólo "Inicio" es enlace; `/categoria/<slug>`
    no existe (hoy da 404). El JSON-LD `BreadcrumbList` lleva sólo Inicio y el producto.
 
+Precisiones del plan 5 (`docs/plans/2026-09-30-shadcn-mercado-plan-5-cabecera.md`) sobre la
+cabecera, decididas al planificarlo y ya en el código:
+
+1. **Píldora compacta en ficha, tienda y cuenta.** `SearchPill compact` con "qué", "dónde" (abre
+   `LocationSheet`) y "Buscar"; reemplaza al buscador compacto anterior y al texto "Cerca de: …".
+   Como vive en el layout raíz, fuera de `app/error.tsx`, su segmento "dónde" no se pinta si la
+   API cae (L-02); en `/` y `/buscar` la píldora de la página conserva su comportamiento.
+2. **Menú de cuenta con `dropdown-menu`.** "Mi cuenta" abre un menú con Resumen, Perfil,
+   Direcciones, Favoritos, Configuración y Salir; se cierra con Escape y clic fuera y se recorre
+   con las flechas. Sin JavaScript el menú no abre (se acepta, como la hoja de ubicación).
+3. **Dos filas en móvil.** Marca y cuenta arriba; la píldora abajo, a todo el ancho. Desde `sm`,
+   una fila: marca, píldora centrada con ancho máximo y cuenta. La cabecera conserva el vidrio, el
+   desenfoque y la sombra al hacer scroll.
+
 Sin imagen, una tarjeta muestra el icono de su categoría raíz sobre un tinte por categoría (el
 comportamiento actual de `ProductThumb`, con los tintes del prototipo). "Mejor precio" marca la
 oferta de menor precio de la ficha (precisión 2 arriba); el frontend no calcula montos, usa el
@@ -123,6 +138,7 @@ Modo ligero (pantallas contra un simulado y datos locales), un solo repo. Razone
 | 2 | Inicio y búsqueda en dirección C (§4) | Depende de 1; juicio visual | ~10 archivos |
 | 3 | Ficha en dirección C (§4). **Cerrado** (2026-09-30) | Otra pantalla; se puede revisar sola | ~5 archivos |
 | 4 | Deuda menor de los planes 2 y 3: primitivas, `sm` táctil, ficha y `AddressForm` con `Select`. **Cerrado** (2026-09-30) | Arreglos repartidos que no cambian pantallas | ~25 archivos |
+| 5 | Cabecera en dirección C: píldora compacta y menú de cuenta. **Cerrado** (2026-09-30) | Pieza común a todas las pantallas; se revisa sola | ~10 archivos |
 
 El plan 1 se parte en dos tareas por área (cuenta y formularios frente a búsqueda, producto y
 tienda) si el diff no se revisa en una pasada. Antes de ejecutar 2 y 3 se instalan solo las piezas

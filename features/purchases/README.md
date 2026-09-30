@@ -1,0 +1,108 @@
+---
+module: "purchases"
+path: "features/purchases"
+type: "feature"
+exports: ["PURCHASE_STATUS_TEXT", "ORDER_STATUS_TEXT", "FULFILLMENT_TEXT", "formatDateTime", "storeCountText", "PurchaseList", "PurchaseRow", "purchaseHref", "PurchaseDetail", "RecentPurchases"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx"]
+tests: "features/purchases/*.test.{ts,tsx}"
+verified_against: ["features/purchases/labels.ts", "features/purchases/PurchaseList.tsx", "features/purchases/PurchaseDetail.tsx", "features/purchases/RecentPurchases.tsx", "features/purchases/PurchaseList.test.tsx", "features/purchases/PurchaseDetail.test.tsx", "features/purchases/RecentPurchases.test.tsx", "app/cuenta/compras/page.tsx", "app/cuenta/compras/[codigo]/page.tsx", "app/cuenta/page.tsx", "app/cuenta/layout.tsx", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
+capabilities:
+  - intent: "listar las compras del comprador, paginadas"
+    intent_aliases: ["mis compras", "historial de compras", "pedidos", "compras anteriores"]
+    entrypoint: "<PurchaseList />"
+    file: "features/purchases/PurchaseList.tsx"
+    input: "page: PurchasePage (de listPurchases en app/cuenta/compras/page.tsx, con ?pagina=N)"
+    output: "filas con código, estado, fecha, tiendas y total enlazadas al detalle; 'Anteriores' y 'Siguientes'; vacío con 'Buscar productos'"
+    source: "GET /me/purchases?page de posveapi vía BFF"
+    rules: ["RN-PURCHASES-01"]
+  - intent: "ver el detalle de una compra con el código de retiro y los reembolsos"
+    intent_aliases: ["detalle de compra", "codigo de retiro", "pickup code", "reembolso", "linea faltante"]
+    entrypoint: "<PurchaseDetail />"
+    file: "features/purchases/PurchaseDetail.tsx"
+    input: "purchase: Purchase (de getPurchase en app/cuenta/compras/[codigo]/page.tsx)"
+    output: "estado, total y cobro; una tarjeta por pedido con entrega, estado (sólo pagada), código de retiro, dirección, líneas con 'Faltante · reembolsado', subtotal, envío, reembolsado y fechas"
+    source: "GET /me/purchases/{code} de posveapi vía BFF"
+    rules: ["RN-PURCHASES-02", "RN-PURCHASES-03"]
+  - intent: "mostrar las últimas compras en el resumen de la cuenta"
+    intent_aliases: ["ultimas compras", "resumen de compras"]
+    entrypoint: "<RecentPurchases />"
+    file: "features/purchases/RecentPurchases.tsx"
+    input: "ctx: AccountContext; en app/cuenta/page.tsx dentro de <Suspense>, con el carrito encendido"
+    output: "las 3 primeras de la página 1 y 'Ver todas'; null sin compras"
+    source: "GET /me/purchases?page=1"
+    rules: ["RN-PURCHASES-01"]
+---
+
+# Módulo `purchases`
+
+## 1. Propósito
+
+Compras del comprador (plan 4b de cuentas y compras): el historial paginado en `/cuenta/compras`,
+el detalle en `/cuenta/compras/[codigo]` con el código de retiro y los reembolsos, y "Últimas
+compras" en `/cuenta`. No calcula montos: el envío, el reembolso y los totales son cadenas de la
+API. El pago y su resultado viven en `features/checkout`.
+
+## 2. Reglas de negocio
+
+| Regla | Enunciado | Test que la hace cumplir |
+|---|---|---|
+| `RN-PURCHASES-01` | Las compras llegan de 10 en 10, más recientes primero; la lista pagina con `?pagina=N` (la 1 sin parámetro), una página fuera de rango con compras es 404 y "Últimas compras" muestra las 3 primeras de la página 1. | `features/purchases/PurchaseList.test.tsx`; `features/purchases/RecentPurchases.test.tsx`; `lib/marketplace/mock/checkout.test.ts` ("el listado va de 10 en 10...") |
+| `RN-PURCHASES-02` | El detalle destaca el `pickup_code` ("Código de retiro") cuando no es nulo y marca cada línea `missing` con "Faltante · reembolsado"; el reembolsado del pedido sale sólo si no es cero. | `features/purchases/PurchaseDetail.test.tsx`; `e2e/checkout.spec.ts` ("compra completa...") |
+| `RN-PURCHASES-03` | El estado de cada pedido sólo se muestra con la compra `paid`: el contrato no tiene un estado de pedido para una compra sin pagar (hueco a acordar con posveapi). | `features/purchases/PurchaseDetail.test.tsx` ("con la compra sin pagar no muestra el estado del pedido") |
+
+## 3. Dónde hacer cambios
+
+| Tipo de cambio | Dónde va | Además hay que |
+|---|---|---|
+| Textos de estados o entrega | `labels.ts` | las pruebas de lista y detalle y `e2e/checkout.spec.ts` |
+| Un dato nuevo del pedido | `PurchaseDetail.tsx` | el esquema en `lib/marketplace/schemas.ts` primero (spec §4.1) |
+| Tamaño de "Últimas compras" | `RECENT_COUNT` en `RecentPurchases.tsx` | `RecentPurchases.test.tsx` |
+
+## 4. API pública
+
+- `PURCHASE_STATUS_TEXT`, `ORDER_STATUS_TEXT`, `FULFILLMENT_TEXT`, `formatDateTime(iso: string): string` ("30/09/2026 14:00" en hora de Caracas) y `storeCountText(count: number): string`, `features/purchases/labels.ts`.
+- `PurchaseList({ page }: { page: PurchasePage })`, `PurchaseRow({ purchase })` y `purchaseHref(code: string): string`, `features/purchases/PurchaseList.tsx`.
+- `PurchaseDetail({ purchase }: { purchase: Purchase })`, `features/purchases/PurchaseDetail.tsx`.
+- `RecentPurchases({ ctx }: { ctx: AccountContext })`, `features/purchases/RecentPurchases.tsx` (Server Component async).
+
+## 5. Estructura interna
+
+| Pieza | Archivo | Responsabilidad |
+|---|---|---|
+| Textos y fechas | `labels.ts` | estados en español y fecha armada por partes de `Intl.DateTimeFormat` |
+| Lista | `PurchaseList.tsx` | filas enlazadas y paginación desde `meta` (cuenta páginas, no montos) |
+| Detalle | `PurchaseDetail.tsx` | una tarjeta por pedido; fechas no nulas de `timeline` |
+| Resumen | `RecentPurchases.tsx` | reutiliza `PurchaseRow` |
+| Rutas | `app/cuenta/compras/page.tsx`, `app/cuenta/compras/[codigo]/page.tsx` | `noindex`, `requireCustomer`, 404 con el carrito apagado, código inválido o `not_found`; título fijo "Detalle de compra" (el código es de la petición) |
+
+## 6. Dependencias
+
+- `lib/marketplace/client.ts` (`listPurchases`), `schemas.ts`, `params.ts`; `lib/format.ts`.
+- `components/ui/` (`Badge`, `buttonVariants`, `Card`).
+- Las rutas usan `features/account/session.ts`, `features/cart/flag.ts` y `PURCHASE_CODE_PATTERN` de `features/checkout/CheckoutResult.tsx`.
+
+## 7. Ejemplo de uso
+
+```tsx
+import { PurchaseList } from "@/features/purchases/PurchaseList";
+import { listPurchases } from "@/lib/marketplace/client";
+import type { AccountContext } from "@/lib/marketplace/params";
+
+async function Purchases({ ctx }: { ctx: AccountContext }) {
+  return <PurchaseList page={await listPurchases(ctx, 1)} />;
+}
+```
+
+## 8. Restricciones
+
+- El módulo no calcula montos: todo monto es una cadena de la API formateada con `lib/format.ts`.
+- Nada de un comprador en `'use cache'`; las rutas leen la sesión dentro de `<Suspense>`.
+- Con el carrito apagado no hay compras: `/cuenta/compras*` da 404 y ni "Mis compras" ni "Últimas compras" se pintan.
+
+## 9. Pruebas
+
+- Comando: el de la sección Verificación de `posven-ecommerce/CLAUDE.md` (`npx vitest run features/purchases`).
+- `features/purchases/PurchaseList.test.tsx`: fecha de Caracas, fila completa, vacío y paginación en la primera y la última página.
+- `features/purchases/PurchaseDetail.test.tsx`: código de retiro, faltante reembolsado y montos sin calcular; entrega con dirección y envío; estado del pedido oculto sin pagar.
+- `features/purchases/RecentPurchases.test.tsx`: las 3 primeras y "Ver todas"; nada sin compras.
+- `e2e/checkout.spec.ts`: el detalle con el código de retiro y el reembolso, y "Últimas compras" en `/cuenta`.

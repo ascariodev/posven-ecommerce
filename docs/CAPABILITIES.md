@@ -26,6 +26,15 @@ README: `features/cart/README.md`
 | mostrar el contador del carrito en la cabecera | `<CartLink />` | `features/cart/CartLink.tsx` | RN-CART-04 |
 | ver y cambiar el carrito | `<CartView />` | `features/cart/CartView.tsx` | RN-CART-01 |
 
+## checkout
+
+README: `features/checkout/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| pagar el carrito: elegir dirección y retiro o entrega por tienda, ver la cotización e iniciar el pago | `<CheckoutView />` | `features/checkout/CheckoutView.tsx` | RN-CHECKOUT-01, RN-CHECKOUT-02, RN-CHECKOUT-03 |
+| mostrar el resultado del pago y consultarlo hasta un estado final | `<CheckoutResult />` | `features/checkout/CheckoutResult.tsx` | RN-CHECKOUT-04 |
+
 ## events
 
 README: `features/events/README.md`
@@ -55,6 +64,16 @@ README: `features/product/README.md`
 | cargar un producto por slug con su 404 y su redirección | `loadProduct()` | `features/product/load.ts` | RN-PRODUCT-02 |
 | armar los metadatos y el JSON-LD de un producto | `productMetadata()` | `features/product/metadata.ts` | RN-PRODUCT-01, RN-PRODUCT-02 |
 | mostrar dónde comprar un producto ordenado por precio o cercanía | `<ProductOffers />` | `features/product/ProductOffers.tsx` | RN-PRODUCT-03, RN-PRODUCT-04, RN-PRODUCT-05 |
+
+## purchases
+
+README: `features/purchases/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| listar las compras del comprador, paginadas | `<PurchaseList />` | `features/purchases/PurchaseList.tsx` | RN-PURCHASES-01 |
+| ver el detalle de una compra con el código de retiro y los reembolsos | `<PurchaseDetail />` | `features/purchases/PurchaseDetail.tsx` | RN-PURCHASES-02, RN-PURCHASES-03 |
+| mostrar las últimas compras en el resumen de la cuenta | `<RecentPurchases />` | `features/purchases/RecentPurchases.tsx` | RN-PURCHASES-01 |
 
 ## search
 
@@ -99,3 +118,4 @@ README: `lib/marketplace/README.md`
 | listar, crear, editar y borrar las direcciones del comprador | `listAddresses()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07 |
 | listar, marcar y desmarcar los productos y las tiendas favoritas del comprador | `listFavorites()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07 |
 | cotizar el carrito de invitado y leer, cambiar o fusionar el carrito del comprador | `getCart()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07, RN-MARKETPLACE-08 |
+| cotizar el checkout, iniciar el pago y leer las compras del comprador | `quoteCheckout()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07, RN-MARKETPLACE-09 |

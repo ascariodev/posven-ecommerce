@@ -95,18 +95,18 @@ URL de la búsqueda, `features/search/query.ts`:
 
 Componentes:
 
-- `SearchPill({ defaultQuery, compact = false }: { defaultQuery?: string; compact?: boolean })`, Server Component, `features/search/SearchPill.tsx`: píldora `rounded-full` con el `Form` de `next/form` (`role="search"`, campo `q`, "Buscar productos"), el segmento de ubicación (`LocationBar` en su `<Suspense>`) y el botón "Buscar" fuera del `<form>` con `form={id}` para no anidar formularios; `compact` usa controles de 36 px (`/buscar`), si no 44 px (inicio)
+- `SearchPill({ defaultQuery, compact = false }: { defaultQuery?: string; compact?: boolean })`, Server Component, `features/search/SearchPill.tsx`: píldora `rounded-full` con el `Form` de `next/form` (`role="search"`, campo `q`, "Buscar productos"), el segmento de ubicación (`LocationBar` en su `<Suspense>`) y el botón "Buscar" fuera del `<form>` con `form={id}` para no anidar formularios; `compact` usa controles de 44 px en móvil y 36 px desde `md` (`h-11 md:h-9`, `/buscar`), si no 44 px (inicio)
 - `CategoryRail({ categories }: { categories: CategoryNode[] })`, Server Component, `features/search/CategoryRail.tsx`: `<nav aria-label="Categorías">` con enlaces de ícono y nombre a `searchHref({ q: "", categoria, radio: DEFAULT_RADIUS_KM, pagina: 1 })`; `null` sin categorías
 - `FiltersSheet({ children }: { children: ReactNode })`, `features/search/FiltersSheet.tsx` (`"use client"`): botón "Filtros" (sólo bajo `md`) que abre un `Sheet` inferior con los hijos; el `RadiusFilter` sigue siendo de servidor
-- `SearchForm({ defaultQuery, size = "lg" }: { defaultQuery?: string; size?: "lg" | "sm" })`, `features/search/SearchForm.tsx`: `"lg"` con vidrio propio; `"sm"` sin vidrio, con input y botón de 36 px, para la cabecera. Ya no lo usan el inicio ni `/buscar`, que montan `SearchPill`
+- `SearchForm({ defaultQuery, size = "lg" }: { defaultQuery?: string; size?: "lg" | "sm" })`, `features/search/SearchForm.tsx`: `"lg"` con vidrio propio; `"sm"` sin vidrio, con input y botón de 44 px en móvil y 36 px desde `md`, para la cabecera. Ya no lo usan el inicio ni `/buscar`, que montan `SearchPill`
 - `SearchResults({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/search/SearchResults.tsx`
 - `ProductCard({ item }: { item: SearchItem })`, `features/search/ProductCard.tsx`
 - `FeaturedCard({ item }: { item: FeaturedProduct })`, `features/search/FeaturedCard.tsx`
 - `RadiusFilter({ query, geoKind, cityName }: { query: SearchQuery; geoKind: "coords" | "city"; cityName: string | null })`, `features/search/RadiusFilter.tsx`
 - `Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta })`, `features/search/Pagination.tsx`
 - `EmptyState({ query, geoKind, categories }: { query: SearchQuery; geoKind: "coords" | "city" | null; categories: CategoryNode[] })`, `features/search/EmptyState.tsx`
-- `CategoryLinks({ categories }: { categories: CategoryNode[] })`, `features/search/CategoryLinks.tsx`
-- `ProductThumb({ imageUrl, category, size, alt, preload, className }: { imageUrl: string | null; category: Category | null; size: "md" | "lg" | "card" | "detail"; alt?: string; preload?: boolean; className?: string })`, Server Component, `features/search/ProductThumb.tsx`: la imagen (96 o 320 px; `card` llena un contenedor `aspect-[4/3]`; `detail`, el de la ficha, llena uno `aspect-square` con `object-contain p-6` y ícono `size-24` sin imagen; el tamaño `lg` no lo usa nadie hoy) con `alt` (por defecto `""`) y `preload` (por defecto `false`), que sólo se aplican a `<Image>`, o, sin imagen, el ícono de `categoryIcon(category)` sobre el tinte de `categoryTint(category)`, con `aria-hidden`
+- `CategoryLinks({ categories }: { categories: CategoryNode[] })`, `features/search/CategoryLinks.tsx`: chips de categoría como enlaces a `/buscar`, con `buttonVariants` outline `sm`, `rounded-full` y `shadow-card`
+- `ProductThumb({ imageUrl, category, size, alt, preload, className }: { imageUrl: string | null; category: Category | null; size: "md" | "card" | "detail"; alt?: string; preload?: boolean; className?: string })`, Server Component, `features/search/ProductThumb.tsx`: la imagen (96 px en `md`; `card` llena un contenedor `aspect-[4/3]`; `detail`, el de la ficha, llena uno `aspect-square` con `object-contain p-6`, `sizes` a su columna (`(min-width: 1024px) 540px, (min-width: 768px) 50vw, 100vw`) e ícono `size-24` sin imagen) con `alt` (por defecto `""`) y `preload` (por defecto `false`), que sólo se aplican a `<Image>`, o, sin imagen, el ícono de `categoryIcon(category)` sobre el tinte de `categoryTint(category)`, con `aria-hidden`
 - `HeaderSearchSlot({ children }: { children: ReactNode })`, `features/search/HeaderSearchSlot.tsx` (`"use client"`): `null` en `/` y en toda ruta que empieza por `/buscar`, que ya tienen su buscador; si no, sus hijos
 
 Tintes, `features/search/categoryTint.ts`:
@@ -137,7 +137,7 @@ Tintes, `features/search/categoryTint.ts`:
 - `components/ui/button.tsx`, `components/ui/input.tsx`, `components/ui/badge.tsx`, `components/ui/card.tsx`, `components/ui/sheet.tsx`, `components/ui/toggle.tsx` (`toggleVariants` en `RadiusFilter` y los chips) y `components/ui/skeleton.tsx`.
 - `next/form`, `next/link`, `next/image` y `next/navigation` (`usePathname` en `HeaderSearchSlot`).
 - `lucide-react`: íconos por nombre, decorativos con `aria-hidden`.
-- `lib/utils.ts` (`cn`) en `SearchForm`, `SearchPill`, `ProductThumb`, `RadiusFilter` y `SearchResults`.
+- `lib/utils.ts` (`cn`) en `SearchForm`, `SearchPill`, `ProductThumb`, `RadiusFilter`, `SearchResults` y `CategoryLinks`.
 
 ## 7. Ejemplo de uso
 

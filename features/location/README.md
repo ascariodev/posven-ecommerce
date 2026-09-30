@@ -88,7 +88,7 @@ Componentes:
 
 - `LocationPicker({ label, states, onDone }: { label: string | null; states: LocationState[]; onDone?: () => void })`, `features/location/LocationPicker.tsx` (`"use client"`): `onDone` se llama tras guardar la ciudad, usar la ubicación con éxito o quitarla
 - `LocationSheet({ label, states, compact }: { label: string | null; states: LocationState[]; compact?: boolean })`, `features/location/LocationSheet.tsx` (`"use client"`): `Sheet` controlado, `side="bottom"` en móvil y `"right"` desde `sm`; disparador `Button variant="ghost"` con `MapPin` y `label ?? "¿Dónde?"`; contenido "Tu ubicación", "Buscamos tiendas cerca de este lugar." y `LocationPicker` con `onDone` que lo cierra
-- `LocationBar({ compact }: { compact?: boolean }): Promise<React.JSX.Element>`, Server Component, y `LocationBarSkeleton({ compact }: { compact?: boolean })` (`h-11 w-28 rounded-full`, `h-9` con `compact`), `features/location/LocationBar.tsx`: `LocationBar` es el segmento "dónde" de `SearchPill` y pinta `LocationSheet`
+- `LocationBar({ compact }: { compact?: boolean }): Promise<React.JSX.Element>`, Server Component, y `LocationBarSkeleton({ compact }: { compact?: boolean })` (`h-11 w-28 rounded-full`, `h-11 md:h-9` con `compact`), `features/location/LocationBar.tsx`: `LocationBar` es el segmento "dónde" de `SearchPill` y pinta `LocationSheet`
 - `LocationSummary(): Promise<React.JSX.Element>`, Server Component, y `LocationSummarySkeleton()`, `features/location/LocationBar.tsx`: sólo lectura, "Cerca de: {name}" o "Sin ubicación" con `getEffectiveLocation()`, y "Sin ubicación" también si lanza `MarketplaceUnavailableError`; lo usa la cabecera de `app/layout.tsx`
 
 ## 5. Estructura interna

@@ -48,13 +48,17 @@ El botón por defecto de shadcn mide 32 px de alto. El ecommerce se usa en móvi
 tamaño por defecto ajustado en el propio archivo). El contraste AA y el foco visible en
 `--foreground` siguen rigiendo.
 
+Precisión del plan 4 (`docs/plans/2026-09-30-shadcn-mercado-plan-4-deuda.md`): el tamaño `sm` de
+`Button`, `Toggle` y `SelectTrigger` mide 44 px en móvil y 36 px desde `md` (`h-11 md:h-9`), y
+las alturas escritas a mano en controles y esqueletos siguen la misma pareja.
+
 ## 4. Pantallas de la dirección C
 
 | Pantalla | Composición | Piezas de shadcn |
 |---|---|---|
 | Inicio | Título, píldora de dos segmentos (qué y dónde), carril de categorías con icono, rejilla "Cerca de ti" con tarjetas de imagen, tiendas con portada | `input`, `button`, `tabs`, `card`, `badge` |
 | Búsqueda | Píldora compacta, chips de categoría, botón de filtros, orden y rejilla de tarjetas con "Desde" y número de tiendas | `sheet` (filtros en móvil), `select`, `badge`, `toggle-group` |
-| Ficha | Imagen a la izquierda; a la derecha un panel fijo con el resumen del producto y su rango de precio; debajo, a todo el ancho, las tiendas en filas con "Mejor precio", Llamar y Ver ruta (precisiones del plan 3 abajo) | `card`, `badge`, `button`, `toggle` |
+| Ficha | Imagen a la izquierda; a la derecha un panel con el resumen del producto y su rango de precio; debajo, a todo el ancho, las tiendas en filas con "Mejor precio", Llamar y Ver ruta (precisiones del plan 3 abajo) | `card`, `badge`, `button`, `toggle` |
 
 Diferencias del plan 2 (`docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda.md`) contra
 la tabla anterior, decididas al planificarlo y ya en el código:
@@ -76,10 +80,11 @@ la tabla anterior, decididas al planificarlo y ya en el código:
 Precisiones del plan 3 (`docs/plans/2026-09-30-shadcn-mercado-plan-3-ficha.md`) sobre la ficha,
 decididas al planificarlo y ya en el código:
 
-1. **Panel fijo sólo con el resumen.** Imagen a la izquierda; a la derecha, fijo en escritorio, el
-   resumen (categoría, nombre, marca, récipe, rango de precio, favoritos, atributos). La lista
-   completa de tiendas va debajo, a todo el ancho, con el orden, las destacadas y "Fuera de tu
-   zona". En móvil todo se apila.
+1. **Panel sólo con el resumen.** Imagen a la izquierda; a la derecha el resumen (categoría,
+   nombre, marca, récipe, rango de precio, favoritos, atributos). La lista completa de tiendas va
+   debajo, a todo el ancho, con el orden, las destacadas y "Fuera de tu zona". En móvil todo se
+   apila. El plan 4 le quitó el `sticky` que tenía en escritorio: con la lista debajo, el panel
+   sólo podía moverse dentro de la fila de la imagen y apenas se desplazaba.
 2. **"Mejor precio" sólo con orden por precio, en la primera oferta normal y sin destacadas** (la
    primera de `offers` dentro del radio). La API saca las destacadas de `offers` y una puede ser
    más barata, así que con destacadas no se marca ninguna (revisión final del plan 3). Ni las
@@ -117,6 +122,7 @@ Modo ligero (pantallas contra un simulado y datos locales), un solo repo. Razone
 | 1 | Reemplazo de primitivas y migración de usos (§5) | Mecánico, diff que se revisa aparte | ~42 archivos, advertencia de tamaño |
 | 2 | Inicio y búsqueda en dirección C (§4) | Depende de 1; juicio visual | ~10 archivos |
 | 3 | Ficha en dirección C (§4). **Cerrado** (2026-09-30) | Otra pantalla; se puede revisar sola | ~5 archivos |
+| 4 | Deuda menor de los planes 2 y 3: primitivas, `sm` táctil, ficha y `AddressForm` con `Select`. **Cerrado** (2026-09-30) | Arreglos repartidos que no cambian pantallas | ~25 archivos |
 
 El plan 1 se parte en dos tareas por área (cuenta y formularios frente a búsqueda, producto y
 tienda) si el diff no se revisa en una pasada. Antes de ejecutar 2 y 3 se instalan solo las piezas

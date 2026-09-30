@@ -86,7 +86,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 | Orden | `SortLinks.tsx` | enlaces "Menor precio" y "Más cerca" con `toggleVariants` (`data-state`) y `aria-current="true"` en el activo |
 | Oferta | `OfferCard.tsx` | fila con enlace a `/tienda/{slug}`, ciudad, distancia, precios, "Mejor precio" (`best`), "Destacado", "Pocas unidades", antigüedad y `ContactButtons` |
 | Ofertas | `ProductOffers.tsx` | ubicación efectiva, `sort` y radio, la llamada a `getProductOffers`, el reparto en destacadas, radio y "Fuera de tu zona"; `best` sólo en la primera del radio con orden por precio |
-| Página | `app/p/[slug]/page.tsx` | `generateStaticParams` (20 slugs o `__vacio`), `generateMetadata`, migas (sólo "Inicio" es enlace; `BreadcrumbList` Inicio y producto), ficha en dos columnas (imagen y panel fijo con `PriceSummary`), `ViewBeacon` y `ProductOffers` en `<Suspense>` |
+| Página | `app/p/[slug]/page.tsx` | `generateStaticParams` (20 slugs o `__vacio`), `generateMetadata`, migas (sólo "Inicio" es enlace; `BreadcrumbList` Inicio y producto), ficha en dos columnas (imagen y panel con `PriceSummary`, sin `sticky`), `ViewBeacon` y `ProductOffers` en `<Suspense>` |
 
 ## 6. Dependencias
 

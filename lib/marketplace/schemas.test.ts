@@ -16,11 +16,14 @@ import {
   registerCustomer,
   searchProducts,
 } from "./mock/adapter";
+import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "./mock/cart";
 import { MOCK_STORES } from "./mock/fixtures";
 import {
   accountErrorBodySchema,
   addressSchema,
   authResponseSchema,
+  cartItemsSchema,
+  cartSchema,
   categoriesResponseSchema,
   customerSchema,
   eventInputSchema,
@@ -221,5 +224,49 @@ describe("el simulado de cuentas pasa los esquemas del contrato", () => {
       },
     };
     expect(accountErrorBodySchema.safeParse(body).success).toBe(true);
+  });
+});
+
+describe("el simulado del carrito pasa los esquemas del contrato", () => {
+  const anonymous = { session: null, clientIp: null };
+  const line = { store_slug: "farmacia-central-valencia", product_slug: "acetaminofen-500-mg-20-tabletas", quantity: 1 };
+
+  beforeEach(() => {
+    resetMockAccounts();
+    resetMockCarts();
+  });
+
+  it("cotización de invitado, carrito, PUT y merge", async () => {
+    const { token } = await loginCustomer(anonymous, { email: "comprador@posven.test", password: "clave-segura-1" });
+    const ctx = { session: token, clientIp: null };
+    const offerGone = { store_slug: "farmacia-central-valencia", product_slug: "jarabe-para-la-tos-120-ml", quantity: 1 };
+    const responses = [
+      await quoteGuestCart(anonymous, []),
+      await quoteGuestCart(anonymous, [line, offerGone]),
+      await setCartItem(ctx, line),
+      await mergeCart(ctx, [offerGone]),
+      await getCart(ctx),
+    ];
+    for (const response of responses) expect(cartSchema.parse(response)).toEqual(response);
+  });
+});
+
+describe("cartItemsSchema", () => {
+  const line = { store_slug: "farmacia-central-valencia", product_slug: "acetaminofen-500-mg-20-tabletas", quantity: 1 };
+
+  it("acepta hasta 20 entradas distintas", () => {
+    const items = Array.from({ length: 20 }, (_, index) => ({ ...line, product_slug: `producto-${index}` }));
+    expect(cartItemsSchema.safeParse(items).success).toBe(true);
+  });
+
+  it.each([
+    ["claves de más", [{ ...line, price_usd: "1.00" }]],
+    ["entradas repetidas", [line, { ...line, quantity: 2 }]],
+    ["slug de más de 120 caracteres", [{ ...line, product_slug: "a".repeat(121) }]],
+    ["cantidad 0", [{ ...line, quantity: 0 }]],
+    ["cantidad 100", [{ ...line, quantity: 100 }]],
+    ["21 entradas", Array.from({ length: 21 }, (_, index) => ({ ...line, product_slug: `producto-${index}` }))],
+  ])("rechaza %s", (_name, items) => {
+    expect(cartItemsSchema.safeParse(items).success).toBe(false);
   });
 });

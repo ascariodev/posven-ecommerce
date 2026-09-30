@@ -1,0 +1,132 @@
+import { beforeEach, describe, expect, it } from "vitest";
+import { MarketplaceAccountError } from "../errors";
+import type { AccountContext } from "../params";
+import type { CartItem } from "../schemas";
+import { loginCustomer, resetMockAccounts } from "./accounts";
+import { MOCK_PRODUCTS } from "./fixtures";
+import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "./cart";
+
+const anonymous: AccountContext = { session: null, clientIp: null };
+
+// Tiendas del simulado: farmacia-central-valencia y abasto-la-esquina venden en línea;
+// farmacia-naguanagua no. Acetaminofén 500 está "low" (stock 3) en farmacia-naguanagua.
+const ACETAMINOFEN = "acetaminofen-500-mg-20-tabletas";
+const CENTRAL = "farmacia-central-valencia";
+
+function item(store_slug: string, product_slug: string, quantity = 1): CartItem {
+  return { store_slug, product_slug, quantity };
+}
+
+async function session(): Promise<AccountContext> {
+  const { token } = await loginCustomer(anonymous, { email: "comprador@posven.test", password: "clave-segura-1" });
+  return { session: token, clientIp: null };
+}
+
+async function errorCode(promise: Promise<unknown>): Promise<string> {
+  const error = await promise.then(
+    () => null,
+    (reason: unknown) => reason,
+  );
+  if (!(error instanceof MarketplaceAccountError)) throw new Error("se esperaba MarketplaceAccountError");
+  return error.code;
+}
+
+beforeEach(() => {
+  resetMockAccounts();
+  resetMockCarts();
+});
+
+describe("cotización del carrito simulado", () => {
+  it("vacío: sin tiendas, totales en cero y line_count 0", async () => {
+    const cart = await quoteGuestCart(anonymous, []);
+    expect(cart).toMatchObject({ stores: [], total_usd: "0.00", total_ves: "0.00", line_count: 0 });
+  });
+
+  it("suma sólo las líneas ok: la de una tienda que no vende sale unavailable y no suma", async () => {
+    const cart = await quoteGuestCart(anonymous, [item(CENTRAL, ACETAMINOFEN, 2), item("farmacia-naguanagua", ACETAMINOFEN)]);
+    const [central, naguanagua] = cart.stores;
+    expect(central.lines[0]).toMatchObject({ status: "ok", line_usd: "5.00", line_ves: "182.50", availability: "available" });
+    expect(naguanagua.lines[0]).toMatchObject({
+      status: "unavailable",
+      unavailable_reason: "store_not_selling",
+      availability: null,
+    });
+    expect(naguanagua.subtotal_usd).toBe("0.00");
+    expect(cart).toMatchObject({ total_usd: "5.00", total_ves: "182.50", line_count: 1 });
+  });
+
+  it("una oferta que ya no existe sale offer_gone con montos nulos", async () => {
+    const cart = await quoteGuestCart(anonymous, [item(CENTRAL, "jarabe-para-la-tos-120-ml")]);
+    expect(cart.stores[0].lines[0]).toMatchObject({
+      status: "unavailable",
+      unavailable_reason: "offer_gone",
+      price_usd: null,
+      line_usd: null,
+    });
+  });
+
+  it("un producto restringido sale unavailable en la cotización, sin error", async () => {
+    const cart = await quoteGuestCart(anonymous, [item(CENTRAL, "amoxicilina-500-mg-21-capsulas")]);
+    expect(cart.stores[0].lines[0]).toMatchObject({ status: "unavailable", unavailable_reason: "restricted" });
+  });
+
+  it("omite tiendas y productos inexistentes", async () => {
+    const cart = await quoteGuestCart(anonymous, [item("no-existe", ACETAMINOFEN), item(CENTRAL, "no-existe")]);
+    expect(cart.stores).toEqual([]);
+  });
+
+  it("rechaza más de 20 entradas con validation_failed", async () => {
+    const items = Array.from({ length: 21 }, (_, index) => item(CENTRAL, `producto-${index}`));
+    expect(await errorCode(quoteGuestCart(anonymous, items))).toBe("validation_failed");
+  });
+});
+
+describe("carrito del comprador simulado", () => {
+  it("PUT agrega con techo de stock", async () => {
+    const ctx = await session();
+    const cart = await setCartItem(ctx, item(CENTRAL, ACETAMINOFEN, 99));
+    expect(cart.stores[0].lines[0].quantity).toBe(50);
+    expect(cart.line_count).toBe(1);
+  });
+
+  it("PUT de un producto con récipe responde product_restricted", async () => {
+    const ctx = await session();
+    expect(await errorCode(setCartItem(ctx, item(CENTRAL, "amoxicilina-500-mg-21-capsulas")))).toBe("product_restricted");
+  });
+
+  it("PUT en una tienda que no vende responde not_orderable", async () => {
+    const ctx = await session();
+    expect(await errorCode(setCartItem(ctx, item("farmacia-naguanagua", ACETAMINOFEN)))).toBe("not_orderable");
+  });
+
+  it("merge topa en 20 líneas sin error (enmienda K) y el PUT de la 21 responde cart_full", async () => {
+    const ctx = await session();
+    const slugs = MOCK_PRODUCTS.map((entry) => entry.product.slug).filter((slug) => slug !== ACETAMINOFEN);
+    await mergeCart(ctx, slugs.slice(0, 15).map((slug) => item("ferreteria-el-tornillo", slug)));
+    const merged = await mergeCart(ctx, slugs.slice(15, 24).map((slug) => item("ferreteria-el-tornillo", slug)));
+    expect(merged.stores.flatMap((store) => store.lines)).toHaveLength(20);
+    expect(await errorCode(setCartItem(ctx, item(CENTRAL, ACETAMINOFEN)))).toBe("cart_full");
+  });
+
+  it("PUT con cantidad 0 borra aunque la línea ya no se pueda comprar (enmienda J)", async () => {
+    const ctx = await session();
+    await mergeCart(ctx, [item("farmacia-naguanagua", ACETAMINOFEN), item(CENTRAL, "jarabe-para-la-tos-120-ml")]);
+    expect((await getCart(ctx)).stores).toHaveLength(2);
+    await setCartItem(ctx, item("farmacia-naguanagua", ACETAMINOFEN, 0));
+    const cart = await setCartItem(ctx, item(CENTRAL, "jarabe-para-la-tos-120-ml", 0));
+    expect(cart.stores).toEqual([]);
+  });
+
+  it("merge suma las cantidades de la misma línea con techo de stock", async () => {
+    const ctx = await session();
+    await setCartItem(ctx, item(CENTRAL, ACETAMINOFEN, 2));
+    const cart = await mergeCart(ctx, [item(CENTRAL, ACETAMINOFEN, 3), item("abasto-la-esquina", ACETAMINOFEN, 1)]);
+    expect(cart.stores.map((store) => store.lines[0].quantity)).toEqual([5, 1]);
+    const capped = await mergeCart(ctx, [item(CENTRAL, ACETAMINOFEN, 99)]);
+    expect(capped.stores[0].lines[0].quantity).toBe(50);
+  });
+
+  it("sin sesión responde unauthenticated", async () => {
+    expect(await errorCode(getCart(anonymous))).toBe("unauthenticated");
+  });
+});

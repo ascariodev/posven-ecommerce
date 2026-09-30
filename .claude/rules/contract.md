@@ -9,9 +9,10 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
 
 1. **Montos como cadena y sin cálculo.** Todo monto es `Money` (`moneySchema`, `^\d+\.\d{2}$`,
    en `schemas.ts`). Nada en el módulo suma, convierte ni redondea: la API calcula. El simulado
-   escribe montos y distancias como literales en `mock/fixtures.ts`. Única excepción:
-   `mock/adapter.ts` compara montos con `Number()` para ordenar y elegir mínimo y máximo, porque
-   simula lo que calcula la API; no suma ni redondea.
+   escribe montos y distancias como literales en `mock/fixtures.ts`. Dos excepciones, porque
+   simulan lo que calcula la API: `mock/adapter.ts` compara montos con `Number()` para ordenar y
+   elegir mínimo y máximo, sin sumar ni redondear; y `mock/money.ts` multiplica y suma los montos
+   del carrito en céntimos enteros (sin coma flotante), único lugar del repo que lo hace.
 2. **Esquema antes que tipo a mano.** Cada tipo del contrato es `z.infer` de su esquema en
    `schemas.ts`; no se declara un `type` o `interface` paralelo. Los tipos que no son contrato
    (`GeoFilter` en `params.ts`, `MockProduct` en `mock/fixtures.ts`) sí se escriben a mano.

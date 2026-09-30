@@ -17,6 +17,7 @@ import {
   addressEnvelopeSchema,
   addressListSchema,
   authResponseSchema,
+  cartSchema,
   categoriesResponseSchema,
   customerEnvelopeSchema,
   favoritesResponseSchema,
@@ -30,6 +31,9 @@ import {
   type AddressInput,
   type AddressPatch,
   type AuthResponse,
+  type Cart,
+  type CartItem,
+  type CartItemPut,
   type CategoryNode,
   type Customer,
   type FavoritesResponse,
@@ -282,4 +286,26 @@ export async function addFavorite(ctx: AccountContext, target: FavoriteTarget): 
 export async function removeFavorite(ctx: AccountContext, target: FavoriteTarget): Promise<void> {
   if (usesMock()) return mock.removeFavorite(ctx, target);
   await accountCommand({ method: "DELETE", path: favoritePath(target), ctx });
+}
+
+// Carrito (spec cuentas-y-compras §4.2 con la enmienda del 2026-09-30): nada de un comprador en
+// 'use cache'. El invitado cotiza su cookie; el usuario usa su carrito del servidor.
+export async function quoteGuestCart(ctx: AccountContext, items: CartItem[]): Promise<Cart> {
+  if (usesMock()) return mock.quoteGuestCart(ctx, items);
+  return accountRequest({ method: "POST", path: "/cart/quote", ctx, body: { items } }, cartSchema);
+}
+
+export async function getCart(ctx: AccountContext): Promise<Cart> {
+  if (usesMock()) return mock.getCart(ctx);
+  return accountRequest({ method: "GET", path: "/me/cart", ctx }, cartSchema);
+}
+
+export async function setCartItem(ctx: AccountContext, item: CartItemPut): Promise<Cart> {
+  if (usesMock()) return mock.setCartItem(ctx, item);
+  return accountRequest({ method: "PUT", path: "/me/cart/items", ctx, body: item }, cartSchema);
+}
+
+export async function mergeCart(ctx: AccountContext, items: CartItem[]): Promise<Cart> {
+  if (usesMock()) return mock.mergeCart(ctx, items);
+  return accountRequest({ method: "POST", path: "/me/cart/merge", ctx, body: { items } }, cartSchema);
 }

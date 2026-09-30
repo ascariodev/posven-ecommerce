@@ -367,3 +367,5 @@ export {
   updateSettings,
   verifyEmail,
 } from "./accounts";
+
+export { getCart, mergeCart, quoteGuestCart, setCartItem } from "./cart";

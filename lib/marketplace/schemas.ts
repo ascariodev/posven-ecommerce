@@ -254,6 +254,9 @@ export const accountErrorCodeSchema = z.enum([
   "token_invalid",
   "token_expired",
   "too_many_attempts",
+  "not_orderable",
+  "product_restricted",
+  "cart_full",
 ]);
 export type AccountErrorCode = z.infer<typeof accountErrorCodeSchema>;
 
@@ -347,3 +350,69 @@ export const favoritesResponseSchema = z.object({
   stores: z.array(storeSummarySchema),
 });
 export type FavoritesResponse = z.infer<typeof favoritesResponseSchema>;
+
+// Carrito (spec cuentas-y-compras §4.1 Cart, con la enmienda del 2026-09-30, puntos C, D, H, J y K).
+const cartSlugSchema = z.string().min(1).max(120);
+
+function cartLineKey(item: { store_slug: string; product_slug: string }): string {
+  return `${item.store_slug}\u0000${item.product_slug}`;
+}
+
+export const cartItemSchema = z.strictObject({
+  store_slug: cartSlugSchema,
+  product_slug: cartSlugSchema,
+  quantity: z.int().min(1).max(99),
+});
+export type CartItem = z.infer<typeof cartItemSchema>;
+
+export const cartItemsSchema = z
+  .array(cartItemSchema)
+  .max(20)
+  .refine((items) => new Set(items.map(cartLineKey)).size === items.length, {
+    message: "Hay productos repetidos en el carrito.",
+  });
+
+// Entrada de PUT /me/cart/items: 0 borra la línea (enmienda J).
+export const cartItemPutSchema = cartItemSchema.extend({ quantity: z.int().min(0).max(99) });
+export type CartItemPut = z.infer<typeof cartItemPutSchema>;
+
+export const unavailableReasonSchema = z.enum(["out_of_stock", "store_not_selling", "offer_gone", "restricted"]);
+export type UnavailableReason = z.infer<typeof unavailableReasonSchema>;
+
+export const cartLineSchema = z.object({
+  product: z.object({
+    slug: z.string(),
+    name: z.string(),
+    image_url: z.url().nullable(),
+    category: categorySchema.nullable(),
+  }),
+  quantity: z.int().min(1).max(99),
+  price_usd: moneySchema.nullable(),
+  price_ves: moneySchema.nullable(),
+  line_usd: moneySchema.nullable(),
+  line_ves: moneySchema.nullable(),
+  availability: availabilitySchema.nullable(),
+  status: z.enum(["ok", "unavailable"]),
+  unavailable_reason: unavailableReasonSchema.nullable(),
+});
+export type CartLine = z.infer<typeof cartLineSchema>;
+
+export const cartStoreSchema = z.object({
+  store: storeSummarySchema,
+  is_open: z.boolean(),
+  accepts_orders: z.boolean(),
+  offers_delivery: z.boolean(),
+  lines: z.array(cartLineSchema).min(1),
+  subtotal_usd: moneySchema,
+  subtotal_ves: moneySchema,
+});
+export type CartStore = z.infer<typeof cartStoreSchema>;
+
+export const cartSchema = z.object({
+  stores: z.array(cartStoreSchema),
+  total_usd: moneySchema,
+  total_ves: moneySchema,
+  line_count: z.int().min(0),
+  rate: rateSchema,
+});
+export type Cart = z.infer<typeof cartSchema>;

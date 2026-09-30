@@ -74,9 +74,12 @@ const ERROR_MESSAGES: Record<SimpleErrorCode, string> = {
   invalid_credentials: "Correo o contraseña incorrectos.",
   token_invalid: "El enlace no es válido.",
   token_expired: "El enlace venció. Pide uno nuevo.",
+  not_orderable: "Esta tienda no vende este producto en línea.",
+  product_restricted: "Este producto no se vende en línea: consúltalo en la tienda.",
+  cart_full: "Tu carrito admite hasta 20 productos.",
 };
 
-function accountError(
+export function accountError(
   code: SimpleErrorCode,
   fields: Record<string, string> | null = null,
 ): MarketplaceAccountError {
@@ -161,6 +164,10 @@ function authenticate(ctx: AccountContext): { account: MockAccount; token: strin
   const account = id === undefined ? undefined : state().accounts.get(id);
   if (token === null || account === undefined) throw accountError("unauthenticated");
   return { account, token };
+}
+
+export function customerIdFor(ctx: AccountContext): number {
+  return authenticate(ctx).account.id;
 }
 
 function issueToken(customerId: number): string {

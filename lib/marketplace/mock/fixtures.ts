@@ -14,7 +14,14 @@ import type {
   StoreSummary,
 } from "../schemas";
 
-export type MockStore = { summary: StoreSummary; distance_km: number; offers_delivery: boolean };
+// `offers_delivery` e `is_open` son del carrito (Cart), no de StoreSummary; `is_open` es fijo para que
+// el simulado no dependa de la hora.
+export type MockStore = {
+  summary: StoreSummary;
+  distance_km: number;
+  offers_delivery: boolean;
+  is_open: boolean;
+};
 
 export type MockOffer = {
   store_slug: string;
@@ -106,6 +113,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 1.2,
     offers_delivery: true,
+    is_open: true,
   },
   {
     summary: {
@@ -123,6 +131,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 4.8,
     offers_delivery: false,
+    is_open: true,
   },
   {
     summary: {
@@ -140,6 +149,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 7.5,
     offers_delivery: false,
+    is_open: true,
   },
   {
     summary: {
@@ -157,6 +167,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 9.3,
     offers_delivery: false,
+    is_open: true,
   },
   {
     summary: {
@@ -174,6 +185,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 165.4,
     offers_delivery: true,
+    is_open: false,
   },
   {
     summary: {
@@ -191,6 +203,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 168.0,
     offers_delivery: false,
+    is_open: true,
   },
 ];
 
@@ -665,6 +678,23 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     min_price_ves: "71.18",
     nearest_km: 4.8,
     offers: [offer("ferreteria-el-tornillo", "1.95", "71.18")],
+  },
+  {
+    product: {
+      slug: "clonazepam-0-5-mg-30-tabletas",
+      name: "Clonazepam 0,5 mg x 30 tabletas",
+      ean: "7590000000240",
+      brand: "Genven",
+      category: salud,
+      image_url: null,
+      attributes: [{ name: "Concentración", value: "0,5 mg" }],
+      restriction: "controlled",
+      is_unified: true,
+    },
+    min_price_usd: "4.20",
+    min_price_ves: "153.30",
+    nearest_km: 1.2,
+    offers: [offer("farmacia-central-valencia", "4.20", "153.30")],
   },
 ];
 

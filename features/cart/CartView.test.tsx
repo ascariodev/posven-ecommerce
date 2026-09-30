@@ -18,8 +18,8 @@ function line(overrides: Partial<CartLine> = {}): CartLine {
     quantity: 2,
     price_usd: "2.50",
     price_ves: "91.25",
-    line_usd: "5.00",
-    line_ves: "182.50",
+    line_usd: "5.10",
+    line_ves: "186.15",
     availability: "available",
     status: "ok",
     unavailable_reason: null,
@@ -46,8 +46,8 @@ function store(lines: CartLine[], overrides: Partial<CartStore> = {}): CartStore
     accepts_orders: true,
     offers_delivery: false,
     lines,
-    subtotal_usd: "5.00",
-    subtotal_ves: "182.50",
+    subtotal_usd: "6.20",
+    subtotal_ves: "226.30",
     ...overrides,
   };
 }
@@ -67,11 +67,14 @@ describe("CartContent", () => {
     expect(screen.getByRole("link", { name: "Buscar productos" }).getAttribute("href")).toBe("/buscar");
   });
 
+  // Montos que no salen de multiplicar ni sumar (2,50 × 2 ≠ 5,10; 5,10 ≠ 6,20 ≠ 7,40): si el
+  // componente calculara algo, estas cadenas no aparecerían.
   it("pinta las cadenas del carrito formateadas, sin calcular", () => {
     render(<CartContent cart={cart([store([line()])])} />);
 
     expect(screen.getByText("$ 2,50 · Bs 91,25 c/u")).toBeTruthy();
-    expect(screen.getByText("$ 5,00")).toBeTruthy();
+    expect(screen.getByText("$ 5,10")).toBeTruthy();
+    expect(screen.getByText("$ 6,20 · Bs 226,30")).toBeTruthy();
     expect(screen.getByText("$ 7,40")).toBeTruthy();
     expect(screen.getByText("Bs 270,10")).toBeTruthy();
     expect(screen.getByText("Tasa BCV del 26/09/2026: Bs 36,50")).toBeTruthy();
@@ -88,9 +91,11 @@ describe("CartContent", () => {
       status: "unavailable",
       unavailable_reason: "offer_gone",
     });
-    render(<CartContent cart={cart([store([gone])])} />);
+    render(<CartContent cart={cart([store([line(), gone])])} />);
 
-    const item = screen.getByRole("listitem");
+    const [okItem, item] = screen.getAllByRole("listitem");
+    const quantity = within(okItem).getByRole("group", { name: "Cantidad de Acetaminofén 500 mg" });
+    expect(quantity.textContent).toContain("Cantidad: 2");
     expect(within(item).getByText("Ya no se ofrece en esta tienda")).toBeTruthy();
     expect(within(item).queryByRole("button", { name: /^Quitar uno/ })).toBeNull();
     expect(within(item).queryByRole("button", { name: /^Agregar uno/ })).toBeNull();

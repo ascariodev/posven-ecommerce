@@ -2,12 +2,12 @@ import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getCart } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import { accountContext } from "@/features/account/session";
 import { cn } from "@/lib/utils";
 import { readGuestCart } from "./cookie";
 import { cartEnabled } from "./flag";
+import { getSessionCart } from "./server";
 
 // Contador del carrito en la cabecera. El layout raíz no lo cubre app/error.tsx (L-02): ante
 // cualquier error de la API degrada a "Carrito" sin número. El invitado cuenta las entradas de
@@ -16,7 +16,8 @@ async function cartCount(): Promise<number | null> {
   const ctx = await accountContext();
   if (ctx.session !== null) {
     try {
-      return (await getCart(ctx)).line_count;
+      const cart = await getSessionCart();
+      if (cart !== null) return cart.line_count;
     } catch (error) {
       if (error instanceof MarketplaceUnavailableError) return null;
       if (!(error instanceof MarketplaceAccountError)) throw error;
@@ -32,7 +33,12 @@ export async function CartLink() {
   const label =
     count === null || count === 0 ? "Carrito" : `Carrito, ${count} ${count === 1 ? "producto" : "productos"}`;
   return (
-    <Link href="/carrito" aria-label={label} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}>
+    <Link
+      href="/carrito"
+      rel="nofollow"
+      aria-label={label}
+      className={cn(buttonVariants({ variant: "outline", size: "sm" }), "min-w-11")}
+    >
       <ShoppingCart aria-hidden="true" className="size-4" />
       <span className="hidden sm:inline">Carrito</span>
       {count !== null && count > 0 && (

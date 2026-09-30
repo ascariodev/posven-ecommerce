@@ -49,14 +49,20 @@ function Line({ line, storeSlug }: { line: CartLine; storeSlug: string }) {
   const { product } = line;
   const ok = line.status === "ok";
   return (
-    <li className={cn("flex gap-3 border-t border-border pt-4 first:border-t-0 first:pt-0", !ok && "opacity-70")}>
-      <ProductThumb imageUrl={product.image_url} category={product.category} size="md" />
+    <li className="flex gap-3 border-t border-border pt-4 first:border-t-0 first:pt-0">
+      {/* Sólo la imagen se atenúa en una línea no disponible: el texto conserva el contraste AA. */}
+      <div className={cn("shrink-0", !ok && "opacity-50")}>
+        <ProductThumb imageUrl={product.image_url} category={product.category} size="md" />
+      </div>
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="flex min-w-0 flex-col gap-1">
             <Link
               href={`/p/${product.slug}`}
-              className="font-medium text-foreground underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              className={cn(
+                "font-medium underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+                ok ? "text-foreground" : "text-muted-foreground",
+              )}
             >
               {product.name}
             </Link>
@@ -78,7 +84,7 @@ function Line({ line, storeSlug }: { line: CartLine; storeSlug: string }) {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {ok && (
-            <>
+            <div role="group" aria-label={`Cantidad de ${product.name}`} className="flex items-center gap-2">
               <LineForm action={setQuantity} storeSlug={storeSlug} productSlug={product.slug} quantity={line.quantity - 1}>
                 <Button
                   type="submit"
@@ -91,7 +97,8 @@ function Line({ line, storeSlug }: { line: CartLine; storeSlug: string }) {
                   <Minus aria-hidden="true" />
                 </Button>
               </LineForm>
-              <span className="min-w-8 text-center font-medium tabular-nums" aria-label={`Cantidad: ${line.quantity}`}>
+              <span className="min-w-8 text-center font-medium tabular-nums">
+                <span className="sr-only">Cantidad: </span>
                 {line.quantity}
               </span>
               <LineForm action={setQuantity} storeSlug={storeSlug} productSlug={product.slug} quantity={line.quantity + 1}>
@@ -106,7 +113,7 @@ function Line({ line, storeSlug }: { line: CartLine; storeSlug: string }) {
                   <Plus aria-hidden="true" />
                 </Button>
               </LineForm>
-            </>
+            </div>
           )}
           <LineForm action={removeLine} storeSlug={storeSlug} productSlug={product.slug}>
             <Button type="submit" variant="ghost" size="sm" aria-label={`Quitar: ${product.name}`}>

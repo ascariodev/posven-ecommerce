@@ -15,13 +15,21 @@ function isUnauthenticated(error: unknown): boolean {
   return error instanceof MarketplaceAccountError && error.code === "unauthenticated";
 }
 
+// El carrito del comprador con sesión, una sola vez por petición: lo usan `/carrito` y el contador
+// de la cabecera. Sin argumentos a propósito: `cache` compara por identidad. Sin sesión, `null`.
+export const getSessionCart = cache(async (): Promise<Cart | null> => {
+  const ctx = await accountContext();
+  return ctx.session === null ? null : getCart(ctx);
+});
+
 // El carrito de la petición: con sesión, el del servidor (un 401 sigue como invitado, spec §6); sin
 // sesión, la cotización de `mp_cart`; sin entradas, `null` sin llamar a la API.
 export const getCurrentCart = cache(async (): Promise<Cart | null> => {
   const ctx = await accountContext();
   if (ctx.session !== null) {
     try {
-      return await getCart(ctx);
+      const cart = await getSessionCart();
+      if (cart !== null) return cart;
     } catch (error) {
       if (!isUnauthenticated(error)) throw error;
     }

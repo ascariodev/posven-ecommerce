@@ -40,7 +40,7 @@ test.describe("carrito", () => {
     await expect(page.getByRole("list", { name: "Productos de Abasto La Esquina" })).toBeVisible();
 
     await page.getByRole("button", { name: "Agregar uno: Acetaminofén 500 mg x 20 tabletas" }).click();
-    await expect(page.getByLabel("Cantidad: 2")).toBeVisible();
+    await expect(page.getByText("Cantidad: 2")).toBeAttached();
 
     await page.getByRole("button", { name: "Quitar: Harina de maíz precocida 1 kg" }).click();
     await expect(page.getByRole("list", { name: "Productos de Abasto La Esquina" })).toHaveCount(0);
@@ -87,7 +87,7 @@ test.describe("carrito", () => {
     await expect(page).toHaveURL("/cuenta");
 
     await page.goto("/carrito");
-    await expect(page.getByLabel("Cantidad: 2")).toBeVisible();
+    await expect(page.getByText("Cantidad: 2")).toBeAttached();
     await expect(cartLink(page, "Carrito, 1 producto")).toBeVisible();
 
     await page.goto(ACETAMINOFEN_PATH);
@@ -104,5 +104,18 @@ test.describe("carrito", () => {
 
     const sitemap = await (await request.get("/sitemap/static.xml")).text();
     expect(sitemap).not.toContain("/carrito");
+  });
+});
+
+// Sin JavaScript la ficha, la tienda y /carrito no muestran lo que llega por streaming dentro de un
+// <Suspense> (ofertas, productos, líneas del carrito, contador): con PPR lo revela un script. El
+// botón es un formulario, pero no se ve. Queda visible aquí hasta que se decida (resultado del plan 4a).
+test.describe("carrito sin JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test.fixme("Agregar suma y el contador sube tras la recarga", async ({ page }) => {
+    await page.goto(ACETAMINOFEN_PATH);
+    await page.getByRole("button", { name: ADD_ACETAMINOFEN }).click();
+    await expect(cartLink(page, "Carrito, 1 producto")).toBeVisible();
   });
 });

@@ -352,7 +352,12 @@ export const favoritesResponseSchema = z.object({
 export type FavoritesResponse = z.infer<typeof favoritesResponseSchema>;
 
 // Carrito (spec cuentas-y-compras §4.1 Cart, con la enmienda del 2026-09-30, puntos C, D, H, J y K).
-const cartSlugSchema = z.string().min(1).max(120);
+// Límites del contrato (spec §5.2): los usan también la cookie, las acciones y el simulado.
+export const CART_MAX_LINES = 20;
+export const CART_MAX_QUANTITY = 99;
+export const CART_SLUG_MAX_LENGTH = 120;
+
+const cartSlugSchema = z.string().min(1).max(CART_SLUG_MAX_LENGTH);
 
 function cartLineKey(item: { store_slug: string; product_slug: string }): string {
   return `${item.store_slug}\u0000${item.product_slug}`;
@@ -361,19 +366,19 @@ function cartLineKey(item: { store_slug: string; product_slug: string }): string
 export const cartItemSchema = z.strictObject({
   store_slug: cartSlugSchema,
   product_slug: cartSlugSchema,
-  quantity: z.int().min(1).max(99),
+  quantity: z.int().min(1).max(CART_MAX_QUANTITY),
 });
 export type CartItem = z.infer<typeof cartItemSchema>;
 
 export const cartItemsSchema = z
   .array(cartItemSchema)
-  .max(20)
+  .max(CART_MAX_LINES)
   .refine((items) => new Set(items.map(cartLineKey)).size === items.length, {
     message: "Hay productos repetidos en el carrito.",
   });
 
 // Entrada de PUT /me/cart/items: 0 borra la línea (enmienda J).
-export const cartItemPutSchema = cartItemSchema.extend({ quantity: z.int().min(0).max(99) });
+export const cartItemPutSchema = cartItemSchema.extend({ quantity: z.int().min(0).max(CART_MAX_QUANTITY) });
 export type CartItemPut = z.infer<typeof cartItemPutSchema>;
 
 export const unavailableReasonSchema = z.enum(["out_of_stock", "store_not_selling", "offer_gone", "restricted"]);
@@ -386,7 +391,7 @@ export const cartLineSchema = z.object({
     image_url: z.url().nullable(),
     category: categorySchema.nullable(),
   }),
-  quantity: z.int().min(1).max(99),
+  quantity: z.int().min(1).max(CART_MAX_QUANTITY),
   price_usd: moneySchema.nullable(),
   price_ves: moneySchema.nullable(),
   line_usd: moneySchema.nullable(),

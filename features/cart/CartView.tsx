@@ -6,12 +6,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductThumb } from "@/features/search/ProductThumb";
 import { formatRate, formatUsd, formatVes } from "@/lib/format";
-import type { Cart, CartLine, CartStore, UnavailableReason } from "@/lib/marketplace/schemas";
+import {
+  CART_MAX_QUANTITY as MAX_QUANTITY,
+  type Cart,
+  type CartLine,
+  type CartStore,
+  type UnavailableReason,
+} from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
 import { removeLine, setQuantity } from "./actions";
 import { getCurrentCart } from "./server";
 
-const MAX_QUANTITY = 99;
 
 const UNAVAILABLE_TEXT: Record<UnavailableReason, string> = {
   out_of_stock: "Sin existencias",

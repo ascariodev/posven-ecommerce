@@ -288,6 +288,18 @@ describe("fusión del carrito de invitado al entrar (RN-CART-02)", () => {
     expect(cartDeleted()).toBe(false);
   });
 
+  it("con el carrito apagado no fusiona ni toca mp_cart", async () => {
+    vi.stubEnv("MARKETPLACE_MODE", "api");
+    vi.stubEnv("MARKETPLACE_CART_ENABLED", "");
+    withGuestCart(guestCart);
+    vi.mocked(loginCustomer).mockResolvedValue({ token: "7|nuevo", customer });
+
+    await expect(login(INITIAL_FORM_STATE, loginForm(form))).rejects.toThrow("NEXT_REDIRECT:/carrito");
+
+    expect(mergeCart).not.toHaveBeenCalled();
+    expect(cartDeleted()).toBe(false);
+  });
+
   it("una mp_cart inválida se borra sin llamar a la API", async () => {
     withGuestCart("no-es-json");
     vi.mocked(loginCustomer).mockResolvedValue({ token: "7|nuevo", customer });

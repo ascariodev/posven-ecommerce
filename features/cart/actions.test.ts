@@ -154,6 +154,7 @@ describe("addToCart con sesión", () => {
   it("manda la cantidad actual más uno", async () => {
     withCookies({ session: "7|token" });
     vi.mocked(getCart).mockResolvedValue(cartWith(2));
+    vi.mocked(setCartItem).mockResolvedValue(cartWith(3));
 
     const state = await addToCart(INITIAL_ADD_TO_CART_STATE, form(ref));
 
@@ -169,6 +170,29 @@ describe("addToCart con sesión", () => {
 
     expect(state).toEqual({ status: "error", message: "Ya tienes 99 unidades de este producto." });
     expect(setCartItem).not.toHaveBeenCalled();
+  });
+
+  it("si la API topa la cantidad al stock, avisa cuántas hay en lugar de Agregado", async () => {
+    withCookies({ session: "7|token" });
+    vi.mocked(getCart).mockResolvedValue(cartWith(3));
+    vi.mocked(setCartItem).mockResolvedValue(cartWith(3));
+
+    const state = await addToCart(INITIAL_ADD_TO_CART_STATE, form(ref));
+
+    expect(state).toEqual({ status: "error", message: "Sólo hay 3 unidades disponibles." });
+    expect(refresh).toHaveBeenCalled();
+  });
+
+  it("un 429 dice cuántos segundos esperar", async () => {
+    withCookies({ session: "7|token" });
+    vi.mocked(getCart).mockResolvedValue(cartWith(0));
+    vi.mocked(setCartItem).mockRejectedValue(
+      new MarketplaceAccountError({ status: 429, code: "too_many_attempts", message: "Demasiados intentos.", retryAfter: 42 }),
+    );
+
+    const state = await addToCart(INITIAL_ADD_TO_CART_STATE, form(ref));
+
+    expect(state).toEqual({ status: "error", message: "Demasiados intentos. Prueba de nuevo en 42 segundos." });
   });
 
   it("un error de la API llega con su mensaje", async () => {

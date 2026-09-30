@@ -1,5 +1,7 @@
 import type { AccountContext } from "../params";
 import {
+  CART_MAX_LINES as MAX_LINES,
+  CART_MAX_QUANTITY as MAX_QUANTITY,
   cartItemPutSchema,
   cartItemsSchema,
   type Cart,
@@ -15,8 +17,6 @@ import { MOCK_PRODUCTS, MOCK_RATE, MOCK_STORES, MOCK_UNAVAILABLE_PRODUCTS, type 
 import { multiply, sum } from "./money";
 
 // Reglas de la spec cuentas-y-compras §5.2 con la enmienda del 2026-09-30 (C, D, E, G, J y K).
-const MAX_LINES = 20;
-const MAX_QUANTITY = 99;
 
 type MockCartsState = Map<number, CartItem[]>;
 

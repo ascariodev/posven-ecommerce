@@ -12,6 +12,9 @@ import {
   verifyEmail,
 } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
+import type { AccountContext } from "@/lib/marketplace/params";
+import { cartEnabled } from "@/features/cart/flag";
+import { mergeGuestCart } from "@/features/cart/server";
 import { formStateFromError, type FormState } from "./formState";
 import { safeReturnPath } from "./returnPath";
 import { accountContext, endSession, SESSION_COOKIE, sessionCookieOptions, withSession } from "./session";
@@ -34,8 +37,10 @@ function success(message: string): FormState {
   return { status: "success", message, fields: {}, values: {} };
 }
 
-async function startSession(token: string): Promise<void> {
+// Guarda la sesión y fusiona el carrito de invitado con el del comprador (RN-CART-02).
+async function startSession(ctx: AccountContext, token: string): Promise<void> {
   (await cookies()).set(SESSION_COOKIE, token, sessionCookieOptions());
+  if (cartEnabled()) await mergeGuestCart({ ...ctx, session: token });
 }
 
 export async function login(prev: FormState, formData: FormData): Promise<FormState> {
@@ -47,7 +52,7 @@ export async function login(prev: FormState, formData: FormData): Promise<FormSt
   } catch (error) {
     return formStateFromError(error, values);
   }
-  await startSession(token);
+  await startSession(ctx, token);
   redirect(safeReturnPath(values.volver));
 }
 
@@ -65,7 +70,7 @@ export async function register(prev: FormState, formData: FormData): Promise<For
   } catch (error) {
     return formStateFromError(error, values);
   }
-  await startSession(token);
+  await startSession(ctx, token);
   redirect(safeReturnPath(values.volver));
 }
 

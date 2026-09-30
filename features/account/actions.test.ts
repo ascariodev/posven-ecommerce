@@ -2,12 +2,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   loginCustomer,
   logoutCustomer,
+  mergeCart,
+  registerCustomer,
   requestPasswordReset,
   resendVerification,
 } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Customer } from "@/lib/marketplace/schemas";
-import { forgotPassword, login, logout, resendVerificationAction } from "./actions";
+import { forgotPassword, login, logout, register, resendVerificationAction } from "./actions";
 import { INITIAL_FORM_STATE } from "./formState";
 
 const cookieStore = vi.hoisted(() => ({ get: vi.fn(), set: vi.fn(), delete: vi.fn() }));
@@ -32,6 +34,9 @@ vi.mock("@/lib/marketplace/client", () => ({
   verifyEmail: vi.fn(),
   resendVerification: vi.fn(),
   getMe: vi.fn(),
+  getCart: vi.fn(),
+  mergeCart: vi.fn(),
+  quoteGuestCart: vi.fn(),
 }));
 
 const customer: Customer = {
@@ -65,6 +70,8 @@ afterEach(() => {
   vi.mocked(logoutCustomer).mockReset();
   vi.mocked(requestPasswordReset).mockReset();
   vi.mocked(resendVerification).mockReset();
+  vi.mocked(registerCustomer).mockReset();
+  vi.mocked(mergeCart).mockReset();
 });
 
 describe("login", () => {
@@ -197,5 +204,77 @@ describe("forgotPassword", () => {
       fields: {},
       values: {},
     });
+  });
+});
+
+describe("fusión del carrito de invitado al entrar (RN-CART-02)", () => {
+  const guestCart = JSON.stringify([
+    { store_slug: "farmacia-central-valencia", product_slug: "acetaminofen-500-mg-20-tabletas", quantity: 2 },
+  ]);
+  const form = { email: customer.email, password: "secreta123", volver: "/carrito" };
+
+  function withGuestCart(value: string): void {
+    cookieStore.get.mockImplementation((name: string) => (name === "mp_cart" ? { name, value } : undefined));
+  }
+
+  function cartDeleted(): boolean {
+    return cookieStore.delete.mock.calls.some(([arg]) => (arg as { name: string }).name === "mp_cart");
+  }
+
+  it("login fusiona con el token nuevo y borra mp_cart", async () => {
+    withGuestCart(guestCart);
+    vi.mocked(loginCustomer).mockResolvedValue({ token: "7|nuevo", customer });
+
+    await expect(login(INITIAL_FORM_STATE, loginForm(form))).rejects.toThrow("NEXT_REDIRECT:/carrito");
+
+    expect(mergeCart).toHaveBeenCalledWith(
+      { session: "7|nuevo", clientIp: null },
+      [{ store_slug: "farmacia-central-valencia", product_slug: "acetaminofen-500-mg-20-tabletas", quantity: 2 }],
+    );
+    expect(cartDeleted()).toBe(true);
+  });
+
+  it("register también fusiona", async () => {
+    withGuestCart(guestCart);
+    vi.mocked(registerCustomer).mockResolvedValue({ token: "8|nuevo", customer });
+
+    await expect(
+      register(INITIAL_FORM_STATE, loginForm({ ...form, name: "Comprador", phone: "04141234567" })),
+    ).rejects.toThrow("NEXT_REDIRECT:/carrito");
+
+    expect(mergeCart).toHaveBeenCalledOnce();
+    expect(cartDeleted()).toBe(true);
+  });
+
+  it("con la API caída el login sigue y mp_cart se conserva para el próximo", async () => {
+    withGuestCart(guestCart);
+    vi.mocked(loginCustomer).mockResolvedValue({ token: "7|nuevo", customer });
+    vi.mocked(mergeCart).mockRejectedValue(new MarketplaceUnavailableError("/me/cart/merge"));
+
+    await expect(login(INITIAL_FORM_STATE, loginForm(form))).rejects.toThrow("NEXT_REDIRECT:/carrito");
+
+    expect(cartDeleted()).toBe(false);
+  });
+
+  it("con un error de la API el login sigue y mp_cart se borra (no se reintenta siempre)", async () => {
+    withGuestCart(guestCart);
+    vi.mocked(loginCustomer).mockResolvedValue({ token: "7|nuevo", customer });
+    vi.mocked(mergeCart).mockRejectedValue(
+      new MarketplaceAccountError({ status: 422, code: "validation_failed", message: "Revisa los datos del formulario." }),
+    );
+
+    await expect(login(INITIAL_FORM_STATE, loginForm(form))).rejects.toThrow("NEXT_REDIRECT:/carrito");
+
+    expect(cartDeleted()).toBe(true);
+  });
+
+  it("una mp_cart inválida se borra sin llamar a la API", async () => {
+    withGuestCart("no-es-json");
+    vi.mocked(loginCustomer).mockResolvedValue({ token: "7|nuevo", customer });
+
+    await expect(login(INITIAL_FORM_STATE, loginForm(form))).rejects.toThrow("NEXT_REDIRECT:/carrito");
+
+    expect(mergeCart).not.toHaveBeenCalled();
+    expect(cartDeleted()).toBe(true);
   });
 });

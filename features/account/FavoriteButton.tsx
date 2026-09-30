@@ -21,7 +21,7 @@ function isSaved(favorites: FavoritesResponse, target: FavoriteTarget): boolean 
 
 function LoginLink({ returnTo }: { returnTo: string }) {
   return (
-    <Link href={loginHref(returnTo)} rel="nofollow" className={buttonVariants({ variant: "outline", size: "sm", className: "self-start" })}>
+    <Link href={loginHref(returnTo)} rel="nofollow" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "self-start")}>
       <Heart aria-hidden="true" className="size-4" />
       {SAVE_LABEL}
     </Link>

@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Customer } from "@/lib/marketplace/schemas";
+import { cn } from "@/lib/utils";
 import { logout } from "./actions";
 import { getCurrentCustomer } from "./session";
 
@@ -40,7 +41,7 @@ export async function AccountSlot() {
   }
   return (
     <details className="relative">
-      <summary className={buttonVariants({ variant: "outline", size: "sm", className: "cursor-pointer list-none [&::-webkit-details-marker]:hidden" })}>
+      <summary className={cn(buttonVariants({ variant: "outline", size: "sm" }), "cursor-pointer list-none [&::-webkit-details-marker]:hidden")}>
         <User aria-hidden="true" className="size-4" />
         Mi cuenta
       </summary>

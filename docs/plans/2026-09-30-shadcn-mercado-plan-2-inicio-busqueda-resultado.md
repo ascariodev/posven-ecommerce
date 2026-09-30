@@ -74,7 +74,10 @@ Del implementador, sin cubrir el plan al pie de la letra:
   coordina.
 - `docs/CAPABILITIES.md` se editó a mano: `posven/.claude/scripts/generate-index.mjs` no está en
   este entorno. Se añadieron las entradas de `<SearchPill />` y `<CategoryRail />` con el formato y
-  el orden de las demás; regenerar el índice donde el script exista y confirmar que no difiere.
+  el orden de las demás. Comprobado después con una reproducción del generador (lee el
+  frontmatter `capabilities` de cada README y arma las mismas tablas), que da idénticas las
+  versiones generadas por el script en `4245a9a` y `bc1c598`: sobre `31cbe8b` produce exactamente
+  el archivo commiteado, así que no hay diferencia pendiente.
 
 ## Deuda declarada
 

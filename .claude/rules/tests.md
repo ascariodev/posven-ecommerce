@@ -32,9 +32,11 @@ paths:
    `SITE_URL=http://localhost:3000`: con `reuseExistingServer`, `webServer.env` no le llega.
    `webServer.env` fija además `SITE_URL=http://localhost:3000`, del que salen las canónicas y
    los sitemaps que se comprueban. El e2e de cierre son `e2e/search.spec.ts`,
-   `e2e/product.spec.ts`, `e2e/account.spec.ts` y `e2e/cart.spec.ts`; los dos últimos corren en
-   serie porque el simulado de cuentas y el del carrito guardan estado en el servidor, y registran
-   un comprador nuevo en cada corrida para ser repetibles.
+   `e2e/product.spec.ts`, `e2e/account.spec.ts`, `e2e/cart.spec.ts` y `e2e/checkout.spec.ts`; los
+   tres últimos corren en serie porque los simulados de cuentas, carrito y compras guardan estado
+   en el servidor, y registran un comprador nuevo en cada corrida para ser repetibles.
+   `checkout.spec.ts` usa además sus cuentas sembradas propias (`entrega@posven.test` y
+   `pago-fallido@posven.test`) y les vacía el carrito al terminar.
 8. Vitest corre sin `globals`, así que Testing Library no desmonta sola: toda prueba `.tsx` llama
    `cleanup()` en `afterEach`. Un Server Component async se prueba con `render(await Comp(props))`,
    como en `features/store/NearbyStores.test.tsx`.

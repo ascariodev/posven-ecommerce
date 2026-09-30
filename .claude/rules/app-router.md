@@ -27,7 +27,8 @@ Rige al editar `app/` y `features/`.
    `MarketplaceUnavailableError` y no se atrapa en la página; la frontera muestra el reintento y
    `noindex`. Un recurso inexistente es `notFound()`, que pinta `app/not-found.tsx`. Excepción:
    lo que lee la API desde `app/layout.tsx` (la cabecera) atrapa `MarketplaceUnavailableError` y
-   degrada, porque `app/error.tsx` no cubre el layout raíz (`LocationSummary`).
+   degrada, porque `app/error.tsx` no cubre el layout raíz (`LocationBar` con `degrade`, que la
+   cabecera activa con `SearchPill degradeLocation`, y `AccountSlot`).
 8. **Marca por `SITE_NAME`** (`lib/site.ts`): ningún texto visible ni metadato escribe la marca
    literal. El título de una página es su parte propia; la plantilla `%s | SITE_NAME` la pone
    `app/layout.tsx`.

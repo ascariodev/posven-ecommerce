@@ -6,7 +6,15 @@ import { Input } from "@/components/ui/input";
 import { LocationBar, LocationBarSkeleton } from "@/features/location/LocationBar";
 import { cn } from "@/lib/utils";
 
-export function SearchPill({ defaultQuery, compact = false }: { defaultQuery?: string; compact?: boolean }) {
+export function SearchPill({
+  defaultQuery,
+  compact = false,
+  degradeLocation = false,
+}: {
+  defaultQuery?: string;
+  compact?: boolean;
+  degradeLocation?: boolean;
+}) {
   const formId = useId();
   const controlHeight = compact ? "h-11 md:h-9" : "h-11";
   return (
@@ -21,9 +29,8 @@ export function SearchPill({ defaultQuery, compact = false }: { defaultQuery?: s
           className={cn(controlHeight, "rounded-full border-0 bg-transparent px-4 shadow-none", compact && "text-sm")}
         />
       </Form>
-      <span aria-hidden="true" className="h-6 w-px shrink-0 bg-border" />
       <Suspense fallback={<LocationBarSkeleton compact={compact} />}>
-        <LocationBar compact={compact} />
+        <LocationBar compact={compact} degrade={degradeLocation} />
       </Suspense>
       <Button
         type="submit"

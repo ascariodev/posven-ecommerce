@@ -1,7 +1,8 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
-import { LocationSummary } from "./LocationBar";
+import { listLocations } from "@/lib/marketplace/client";
+import { LocationBar } from "./LocationBar";
 import { getEffectiveLocation } from "./server";
 
 vi.mock("@/lib/marketplace/client", () => ({
@@ -19,25 +20,39 @@ vi.mock("./server", () => ({
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  vi.unstubAllGlobals();
 });
 
-describe("LocationSummary", () => {
-  it("con ciudad efectiva pinta Cerca de y su nombre", async () => {
+function unavailable() {
+  vi.mocked(getEffectiveLocation).mockRejectedValue(new MarketplaceUnavailableError("/locations"));
+  vi.mocked(listLocations).mockRejectedValue(new MarketplaceUnavailableError("/locations"));
+}
+
+describe("LocationBar", () => {
+  it("con degrade y ciudad efectiva pinta el segmento con su nombre accesible", async () => {
     vi.mocked(getEffectiveLocation).mockResolvedValue({
       location: { kind: "city", city: "valencia" },
       name: "Valencia",
     });
+    vi.mocked(listLocations).mockResolvedValue([]);
+    vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener: () => {}, removeEventListener: () => {} }));
 
-    render(await LocationSummary());
+    render(await LocationBar({ compact: true, degrade: true }));
 
-    expect(screen.getByText("Cerca de: Valencia")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Ubicación: Valencia" })).toBeTruthy();
   });
 
-  it("con la API caída pinta Sin ubicación en vez de romper la cabecera", async () => {
-    vi.mocked(getEffectiveLocation).mockRejectedValue(new MarketplaceUnavailableError("/locations"));
+  it("con degrade y la API caída no pinta nada en vez de romper la cabecera", async () => {
+    unavailable();
 
-    render(await LocationSummary());
+    const { container } = render(await LocationBar({ compact: true, degrade: true }));
 
-    expect(screen.getByText("Sin ubicación")).toBeTruthy();
+    expect(container.innerHTML).toBe("");
+  });
+
+  it("sin degrade y la API caída propaga el error hacia app/error.tsx", async () => {
+    unavailable();
+
+    await expect(LocationBar({ compact: true })).rejects.toBeInstanceOf(MarketplaceUnavailableError);
   });
 });

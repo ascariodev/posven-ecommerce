@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-async function SearchFormWithQuery({ searchParams }: { searchParams: SearchParams }) {
+async function SearchPillWithQuery({ searchParams }: { searchParams: SearchParams }) {
   const { q } = parseSearchQuery(await searchParams);
   return <SearchPill defaultQuery={q} compact />;
 }
@@ -32,7 +32,7 @@ export default function SearchPage({ searchParams }: { searchParams: SearchParam
     <div className="flex flex-col gap-6">
       <h1 className="sr-only">Buscar productos</h1>
       <Suspense fallback={<SearchPill compact />}>
-        <SearchFormWithQuery searchParams={searchParams} />
+        <SearchPillWithQuery searchParams={searchParams} />
       </Suspense>
       <Suspense fallback={<SearchResultsSkeleton />}>
         <SearchResults searchParams={searchParams} />

@@ -3,9 +3,8 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AccountSlot, AccountSlotSkeleton } from "@/features/account/AccountMenu";
-import { LocationSummary, LocationSummarySkeleton } from "@/features/location/LocationBar";
 import { HeaderSearchSlot } from "@/features/search/HeaderSearchSlot";
-import { SearchForm } from "@/features/search/SearchForm";
+import { SearchPill } from "@/features/search/SearchPill";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -44,13 +43,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </Link>
             <Suspense fallback={null}>
               <HeaderSearchSlot>
-                <div className="order-last w-full sm:order-none sm:w-auto sm:flex-1">
-                  <SearchForm size="sm" />
-                </div>
-                <div className="ml-auto sm:ml-0">
-                  <Suspense fallback={<LocationSummarySkeleton />}>
-                    <LocationSummary />
-                  </Suspense>
+                <div className="order-last flex w-full justify-center sm:order-none sm:w-auto sm:min-w-0 sm:flex-1">
+                  <div className="w-full sm:max-w-xl">
+                    <SearchPill compact degradeLocation />
+                  </div>
                 </div>
               </HeaderSearchSlot>
             </Suspense>

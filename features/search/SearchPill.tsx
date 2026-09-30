@@ -16,7 +16,7 @@ export function SearchPill({ defaultQuery, compact = false }: { defaultQuery?: s
           name="q"
           type="search"
           aria-label="Buscar productos"
-          placeholder="Producto, marca o código de barras"
+          placeholder="Producto o marca"
           defaultValue={defaultQuery}
           className={cn(controlHeight, "rounded-full border-0 bg-transparent px-4 shadow-none", compact && "text-sm")}
         />

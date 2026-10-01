@@ -4,7 +4,7 @@ path: ""                    # p. ej. "features/search"
 type: ""                    # "feature" | "infra" | "integration" | "util"
 exports: []
 depends_on: []
-tests: ""                   # junto al código, p. ej. "features/search/*.test.ts"
+tests: ""                   # en __tests__/, p. ej. "features/cart/__tests__/*.test.ts"
 verified_against: []        # rutas leídas al escribir la ficha; obligatoria
 capabilities:
   - intent: ""

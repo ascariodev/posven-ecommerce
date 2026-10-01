@@ -25,3 +25,23 @@ Datos de entorno y flujo que `posven-ecommerce/CLAUDE.md` no repite. Versiones e
 ## 3. Ramas
 
 Rama base `main`.
+
+## 4. Estructura de un módulo
+
+Cada `features/<f>/` separa por carpetas la frontera servidor/cliente. Ejemplo: `features/cart/`.
+
+| Carpeta | Contenido |
+|---|---|
+| `components/` | Todo `.tsx`. |
+| `server/` | Lo que abre con `"use server"` o `import "server-only"`, o importa algo que lo hace; `server.ts` se llama `server/<f>.ts`. |
+| `lib/` | El resto de `.ts`: puro, importable desde un Client Component. |
+| `__tests__/` | Todos los `*.test.ts(x)`, planos; los datos de prueba, en `__tests__/fixtures/`. |
+
+- `README.md` se queda en la raíz de la feature.
+- Dentro de la feature, los imports son relativos (`../server/actions`); entre features, desde
+  `app/` y en las pruebas, por `@/features/<f>/<carpeta>/<archivo>`.
+- Sin barriles (`index.ts`): uno que reexporte `server/` y `components/` arrastra `server-only` al
+  bundle del cliente.
+- `eslint.config.mjs` lo vigila: `features/*/lib/**` no importa `server-only`, `next/headers`,
+  `**/server/**` ni `@/lib/marketplace/client|http`, y nada fuera de `__tests__/` importa de
+  `**/__tests__/**`.

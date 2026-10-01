@@ -12,8 +12,8 @@ paths:
 1. Vitest con entorno `jsdom` (`vitest.config.mts`): alias `@/` a la raíz y `server-only` al
    módulo vacío de Next, así que `http.ts` y `client.ts` se importan sin error. Corre
    `**/*.test.{ts,tsx}` fuera de `node_modules`, `.next` y `e2e`.
-2. Las pruebas viven junto al código: `lib/marketplace/params.ts` se prueba en
-   `lib/marketplace/params.test.ts`.
+2. Las pruebas viven en el `__tests__/` de su módulo, planas: `features/cart/lib/flag.ts` se
+   prueba en `features/cart/__tests__/flag.test.ts`.
 3. Se corre dirigido: `npx vitest run <ruta>` (p. ej. `npx vitest run lib/marketplace`).
    `npm test` corre la suite entera.
 4. `fetch` y `next/headers` se simulan con `vi` (`vi.stubGlobal`, `vi.mock`); las variables de

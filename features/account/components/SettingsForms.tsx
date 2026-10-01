@@ -3,9 +3,9 @@
 import { useActionState, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { changePasswordAction, deleteAccountAction, updateSettingsAction } from "./accountActions";
+import { changePasswordAction, deleteAccountAction, updateSettingsAction } from "../accountActions";
 import { FieldError, FormNotice } from "./FormFeedback";
-import { INITIAL_FORM_STATE } from "./formState";
+import { INITIAL_FORM_STATE } from "../formState";
 
 export function PasswordChangeForm() {
   const [state, formAction, pending] = useActionState(changePasswordAction, INITIAL_FORM_STATE);

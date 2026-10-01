@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ResetPasswordForm } from "@/features/account/RecoveryForms";
+import { ResetPasswordForm } from "@/features/account/components/RecoveryForms";
 
 export const metadata: Metadata = {
   title: "Nueva contraseña",

@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logout } from "./actions";
+import { logout } from "../actions";
 
 const SUMMARY_LINK = { href: "/cuenta", label: "Resumen" };
 const PURCHASES_LINK = { href: "/cuenta/compras", label: "Mis compras" };

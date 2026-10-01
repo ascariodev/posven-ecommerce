@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/FavoriteButton";
+import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/components/FavoriteButton";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { ViewBeacon } from "@/features/events/components/ViewBeacon";
 import { productJsonLd } from "@/features/product/lib/jsonld";

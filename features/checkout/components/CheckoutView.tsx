@@ -2,7 +2,7 @@ import { connection } from "next/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/session";
-import { ResendVerificationForm } from "@/features/account/VerifyEmailForm";
+import { ResendVerificationForm } from "@/features/account/components/VerifyEmailForm";
 import { CheckoutEmpty } from "./CheckoutEmpty";
 import { CheckoutForm } from "./CheckoutForm";
 import { readCheckoutParams } from "../lib/params";

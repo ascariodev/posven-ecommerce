@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
-import { ForgotPasswordForm } from "@/features/account/RecoveryForms";
+import { ForgotPasswordForm } from "@/features/account/components/RecoveryForms";
 
 export const metadata: Metadata = {
   title: "Recuperar contraseña",

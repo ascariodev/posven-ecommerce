@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { VerifyEmailForm } from "@/features/account/VerifyEmailForm";
+import { VerifyEmailForm } from "@/features/account/components/VerifyEmailForm";
 
 export const metadata: Metadata = {
   title: "Verificar correo",

@@ -1,4 +1,4 @@
-import type { FormState } from "./formState";
+import type { FormState } from "../formState";
 
 export function FormNotice({ state }: { state: FormState }) {
   if (state.status === "idle" || state.message === null) return null;

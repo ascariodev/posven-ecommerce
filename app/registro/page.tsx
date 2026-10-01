@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RegisterForm } from "@/features/account/RegisterForm";
+import { RegisterForm } from "@/features/account/components/RegisterForm";
 import { safeReturnPath } from "@/features/account/returnPath";
 
 export const metadata: Metadata = {

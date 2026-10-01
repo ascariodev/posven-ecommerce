@@ -20,7 +20,7 @@ aplicada en: `components/ui/sheet.tsx`, `components/ui/select.tsx`,
 Un `Select` de Radix dentro de un `<form action>` con `useActionState` vuelve al valor con que se
 montó cuando React 19 resetea el formulario tras la acción, y pierde lo elegido. Se monta de nuevo
 con una `key` que cambia con cada respuesta, para que tome el `defaultValue` de la respuesta.
-aplicada en: `features/account/AddressForm.tsx`
+aplicada en: `features/account/components/AddressForm.tsx`
 
 ## L-05
 
@@ -29,4 +29,4 @@ elegir el ítem, Radix cierra el menú y, sin animación de salida que retenga `
 desmonta el contenido antes de la acción por defecto del clic; el formulario queda desconectado.
 El formulario va fuera del menú, siempre montado, y el ítem lo envía con `requestSubmit()` en su
 `onSelect`.
-aplicada en: `features/account/AccountDropdown.tsx`
+aplicada en: `features/account/components/AccountDropdown.tsx`

@@ -4,8 +4,8 @@ path: "features/account"
 type: "feature"
 exports: ["safeReturnPath", "loginHref", "FormState", "INITIAL_FORM_STATE", "formStateFromError", "SESSION_COOKIE", "sessionCookieOptions", "readSession", "clientIpFrom", "clientIp", "accountContext", "getCurrentCustomer", "requireCustomer", "withSession", "endSession", "login", "register", "logout", "forgotPassword", "resetPasswordAction", "verifyEmailAction", "resendVerificationAction", "FormNotice", "FieldError", "LoginForm", "RegisterForm", "ForgotPasswordForm", "ResetPasswordForm", "VerifyEmailForm", "ResendVerificationForm", "updateProfile", "changePasswordAction", "updateSettingsAction", "deleteAccountAction", "saveAddress", "deleteAddressAction", "setDefaultAddress", "toggleFavorite", "AccountSlot", "AccountSlotSkeleton", "AccountDropdown", "FavoriteButton", "FavoriteButtonSkeleton", "ProfileForm", "AddressForm", "PasswordChangeForm", "NotificationsForm", "DeleteAccountForm"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/badge.tsx", "components/ui/select.tsx", "components/ui/dropdown-menu.tsx", "features/cart/lib/flag.ts", "features/purchases/components/RecentPurchases.tsx", "features/location/lib/cookie.ts", "features/search/components/ProductThumb.tsx", "features/cart/lib/flag.ts", "features/cart/server/cart.ts"]
-tests: "features/account/*.test.{ts,tsx}"
-verified_against: ["features/account/returnPath.ts", "features/account/formState.ts", "features/account/session.ts", "features/account/actions.ts", "features/account/FormFeedback.tsx", "features/account/LoginForm.tsx", "features/account/RegisterForm.tsx", "features/account/RecoveryForms.tsx", "features/account/VerifyEmailForm.tsx", "features/account/returnPath.test.ts", "features/account/session.test.ts", "features/account/actions.test.ts", "features/account/accountActions.ts", "features/account/AccountMenu.tsx", "features/account/AccountDropdown.tsx", "features/account/FavoriteButton.tsx", "features/account/ProfileForm.tsx", "features/account/AddressForm.tsx", "features/account/SettingsForms.tsx", "features/account/accountActions.test.ts", "features/account/AccountMenu.test.tsx", "features/account/AddressForm.test.tsx", "features/cart/lib/flag.ts", "features/purchases/components/RecentPurchases.tsx", "app/cuenta/layout.tsx", "app/cuenta/page.tsx", "app/cuenta/perfil/page.tsx", "app/cuenta/direcciones/page.tsx", "app/cuenta/favoritos/page.tsx", "app/cuenta/configuracion/page.tsx", "app/layout.tsx", "app/p/[slug]/page.tsx", "app/tienda/[slug]/page.tsx", "e2e/account.spec.ts", "app/entrar/page.tsx", "app/registro/page.tsx", "app/recuperar/page.tsx", "app/restablecer/[token]/page.tsx", "app/verificar/[token]/page.tsx", "app/api/sesion/vencida/route.ts", "proxy.ts", "app/robots.ts", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts"]
+tests: ["features/account/*.test.ts", "features/account/__tests__/*.test.tsx"]
+verified_against: ["features/account/returnPath.ts", "features/account/formState.ts", "features/account/session.ts", "features/account/actions.ts", "features/account/components/FormFeedback.tsx", "features/account/components/LoginForm.tsx", "features/account/components/RegisterForm.tsx", "features/account/components/RecoveryForms.tsx", "features/account/components/VerifyEmailForm.tsx", "features/account/returnPath.test.ts", "features/account/session.test.ts", "features/account/actions.test.ts", "features/account/accountActions.ts", "features/account/components/AccountMenu.tsx", "features/account/components/AccountDropdown.tsx", "features/account/components/FavoriteButton.tsx", "features/account/components/ProfileForm.tsx", "features/account/components/AddressForm.tsx", "features/account/components/SettingsForms.tsx", "features/account/accountActions.test.ts", "features/account/__tests__/AccountMenu.test.tsx", "features/account/__tests__/AddressForm.test.tsx", "features/cart/lib/flag.ts", "features/purchases/components/RecentPurchases.tsx", "app/cuenta/layout.tsx", "app/cuenta/page.tsx", "app/cuenta/perfil/page.tsx", "app/cuenta/direcciones/page.tsx", "app/cuenta/favoritos/page.tsx", "app/cuenta/configuracion/page.tsx", "app/layout.tsx", "app/p/[slug]/page.tsx", "app/tienda/[slug]/page.tsx", "e2e/account.spec.ts", "app/entrar/page.tsx", "app/registro/page.tsx", "app/recuperar/page.tsx", "app/restablecer/[token]/page.tsx", "app/verificar/[token]/page.tsx", "app/api/sesion/vencida/route.ts", "proxy.ts", "app/robots.ts", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts"]
 capabilities:
   - intent: "leer el comprador de la sesión"
     intent_aliases: ["comprador actual", "usuario logueado", "sesion del comprador", "esta logueado", "cookie mp_session", "exigir sesion"]
@@ -26,7 +26,7 @@ capabilities:
   - intent: "mostrar el acceso o el menú de la cuenta en la cabecera"
     intent_aliases: ["cabecera de la cuenta", "boton entrar", "menu de la cuenta", "mi cuenta", "salir"]
     entrypoint: "<AccountSlot />"
-    file: "features/account/AccountMenu.tsx"
+    file: "features/account/components/AccountMenu.tsx"
     input: "sin props; se monta dentro de <Suspense fallback={<AccountSlotSkeleton />}> en app/layout.tsx"
     output: "enlace Entrar sin comprador o con la API caída (L-02); con comprador, AccountDropdown: botón Mi cuenta que abre un DropdownMenu de shadcn con Resumen, Mis compras (con el carrito encendido), Perfil, Direcciones, Favoritos, Configuración y Salir"
     source: "getCurrentCustomer() de features/account/session.ts"
@@ -42,7 +42,7 @@ capabilities:
   - intent: "marcar o quitar un producto o una tienda de favoritos"
     intent_aliases: ["favoritos del comprador", "guardar en favoritos", "quitar de favoritos", "corazon"]
     entrypoint: "<FavoriteButton /> / toggleFavorite()"
-    file: "features/account/FavoriteButton.tsx"
+    file: "features/account/components/FavoriteButton.tsx"
     input: "target: { kind: \"product\" | \"store\"; slug: string } y returnTo: string; se monta dentro de <Suspense fallback={<FavoriteButtonSkeleton />}>"
     output: "sin sesión, enlace a /entrar?volver=<returnTo>; con sesión, botón Guardar en favoritos o Quitar de favoritos; con la API caída no pinta nada"
     source: "listFavorites() de lib/marketplace y toggleFavorite() de features/account/accountActions.ts"
@@ -68,7 +68,7 @@ direcciones: lo hace la API.
 | `RN-ACCOUNT-02` | `volver` sólo acepta rutas internas: empieza con `/` y no con `//` ni `/\`; cualquier otro valor vuelve a `/cuenta`. | `features/account/returnPath.test.ts` ("acepta una ruta interna con consulta", "devuelve /cuenta ante %j"); `features/account/actions.test.ts` ("con volver externo redirige a /cuenta") |
 | `RN-ACCOUNT-03` | Un 401 `unauthenticated` borra `mp_session` y lleva a `/entrar?volver=`; un 401 sin esa forma es API caída y conserva la cookie. | `features/account/actions.test.ts` ("con unauthenticated borra la cookie y lleva a entrar", "con un 401 que llega como API caída conserva la cookie") |
 | `RN-ACCOUNT-04` | La IP del cliente es el último valor de `x-forwarded-for` si `isIP` lo acepta; si no, no se manda `X-Client-IP`. | `features/account/session.test.ts` ("toma el último valor de x-forwarded-for", "devuelve null ante un valor que no es IP o sin encabezado") |
-| `RN-ACCOUNT-05` | La cabecera y el botón de favorito leen la sesión en su `<Suspense>`; con la API caída la cabecera muestra "Entrar" y el botón no se pinta. | `features/account/AccountMenu.test.tsx` ("con la API caída muestra Entrar (RN-ACCOUNT-05)"); el botón de favorito lo cubren `next build` (◐ en `/p/[slug]` y `/tienda/[slug]`) y `e2e/account.spec.ts` |
+| `RN-ACCOUNT-05` | La cabecera y el botón de favorito leen la sesión en su `<Suspense>`; con la API caída la cabecera muestra "Entrar" y el botón no se pinta. | `features/account/__tests__/AccountMenu.test.tsx` ("con la API caída muestra Entrar (RN-ACCOUNT-05)"); el botón de favorito lo cubren `next build` (◐ en `/p/[slug]` y `/tienda/[slug]`) y `e2e/account.spec.ts` |
 | `RN-ACCOUNT-06` | Una dirección nueva sólo se envía con las coordenadas de "Usar mi ubicación"; sin ellas el botón de guardar queda deshabilitado. | `features/account/accountActions.test.ts` ("una dirección nueva sin coordenadas devuelve el aviso sin llamar a la API (RN-ACCOUNT-06)"); el botón deshabilitado, `e2e/account.spec.ts` |
 
 ## 3. Dónde hacer cambios
@@ -79,11 +79,11 @@ direcciones: lo hace la API.
 | Qué rutas de vuelta se aceptan | `safeReturnPath` en `returnPath.ts` | sus casos en `returnPath.test.ts` |
 | Traducción de un error de la API a mensaje de formulario | `formStateFromError` en `formState.ts` | los casos de error de `actions.test.ts` |
 | Una acción nueva de cuenta con sesión | `actions.ts`, envuelta en `withSession(returnTo, run)` | el 401 `unauthenticated` lo resuelve `withSession`; `formStateFromError` lo relanza |
-| Textos o campos de un formulario | `LoginForm.tsx`, `RegisterForm.tsx`, `RecoveryForms.tsx`, `VerifyEmailForm.tsx` | el `pick` de su acción en `actions.ts` (qué valores vuelven al formulario) |
+| Textos o campos de un formulario | `components/LoginForm.tsx`, `components/RegisterForm.tsx`, `components/RecoveryForms.tsx`, `components/VerifyEmailForm.tsx` | el `pick` de su acción en `actions.ts` (qué valores vuelven al formulario) |
 | Rutas que exigen sesión | `matcher` de `proxy.ts` y `requireCustomer(path)` en la página | `disallow` de `app/robots.ts` si la ruta no se indexa |
-| Una pantalla nueva de `/cuenta` | `app/cuenta/<ruta>/page.tsx`, con `metadata` `noindex` y el cuerpo async en un `<Suspense>` que empieza con `requireCustomer("<su ruta>")` | el enlace en `app/cuenta/layout.tsx`, en `app/cuenta/page.tsx` y en `MENU_LINKS` de `AccountDropdown.tsx`; las de compras (`/cuenta/compras*`, módulo `features/purchases`) sólo con `cartEnabled()` |
+| Una pantalla nueva de `/cuenta` | `app/cuenta/<ruta>/page.tsx`, con `metadata` `noindex` y el cuerpo async en un `<Suspense>` que empieza con `requireCustomer("<su ruta>")` | el enlace en `app/cuenta/layout.tsx`, en `app/cuenta/page.tsx` y en `MENU_LINKS` de `components/AccountDropdown.tsx`; las de compras (`/cuenta/compras*`, módulo `features/purchases`) sólo con `cartEnabled()` |
 | Una mutación de cuenta | `accountActions.ts`, envuelta en `withSession(returnTo, ...)`; errores de negocio por `formStateFromError` | su formulario `"use client"` con `useActionState` y su prefijo de `useId()`; el caso en `accountActions.test.ts` |
-| Campos o textos de perfil, dirección o configuración | `ProfileForm.tsx`, `AddressForm.tsx`, `SettingsForms.tsx` | el `pick` o los campos que lee su acción en `accountActions.ts` |
+| Campos o textos de perfil, dirección o configuración | `components/ProfileForm.tsx`, `components/AddressForm.tsx`, `components/SettingsForms.tsx` | el `pick` o los campos que lee su acción en `accountActions.ts` |
 | Dónde se ofrece el favorito | `<FavoriteButton />` dentro de su propio `<Suspense fallback={<FavoriteButtonSkeleton />}>` en la ficha | nada de `<Suspense>` por encima de la página (`seo.md` regla 7) |
 
 ## 4. API pública
@@ -122,7 +122,7 @@ Acciones de servidor, `features/account/actions.ts` (`"use server"`), `(prev: Fo
 - `verifyEmailAction`: `token`; éxito, "Tu correo quedó verificado."
 - `resendVerificationAction`: sin campos, dentro de `withSession("/cuenta", ...)`; éxito, "Te enviamos un enlace nuevo. Revisa tu correo."
 
-Componentes, `features/account/FormFeedback.tsx` (sin estado, usable desde cliente):
+Componentes, `features/account/components/FormFeedback.tsx` (sin estado, usable desde cliente):
 
 - `FormNotice({ state }: { state: FormState })`: nada en `idle`; `role="alert"` en `error` y `role="status"` en `success`
 - `FieldError({ id, state, name }: { id: string; state: FormState; name: string })`: `<p id={id}>` con `state.fields[name]` si existe
@@ -139,19 +139,19 @@ Acciones de cuenta, `features/account/accountActions.ts` (`"use server"`), todas
 
 Cabecera y favoritos, componentes async que van dentro de su `<Suspense>`:
 
-- `AccountSlot()` y `AccountSlotSkeleton()`, `features/account/AccountMenu.tsx`: enlace "Entrar" sin comprador o con la API caída; con comprador, `<AccountDropdown showPurchases={cartEnabled()} />` (RN-ACCOUNT-05)
-- `AccountDropdown({ showPurchases }: { showPurchases: boolean })`, `features/account/AccountDropdown.tsx` (`"use client"`): `DropdownMenu` de shadcn con el disparador "Mi cuenta" (`Button` outline `sm`) y los ítems Resumen, Mis compras (sólo con `showPurchases`, que decide el servidor con el interruptor del carrito), Perfil, Direcciones, Favoritos y Configuración (enlaces `menuitem`) y "Salir". "Salir" envía con `requestSubmit()` un `<form action={logout} hidden>` que vive fuera del menú: al elegir un ítem Radix cierra el menú y, con movimiento reducido (sin animación de salida), desmonta el contenido en el mismo evento, así que un botón `submit` dentro del menú quedaría en un formulario desconectado y no enviaría (L-05). Sin JavaScript el menú no abre (decisión 4 del plan 5)
-- `FavoriteButton({ target, returnTo }: { target: FavoriteTarget; returnTo: string })` y `FavoriteButtonSkeleton()`, `features/account/FavoriteButton.tsx`: sin sesión o con `unauthenticated`, enlace a `loginHref(returnTo)`; con sesión, botón "Guardar en favoritos" o "Quitar de favoritos"; con la API caída no pinta nada
+- `AccountSlot()` y `AccountSlotSkeleton()`, `features/account/components/AccountMenu.tsx`: enlace "Entrar" sin comprador o con la API caída; con comprador, `<AccountDropdown showPurchases={cartEnabled()} />` (RN-ACCOUNT-05)
+- `AccountDropdown({ showPurchases }: { showPurchases: boolean })`, `features/account/components/AccountDropdown.tsx` (`"use client"`): `DropdownMenu` de shadcn con el disparador "Mi cuenta" (`Button` outline `sm`) y los ítems Resumen, Mis compras (sólo con `showPurchases`, que decide el servidor con el interruptor del carrito), Perfil, Direcciones, Favoritos y Configuración (enlaces `menuitem`) y "Salir". "Salir" envía con `requestSubmit()` un `<form action={logout} hidden>` que vive fuera del menú: al elegir un ítem Radix cierra el menú y, con movimiento reducido (sin animación de salida), desmonta el contenido en el mismo evento, así que un botón `submit` dentro del menú quedaría en un formulario desconectado y no enviaría (L-05). Sin JavaScript el menú no abre (decisión 4 del plan 5)
+- `FavoriteButton({ target, returnTo }: { target: FavoriteTarget; returnTo: string })` y `FavoriteButtonSkeleton()`, `features/account/components/FavoriteButton.tsx`: sin sesión o con `unauthenticated`, enlace a `loginHref(returnTo)`; con sesión, botón "Guardar en favoritos" o "Quitar de favoritos"; con la API caída no pinta nada
 
 Formularios `"use client"` con `useActionState`:
 
-- `ProfileForm({ customer }: { customer: Customer })`, `features/account/ProfileForm.tsx`
-- `AddressForm({ address, cities }: { address: Address | null; cities: { slug: string; name: string; state: string }[] })`, `features/account/AddressForm.tsx`: obtiene `lat` y `lng` con `navigator.geolocation` al tocar "Usar mi ubicación"; si es nueva, "Guardar dirección" queda deshabilitado sin coordenadas. La ciudad es un `Select` de shadcn agrupado por estado (`SelectGroup` y `SelectLabel`) con `name="city_slug"`; se monta de nuevo con cada respuesta de la acción (`key`), porque Radix vuelve al valor con que se montó cuando React 19 resetea el formulario y así perdería la ciudad elegida tras un error
-- `PasswordChangeForm()`, `NotificationsForm({ enabled }: { enabled: boolean })` y `DeleteAccountForm()`, `features/account/SettingsForms.tsx`
-- `LoginForm({ volver }: { volver: string })`, `features/account/LoginForm.tsx`
-- `RegisterForm({ volver }: { volver: string })`, `features/account/RegisterForm.tsx`
-- `ForgotPasswordForm()` y `ResetPasswordForm({ token }: { token: string })`, `features/account/RecoveryForms.tsx`
-- `VerifyEmailForm({ token }: { token: string })` y `ResendVerificationForm()`, `features/account/VerifyEmailForm.tsx`
+- `ProfileForm({ customer }: { customer: Customer })`, `features/account/components/ProfileForm.tsx`
+- `AddressForm({ address, cities }: { address: Address | null; cities: { slug: string; name: string; state: string }[] })`, `features/account/components/AddressForm.tsx`: obtiene `lat` y `lng` con `navigator.geolocation` al tocar "Usar mi ubicación"; si es nueva, "Guardar dirección" queda deshabilitado sin coordenadas. La ciudad es un `Select` de shadcn agrupado por estado (`SelectGroup` y `SelectLabel`) con `name="city_slug"`; se monta de nuevo con cada respuesta de la acción (`key`), porque Radix vuelve al valor con que se montó cuando React 19 resetea el formulario y así perdería la ciudad elegida tras un error
+- `PasswordChangeForm()`, `NotificationsForm({ enabled }: { enabled: boolean })` y `DeleteAccountForm()`, `features/account/components/SettingsForms.tsx`
+- `LoginForm({ volver }: { volver: string })`, `features/account/components/LoginForm.tsx`
+- `RegisterForm({ volver }: { volver: string })`, `features/account/components/RegisterForm.tsx`
+- `ForgotPasswordForm()` y `ResetPasswordForm({ token }: { token: string })`, `features/account/components/RecoveryForms.tsx`
+- `VerifyEmailForm({ token }: { token: string })` y `ResendVerificationForm()`, `features/account/components/VerifyEmailForm.tsx`
 
 ## 5. Estructura interna
 
@@ -179,7 +179,7 @@ Formularios `"use client"` con `useActionState`:
 ```tsx
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LoginForm } from "@/features/account/LoginForm";
+import { LoginForm } from "@/features/account/components/LoginForm";
 import { safeReturnPath } from "@/features/account/returnPath";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -219,5 +219,5 @@ export default function LoginPage({ searchParams }: { searchParams: SearchParams
 - `features/account/session.test.ts`: IP de `x-forwarded-for`, validez del valor de `mp_session` y opciones de la cookie en producción.
 - `features/account/actions.test.ts`: `login` con cookie y redirección, `volver` externo, credenciales inválidas, 429 y API caída; `logout` con la API caída; `resendVerificationAction` con 401 `unauthenticated` y con API caída; `forgotPassword` con cualquier correo.
 - `features/account/accountActions.test.ts`: `updateProfile` con y sin cambio de correo, `saveAddress` nueva sin coordenadas y edición sin `coords_changed`, `toggleFavorite` con `unauthenticated` y con `not_found`, `deleteAccountAction` con contraseña errada, con pedidos en curso (`open_orders`) y con éxito.
-- `features/account/AccountMenu.test.tsx`: `AccountSlot` sin comprador, con la API caída y con comprador (abre el menú con Enter y comprueba los seis `menuitem` y sus `href`). "Salir" lo cubre `e2e/account.spec.ts` con movimiento normal; con movimiento reducido se comprobó a mano al cerrar el plan 5 y no queda en el e2e.
+- `features/account/__tests__/AccountMenu.test.tsx`: `AccountSlot` sin comprador, con la API caída y con comprador (abre el menú con Enter y comprueba los seis `menuitem` y sus `href`). "Salir" lo cubre `e2e/account.spec.ts` con movimiento normal; con movimiento reducido se comprobó a mano al cerrar el plan 5 y no queda en el e2e.
 - `e2e/account.spec.ts` (en serie, `npx playwright test`): el recorrido de la cuenta en simulado, de registrarse a favoritos, `noindex` y cabecera en móvil.

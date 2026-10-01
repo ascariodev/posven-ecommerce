@@ -6,7 +6,7 @@ import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/mark
 import type { Customer } from "@/lib/marketplace/schemas";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { AccountDropdown } from "./AccountDropdown";
-import { getCurrentCustomer } from "./session";
+import { getCurrentCustomer } from "../session";
 
 // app/error.tsx no cubre el layout raíz (L-02): sin API, la cabecera degrada a invitado.
 async function currentCustomerOrGuest(): Promise<Customer | null> {

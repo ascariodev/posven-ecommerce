@@ -2,14 +2,14 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Customer } from "@/lib/marketplace/schemas";
-import { AccountSlot } from "./AccountMenu";
-import { getCurrentCustomer } from "./session";
+import { AccountSlot } from "../components/AccountMenu";
+import { getCurrentCustomer } from "../session";
 
-vi.mock("./session", () => ({
+vi.mock("../session", () => ({
   getCurrentCustomer: vi.fn(),
 }));
 
-vi.mock("./actions", () => ({
+vi.mock("../actions", () => ({
   logout: vi.fn(),
 }));
 

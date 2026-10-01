@@ -17,7 +17,7 @@ import type {
   Quote,
   QuoteStore,
 } from "@/lib/marketplace/schemas";
-import { ResendVerificationForm } from "@/features/account/VerifyEmailForm";
+import { ResendVerificationForm } from "@/features/account/components/VerifyEmailForm";
 import { payCheckout } from "../server/actions";
 import { CheckoutEmpty } from "./CheckoutEmpty";
 import { INITIAL_CHECKOUT_STATE } from "../lib/checkoutState";

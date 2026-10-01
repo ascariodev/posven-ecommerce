@@ -3,9 +3,9 @@
 import { useActionState, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { register } from "./actions";
+import { register } from "../actions";
 import { FieldError, FormNotice } from "./FormFeedback";
-import { INITIAL_FORM_STATE } from "./formState";
+import { INITIAL_FORM_STATE } from "../formState";
 
 export function RegisterForm({ volver }: { volver: string }) {
   const [state, formAction, pending] = useActionState(register, INITIAL_FORM_STATE);

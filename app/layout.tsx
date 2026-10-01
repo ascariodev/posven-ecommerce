@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
-import { AccountSlot, AccountSlotSkeleton } from "@/features/account/AccountMenu";
+import { AccountSlot, AccountSlotSkeleton } from "@/features/account/components/AccountMenu";
 import { CartLink, CartLinkSkeleton } from "@/features/cart/components/CartLink";
 import { HeaderSearchSlot } from "@/features/search/components/HeaderSearchSlot";
 import { SearchPill } from "@/features/search/components/SearchPill";

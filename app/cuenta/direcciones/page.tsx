@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { deleteAddressAction, setDefaultAddress } from "@/features/account/accountActions";
-import { AddressForm } from "@/features/account/AddressForm";
+import { AddressForm } from "@/features/account/components/AddressForm";
 import { requireCustomer } from "@/features/account/session";
 import { listAddresses, listLocations } from "@/lib/marketplace/client";
 

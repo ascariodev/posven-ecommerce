@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/session";
-import { DeleteAccountForm, NotificationsForm, PasswordChangeForm } from "@/features/account/SettingsForms";
+import { DeleteAccountForm, NotificationsForm, PasswordChangeForm } from "@/features/account/components/SettingsForms";
 
 export const metadata: Metadata = {
   title: "Configuración",

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProfileForm } from "@/features/account/ProfileForm";
+import { ProfileForm } from "@/features/account/components/ProfileForm";
 import { requireCustomer } from "@/features/account/session";
 
 export const metadata: Metadata = {

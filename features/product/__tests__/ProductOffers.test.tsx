@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getEffectiveLocation } from "@/features/location/server/location";
 import { getProductOffers } from "@/lib/marketplace/client";
 import type { ProductOffer, ProductPage } from "@/lib/marketplace/schemas";
-import { ProductOffers } from "./ProductOffers";
+import { ProductOffers } from "@/features/product/components/ProductOffers";
 
 vi.mock("@/lib/marketplace/client", () => ({
   getProductOffers: vi.fn(),

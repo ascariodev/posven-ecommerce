@@ -59,7 +59,7 @@ para validar la ciudad con `listLocations()`; sin ubicación la búsqueda es nac
 | Textos o pasos del selector | `components/LocationPicker.tsx` | los nombres accesibles que busca `__tests__/LocationPicker.test.tsx` y `e2e/search.spec.ts` |
 | El botón o la hoja de ubicación | `components/LocationSheet.tsx` | su nombre accesible ("Ubicación: {label}" o "¿Dónde? Ubicación: sin elegir", que contiene el texto visible, WCAG 2.5.3) lo busca `e2e/search.spec.ts` |
 | Cómo llega la ubicación a la consulta | `toGeoFilter` en `lib/cookie.ts` | `GeoFilter` vive en `lib/marketplace/params.ts` y no se cambia desde acá |
-| Qué ubicación cuenta como efectiva | `getEffectiveLocation` en `server/location.ts` | sus casos en `__tests__/server.test.ts`; la consume `components/LocationBar.tsx` (`LocationBar`), `features/search/SearchResults.tsx`, `features/store/components/NearbyStores.tsx` y `features/product/ProductOffers.tsx` |
+| Qué ubicación cuenta como efectiva | `getEffectiveLocation` en `server/location.ts` | sus casos en `__tests__/server.test.ts`; la consume `components/LocationBar.tsx` (`LocationBar`), `features/search/SearchResults.tsx`, `features/store/components/NearbyStores.tsx` y `features/product/components/ProductOffers.tsx` |
 
 ## 4. API pública
 

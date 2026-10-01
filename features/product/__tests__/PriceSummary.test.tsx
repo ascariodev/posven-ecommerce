@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { OffersSummary } from "@/lib/marketplace/schemas";
-import { PriceSummary } from "./PriceSummary";
+import { PriceSummary } from "@/features/product/components/PriceSummary";
 
 function summary(overrides: Partial<OffersSummary> = {}): OffersSummary {
   return { offer_count: 3, low_price_usd: "2.35", high_price_usd: "3.10", ...overrides };

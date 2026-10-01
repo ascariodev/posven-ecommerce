@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ProductDetail } from "@/lib/marketplace/schemas";
-import { productMetadata } from "./metadata";
+import { productMetadata } from "@/features/product/lib/metadata";
 
 function product(offerCount: number): ProductDetail {
   return {

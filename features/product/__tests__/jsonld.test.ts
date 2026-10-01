@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ProductDetail } from "@/lib/marketplace/schemas";
-import { productJsonLd } from "./jsonld";
+import { productJsonLd } from "@/features/product/lib/jsonld";
 
 function product(overrides: Partial<ProductDetail> = {}): ProductDetail {
   return {

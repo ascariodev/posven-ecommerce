@@ -61,9 +61,9 @@ README: `features/product/README.md`
 
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
-| cargar un producto por slug con su 404 y su redirección | `loadProduct()` | `features/product/load.ts` | RN-PRODUCT-02 |
-| armar los metadatos y el JSON-LD de un producto | `productMetadata()` | `features/product/metadata.ts` | RN-PRODUCT-01, RN-PRODUCT-02 |
-| mostrar dónde comprar un producto ordenado por precio o cercanía | `<ProductOffers />` | `features/product/ProductOffers.tsx` | RN-PRODUCT-03, RN-PRODUCT-04, RN-PRODUCT-05 |
+| cargar un producto por slug con su 404 y su redirección | `loadProduct()` | `features/product/server/load.ts` | RN-PRODUCT-02 |
+| armar los metadatos y el JSON-LD de un producto | `productMetadata()` | `features/product/lib/metadata.ts` | RN-PRODUCT-01, RN-PRODUCT-02 |
+| mostrar dónde comprar un producto ordenado por precio o cercanía | `<ProductOffers />` | `features/product/components/ProductOffers.tsx` | RN-PRODUCT-03, RN-PRODUCT-04, RN-PRODUCT-05 |
 
 ## purchases
 

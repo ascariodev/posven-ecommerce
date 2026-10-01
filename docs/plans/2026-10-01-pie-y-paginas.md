@@ -4,7 +4,7 @@ modo: ligero
 
 **Objetivo:** el pie en columnas de la dirección C en todas las páginas, y `/comercios`, `/terminos` y
 `/privacidad` respondiendo 200 (las legales como borrador con `noindex`).
-**Estado:** en curso · Fase actual: 1
+**Estado:** en curso · Fase actual: 2
 
 ## Contexto mínimo
 
@@ -23,7 +23,7 @@ modo: ligero
 
 ## Fases
 
-### [ ] Fase 1: pie en columnas
+### [x] Fase 1: pie en columnas
 
 - **Repo:** posven-ecommerce
 - **Alcance:** módulo `features/site/` con `SiteFooter` (Server Component async) según spec §2. Lee
@@ -92,8 +92,13 @@ modo: ligero
   rama `feat/pie-y-paginas` (spec aprobada por el usuario).
 - 2026-10-01: el año del pie y la lectura de categorías van en módulos simulables, porque
   `cacheLife` no corre en vitest (regla `tests` 5).
+- 2026-10-01 (fase 1): `FooterCategories` se exporta desde `SiteFooter.tsx` (puro, `categories:
+  CategoryNode[]`, `null` con lista vacía); `SiteFooter` resuelve categorías y año con
+  `Promise.all`; reglas `RN-SITE-01` (corte en 8) y `RN-SITE-02` (columna omitida sin API o sin
+  raíces) en el README.
 
 ## Notas para la próxima sesión
 
-- Arrancar por la fase 1; leer `docs/conventions/lessons.md` y la skill `new-page` antes de las
-  fases 2 a 4.
+- Fase 2: leer la skill `new-page` antes. Cada fase que agregue exports a `features/site` amplía
+  `exports` y `capabilities` del README y regenera `docs/CAPABILITIES.md`.
+- Si tsc falla por `.next/types` viejos (`app/preview/page.js`), `npx next build` los regenera.

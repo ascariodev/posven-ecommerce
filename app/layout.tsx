@@ -6,6 +6,7 @@ import { AccountSlot, AccountSlotSkeleton } from "@/features/account/AccountMenu
 import { CartLink, CartLinkSkeleton } from "@/features/cart/CartLink";
 import { HeaderSearchSlot } from "@/features/search/HeaderSearchSlot";
 import { SearchPill } from "@/features/search/SearchPill";
+import { SiteFooter } from "@/features/site/SiteFooter";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -26,12 +27,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#f7900a",
 };
-
-const footerLinks = [
-  { href: "/comercios", label: "Para comercios" },
-  { href: "/terminos", label: "Términos" },
-  { href: "/privacidad", label: "Privacidad" },
-];
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -62,22 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </div>
         </header>
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
-        <footer className="border-t border-border bg-surface">
-          <nav
-            aria-label="Enlaces del sitio"
-            className="mx-auto flex w-full max-w-5xl flex-wrap gap-x-6 gap-y-2 px-4 py-6 text-sm"
-          >
-            {footerLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </footer>
+        <SiteFooter />
       </body>
     </html>
   );

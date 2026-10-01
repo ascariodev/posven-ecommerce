@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatSchedule, openingHoursJsonLd } from "./schedule";
+import { formatSchedule, openingHoursJsonLd } from "../lib/schedule";
 
 describe("formatSchedule", () => {
   it("una racha de lunes a sábado sale como Lun a Sáb", () => {

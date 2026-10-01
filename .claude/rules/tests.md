@@ -39,4 +39,4 @@ paths:
    `pago-fallido@posven.test`) y les vacía el carrito al terminar.
 8. Vitest corre sin `globals`, así que Testing Library no desmonta sola: toda prueba `.tsx` llama
    `cleanup()` en `afterEach`. Un Server Component async se prueba con `render(await Comp(props))`,
-   como en `features/store/NearbyStores.test.tsx`.
+   como en `features/store/__tests__/NearbyStores.test.tsx`.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Store } from "@/lib/marketplace/schemas";
-import { storeJsonLd } from "./jsonld";
+import { storeJsonLd } from "../lib/jsonld";
 
 function store(overrides: Partial<Store> = {}): Store {
   return {

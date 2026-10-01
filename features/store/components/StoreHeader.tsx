@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { ContactButtons } from "@/features/events/components/ContactButtons";
 import type { Store } from "@/lib/marketplace/schemas";
-import { storeInitials } from "./initials";
-import { formatSchedule } from "./schedule";
+import { storeInitials } from "../lib/initials";
+import { formatSchedule } from "../lib/schedule";
 
 export function StoreHeader({ store }: { store: Store }) {
   const coverUrl = store.is_premium ? store.cover_url : null;

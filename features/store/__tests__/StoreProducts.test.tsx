@@ -2,7 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getStore } from "@/lib/marketplace/client";
 import type { StoreProduct, StoreResponse } from "@/lib/marketplace/schemas";
-import { StoreProducts } from "./StoreProducts";
+import { StoreProducts } from "../components/StoreProducts";
 
 vi.mock("@/lib/marketplace/client", () => ({
   getStore: vi.fn(),

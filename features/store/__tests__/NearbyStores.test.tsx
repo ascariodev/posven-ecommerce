@@ -2,7 +2,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { listNearbyStores } from "@/lib/marketplace/client";
 import type { NearbyStore, StoresResponse } from "@/lib/marketplace/schemas";
-import { NearbyStores } from "./NearbyStores";
+import { NearbyStores } from "../components/NearbyStores";
 
 vi.mock("@/lib/marketplace/client", () => ({
   listNearbyStores: vi.fn(),

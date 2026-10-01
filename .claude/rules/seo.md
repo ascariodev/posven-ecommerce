@@ -10,6 +10,7 @@ paths:
   - "app/privacidad/**"
   - "lib/jsonld.ts"
   - "features/*/jsonld.ts"
+  - "features/*/lib/jsonld.ts"
   - "app/sitemap.ts"
   - "app/robots.ts"
   - "lib/sitemap.ts"

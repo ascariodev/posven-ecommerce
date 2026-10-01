@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { formatDistance } from "@/lib/format";
 import type { NearbyStore } from "@/lib/marketplace/schemas";
-import { storeInitials } from "./initials";
+import { storeInitials } from "../lib/initials";
 
 export function StoreCard({ store, featured }: { store: NearbyStore; featured?: boolean }) {
   const logoUrl = store.is_premium ? store.logo_url : null;

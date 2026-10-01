@@ -103,11 +103,11 @@ README: `features/store/README.md`
 
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
-| mostrar las tiendas cercanas en la portada | `<NearbyStores />` | `features/store/NearbyStores.tsx` | RN-STORE-02 |
-| mostrar la tarjeta de una tienda | `<StoreCard />` | `features/store/StoreCard.tsx` | RN-STORE-01, RN-STORE-03 |
-| mostrar la cabecera de la página de una tienda con su horario y contacto | `<StoreHeader />` | `features/store/StoreHeader.tsx` | RN-STORE-01, RN-STORE-04 |
-| listar los productos de una tienda con paginación | `<StoreProducts />` | `features/store/StoreProducts.tsx` |  |
-| armar el JSON-LD de una tienda | `storeJsonLd()` | `features/store/jsonld.ts` | RN-STORE-04 |
+| mostrar las tiendas cercanas en la portada | `<NearbyStores />` | `features/store/components/NearbyStores.tsx` | RN-STORE-02 |
+| mostrar la tarjeta de una tienda | `<StoreCard />` | `features/store/components/StoreCard.tsx` | RN-STORE-01, RN-STORE-03 |
+| mostrar la cabecera de la página de una tienda con su horario y contacto | `<StoreHeader />` | `features/store/components/StoreHeader.tsx` | RN-STORE-01, RN-STORE-04 |
+| listar los productos de una tienda con paginación | `<StoreProducts />` | `features/store/components/StoreProducts.tsx` |  |
+| armar el JSON-LD de una tienda | `storeJsonLd()` | `features/store/lib/jsonld.ts` | RN-STORE-04 |
 
 ## marketplace
 

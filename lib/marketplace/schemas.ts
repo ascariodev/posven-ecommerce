@@ -496,7 +496,9 @@ export type CheckoutStart = z.infer<typeof checkoutStartSchema>;
 export const purchaseStatusSchema = z.enum(["pending_payment", "paid", "expired", "failed"]);
 export type PurchaseStatus = z.infer<typeof purchaseStatusSchema>;
 
+// `pending_payment` mientras la compra no se paga; `cancelled` si vence o el pago falla (enmienda L).
 export const storeOrderStatusSchema = z.enum([
+  "pending_payment",
   "accepted",
   "ready_for_pickup",
   "out_for_delivery",

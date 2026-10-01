@@ -329,7 +329,7 @@ const orderLine = {
 const noTimeline = { paid_at: null, ready_at: null, dispatched_at: null, delivered_at: null, cancelled_at: null };
 
 const paidPurchase = {
-  code: "PV-7K2Q9M",
+  code: "K7M2Q9XA",
   status: "paid",
   created_at: "2026-09-30T14:00:00-04:00",
   paid_at: "2026-09-30T14:00:05-04:00",
@@ -342,7 +342,7 @@ const paidPurchase = {
       store: storeSummary,
       status: "ready_for_pickup",
       fulfillment: "pickup",
-      pickup_code: "482913",
+      pickup_code: "R4T9KM",
       address: null,
       lines: [orderLine, { ...orderLine, accepted_quantity: 0, missing: true }],
       subtotal_usd: "10.00",
@@ -387,15 +387,27 @@ describe("contrato de checkout y compras", () => {
     ).toBe(true);
   });
 
+  it("una compra sin pagar lleva sus pedidos en pending_payment (enmienda L)", () => {
+    const [order] = paidPurchase.orders;
+    const pending = {
+      ...paidPurchase,
+      status: "pending_payment",
+      paid_at: null,
+      orders: [{ ...order, status: "pending_payment", pickup_code: null, refunded_usd: "0.00", refunded_ves: "0.00", timeline: noTimeline }],
+    };
+    expect(purchaseSchema.safeParse(pending).success).toBe(true);
+    expect(purchaseSchema.safeParse({ ...pending, orders: [{ ...pending.orders[0], status: "pending" }] }).success).toBe(false);
+  });
+
   it("una fecha sin zona no pasa", () => {
     expect(purchaseSchema.safeParse({ ...paidPurchase, created_at: "2026-09-30T14:00:00" }).success).toBe(false);
   });
 
   const start = (payment: { redirect_url: string | null; instructions: string | null }) =>
-    checkoutStartSchema.safeParse({ purchase_code: "PV-7K2Q9M", payment: { provider: "fake", ...payment } }).success;
+    checkoutStartSchema.safeParse({ purchase_code: "K7M2Q9XA", payment: { provider: "fake", ...payment } }).success;
 
   it("el inicio del pago trae redirect_url o instructions, uno solo", () => {
-    expect(start({ redirect_url: "https://ecom.test/checkout/resultado?compra=PV-7K2Q9M", instructions: null })).toBe(true);
+    expect(start({ redirect_url: "https://ecom.test/checkout/resultado?compra=K7M2Q9XA", instructions: null })).toBe(true);
     expect(start({ redirect_url: null, instructions: "Transfiere a la cuenta 0102." })).toBe(true);
     expect(start({ redirect_url: null, instructions: null })).toBe(false);
     expect(start({ redirect_url: "https://ecom.test/x", instructions: "y" })).toBe(false);

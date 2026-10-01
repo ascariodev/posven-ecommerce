@@ -26,6 +26,8 @@ const ACETAMINOFEN = "acetaminofen-500-mg-20-tabletas";
 const ALCOHOL = "alcohol-isopropilico-250-ml";
 const HARINA = "harina-de-maiz-precocida-1-kg";
 const DELIVERY_ADDRESS_ID = 2;
+// Código de compra: 8 caracteres del alfabeto sin 0, O, 1, I ni L (enmienda L).
+const PURCHASE_CODE = /^[A-HJKMNP-Z2-9]{8}$/;
 
 async function signIn(email: string, password: string): Promise<AccountContext> {
   const { token } = await loginCustomer(anonymous, { email, password });
@@ -217,8 +219,10 @@ describe("avance de la compra simulada por consultas", () => {
     await add(ctx, CENTRAL, ALCOHOL);
     const { purchase_code } = await pay(ctx, input([[CENTRAL, "pickup"]]));
 
+    expect(purchase_code).toMatch(PURCHASE_CODE);
     const pending = await getPurchase(ctx, purchase_code);
     expect(pending.status).toBe("pending_payment");
+    expect(pending.orders.map((order) => order.status)).toEqual(["pending_payment"]);
     expect(cartItemsFor(1)).toHaveLength(2);
 
     const paid = await getPurchase(ctx, purchase_code);
@@ -235,7 +239,7 @@ describe("avance de la compra simulada por consultas", () => {
 
     const ready = await getPurchase(ctx, purchase_code);
     expect(ready.orders[0].status).toBe("ready_for_pickup");
-    expect(ready.orders[0].pickup_code).toMatch(/^\d{6}$/);
+    expect(ready.orders[0].pickup_code).toMatch(/^[A-HJKMNP-Z2-9]{6}$/);
     expect(ready.orders[0].timeline.ready_at).not.toBeNull();
   });
 
@@ -266,7 +270,11 @@ describe("avance de la compra simulada por consultas", () => {
     const { purchase_code } = await pay(ctx, input([[CENTRAL, "pickup"]]));
 
     await getPurchase(ctx, purchase_code);
-    expect((await getPurchase(ctx, purchase_code)).status).toBe("failed");
+    const failed = await getPurchase(ctx, purchase_code);
+    expect(failed.status).toBe("failed");
+    expect(failed.orders.map((order) => order.status)).toEqual(["cancelled"]);
+    expect(failed.orders[0].timeline.cancelled_at).not.toBeNull();
+    expect(failed.orders[0].timeline.paid_at).toBeNull();
     expect((await getPurchase(ctx, purchase_code)).status).toBe("failed");
     expect(cartItemsFor(2)).toHaveLength(1);
   });
@@ -296,6 +304,8 @@ describe("compras simuladas", () => {
     const second = await listPurchases(ctx, 2);
     await listPurchases(ctx, 1);
 
+    expect(new Set(codes).size).toBe(11);
+    expect(codes.every((code) => PURCHASE_CODE.test(code))).toBe(true);
     expect(first.data.map((purchase) => purchase.code)).toEqual(codes.slice(1).reverse());
     expect(first.meta).toEqual({ page: 1, per_page: 10, total: 11 });
     expect(second.data.map((purchase) => purchase.code)).toEqual([codes[0]]);
@@ -310,7 +320,7 @@ describe("compras simuladas", () => {
     const other = await deliveryBuyer();
 
     expect((await accountError(getPurchase(other, purchase_code))).status).toBe(404);
-    expect((await accountError(getPurchase(ctx, "PV-NOEXISTE"))).code).toBe("not_found");
+    expect((await accountError(getPurchase(ctx, "NOEXISTE"))).code).toBe("not_found");
   });
 });
 

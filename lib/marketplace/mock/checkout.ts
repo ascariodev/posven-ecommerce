@@ -24,12 +24,15 @@ import { cartItemsFor, quoteItems, removeCartLines } from "./cart";
 import { MOCK_FAILED_PAYMENT_EMAIL, MOCK_MISSING_LINE, MOCK_RATE, MOCK_STORES, type MockStore } from "./fixtures";
 import { sum } from "./money";
 
-// Checkout, pago `fake` y compras (spec cuentas-y-compras §5.3, §5.5 y §5.8; enmienda F, G y H).
-// El pago avanza por consultas del detalle (decisión 4 del plan 4b): primera `pending_payment`,
-// segunda `paid` (o `failed`), tercera en adelante listo para retirar o en camino.
+// Checkout, pago `fake` y compras (spec cuentas-y-compras §5.3, §5.5 y §5.8; enmienda F, G, H y L).
+// El pago avanza por consultas del detalle (decisión 4 del plan 4b): primera `pending_payment` con
+// sus pedidos `pending_payment`, segunda `paid` con los pedidos `accepted` (o `failed` con los
+// pedidos `cancelled`), tercera en adelante listo para retirar o en camino.
 
 const PER_PAGE = 10;
 const ZERO: Money = "0.00";
+// Alfabeto de los códigos (spec §3, enmienda L): mayúsculas y dígitos sin 0, O, 1, I ni L.
+const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
 type LineRef = { store_slug: string; product_slug: string };
 
@@ -166,7 +169,7 @@ function toOrderLine(line: CartStore["lines"][number]): StoreOrderLine {
 function toOrder(cartStore: CartStore, quoteStore: QuoteStore, address: Address | null): StoreOrder {
   return {
     store: cartStore.store,
-    status: "accepted",
+    status: "pending_payment",
     fulfillment: quoteStore.fulfillment,
     pickup_code: null,
     address:
@@ -191,8 +194,19 @@ function toOrder(cartStore: CartStore, quoteStore: QuoteStore, address: Address 
   };
 }
 
-function purchaseCode(sequence: number): string {
-  return `PV-${sequence.toString(36).toUpperCase().padStart(6, "0")}`;
+// Código de `length` caracteres del alfabeto, derivado de `seed` (determinista, como el resto del
+// simulado).
+function alphabetCode(seed: string, length: number): string {
+  const digest = createHash("sha256").update(seed).digest();
+  return Array.from(digest.subarray(0, length), (byte) => CODE_ALPHABET[byte % CODE_ALPHABET.length]).join("");
+}
+
+// 8 caracteres, único entre las compras simuladas.
+function purchaseCode(sequence: number, taken: Map<string, MockPurchase>): string {
+  for (let attempt = 0; ; attempt += 1) {
+    const code = alphabetCode(`compra:${sequence}:${attempt}`, 8);
+    if (!taken.has(code)) return code;
+  }
 }
 
 export async function startCheckout(ctx: AccountContext, input: CheckoutInput): Promise<CheckoutStart> {
@@ -211,7 +225,7 @@ export async function startCheckout(ctx: AccountContext, input: CheckoutInput): 
   if (quoted.quote.quote_hash !== quote_hash) throw accountError("quote_changed", null, quoted.quote);
 
   const sequence = current.nextSequence++;
-  const code = purchaseCode(sequence);
+  const code = purchaseCode(sequence, current.purchases);
   const orders = quoted.quote.stores.map((quoteStore) => {
     const cartStore = quoted.stores.find((entry) => entry.store.slug === quoteStore.store_slug);
     if (cartStore === undefined) throw new Error(`Tienda cotizada sin carrito: ${quoteStore.store_slug}`);
@@ -253,18 +267,24 @@ function isMissing(storeSlug: string, line: StoreOrderLine): boolean {
   return storeSlug === MOCK_MISSING_LINE.store_slug && line.product.slug === MOCK_MISSING_LINE.product_slug;
 }
 
-// Pago confirmado: la línea faltante se reembolsa al instante (spec §5.5) y el carrito pierde las
-// líneas compradas (§5.3 paso 4).
+// Pago confirmado: los pedidos pasan a `accepted`, la línea faltante se reembolsa al instante
+// (spec §5.5) y el carrito pierde las líneas compradas (§5.3 paso 4). Pago fallido: los pedidos se
+// cancelan y el carrito queda igual (enmienda L).
 function settle(record: MockPurchase): void {
   const purchase = record.purchase;
+  const now = new Date().toISOString();
   if (record.failsPayment) {
     purchase.status = "failed";
+    for (const order of purchase.orders) {
+      order.status = "cancelled";
+      order.timeline.cancelled_at = now;
+    }
     return;
   }
-  const now = new Date().toISOString();
   purchase.status = "paid";
   purchase.paid_at = now;
   for (const order of purchase.orders) {
+    order.status = "accepted";
     order.timeline.paid_at = now;
     for (const line of order.lines) {
       if (!isMissing(order.store.slug, line)) continue;
@@ -298,8 +318,7 @@ function prepare(record: MockPurchase): void {
 }
 
 function pickupCode(code: string, storeSlug: string): string {
-  const digest = createHash("sha256").update(`${code}:${storeSlug}`).digest("hex");
-  return String(Number.parseInt(digest.slice(0, 8), 16) % 1_000_000).padStart(6, "0");
+  return alphabetCode(`retiro:${code}:${storeSlug}`, 6);
 }
 
 export async function getPurchase(ctx: AccountContext, code: string): Promise<Purchase> {

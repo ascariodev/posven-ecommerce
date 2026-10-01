@@ -8,6 +8,7 @@ export const PURCHASE_STATUS_TEXT: Record<PurchaseStatus, string> = {
 };
 
 export const ORDER_STATUS_TEXT: Record<StoreOrderStatus, string> = {
+  pending_payment: "Pago pendiente",
   accepted: "Aceptado",
   ready_for_pickup: "Listo para retirar",
   out_for_delivery: "En camino",

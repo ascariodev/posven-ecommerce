@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { toGeoFilter } from "@/features/location/cookie";
-import { getEffectiveLocation } from "@/features/location/server";
+import { toGeoFilter } from "@/features/location/lib/cookie";
+import { getEffectiveLocation } from "@/features/location/server/location";
 import { listNearbyStores } from "@/lib/marketplace/client";
 import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
 import { SITE_NAME } from "@/lib/site";

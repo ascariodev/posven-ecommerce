@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { toGeoFilter } from "@/features/location/cookie";
-import { getEffectiveLocation } from "@/features/location/server";
+import { toGeoFilter } from "@/features/location/lib/cookie";
+import { getEffectiveLocation } from "@/features/location/server/location";
 import { formatRate } from "@/lib/format";
 import { getProductOffers } from "@/lib/marketplace/client";
 import { DEFAULT_RADIUS_KM, type OfferSort } from "@/lib/marketplace/params";

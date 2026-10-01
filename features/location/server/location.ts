@@ -1,7 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { listLocations } from "@/lib/marketplace/client";
-import { describeLocation, LOCATION_COOKIE, parseLocationCookie, type UserLocation } from "./cookie";
+import { describeLocation, LOCATION_COOKIE, parseLocationCookie, type UserLocation } from "../lib/cookie";
 
 export async function getUserLocation(): Promise<UserLocation | null> {
   const cookieStore = await cookies();

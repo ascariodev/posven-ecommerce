@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { LocationState } from "@/lib/marketplace/schemas";
-import { setLocationCity } from "./actions";
+import { setLocationCity } from "@/features/location/server/actions";
 
 const cookieStore = vi.hoisted(() => ({ set: vi.fn(), delete: vi.fn() }));
 

@@ -51,9 +51,9 @@ README: `features/location/README.md`
 
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
-| leer la ubicación efectiva del usuario para filtrar por cercanía | `getEffectiveLocation()` | `features/location/server.ts` | RN-LOCATION-01, RN-LOCATION-02, RN-LOCATION-04 |
-| guardar la ubicación del usuario por geolocalización o ciudad elegida | `setLocationFromCoords() / setLocationCity() / clearLocation()` | `features/location/actions.ts` | RN-LOCATION-01, RN-LOCATION-03 |
-| mostrar y cambiar la ubicación en pantalla | `<LocationBar />` | `features/location/LocationBar.tsx` | RN-LOCATION-02, RN-LOCATION-03 |
+| leer la ubicación efectiva del usuario para filtrar por cercanía | `getEffectiveLocation()` | `features/location/server/location.ts` | RN-LOCATION-01, RN-LOCATION-02, RN-LOCATION-04 |
+| guardar la ubicación del usuario por geolocalización o ciudad elegida | `setLocationFromCoords() / setLocationCity() / clearLocation()` | `features/location/server/actions.ts` | RN-LOCATION-01, RN-LOCATION-03 |
+| mostrar y cambiar la ubicación en pantalla | `<LocationBar />` | `features/location/components/LocationBar.tsx` | RN-LOCATION-02, RN-LOCATION-03 |
 
 ## product
 

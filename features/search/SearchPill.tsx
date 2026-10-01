@@ -3,7 +3,7 @@ import Form from "next/form";
 import { Suspense, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LocationBar, LocationBarSkeleton } from "@/features/location/LocationBar";
+import { LocationBar, LocationBarSkeleton } from "@/features/location/components/LocationBar";
 import { cn } from "@/lib/utils";
 
 export function SearchPill({

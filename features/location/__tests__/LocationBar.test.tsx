@@ -2,18 +2,18 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import { listLocations } from "@/lib/marketplace/client";
-import { LocationBar } from "./LocationBar";
-import { getEffectiveLocation } from "./server";
+import { LocationBar } from "@/features/location/components/LocationBar";
+import { getEffectiveLocation } from "@/features/location/server/location";
 
 vi.mock("@/lib/marketplace/client", () => ({
   listLocations: vi.fn(),
 }));
 
-vi.mock("./LocationPicker", () => ({
+vi.mock("@/features/location/components/LocationPicker", () => ({
   LocationPicker: () => null,
 }));
 
-vi.mock("./server", () => ({
+vi.mock("@/features/location/server/location", () => ({
   getEffectiveLocation: vi.fn(),
 }));
 

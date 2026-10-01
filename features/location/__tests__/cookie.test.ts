@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { LocationState } from "@/lib/marketplace/schemas";
-import { describeLocation, parseLocationCookie, serializeLocation, toGeoFilter } from "./cookie";
+import { describeLocation, parseLocationCookie, serializeLocation, toGeoFilter } from "@/features/location/lib/cookie";
 
 const states: LocationState[] = [
   {

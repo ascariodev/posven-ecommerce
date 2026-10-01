@@ -8,7 +8,7 @@ import {
   legalSitemapPaths,
   legalText,
 } from "./legal";
-import { LOCATION_COOKIE } from "@/features/location/cookie";
+import { LOCATION_COOKIE } from "@/features/location/lib/cookie";
 import { LegalDocument } from "./LegalDocument";
 import { privacyDocument } from "./privacy";
 import { termsDocument } from "./terms";

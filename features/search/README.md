@@ -3,9 +3,9 @@ module: "search"
 path: "features/search"
 type: "feature"
 exports: ["SearchQuery", "parseSearchQuery", "searchHref", "SearchResults", "ProductCard", "FeaturedCard", "RadiusFilter", "Pagination", "EmptyState", "CategoryLinks", "categoryIcon", "categoryTint", "ProductThumb", "HeaderSearchSlot", "SearchPill", "CategoryRail", "FiltersSheet"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/cookie.ts", "features/location/server.ts", "features/location/LocationBar.tsx", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx", "components/ui/skeleton.tsx", "lib/utils.ts"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/location/components/LocationBar.tsx", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx", "components/ui/skeleton.tsx", "lib/utils.ts"]
 tests: "features/search/*.test.{ts,tsx}"
-verified_against: ["features/search/query.ts", "features/search/SearchResults.tsx", "features/search/ProductCard.tsx", "features/search/FeaturedCard.tsx", "features/search/RadiusFilter.tsx", "features/search/Pagination.tsx", "features/search/EmptyState.tsx", "features/search/CategoryLinks.tsx", "features/search/categoryIcon.ts", "features/search/ProductThumb.tsx", "features/search/HeaderSearchSlot.tsx", "features/search/SearchPill.tsx", "features/search/CategoryRail.tsx", "features/search/categoryTint.ts", "features/search/FiltersSheet.tsx", "app/layout.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/cookie.ts", "features/location/server.ts", "features/location/LocationBar.tsx", "components/ui/skeleton.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx"]
+verified_against: ["features/search/query.ts", "features/search/SearchResults.tsx", "features/search/ProductCard.tsx", "features/search/FeaturedCard.tsx", "features/search/RadiusFilter.tsx", "features/search/Pagination.tsx", "features/search/EmptyState.tsx", "features/search/CategoryLinks.tsx", "features/search/categoryIcon.ts", "features/search/ProductThumb.tsx", "features/search/HeaderSearchSlot.tsx", "features/search/SearchPill.tsx", "features/search/CategoryRail.tsx", "features/search/categoryTint.ts", "features/search/FiltersSheet.tsx", "app/layout.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/location/components/LocationBar.tsx", "components/ui/skeleton.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx"]
 capabilities:
   - intent: "buscar productos por texto o categoría cerca del usuario"
     intent_aliases: ["buscar producto", "resultados de busqueda", "pagina buscar", "buscar por categoria"]
@@ -70,7 +70,7 @@ montos, y esto sólo los formatea.
 | Opciones del filtro de radio | `optionsFor` en `RadiusFilter.tsx` | las opciones salen de `RADIUS_OPTIONS`; `RadiusFilter.test.tsx` cuenta los enlaces |
 | Sugerencias del estado vacío | `EmptyState.tsx` (`relatedCategories`, ampliar radio, todo el país) | sus casos en `EmptyState.test.tsx` |
 | Tinte de una categoría sin imagen | `TINTS` en `categoryTint.ts` | `categoryTint.test.ts`; los colores son los tokens `--tint-N` de `app/globals.css` |
-| Píldora de búsqueda o su segmento de ubicación | `SearchPill.tsx` y `features/location/LocationSheet.tsx` | los nombres accesibles "Buscar productos", "Buscar" y "Ubicación: ..." que usa `e2e/search.spec.ts` |
+| Píldora de búsqueda o su segmento de ubicación | `SearchPill.tsx` y `features/location/components/LocationSheet.tsx` | los nombres accesibles "Buscar productos", "Buscar" y "Ubicación: ..." que usa `e2e/search.spec.ts` |
 | Carril de categorías del inicio | `CategoryRail.tsx` | los enlaces se arman con `searchHref` |
 | Filtros en móvil | `FiltersSheet.tsx` (recibe el `RadiusFilter` como `children`) | el caso "elegir ciudad" de `e2e/search.spec.ts` abre "Filtros" en móvil |
 | Datos de la tarjeta de producto | `ProductCard.tsx` | `ProductCard.test.tsx`; los montos sólo por `formatUsd` y `formatVes` |
@@ -123,7 +123,7 @@ Tintes, `features/search/categoryTint.ts`:
 
 - `lib/marketplace/client.ts`: `searchProducts()` y `listCategories()` en `SearchResults.tsx`.
 - `lib/marketplace/params.ts` (`RADIUS_OPTIONS`, `DEFAULT_RADIUS_KM`, `RadiusKm`) y `lib/marketplace/schemas.ts` (`SearchItem`, `FeaturedProduct`, `PageMeta`, `CategoryNode`).
-- `features/location/server.ts` (`getEffectiveLocation`) y `features/location/cookie.ts` (`toGeoFilter`); `features/location/LocationBar.tsx` (`LocationBar`, `LocationBarSkeleton`) en `SearchPill`.
+- `features/location/server/location.ts` (`getEffectiveLocation`) y `features/location/lib/cookie.ts` (`toGeoFilter`); `features/location/components/LocationBar.tsx` (`LocationBar`, `LocationBarSkeleton`) en `SearchPill`.
 - `lib/format.ts` (`formatUsd`, `formatVes`, `formatRate`, `formatDistance`) y `lib/site.ts` (`SITE_NAME`).
 - `components/ui/button.tsx`, `components/ui/input.tsx`, `components/ui/badge.tsx`, `components/ui/card.tsx`, `components/ui/sheet.tsx`, `components/ui/toggle.tsx` (`toggleVariants` en `RadiusFilter` y los chips) y `components/ui/skeleton.tsx`.
 - `next/form`, `next/link`, `next/image` y `next/navigation` (`usePathname` en `HeaderSearchSlot`).

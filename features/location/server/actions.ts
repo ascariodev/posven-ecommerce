@@ -8,7 +8,7 @@ import {
   isValidCoords,
   serializeLocation,
   type UserLocation,
-} from "./cookie";
+} from "../lib/cookie";
 
 async function saveLocation(loc: UserLocation): Promise<void> {
   const cookieStore = await cookies();

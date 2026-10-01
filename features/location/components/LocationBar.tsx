@@ -4,7 +4,7 @@ import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { LocationState } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
 import { LocationSheet } from "./LocationSheet";
-import { getEffectiveLocation } from "./server";
+import { getEffectiveLocation } from "../server/location";
 
 function Divider() {
   return <span aria-hidden="true" className="h-6 w-px shrink-0 bg-border" />;

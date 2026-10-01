@@ -8,7 +8,7 @@ vi.mock("@/lib/marketplace/client", () => ({
   listNearbyStores: vi.fn(),
 }));
 
-vi.mock("@/features/location/server", () => ({
+vi.mock("@/features/location/server/location", () => ({
   getEffectiveLocation: vi.fn(async () => ({ location: null, name: null })),
 }));
 

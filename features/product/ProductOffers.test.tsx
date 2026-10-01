@@ -1,6 +1,6 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getEffectiveLocation } from "@/features/location/server";
+import { getEffectiveLocation } from "@/features/location/server/location";
 import { getProductOffers } from "@/lib/marketplace/client";
 import type { ProductOffer, ProductPage } from "@/lib/marketplace/schemas";
 import { ProductOffers } from "./ProductOffers";
@@ -11,7 +11,7 @@ vi.mock("@/lib/marketplace/client", () => ({
 
 vi.mock("@/features/cart/server/actions", () => ({ addToCart: vi.fn() }));
 
-vi.mock("@/features/location/server", () => ({
+vi.mock("@/features/location/server/location", () => ({
   getEffectiveLocation: vi.fn(async () => ({ location: null, name: null })),
 }));
 

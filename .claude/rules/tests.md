@@ -20,7 +20,7 @@ paths:
    entorno con `vi.stubEnv`, y todo se restaura en `afterEach`, como en
    `lib/marketplace/http.test.ts`. `useRouter` y las acciones de servidor se simulan con
    `vi.mock('next/navigation')` y `vi.mock('<ruta de actions>')`, como en
-   `features/location/LocationPicker.test.tsx`.
+   `features/location/__tests__/LocationPicker.test.tsx`.
 5. `lib/marketplace/client.ts` no se prueba en vitest: sus funciones con `'use cache'` llaman a
    `cacheLife()`, que fuera de Next lanza "only available with the `cacheComponents` config". Se
    prueban `mock/adapter.ts` y `http.ts`; `client.ts` lo cubren `next build` y el e2e.

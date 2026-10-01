@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { LocationState } from "@/lib/marketplace/schemas";
-import { clearLocation, setLocationCity, setLocationFromCoords } from "./actions";
+import { clearLocation, setLocationCity, setLocationFromCoords } from "../server/actions";
 
 type Mode = "summary" | "choose" | "select";
 

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { toggleVariants } from "@/components/ui/toggle";
-import { toGeoFilter } from "@/features/location/cookie";
-import { getEffectiveLocation } from "@/features/location/server";
+import { toGeoFilter } from "@/features/location/lib/cookie";
+import { getEffectiveLocation } from "@/features/location/server/location";
 import { formatRate } from "@/lib/format";
 import { listCategories, searchProducts } from "@/lib/marketplace/client";
 import { cn } from "@/lib/utils";

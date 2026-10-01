@@ -14,7 +14,7 @@ import {
 } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { AddressInput, AddressPatch, ProfilePatch } from "@/lib/marketplace/schemas";
-import { isValidCoords } from "@/features/location/cookie";
+import { isValidCoords } from "@/features/location/lib/cookie";
 import { formStateFromError, type FormState } from "./formState";
 import { safeReturnPath } from "./returnPath";
 import { endSession, withSession } from "./session";

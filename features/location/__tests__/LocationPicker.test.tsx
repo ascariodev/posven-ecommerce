@@ -1,14 +1,14 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { LocationState } from "@/lib/marketplace/schemas";
-import { setLocationCity } from "./actions";
-import { LocationPicker } from "./LocationPicker";
+import { setLocationCity } from "@/features/location/server/actions";
+import { LocationPicker } from "@/features/location/components/LocationPicker";
 
 const refresh = vi.hoisted(() => vi.fn());
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh }) }));
 
-vi.mock("./actions", () => ({
+vi.mock("@/features/location/server/actions", () => ({
   setLocationFromCoords: vi.fn(async () => ({ ok: true })),
   setLocationCity: vi.fn(async () => ({ ok: true })),
   clearLocation: vi.fn(async () => undefined),

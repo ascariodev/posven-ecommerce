@@ -49,7 +49,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 | `RN-PRODUCT-02` | Un producto sin ofertas en el país muestra "Sin disponibilidad ahora." y lleva `noindex`. | `features/product/metadata.test.ts` ("sin ofertas lleva noindex y la descripción de sin disponibilidad"); `e2e/product.spec.ts` ("un producto sin ofertas muestra sin disponibilidad y lleva noindex") |
 | `RN-PRODUCT-03` | Las ofertas destacadas, dos como máximo, van primero y no se repiten; las de fuera del radio van bajo "Fuera de tu zona". | `features/product/ProductOffers.test.tsx` ("las destacadas van primero con Destacado y las de fuera del radio bajo Fuera de tu zona") |
 | `RN-PRODUCT-04` | "Más cerca" sólo se ofrece con ubicación; sin ella el orden es por precio. | `features/product/ProductOffers.test.tsx` ("sin ubicación no ofrece Más cerca y pide sort price aunque venga orden=cerca", "con coordenadas y orden=cerca pide sort distance y radiusKm 10") |
-| `RN-PRODUCT-05` | "Mejor precio" va sólo en la primera oferta normal (la primera de `offers` dentro del radio), sólo con orden por precio y sólo si no hay destacadas: la API saca las destacadas de `offers` y una puede ser más barata que la primera normal. Ni las destacadas, ni "Fuera de tu zona", ni la vista "Más cerca" la llevan. El frontend no compara precios: la marca sale del orden de la API. | `features/product/ProductOffers.test.tsx` ("con orden por precio y sin destacadas marca Mejor precio una sola vez, en la primera oferta", "con destacadas no marca Mejor precio, porque una destacada puede ser más barata", "con orden=cerca y ubicación no marca Mejor precio", "en Fuera de tu zona no marca Mejor precio") |
+| `RN-PRODUCT-05` | "Mejor precio" va sólo en la primera oferta normal (la primera de `offers` dentro del radio), con orden por precio y sin destacadas. Ni las destacadas, ni "Fuera de tu zona", ni la vista "Más cerca" la llevan. | `features/product/ProductOffers.test.tsx` ("con orden por precio y sin destacadas marca Mejor precio una sola vez, en la primera oferta", "con destacadas no marca Mejor precio, porque una destacada puede ser más barata", "con orden=cerca y ubicación no marca Mejor precio", "en Fuera de tu zona no marca Mejor precio") |
 
 ## 3. Dónde hacer cambios
 
@@ -113,6 +113,10 @@ const { data: product } = await loadProduct(slug);
 ```
 
 ## 8. Restricciones
+
+- "Mejor precio" (`RN-PRODUCT-05`) no va con destacadas porque la API las saca de `offers` y una
+  puede ser más barata que la primera normal. El frontend no compara precios: la marca sale del
+  orden de la API.
 
 - "Agregar al carrito" sale en las tres listas de ofertas (destacadas, del radio y "Fuera de tu zona") sólo si `cartEnabled()`, `store.accepts_orders` y `restriction: "none"`; con el carrito encendido, el panel de la ficha muestra "Requiere récipe, consúltalo en la tienda." o "Venta controlada, consúltalo en la tienda." en lugar de la insignia "Requiere récipe" (`RN-CART-03`, enmienda E de cuentas-y-compras).
 

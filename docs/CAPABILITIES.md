@@ -86,6 +86,17 @@ README: `features/search/README.md`
 | mostrar la píldora de búsqueda con el segmento de ubicación | `<SearchPill />` | `features/search/SearchPill.tsx` |  |
 | mostrar el carril de categorías del inicio | `<CategoryRail />` | `features/search/CategoryRail.tsx` |  |
 
+## site
+
+README: `features/site/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| mostrar el pie del sitio con sus columnas de enlaces | `<SiteFooter />` | `features/site/SiteFooter.tsx` | RN-SITE-01, RN-SITE-02 |
+| ofrecer contacto a un comercio que quiere aparecer en el buscador | `<MerchantContact whatsapp={string \| null} email={string \| null} />` | `features/site/MerchantContact.tsx` | RN-SITE-03 |
+| publicar los términos de uso como borrador legal | `<LegalDocument document={termsDocument} />` | `features/site/LegalDocument.tsx` | RN-SITE-04, RN-SITE-05 |
+| publicar la política de privacidad como borrador legal | `<LegalDocument document={privacyDocument} />` | `features/site/privacy.ts` | RN-SITE-04, RN-SITE-05, RN-SITE-06 |
+
 ## store
 
 README: `features/store/README.md`

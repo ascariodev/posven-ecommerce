@@ -46,6 +46,14 @@ describe("sitemapEntries", () => {
     expect(listSitemap).toHaveBeenCalledWith({ type: "products", page: 1 });
   });
 
+  it("static da la portada y /comercios sin llamar a la API", async () => {
+    expect(await sitemapEntries("static")).toEqual([
+      { url: SITE_URL },
+      { url: `${SITE_URL}/comercios` },
+    ]);
+    expect(listSitemap).not.toHaveBeenCalled();
+  });
+
   it("un id desconocido da una lista vacía sin llamar a la API", async () => {
     expect(await sitemapEntries("categorias-1")).toEqual([]);
     expect(listSitemap).not.toHaveBeenCalled();

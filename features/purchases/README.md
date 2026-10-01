@@ -46,7 +46,7 @@ API. El pago y su resultado viven en `features/checkout`.
 
 | Regla | Enunciado | Test que la hace cumplir |
 |---|---|---|
-| `RN-PURCHASES-01` | Las compras llegan de 10 en 10, más recientes primero; la lista pagina con `?pagina=N` (la 1 sin parámetro), una página vacía después de la 1 es 404 y "Últimas compras" muestra las 3 primeras de la página 1 (y no se pinta si la API falla, salvo un 401). | `features/purchases/pagination.test.ts`; `features/purchases/PurchaseList.test.tsx`; `features/purchases/RecentPurchases.test.tsx`; `lib/marketplace/mock/checkout.test.ts` ("el listado va de 10 en 10...") |
+| `RN-PURCHASES-01` | Las compras llegan de 10 en 10, más recientes primero, paginadas con `?pagina=N` (la 1 sin parámetro); una página vacía tras la 1 es 404. "Últimas compras" muestra las 3 primeras de la página 1 y no se pinta si la API falla, salvo un 401. | `features/purchases/pagination.test.ts`; `features/purchases/PurchaseList.test.tsx`; `features/purchases/RecentPurchases.test.tsx`; `lib/marketplace/mock/checkout.test.ts` ("el listado va de 10 en 10...") |
 | `RN-PURCHASES-02` | El detalle destaca el `pickup_code` ("Código de retiro") cuando no es nulo y marca cada línea `missing` con "Faltante · reembolsado"; el reembolsado del pedido sale sólo si no es cero. | `features/purchases/PurchaseDetail.test.tsx`; `e2e/checkout.spec.ts` ("compra completa...") |
 | `RN-PURCHASES-03` | El estado de cada pedido sólo se muestra con la compra `paid`: el contrato no tiene un estado de pedido para una compra sin pagar (hueco a acordar con posveapi). | `features/purchases/PurchaseDetail.test.tsx` ("con la compra sin pagar no muestra el estado del pedido") |
 

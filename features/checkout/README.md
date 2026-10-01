@@ -38,10 +38,16 @@ de la Quote y de la compra. Las compras (`/cuenta/compras`) viven en `features/p
 
 | Regla | Enunciado | Test que la hace cumplir |
 |---|---|---|
-| `RN-CHECKOUT-01` | Pagar exige sesión (`requireCustomer`; un 401 al pagar borra la sesión y lleva a `/entrar?volver=%2Fcheckout`) y correo verificado: sin verificar, la página muestra "Verifica tu correo para comprar." con "Reenviar verificación" y no ofrece pagar; un 403 `email_unverified` de la API da el mismo aviso, con "Reenviar verificación" y sin "Pagar". | `features/checkout/actions.test.ts` ("un 401 borra la sesión...", "mapea %s a su estado"); `features/checkout/CheckoutForm.test.tsx` ("sin el correo verificado no ofrece pagar", "un email_unverified de la acción..."); `e2e/checkout.spec.ts` ("sin el correo verificado no se puede pagar") |
-| `RN-CHECKOUT-02` | La elección vive en la URL (`direccion`, `f-<tienda>=delivery`) y cada cambio vuelve a cotizar en el servidor; sin dirección todo es retiro. Un 409 `quote_changed` reemplaza la Quote por la nueva, marca "Cambió" en las tiendas cuyo total o entrega difieren de la Quote mostrada justo antes (también tras dos cambios seguidos) y pide confirmar otra vez. | `features/checkout/params.test.ts`; `features/checkout/server.test.ts`; `features/checkout/CheckoutForm.test.tsx` ("elegir entrega vuelve a cotizar...", "tras quote_changed...", "tras dos quote_changed seguidos...") |
+| `RN-CHECKOUT-01` | Pagar exige sesión (`requireCustomer`; un 401 al pagar borra la sesión y lleva a `/entrar?volver=%2Fcheckout`) y correo verificado: sin verificar, o ante un 403 `email_unverified`, se muestra el aviso de abajo y no se ofrece pagar. | `features/checkout/actions.test.ts` ("un 401 borra la sesión...", "mapea %s a su estado"); `features/checkout/CheckoutForm.test.tsx` ("sin el correo verificado no ofrece pagar", "un email_unverified de la acción..."); `e2e/checkout.spec.ts` ("sin el correo verificado no se puede pagar") |
+| `RN-CHECKOUT-02` | La elección vive en la URL (`direccion`, `f-<tienda>=delivery`) y cada cambio vuelve a cotizar en el servidor; sin dirección todo es retiro. Un 409 `quote_changed` reemplaza la Quote, marca "Cambió" y pide confirmar otra vez. | `features/checkout/params.test.ts`; `features/checkout/server.test.ts`; `features/checkout/CheckoutForm.test.tsx` ("elegir entrega vuelve a cotizar...", "tras quote_changed...", "tras dos quote_changed seguidos...") |
 | `RN-CHECKOUT-03` | Cada página pintada de `/checkout` genera una `idempotency_key` (UUID v4) y la reenvía igual en cada intento de pago de esa página; el formulario de pago manda la dirección, las entregas y el `quote_hash` de la Quote que se muestra. | `features/checkout/CheckoutForm.test.tsx` ("los campos ocultos llevan lo de la Quote vigente"); `features/checkout/actions.test.ts` ("manda lo cotizado y redirige a la pasarela", "con %s no llama a la API") |
 | `RN-CHECKOUT-04` | `/checkout/resultado` consulta la compra cada 3 s mientras está `pending_payment` y para en un estado final (`paid`, `failed`, `expired`); sin JavaScript queda "Consultar de nuevo". | `features/checkout/PurchasePoller.test.tsx`; `features/checkout/CheckoutResult.test.tsx`; `e2e/checkout.spec.ts` |
+
+Aviso sin correo verificado (`RN-CHECKOUT-01`): "Verifica tu correo para comprar." con "Reenviar
+verificación" y sin "Pagar".
+
+Marca "Cambió" (`RN-CHECKOUT-02`): va en las tiendas cuyo total o entrega difieren de la Quote
+mostrada justo antes, también tras dos `quote_changed` seguidos.
 
 ## 3. Dónde hacer cambios
 

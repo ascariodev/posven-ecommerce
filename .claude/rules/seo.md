@@ -5,6 +5,9 @@ paths:
   - "app/buscar/**"
   - "app/p/**"
   - "app/tienda/**"
+  - "app/comercios/**"
+  - "app/terminos/**"
+  - "app/privacidad/**"
   - "lib/jsonld.ts"
   - "features/*/jsonld.ts"
   - "app/sitemap.ts"
@@ -32,12 +35,14 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
    `/restablecer/[token]`, `/verificar/[token]`), `/cuenta/*` (compras incluidas), `/carrito`,
    `/checkout` y `/checkout/resultado` exportan
    `robots: { index: false, follow: false }` y no entran al sitemap.
+   `/terminos` y `/privacidad` exportan `robots: { index: false, follow: true }` por
+   `legalMetadata` mientras `LEGAL_DRAFT` (`features/site/legal.ts`) sea `true`, y tampoco entran.
 4. **Metadatos estáticos (`export const metadata`) por defecto.** `generateMetadata` sólo cuando
    la ruta los saca de sus datos (el nombre del producto o de la tienda), y nunca de la cookie de
    ubicación: `productMetadata` en `features/product/metadata.ts`, que usa `app/p/[slug]/page.tsx`.
 5. **El e2e comprueba la canónica de `/` y el `noindex` de `/buscar`** (`e2e/search.spec.ts`),
    la canónica y el JSON-LD de producto y tienda, el `noindex` del producto sin ofertas, `robots.txt` y el sitemap
-   (`e2e/product.spec.ts`): quien cambia esos metadatos corre `npx playwright test`.
+   (`e2e/product.spec.ts`), y `/comercios`, las legales y el sitemap `static` (`e2e/site.spec.ts`): quien cambia esos metadatos corre `npx playwright test`.
 6. **JSON-LD por `serializeJsonLd`** (`lib/jsonld.ts`, que escapa `<` como `\u003c`, guía
    `json-ld`) en un `<script type="application/ld+json">`, y sin datos de la cookie de ubicación:
    sale de lo cacheado por slug (`productJsonLd` en `features/product/jsonld.ts`). Cada objeto
@@ -54,3 +59,5 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
    `sitemapEntries` arma las URLs absolutas con `SITE_URL`; `app/sitemap.ts` sirve
    `/sitemap/{id}.xml`. `app/robots.ts` excluye `/buscar`, `/api/`, `/cuenta`, `/carrito`,
    `/checkout`, `/restablecer/` y `/verificar/` y lista cada sitemap.
+   El grupo `static` (`/sitemap/static.xml`) trae `/` y `/comercios`, y las legales sólo con
+   `LEGAL_DRAFT` en `false` (`legalSitemapPaths`).

@@ -809,3 +809,35 @@ La hace quien coordina con el usuario, después de la Task 3, sin editar ningún
   `attributes` vacío; el ecommerce los muestra tal cual.
 - `MARKETPLACE_STOREFRONT_URL=` en `.env.example` de posveapi: pendiente del usuario (la
   configuración de permisos bloquea `.env*`).
+- Destino ejecución local del usuario: el e2e de Playwright (`search`, `product`, `account`) no se
+  corrió en el entorno del plan; corre en local con el puerto 3000 libre y en simulado.
+- Destino ejecución local del usuario: "Verificación manual final contra el Docker", pasos 1 a 5,
+  sin correr.
+- Destino ejecución local del usuario: `docs/CAPABILITIES.md` se editó a mano en las Tasks 2 y 3
+  porque `generate-index.mjs` no estaba disponible; regenerarlo y confirmar que no deja diff.
+- Destino plan 3 de posveapi o siguiente plan del ecommerce: el simulado (`mock/accounts.ts`) no
+  compara `pendingVerification.email` en `verifyEmail`, y no limpia `pending_email` ni
+  `pendingReset` en `resetPassword`, `changePassword` ni al confirmar `pending_email` (Minor de la
+  Task 1).
+- Destino siguiente plan del ecommerce, Minor de la revisión de la Task 2:
+  - `safeReturnPath` acepta rutas que el navegador normaliza a `//` (`/.//evil.test`,
+    `/%2e%2e//evil.test`) y caracteres fuera de ASCII (`/x€` rompe `x-action-redirect` tras fijar
+    la sesión). No es un open redirect; con enlaces hechos a mano deja una navegación rota.
+  - `logout` no borra `mp_session` si falla la configuración de la API (`http.ts:21-25`).
+  - El test de `logout` no afirma que se llamó a `logoutCustomer`.
+  - `resetPasswordAction` marca `fields.token` para pintar "Pedir un enlace nuevo" porque
+    `FormState` no lleva el código de error; esa rama no tiene test propio.
+  - `"mp_session"` duplicado en `proxy.ts` para no arrastrar `server-only` al proxy; se resuelve
+    moviendo la constante a un módulo puro.
+  - `GET /api/sesion/vencida` borra la cookie a quien lo visite: otro sitio puede cerrar la sesión
+    con un enlace (logout CSRF, sin robo de datos).
+  - Un `mp_session` mal formado cuenta como sin sesión pero no se borra: el proxy lo deja pasar y
+    `requireCustomer` redirige a `/entrar` en cada visita a `/cuenta` hasta el próximo login.
+- Destino siguiente plan del ecommerce, Minor de la revisión final de la rama:
+  - El menú `<details>` de la cuenta sigue abierto tras navegar y no cierra con Escape ni al
+    hacer clic fuera.
+  - `AddressForm` en edición toma `is_default` del último guardado y no de `address.is_default`:
+    puede devolver la marca de predeterminada sin querer.
+  - `features/account/README.md` cita el e2e para "el botón deshabilitado" y el e2e no lo afirma.
+  - `FavoriteButton` combina `aria-pressed` con texto que cambia (fijado por el plan).
+- Fuera de alcance: `features/location/README.md` quedó rancio (docs-check).

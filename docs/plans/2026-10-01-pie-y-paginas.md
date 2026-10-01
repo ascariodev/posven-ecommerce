@@ -4,7 +4,7 @@ modo: ligero
 
 **Objetivo:** el pie en columnas de la dirección C en todas las páginas, y `/comercios`, `/terminos` y
 `/privacidad` respondiendo 200 (las legales como borrador con `noindex`).
-**Estado:** en curso · Fase actual: 3
+**Estado:** en curso · Fase actual: 4
 
 ## Contexto mínimo
 
@@ -56,7 +56,7 @@ modo: ligero
 - **Terminado cuando:** tsc, eslint, `npx vitest run features/site lib/sitemap.test.ts` y
   `npx next build` pasan.
 
-### [ ] Fase 3: borrador legal y `/terminos`
+### [x] Fase 3: borrador legal y `/terminos`
 
 - **Repo:** posven-ecommerce
 - **Alcance:** spec §4. `features/site/legal.ts` con `LEGAL_DRAFT`, los cinco marcadores y las
@@ -102,9 +102,19 @@ modo: ligero
   `MerchantContact.test.tsx` y `RN-SITE-03`, y `app/comercios/**` al `paths` de la regla `seo`.
 - 2026-10-01 (fase 2): `.env.example` queda sin commit: los permisos bloquean leerlo y nadie pudo
   revisar las 4 líneas agregadas; lo revisa y commitea el usuario.
+- 2026-10-01 (fase 3): el texto legal va como datos (`LegalDocumentContent`, leído por `legalText`
+  para la guarda), no como TSX; `legalMetadata(args, draft = LEGAL_DRAFT)` y
+  `legalSitemapPaths(draft = LEGAL_DRAFT)` reciben el interruptor para probar ambos estados; el
+  grupo `static` es `/comercios` más `legalSitemapPaths()`; reglas `RN-SITE-04/05`.
 
 ## Notas para la próxima sesión
 
-- Fase 3: leer la skill `new-page` antes. Cada fase que agregue exports a `features/site` amplía
-  `exports` y `capabilities` del README y regenera `docs/CAPABILITIES.md`.
+- Fase 4: leer la skill `new-page`. Sumar `/privacidad` a `LEGAL_PATHS` y a `registered` en
+  `legal.test.tsx`, crear `privacy.ts` y `app/privacidad/**`, la ruta al `paths` de la regla `seo`,
+  y ampliar el README y regenerar `docs/CAPABILITIES.md` (`generate-index.mjs` recibe el nombre del
+  repo). Cada afirmación del texto se comprueba contra el código: en la fase 3 la revisión halló
+  dos que no coincidían (momento del `pickup_code`, entrega a domicilio).
+- `docs-check` marca RANCIO los README de `events`, `product` y `store` por el cambio de
+  `lib/site.ts` de la fase 2: refrescar su `verified_at` tras comprobarlos.
+- El texto de términos (secciones 3 tasa y 4 reembolsos) debe revisarlo el área legal.
 - Si tsc falla por `.next/types` viejos (`app/preview/page.js`), `npx next build` los regenera.

@@ -1,5 +1,6 @@
 import "server-only";
 import type { MetadataRoute } from "next";
+import { legalSitemapPaths } from "@/features/site/legal";
 import { listSitemap } from "@/lib/marketplace/client";
 import { sitemapTypeSchema, type SitemapType } from "@/lib/marketplace/schemas";
 import { SITE_URL } from "@/lib/site";
@@ -34,7 +35,12 @@ function parseId(id: string): { type: SitemapType; page: number } | null {
 
 export async function sitemapEntries(id: string): Promise<MetadataRoute.Sitemap> {
   if (id === STATIC_ID) {
-    return [{ url: SITE_URL }, { url: new URL("/comercios", SITE_URL).href }];
+    return [
+      { url: SITE_URL },
+      ...["/comercios", ...legalSitemapPaths()].map((path) => ({
+        url: new URL(path, SITE_URL).href,
+      })),
+    ];
   }
   const parsed = parseId(id);
   if (parsed === null) return [];

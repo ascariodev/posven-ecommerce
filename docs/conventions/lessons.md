@@ -6,13 +6,6 @@ de planificar o ejecutar un plan en este repo.
 
 ---
 
-## L-02
-
-Lo que lanza un componente de `app/layout.tsx` no lo cubre `app/error.tsx` (sólo
-`global-error.js`): una lectura de la API en la cabecera atrapa `MarketplaceUnavailableError` y
-degrada, para que la ruta muestre su reintento, su `noindex` y su 404.
-aplicada en: `.claude/rules/app-router.md` (regla 7), `features/location/LocationBar.tsx`
-
 ## L-03
 
 `motion-reduce:animate-none` no apaga una animación de shadcn: `data-open:animate-in` usa la

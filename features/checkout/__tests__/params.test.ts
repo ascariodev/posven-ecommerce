@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkoutHref, readCheckoutParams } from "./params";
+import { checkoutHref, readCheckoutParams } from "@/features/checkout/lib/params";
 
 describe("readCheckoutParams", () => {
   it("lee la dirección y las tiendas con entrega", () => {

@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/session";
 import { cartEnabled } from "@/features/cart/lib/flag";
-import { PURCHASE_CODE_PATTERN } from "@/features/checkout/CheckoutResult";
+import { PURCHASE_CODE_PATTERN } from "@/features/checkout/components/CheckoutResult";
 import { PurchaseDetail } from "@/features/purchases/components/PurchaseDetail";
 import { purchaseHref } from "@/features/purchases/components/PurchaseList";
 import { getPurchase } from "@/lib/marketplace/client";

@@ -18,10 +18,10 @@ import type {
   QuoteStore,
 } from "@/lib/marketplace/schemas";
 import { ResendVerificationForm } from "@/features/account/VerifyEmailForm";
-import { payCheckout } from "./actions";
+import { payCheckout } from "../server/actions";
 import { CheckoutEmpty } from "./CheckoutEmpty";
-import { INITIAL_CHECKOUT_STATE } from "./checkoutState";
-import { checkoutHref, FULFILLMENT_PARAM_PREFIX } from "./params";
+import { INITIAL_CHECKOUT_STATE } from "../lib/checkoutState";
+import { checkoutHref, FULFILLMENT_PARAM_PREFIX } from "../lib/params";
 
 // Los montos son las cadenas de la Quote y del carrito formateadas: aquí no se suma nada. "Cambió"
 // compara cadenas de la Quote vieja y la nueva, sin calcular.

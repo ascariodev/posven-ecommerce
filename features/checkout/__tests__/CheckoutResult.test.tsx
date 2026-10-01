@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getPurchase } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { Purchase, PurchaseStatus } from "@/lib/marketplace/schemas";
-import { CheckoutResult } from "./CheckoutResult";
+import { CheckoutResult } from "@/features/checkout/components/CheckoutResult";
 
 vi.mock("next/navigation", () => ({
   notFound: vi.fn(() => {

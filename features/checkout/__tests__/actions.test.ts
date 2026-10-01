@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startCheckout } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
-import { payCheckout } from "./actions";
-import { INITIAL_CHECKOUT_STATE } from "./checkoutState";
-import { CENTRAL, quote, quoteStore } from "./testQuote";
+import { payCheckout } from "@/features/checkout/server/actions";
+import { INITIAL_CHECKOUT_STATE } from "@/features/checkout/lib/checkoutState";
+import { CENTRAL, quote, quoteStore } from "@/features/checkout/__tests__/fixtures/testQuote";
 
 const cookieStore = vi.hoisted(() => ({ get: vi.fn(), set: vi.fn(), delete: vi.fn() }));
 

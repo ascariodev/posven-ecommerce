@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { cartEnabled } from "@/features/cart/lib/flag";
-import { CheckoutResult, CheckoutResultSkeleton, PURCHASE_CODE_PATTERN } from "@/features/checkout/CheckoutResult";
+import { CheckoutResult, CheckoutResultSkeleton, PURCHASE_CODE_PATTERN } from "@/features/checkout/components/CheckoutResult";
 
 export const metadata: Metadata = {
   title: "Resultado del pago",

@@ -1,14 +1,14 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { DeliveryUnavailableReason } from "@/lib/marketplace/schemas";
-import { payCheckout } from "./actions";
-import { CheckoutForm } from "./CheckoutForm";
-import { ABASTO, CENTRAL, cartStore, quote, quoteStore } from "./testQuote";
+import { payCheckout } from "@/features/checkout/server/actions";
+import { CheckoutForm } from "@/features/checkout/components/CheckoutForm";
+import { ABASTO, CENTRAL, cartStore, quote, quoteStore } from "@/features/checkout/__tests__/fixtures/testQuote";
 
 const replace = vi.hoisted(() => vi.fn());
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace }) }));
-vi.mock("./actions", () => ({ payCheckout: vi.fn() }));
+vi.mock("@/features/checkout/server/actions", () => ({ payCheckout: vi.fn() }));
 vi.mock("@/features/account/actions", () => ({ resendVerificationAction: vi.fn(), verifyEmailAction: vi.fn() }));
 
 afterEach(() => {

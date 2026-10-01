@@ -32,8 +32,8 @@ README: `features/checkout/README.md`
 
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
-| pagar el carrito: elegir dirección y retiro o entrega por tienda, ver la cotización e iniciar el pago | `<CheckoutView />` | `features/checkout/CheckoutView.tsx` | RN-CHECKOUT-01, RN-CHECKOUT-02, RN-CHECKOUT-03 |
-| mostrar el resultado del pago y consultarlo hasta un estado final | `<CheckoutResult />` | `features/checkout/CheckoutResult.tsx` | RN-CHECKOUT-04 |
+| pagar el carrito: elegir dirección y retiro o entrega por tienda, ver la cotización e iniciar el pago | `<CheckoutView />` | `features/checkout/components/CheckoutView.tsx` | RN-CHECKOUT-01, RN-CHECKOUT-02, RN-CHECKOUT-03 |
+| mostrar el resultado del pago y consultarlo hasta un estado final | `<CheckoutResult />` | `features/checkout/components/CheckoutResult.tsx` | RN-CHECKOUT-04 |
 
 ## events
 

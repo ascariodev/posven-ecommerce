@@ -6,7 +6,7 @@ import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/mark
 import { checkoutInputSchema, type CheckoutInput, type CheckoutStart } from "@/lib/marketplace/schemas";
 import { withSession } from "@/features/account/session";
 import { cartEnabled } from "@/features/cart/lib/flag";
-import { INITIAL_CHECKOUT_STATE, PAY_FAILED, type CheckoutState } from "./checkoutState";
+import { INITIAL_CHECKOUT_STATE, PAY_FAILED, type CheckoutState } from "../lib/checkoutState";
 
 // Todo export de este archivo es un endpoint público: sólo la acción del formulario de pago.
 

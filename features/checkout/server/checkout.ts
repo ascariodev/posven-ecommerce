@@ -3,7 +3,7 @@ import { getCart, listAddresses, quoteCheckout } from "@/lib/marketplace/client"
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { Address, CartStore, CheckoutQuoteInput, Fulfillment, Quote } from "@/lib/marketplace/schemas";
-import type { CheckoutParams } from "./params";
+import type { CheckoutParams } from "../lib/params";
 
 // Lectura de /checkout (spec cuentas-y-compras §5.3): el carrito del comprador, sus direcciones y
 // la Quote de lo elegido en la URL (`params.ts`).

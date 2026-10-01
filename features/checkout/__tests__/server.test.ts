@@ -2,8 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { getCart, listAddresses, quoteCheckout } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { Address, Cart } from "@/lib/marketplace/schemas";
-import { loadCheckout } from "./server";
-import { ABASTO, CENTRAL, cartStore, quote, quoteStore } from "./testQuote";
+import { loadCheckout } from "@/features/checkout/server/checkout";
+import { ABASTO, CENTRAL, cartStore, quote, quoteStore } from "@/features/checkout/__tests__/fixtures/testQuote";
 
 vi.mock("@/lib/marketplace/client", () => ({
   getCart: vi.fn(),

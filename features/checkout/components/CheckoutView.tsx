@@ -5,8 +5,8 @@ import { requireCustomer } from "@/features/account/session";
 import { ResendVerificationForm } from "@/features/account/VerifyEmailForm";
 import { CheckoutEmpty } from "./CheckoutEmpty";
 import { CheckoutForm } from "./CheckoutForm";
-import { readCheckoutParams } from "./params";
-import { loadCheckout } from "./server";
+import { readCheckoutParams } from "../lib/params";
+import { loadCheckout } from "../server/checkout";
 
 export const EMAIL_UNVERIFIED_MESSAGE = "Verifica tu correo para comprar.";
 

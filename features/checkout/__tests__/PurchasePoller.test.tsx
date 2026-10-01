@@ -1,6 +1,6 @@
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { PurchasePoller } from "./PurchasePoller";
+import { PurchasePoller } from "@/features/checkout/components/PurchasePoller";
 
 const refresh = vi.hoisted(() => vi.fn());
 

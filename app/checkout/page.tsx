@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { cartEnabled } from "@/features/cart/lib/flag";
-import { CheckoutView, CheckoutViewSkeleton } from "@/features/checkout/CheckoutView";
+import { CheckoutView, CheckoutViewSkeleton } from "@/features/checkout/components/CheckoutView";
 
 export const metadata: Metadata = {
   title: "Pagar",

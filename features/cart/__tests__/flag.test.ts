@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cartEnabled } from "./flag";
+import { cartEnabled } from "@/features/cart/lib/flag";
 
 afterEach(() => {
   vi.unstubAllEnvs();

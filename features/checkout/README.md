@@ -3,7 +3,7 @@ module: "checkout"
 path: "features/checkout"
 type: "feature"
 exports: ["readCheckoutParams", "checkoutHref", "FULFILLMENT_PARAM_PREFIX", "CheckoutParams", "loadCheckout", "CheckoutData", "payCheckout", "CheckoutState", "INITIAL_CHECKOUT_STATE", "PAY_FAILED", "CheckoutView", "CheckoutViewSkeleton", "EMAIL_UNVERIFIED_MESSAGE", "CheckoutForm", "DELIVERY_UNAVAILABLE_TEXT", "CheckoutEmpty", "CART_EMPTY_MESSAGE", "CheckoutResult", "CheckoutResultSkeleton", "PURCHASE_CODE_PATTERN", "resultHref", "PurchasePoller", "POLL_INTERVAL_MS"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/session.ts", "features/account/VerifyEmailForm.tsx", "features/account/actions.ts", "features/cart/flag.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/radio-group.tsx", "components/ui/select.tsx", "components/ui/skeleton.tsx"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/session.ts", "features/account/VerifyEmailForm.tsx", "features/account/actions.ts", "features/cart/lib/flag.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/radio-group.tsx", "components/ui/select.tsx", "components/ui/skeleton.tsx"]
 tests: "features/checkout/*.test.{ts,tsx}"
 verified_against: ["features/checkout/params.ts", "features/checkout/server.ts", "features/checkout/actions.ts", "features/checkout/checkoutState.ts", "features/checkout/CheckoutView.tsx", "features/checkout/CheckoutForm.tsx", "features/checkout/CheckoutEmpty.tsx", "features/checkout/CheckoutResult.tsx", "features/checkout/PurchasePoller.tsx", "features/checkout/params.test.ts", "features/checkout/server.test.ts", "features/checkout/actions.test.ts", "features/checkout/CheckoutForm.test.tsx", "features/checkout/CheckoutResult.test.tsx", "features/checkout/PurchasePoller.test.tsx", "app/checkout/page.tsx", "app/checkout/resultado/page.tsx", "app/robots.ts", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
 capabilities:
@@ -81,7 +81,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 ## 6. Dependencias
 
 - `lib/marketplace/client.ts` (`getCart`, `listAddresses`, `quoteCheckout`, `startCheckout`, `getPurchase`), `errors.ts`, `schemas.ts`, `params.ts`.
-- `features/account/session.ts` (`requireCustomer`, `withSession`), `features/account/VerifyEmailForm.tsx` (`ResendVerificationForm`), `features/cart/flag.ts` (`cartEnabled`).
+- `features/account/session.ts` (`requireCustomer`, `withSession`), `features/account/VerifyEmailForm.tsx` (`ResendVerificationForm`), `features/cart/lib/flag.ts` (`cartEnabled`).
 - `lib/format.ts`; `components/ui/` (`Badge`, `Button`, `Card`, `RadioGroup`, `Select`, `Skeleton`).
 
 ## 7. Ejemplo de uso

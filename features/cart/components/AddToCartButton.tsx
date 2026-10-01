@@ -4,8 +4,8 @@ import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { addToCart } from "./actions";
-import { INITIAL_ADD_TO_CART_STATE } from "./addToCartState";
+import { addToCart } from "../server/actions";
+import { INITIAL_ADD_TO_CART_STATE } from "../lib/addToCartState";
 
 // Suma 1 y se queda en la página (plan 4a, decisión 5). Es un formulario con una Server Action; en
 // la ficha y la tienda llega por streaming dentro de un <Suspense>, que sin JavaScript no se muestra.

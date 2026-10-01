@@ -21,10 +21,10 @@ README: `features/cart/README.md`
 
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
-| agregar un producto de una tienda al carrito | `<AddToCartButton />` | `features/cart/AddToCartButton.tsx` | RN-CART-01, RN-CART-03, RN-CART-04 |
-| leer el carrito de la petición | `getCurrentCart()` | `features/cart/server.ts` | RN-CART-01 |
-| mostrar el contador del carrito en la cabecera | `<CartLink />` | `features/cart/CartLink.tsx` | RN-CART-04 |
-| ver y cambiar el carrito | `<CartView />` | `features/cart/CartView.tsx` | RN-CART-01 |
+| agregar un producto de una tienda al carrito | `<AddToCartButton />` | `features/cart/components/AddToCartButton.tsx` | RN-CART-01, RN-CART-03, RN-CART-04 |
+| leer el carrito de la petición | `getCurrentCart()` | `features/cart/server/cart.ts` | RN-CART-01 |
+| mostrar el contador del carrito en la cabecera | `<CartLink />` | `features/cart/components/CartLink.tsx` | RN-CART-04 |
+| ver y cambiar el carrito | `<CartView />` | `features/cart/components/CartView.tsx` | RN-CART-01 |
 
 ## checkout
 

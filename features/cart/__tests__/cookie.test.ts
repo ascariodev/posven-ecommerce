@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CartItem } from "@/lib/marketplace/schemas";
-import { cartCookieOptions, parseCartCookie, serializeCart } from "./cookie";
+import { cartCookieOptions, parseCartCookie, serializeCart } from "@/features/cart/server/cookie";
 
 const line: CartItem = {
   store_slug: "farmacia-central-valencia",

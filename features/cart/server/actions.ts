@@ -11,9 +11,9 @@ import {
   type Cart,
 } from "@/lib/marketplace/schemas";
 import { accountContext, SESSION_COOKIE, sessionCookieOptions } from "@/features/account/session";
-import { INITIAL_ADD_TO_CART_STATE, type AddToCartState } from "./addToCartState";
+import { INITIAL_ADD_TO_CART_STATE, type AddToCartState } from "../lib/addToCartState";
 import { readGuestCart, serializeCart, writeGuestCart } from "./cookie";
-import { cartEnabled } from "./flag";
+import { cartEnabled } from "../lib/flag";
 
 // Todo export de este archivo es un endpoint público: sólo las tres acciones de formulario. La
 // fusión al entrar vive en server.ts.

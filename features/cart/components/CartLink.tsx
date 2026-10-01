@@ -5,9 +5,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import { accountContext } from "@/features/account/session";
 import { cn } from "@/lib/utils";
-import { readGuestCart } from "./cookie";
-import { cartEnabled } from "./flag";
-import { getSessionCart } from "./server";
+import { readGuestCart } from "../server/cookie";
+import { cartEnabled } from "../lib/flag";
+import { getSessionCart } from "../server/cart";
 
 // Contador del carrito en la cabecera. El layout raíz no lo cubre app/error.tsx (L-02): ante
 // cualquier error de la API degrada a "Carrito" sin número. El invitado cuenta las entradas de

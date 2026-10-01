@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/session";
 import { ResendVerificationForm } from "@/features/account/VerifyEmailForm";
-import { cartEnabled } from "@/features/cart/flag";
+import { cartEnabled } from "@/features/cart/lib/flag";
 import { RecentPurchases } from "@/features/purchases/RecentPurchases";
 
 export const metadata: Metadata = {

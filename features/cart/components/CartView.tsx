@@ -16,8 +16,8 @@ import {
 import { accountContext } from "@/features/account/session";
 import { loginHref } from "@/features/account/returnPath";
 import { cn } from "@/lib/utils";
-import { removeLine, setQuantity } from "./actions";
-import { getCurrentCart } from "./server";
+import { removeLine, setQuantity } from "../server/actions";
+import { getCurrentCart } from "../server/cart";
 
 const CHECKOUT_PATH = "/checkout";
 

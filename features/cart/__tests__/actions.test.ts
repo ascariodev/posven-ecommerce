@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getCart, setCartItem } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Cart, CartItem } from "@/lib/marketplace/schemas";
-import { addToCart, removeLine, setQuantity } from "./actions";
-import { INITIAL_ADD_TO_CART_STATE } from "./addToCartState";
+import { addToCart, removeLine, setQuantity } from "@/features/cart/server/actions";
+import { INITIAL_ADD_TO_CART_STATE } from "@/features/cart/lib/addToCartState";
 
 const cookieStore = vi.hoisted(() => ({ get: vi.fn(), set: vi.fn(), delete: vi.fn() }));
 const refresh = vi.hoisted(() => vi.fn());

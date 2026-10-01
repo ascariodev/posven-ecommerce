@@ -3,7 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AccountSlot, AccountSlotSkeleton } from "@/features/account/AccountMenu";
-import { CartLink, CartLinkSkeleton } from "@/features/cart/CartLink";
+import { CartLink, CartLinkSkeleton } from "@/features/cart/components/CartLink";
 import { HeaderSearchSlot } from "@/features/search/HeaderSearchSlot";
 import { SearchPill } from "@/features/search/SearchPill";
 import { SiteFooter } from "@/features/site/SiteFooter";

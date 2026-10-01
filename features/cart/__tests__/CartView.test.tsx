@@ -1,10 +1,10 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Cart, CartLine, CartStore } from "@/lib/marketplace/schemas";
-import { CartContent } from "./CartView";
+import { CartContent } from "@/features/cart/components/CartView";
 
-vi.mock("./actions", () => ({ setQuantity: vi.fn(), removeLine: vi.fn() }));
-vi.mock("./server", () => ({ getCurrentCart: vi.fn() }));
+vi.mock("@/features/cart/server/actions", () => ({ setQuantity: vi.fn(), removeLine: vi.fn() }));
+vi.mock("@/features/cart/server/cart", () => ({ getCurrentCart: vi.fn() }));
 
 afterEach(() => {
   cleanup();

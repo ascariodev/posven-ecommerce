@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { CartView, CartViewSkeleton } from "@/features/cart/CartView";
-import { cartEnabled } from "@/features/cart/flag";
+import { CartView, CartViewSkeleton } from "@/features/cart/components/CartView";
+import { cartEnabled } from "@/features/cart/lib/flag";
 
 export const metadata: Metadata = {
   title: "Carrito",

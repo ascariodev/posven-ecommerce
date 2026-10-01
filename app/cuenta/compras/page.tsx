@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/session";
-import { cartEnabled } from "@/features/cart/flag";
+import { cartEnabled } from "@/features/cart/lib/flag";
 import { isPageOutOfRange, readPurchasesPage } from "@/features/purchases/pagination";
 import { PurchaseList } from "@/features/purchases/PurchaseList";
 import { listPurchases } from "@/lib/marketplace/client";

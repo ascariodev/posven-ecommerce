@@ -9,7 +9,7 @@ vi.mock("@/lib/marketplace/client", () => ({
   getProductOffers: vi.fn(),
 }));
 
-vi.mock("@/features/cart/actions", () => ({ addToCart: vi.fn() }));
+vi.mock("@/features/cart/server/actions", () => ({ addToCart: vi.fn() }));
 
 vi.mock("@/features/location/server", () => ({
   getEffectiveLocation: vi.fn(async () => ({ location: null, name: null })),

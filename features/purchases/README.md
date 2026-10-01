@@ -81,7 +81,7 @@ API. El pago y su resultado viven en `features/checkout`.
 
 - `lib/marketplace/client.ts` (`listPurchases`), `schemas.ts`, `params.ts`; `lib/format.ts`.
 - `components/ui/` (`Badge`, `buttonVariants`, `Card`).
-- Las rutas usan `features/account/session.ts`, `features/cart/flag.ts` y `PURCHASE_CODE_PATTERN` de `features/checkout/CheckoutResult.tsx`.
+- Las rutas usan `features/account/session.ts`, `features/cart/lib/flag.ts` y `PURCHASE_CODE_PATTERN` de `features/checkout/CheckoutResult.tsx`.
 
 ## 7. Ejemplo de uso
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { cartEnabled } from "@/features/cart/flag";
+import { cartEnabled } from "@/features/cart/lib/flag";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },

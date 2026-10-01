@@ -8,7 +8,7 @@ vi.mock("@/lib/marketplace/client", () => ({
   getStore: vi.fn(),
 }));
 
-vi.mock("@/features/cart/actions", () => ({ addToCart: vi.fn() }));
+vi.mock("@/features/cart/server/actions", () => ({ addToCart: vi.fn() }));
 
 const SLUG = "farmacia-central-valencia";
 

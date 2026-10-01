@@ -13,8 +13,8 @@ import {
 } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
-import { cartEnabled } from "@/features/cart/flag";
-import { mergeGuestCart } from "@/features/cart/server";
+import { cartEnabled } from "@/features/cart/lib/flag";
+import { mergeGuestCart } from "@/features/cart/server/cart";
 import { formStateFromError, type FormState } from "./formState";
 import { safeReturnPath } from "./returnPath";
 import { accountContext, endSession, SESSION_COOKIE, sessionCookieOptions, withSession } from "./session";

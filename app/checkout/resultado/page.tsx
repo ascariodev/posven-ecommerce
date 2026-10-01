@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { cartEnabled } from "@/features/cart/flag";
+import { cartEnabled } from "@/features/cart/lib/flag";
 import { CheckoutResult, CheckoutResultSkeleton, PURCHASE_CODE_PATTERN } from "@/features/checkout/CheckoutResult";
 
 export const metadata: Metadata = {

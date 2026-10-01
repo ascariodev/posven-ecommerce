@@ -1,9 +1,9 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { addToCart } from "./actions";
-import { AddToCartButton } from "./AddToCartButton";
+import { addToCart } from "@/features/cart/server/actions";
+import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
 
-vi.mock("./actions", () => ({ addToCart: vi.fn() }));
+vi.mock("@/features/cart/server/actions", () => ({ addToCart: vi.fn() }));
 
 afterEach(() => {
   cleanup();

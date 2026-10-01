@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getCart } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Cart } from "@/lib/marketplace/schemas";
-import { CartLink } from "./CartLink";
+import { CartLink } from "@/features/cart/components/CartLink";
 
 const cookieStore = vi.hoisted(() => ({ get: vi.fn() }));
 

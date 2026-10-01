@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/FavoriteButton";
-import { cartEnabled } from "@/features/cart/flag";
+import { cartEnabled } from "@/features/cart/lib/flag";
 import { ViewBeacon } from "@/features/events/ViewBeacon";
 import { productJsonLd } from "@/features/product/jsonld";
 import { loadProduct } from "@/features/product/load";

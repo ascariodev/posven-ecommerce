@@ -5,6 +5,7 @@ paths:
   - "app/buscar/**"
   - "app/p/**"
   - "app/tienda/**"
+  - "app/comercios/**"
   - "lib/jsonld.ts"
   - "features/*/jsonld.ts"
   - "app/sitemap.ts"

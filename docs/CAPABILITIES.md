@@ -93,6 +93,7 @@ README: `features/site/README.md`
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
 | mostrar el pie del sitio con sus columnas de enlaces | `<SiteFooter />` | `features/site/SiteFooter.tsx` | RN-SITE-01, RN-SITE-02 |
+| ofrecer contacto a un comercio que quiere aparecer en el buscador | `<MerchantContact whatsapp={string \| null} email={string \| null} />` | `features/site/MerchantContact.tsx` | RN-SITE-03 |
 
 ## store
 

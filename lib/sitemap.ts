@@ -33,7 +33,9 @@ function parseId(id: string): { type: SitemapType; page: number } | null {
 }
 
 export async function sitemapEntries(id: string): Promise<MetadataRoute.Sitemap> {
-  if (id === STATIC_ID) return [{ url: SITE_URL }];
+  if (id === STATIC_ID) {
+    return [{ url: SITE_URL }, { url: new URL("/comercios", SITE_URL).href }];
+  }
   const parsed = parseId(id);
   if (parsed === null) return [];
   const { data } = await listSitemap(parsed);

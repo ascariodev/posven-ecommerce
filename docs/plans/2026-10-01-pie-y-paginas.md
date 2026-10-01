@@ -4,7 +4,7 @@ modo: ligero
 
 **Objetivo:** el pie en columnas de la dirección C en todas las páginas, y `/comercios`, `/terminos` y
 `/privacidad` respondiendo 200 (las legales como borrador con `noindex`).
-**Estado:** en curso · Fase actual: 2
+**Estado:** en curso · Fase actual: 3
 
 ## Contexto mínimo
 
@@ -43,7 +43,7 @@ modo: ligero
   sin aviso `blocking-route` ni `blocking-prerender-current-time`.
 - **Commit:** `feat(site): pie en columnas de la dirección C`
 
-### [ ] Fase 2: página `/comercios`
+### [x] Fase 2: página `/comercios`
 
 - **Repo:** posven-ecommerce
 - **Alcance:** spec §3. Se agregan `POS_NAME` y los lectores de `MERCHANT_WHATSAPP` y
@@ -96,9 +96,15 @@ modo: ligero
   CategoryNode[]`, `null` con lista vacía); `SiteFooter` resuelve categorías y año con
   `Promise.all`; reglas `RN-SITE-01` (corte en 8) y `RN-SITE-02` (columna omitida sin API o sin
   raíces) en el README.
+- 2026-10-01 (fase 2): `MerchantContact` es puro (`whatsapp` en dígitos y `email`, `string|null`);
+  la página llama a `merchantWhatsapp()` y `merchantEmail()` de `lib/site.ts`. WhatsApp va a
+  `https://wa.me/<dígitos>?text=` con mensaje que cita `SITE_NAME`. Se suman
+  `MerchantContact.test.tsx` y `RN-SITE-03`, y `app/comercios/**` al `paths` de la regla `seo`.
+- 2026-10-01 (fase 2): `.env.example` queda sin commit: los permisos bloquean leerlo y nadie pudo
+  revisar las 4 líneas agregadas; lo revisa y commitea el usuario.
 
 ## Notas para la próxima sesión
 
-- Fase 2: leer la skill `new-page` antes. Cada fase que agregue exports a `features/site` amplía
+- Fase 3: leer la skill `new-page` antes. Cada fase que agregue exports a `features/site` amplía
   `exports` y `capabilities` del README y regenera `docs/CAPABILITIES.md`.
 - Si tsc falla por `.next/types` viejos (`app/preview/page.js`), `npx next build` los regenera.

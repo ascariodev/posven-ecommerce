@@ -150,7 +150,13 @@ contra un adaptador simulado. No renderiza, no lee cookies ni `searchParams` (la
 | `RN-MARKETPLACE-06` | Un 429 da los segundos de `retry_after`; sin cuerpo de error, los del encabezado `Retry-After`; sin encabezado, 60. | `lib/marketplace/http.test.ts` ("un 429 con retry_after...", "un 429 sin cuerpo de error toma Retry-After...", "un 429 sin cuerpo de error ni Retry-After da 60...") |
 | `RN-MARKETPLACE-07` | Las llamadas de cuenta mandan `X-Marketplace-Customer` sólo con sesión y `X-Client-IP` sólo con IP; las de catálogo no mandan ninguno de los dos. | `lib/marketplace/http.test.ts` ("con sesión e IP manda...", "sin sesión ni IP no manda...", "envía Bearer...") |
 | `RN-MARKETPLACE-08` | `accepts_orders` de `StoreSummary` se lee opcional mientras posveapi no lo envíe: ausente es `false` (plan 4a de cuentas, decisión 3). | `lib/marketplace/schemas.test.ts` ("sin accepts_orders (posveapi aún no lo envía) lo lee como false") |
-| `RN-MARKETPLACE-09` | El pago simulado avanza por consultas del detalle de la compra: la primera `pending_payment` con sus pedidos `pending_payment`; la segunda `paid` con los pedidos `accepted` (o `failed` con los pedidos `cancelled` para `pago-fallido@posven.test`), con `alcohol-isopropilico-250-ml` de `farmacia-central-valencia` faltante y reembolsado y las líneas compradas fuera del carrito; desde la tercera, retiro `ready_for_pickup` con `pickup_code` y entrega `out_for_delivery`. El listado no avanza. | `lib/marketplace/mock/checkout.test.ts` (describe "avance de la compra simulada por consultas"); `e2e/checkout.spec.ts` |
+| `RN-MARKETPLACE-09` | El pago simulado avanza con cada consulta del detalle de la compra, en la secuencia de abajo, desde `pending_payment` hasta retiro y entrega en curso. El listado no avanza. | `lib/marketplace/mock/checkout.test.ts` (describe "avance de la compra simulada por consultas"); `e2e/checkout.spec.ts` |
+
+Secuencia del pago simulado (`RN-MARKETPLACE-09`): la primera consulta da `pending_payment` con sus
+pedidos `pending_payment`; la segunda, `paid` con los pedidos `accepted` (o `failed` con los
+pedidos `cancelled` para `pago-fallido@posven.test`), con `alcohol-isopropilico-250-ml` de
+`farmacia-central-valencia` faltante y reembolsado y las líneas compradas fuera del carrito; desde
+la tercera, retiro `ready_for_pickup` con `pickup_code` y entrega `out_for_delivery`.
 
 ## 3. Dónde hacer cambios
 

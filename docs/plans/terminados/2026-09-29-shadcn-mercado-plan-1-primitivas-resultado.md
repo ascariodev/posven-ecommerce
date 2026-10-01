@@ -1,6 +1,6 @@
 # Resultado: plan 1 de shadcn Mercado (primitivas y migración)
 
-- Plan: `docs/plans/2026-09-29-shadcn-mercado-plan-1-primitivas.md` (modo ligero)
+- Plan: `docs/plans/terminados/2026-09-29-shadcn-mercado-plan-1-primitivas.md` (modo ligero)
 - Spec: `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md` (aprobada), fila 1 de su §6
 - Repo y rama: posven-ecommerce, `feat/ui-shadcn-mercado` (desde `main` 56a2c44), sin push ni merge
 - Commits del plan: `3691b88` y `d6ac2fb` (Task 1), `7ee2838` (Task 2), `061ae5b` (Task 3), `a96ecfc`

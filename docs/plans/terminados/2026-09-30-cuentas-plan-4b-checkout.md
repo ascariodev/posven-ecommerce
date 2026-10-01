@@ -148,7 +148,7 @@ Todo en `posven-ecommerce` (`<repo>` = `/home/user/posven-ecommerce` en la nube)
 - Task 6 (≈2): `e2e/checkout.spec.ts`, `.claude/rules/tests.md` 7.
 - Task 7 (≈10): `features/{checkout,purchases}/README.md`, `features/{cart,account}/README.md`,
   `lib/marketplace/README.md`, `.claude/rules/{seo,app-router}.md`, `docs/CAPABILITIES.md`,
-  `docs/plans/2026-09-30-cuentas-plan-4b-checkout-resultado.md`.
+  `docs/plans/terminados/2026-09-30-cuentas-plan-4b-checkout-resultado.md`.
 
 ## Composición
 
@@ -550,7 +550,7 @@ commit: docs(checkout): cierre del plan 4b de cuentas y compras
 - Reglas `seo.md` (rutas nuevas `noindex` y robots) y `app-router.md` si cambia algo.
 - `docs/CAPABILITIES.md` regenerado con `gen-capabilities.mjs` **después de añadir los README a
   git** (lección del cierre del 4a), validado contra un commit anterior.
-- `docs/plans/2026-09-30-cuentas-plan-4b-checkout-resultado.md`: hecho, diferencias contra el
+- `docs/plans/terminados/2026-09-30-cuentas-plan-4b-checkout-resultado.md`: hecho, diferencias contra el
   plan, huecos del contrato, verificación con salidas reales, deuda, pasos de deploy y cómo
   continuar.
 

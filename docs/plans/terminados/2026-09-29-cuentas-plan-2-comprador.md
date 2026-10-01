@@ -664,7 +664,7 @@ Restricciones 2, 5, 8, 9 y 10. Guías: `02-guides/forms.md`, `03-api-reference/0
   shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised
   motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:outline-2
   focus-visible:outline-offset-2 focus-visible:outline-foreground` (tarjeta enlazada de
-  `docs/plans/2026-09-28-visual-moderna.md` Restricción 3), título y descripción: "Perfil" /
+  `docs/plans/terminados/2026-09-28-visual-moderna.md` Restricción 3), título y descripción: "Perfil" /
   "Nombre, correo y teléfono", "Direcciones" /
   "Dónde recibes tus pedidos", "Favoritos" / "Productos y tiendas guardados", "Configuración" /
   "Contraseña, avisos y eliminar cuenta".

@@ -1,6 +1,6 @@
 # Resultado: plan 4 de shadcn Mercado (deuda menor de los planes 2 y 3)
 
-- Plan: `docs/plans/2026-09-30-shadcn-mercado-plan-4-deuda.md` (modo ligero)
+- Plan: `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-4-deuda.md` (modo ligero)
 - Spec: `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md` (aprobada), fila 4 de su §6
 - Repo y rama: posven-ecommerce, `feat/ui-shadcn-mercado-deuda` (desde `main` `812085b`); cada
   tarea se subió con push a `gitea` por pedido de quien coordina, sin merge. Primer plan ejecutado

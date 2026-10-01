@@ -7,7 +7,7 @@ modo: ligero
 Fila 2 de la §6 de la spec `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md` (aprobada):
 el inicio y `/buscar` pasan a la dirección C "Mercado" (referencias Airbnb para explorar y Trivago
 para comparar) sobre shadcn/ui, que es la base de todo componente. Parte del plan 1 cerrado
-(`docs/plans/2026-09-29-shadcn-mercado-plan-1-primitivas-resultado.md`): primitivas de shadcn en
+(`docs/plans/terminados/2026-09-29-shadcn-mercado-plan-1-primitivas-resultado.md`): primitivas de shadcn en
 `components/ui/`, `cn` y `buttonVariants` sobre `<Link>`.
 
 Queda afuera: la ficha (plan 3), varias imágenes por producto y `carousel`, la pasarela, el
@@ -100,7 +100,7 @@ commit de este plan). Sin push ni merge. Si `node_modules` no trae `radix-ui` ni
 - Task 4 (≈8 más los borrados): borra `app/preview/` y `components/preview-ui/`;
   `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md`, `.claude/rules/ui.md`,
   `features/search/README.md`, `features/location/README.md`, `features/store/README.md`,
-  `docs/CAPABILITIES.md`, `docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda-resultado.md`
+  `docs/CAPABILITIES.md`, `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda-resultado.md`
   (nuevo).
 
 ## Composición
@@ -358,7 +358,7 @@ Lee antes `docs/conventions/README.template.md`, la spec y el resultado del plan
 - README de `features/search`, `features/location` y `features/store`: componentes nuevos
   (`SearchPill`, `CategoryRail`, `LocationSheet`, `categoryTint`) y retirados del inicio; luego
   `docs/CAPABILITIES.md` (con `generate-index.mjs` si está disponible; si no, a mano y se declara).
-- `docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda-resultado.md` con el formato del
+- `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda-resultado.md` con el formato del
   resultado del plan 1: qué queda hecho, diferencias contra el diseño, verificación, deuda y cómo
   continuar.
 

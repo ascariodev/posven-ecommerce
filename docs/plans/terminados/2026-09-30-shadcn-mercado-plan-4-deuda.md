@@ -6,8 +6,8 @@ modo: ligero
 
 Los planes 1, 2 y 3 de la spec `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md` están
 cerrados y desplegados (`main` `812085b`). Sus resultados
-(`docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda-resultado.md` y
-`docs/plans/2026-09-30-shadcn-mercado-plan-3-ficha-resultado.md`) dejaron una "Deuda declarada";
+(`docs/plans/terminados/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda-resultado.md` y
+`docs/plans/terminados/2026-09-30-shadcn-mercado-plan-3-ficha-resultado.md`) dejaron una "Deuda declarada";
 este plan cierra la que es de primitivas, altura táctil, ficha y formulario de dirección, siempre
 sobre shadcn: cada arreglo va en la primitiva de `components/ui/` o en sus variantes, no en
 estilos paralelos.
@@ -87,7 +87,7 @@ Todo en `posven-ecommerce` (`<repo>` = la raíz del checkout; en la nube,
 - Task 4 (≈3): `features/account/AddressForm.tsx`, `features/account/AddressForm.test.tsx`
   (nuevo), `e2e/account.spec.ts`.
 - Task 5 (≈6): spec, `features/{search,account,product}/README.md`, `docs/CAPABILITIES.md` (sólo
-  si cambia), `docs/plans/2026-09-30-shadcn-mercado-plan-4-deuda-resultado.md` (nuevo).
+  si cambia), `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-4-deuda-resultado.md` (nuevo).
 
 ## Composición
 
@@ -271,7 +271,7 @@ Lee antes la spec, el resultado del plan 3 (formato) y `docs/conventions/README.
   `features/product` (panel sin `sticky`), cada uno sólo si menciona lo que cambió.
 - `docs/CAPABILITIES.md`: se regenera con la reproducción `gen-capabilities.mjs` del traspaso
   (el script real no está en la nube) y se commitea sólo si difiere; se declara cuál se usó.
-- `docs/plans/2026-09-30-shadcn-mercado-plan-4-deuda-resultado.md`, con el formato del resultado
+- `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-4-deuda-resultado.md`, con el formato del resultado
   del plan 3, y en su "Deuda declarada" lo que este plan deja afuera.
 
 **Verificación**: `tsc`, `eslint` de `app`, `features`, `components` y `lib`, `vitest run` entero,

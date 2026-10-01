@@ -1,6 +1,6 @@
 # Resultado: plan 2 de shadcn Mercado (inicio y búsqueda en dirección C)
 
-- Plan: `docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda.md` (modo ligero)
+- Plan: `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda.md` (modo ligero)
 - Spec: `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md` (aprobada), fila 2 de su §6
 - Repo y rama: posven-ecommerce, `feat/ui-shadcn-mercado` (desde `main` 56a2c44); cada tarea se subió con push por pedido de quien coordina (la Restricción 10 decía sin push), sin merge
 - Commits del plan: `437c809` (plan); Task 1 `ed7a3ef`, con `d3d4225` y `e63063e` de su revisión;

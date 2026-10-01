@@ -1,6 +1,6 @@
 # Resultado: plan 4b de cuentas y compras (checkout, pago simulado y compras)
 
-- Plan: `docs/plans/2026-09-30-cuentas-plan-4b-checkout.md` (modo completo)
+- Plan: `docs/plans/terminados/2026-09-30-cuentas-plan-4b-checkout.md` (modo completo)
 - Spec: `posven/.claude/docs/specs/2026-09-29-cuentas-y-compras-design.md` §8 fila 4 (segunda
   mitad), con la enmienda del 2026-09-30 (F, G y H;
   `docs/delivery/2026-09-30-enmienda-cuentas-y-compras-s4.md`, fuera de git)

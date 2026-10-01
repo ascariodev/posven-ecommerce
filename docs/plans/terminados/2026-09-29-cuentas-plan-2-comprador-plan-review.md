@@ -1,6 +1,6 @@
 # Revisión del plan: cuentas plan 2, comprador en el ecommerce
 
-Plan: `posven-ecommerce/docs/plans/2026-09-29-cuentas-plan-2-comprador.md`. Árbol
+Plan: `posven-ecommerce/docs/plans/terminados/2026-09-29-cuentas-plan-2-comprador.md`. Árbol
 `posven-ecommerce`, rama `main`, HEAD `f3381f6`; contrato contra posveapi `feat/marketplace-cuentas`
 `9a8bfc12`. Spec: `posven/.claude/docs/specs/2026-09-29-cuentas-y-compras-design.md`. Revisor:
 `plan-reviewer`, despachado por quien coordina; enmiendas aprobadas por el usuario.
@@ -32,7 +32,7 @@ Veredicto: **ejecutable tras enmiendas** (aplicadas).
    describe lo que hace la 2. Cambió: plan de 3 tareas; `e2e/account.spec.ts` y `tests.md` 7 en
    la Task 3; `seo.md` en la Task 2 junto con `robots.ts`; Composición, Mapa y cifras al día.
 7. "Tarjetas enlazadas del recetario de `ui.md`": `ui.md` no tiene el recetario. Cambió: la cadena
-   de clases copiada de `docs/plans/2026-09-28-visual-moderna.md` Restricción 3.
+   de clases copiada de `docs/plans/terminados/2026-09-28-visual-moderna.md` Restricción 3.
 8. El contenedor de `AccountSlot` no se alineaba cuando `HeaderSearchSlot` no pinta. Cambió:
    `ml-auto shrink-0` y caso 9 del e2e en móvil (sin desborde horizontal).
 9. Los casos 5 y 6 del e2e usaban el comprador sembrado, que otras corridas mutan, y el 6 no decía

@@ -1,6 +1,6 @@
 # Resultado: plan 5 de shadcn Mercado (cabecera en dirección C)
 
-- Plan: `docs/plans/2026-09-30-shadcn-mercado-plan-5-cabecera.md` (modo ligero)
+- Plan: `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-5-cabecera.md` (modo ligero)
 - Spec: `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md` (aprobada), fila 5 de su §6
 - Repo y rama: posven-ecommerce, `feat/ui-shadcn-mercado-cabecera` (desde
   `feat/ui-shadcn-mercado-deuda` `7fc83a4`, el plan 4 sin mergear); cada tarea se subió con push a

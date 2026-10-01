@@ -17,7 +17,7 @@ git; pendiente de aplicar en `posven`), incluidas sus precisiones J y K, añadid
 de este plan. **Este plan no se ejecuta hasta que la enmienda esté aplicada en `posven`**
 (`contract.md` 4: el campo nuevo de su punto A entra antes en la spec del rasgo §3).
 
-Revisión del plan: `docs/plans/2026-09-30-cuentas-plan-4a-carrito-plan-review.md`.
+Revisión del plan: `docs/plans/terminados/2026-09-30-cuentas-plan-4a-carrito-plan-review.md`.
 
 Queda afuera (plan 4b): `/checkout`, `/checkout/resultado`, Quote, pago simulado, compras,
 `/cuenta/compras`, "Últimas compras" de `/cuenta`, "Mis compras" en el menú de cuenta, el 403
@@ -137,7 +137,7 @@ Todo en `posven-ecommerce` (`<repo>` = `/home/user/posven-ecommerce` en la nube)
   `app/layout.tsx`, `app/robots.ts`, `e2e/cart.spec.ts`.
 - Task 6 (≈10): `features/cart/README.md`, `lib/marketplace/README.md`,
   `features/{product,store,account}/README.md`, `.claude/rules/{seo,tests,app-router}.md`,
-  `docs/CAPABILITIES.md`, `docs/plans/2026-09-30-cuentas-plan-4a-carrito-resultado.md`.
+  `docs/CAPABILITIES.md`, `docs/plans/terminados/2026-09-30-cuentas-plan-4a-carrito-resultado.md`.
 
 ## Composición
 
@@ -454,7 +454,7 @@ Lee antes el resultado del plan 5 de shadcn (formato) y `docs/conventions/README
   excepciones del layout).
 - `docs/CAPABILITIES.md` regenerado con la reproducción `gen-capabilities.mjs` validada antes
   contra el archivo de `77ca74e`.
-- `docs/plans/2026-09-30-cuentas-plan-4a-carrito-resultado.md`, con:
+- `docs/plans/terminados/2026-09-30-cuentas-plan-4a-carrito-resultado.md`, con:
   - pasos de deploy: `MARKETPLACE_CART_ENABLED` apagada en producción hasta el plan 3 de posveapi;
     se lee al construir (lo prerenderizado queda fijado), así que cambiarla exige reconstruir y
     debe estar también en el `next build` del CI; `accepts_orders` pasa a obligatorio cuando

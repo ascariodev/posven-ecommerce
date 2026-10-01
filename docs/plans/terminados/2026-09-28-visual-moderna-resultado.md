@@ -1,6 +1,6 @@
 # Resultado: visual moderna del ecommerce
 
-- Plan: `docs/plans/2026-09-28-visual-moderna.md` (modo ligero)
+- Plan: `docs/plans/terminados/2026-09-28-visual-moderna.md` (modo ligero)
 - Spec: `docs/specs/2026-09-28-visual-moderna-design.md`
 - Repo y rama: posven-ecommerce, `main`, sin push
 - Commits: `92ab22c..dbdc9fc` más el commit de cierre de documentación

@@ -1,7 +1,7 @@
 # Resultado: plan 4a de cuentas y compras (carrito del comprador)
 
-- Plan: `docs/plans/2026-09-30-cuentas-plan-4a-carrito.md` (modo completo), con su revisión
-  `docs/plans/2026-09-30-cuentas-plan-4a-carrito-plan-review.md`
+- Plan: `docs/plans/terminados/2026-09-30-cuentas-plan-4a-carrito.md` (modo completo), con su revisión
+  `docs/plans/terminados/2026-09-30-cuentas-plan-4a-carrito-plan-review.md`
 - Spec: `posven/.claude/docs/specs/2026-09-29-cuentas-y-compras-design.md` §8 fila 4 (partida en 4a
   y 4b), con la enmienda del 2026-09-30 (A a K;
   `docs/delivery/2026-09-30-enmienda-cuentas-y-compras-s4.md`, fuera de git), que quien coordina

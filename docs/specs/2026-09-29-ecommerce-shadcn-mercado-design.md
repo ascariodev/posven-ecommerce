@@ -48,7 +48,7 @@ El botón por defecto de shadcn mide 32 px de alto. El ecommerce se usa en móvi
 tamaño por defecto ajustado en el propio archivo). El contraste AA y el foco visible en
 `--foreground` siguen rigiendo.
 
-Precisión del plan 4 (`docs/plans/2026-09-30-shadcn-mercado-plan-4-deuda.md`): el tamaño `sm` de
+Precisión del plan 4 (`docs/plans/terminados/2026-09-30-shadcn-mercado-plan-4-deuda.md`): el tamaño `sm` de
 `Button`, `Toggle` y `SelectTrigger` mide 44 px en móvil y 36 px desde `md` (`h-11 md:h-9`), y
 las alturas escritas a mano en controles y esqueletos siguen la misma pareja.
 
@@ -61,7 +61,7 @@ las alturas escritas a mano en controles y esqueletos siguen la misma pareja.
 | Ficha | Imagen a la izquierda; a la derecha un panel con el resumen del producto y su rango de precio; debajo, a todo el ancho, las tiendas en filas con "Mejor precio", Llamar y Ver ruta (precisiones del plan 3 abajo) | `card`, `badge`, `button`, `toggle` |
 | Cabecera | Marca, píldora compacta de dos segmentos (qué y dónde) y cuenta; en `/` y `/buscar` sin píldora, que ya va en la página (precisiones del plan 5 abajo) | `input`, `button`, `sheet`, `select`, `dropdown-menu` |
 
-Diferencias del plan 2 (`docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda.md`) contra
+Diferencias del plan 2 (`docs/plans/terminados/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda.md`) contra
 la tabla anterior, decididas al planificarlo y ya en el código:
 
 1. **Inicio sin rejilla "Cerca de ti" de productos.** El contrato no tiene un endpoint de
@@ -78,7 +78,7 @@ la tabla anterior, decididas al planificarlo y ya en el código:
 6. **Tarjeta de tienda con banda de color por token** y el logo o las iniciales encima; la portada
    real exige `cover_url` en las tiendas cercanas, que se declara en §7.
 
-Precisiones del plan 3 (`docs/plans/2026-09-30-shadcn-mercado-plan-3-ficha.md`) sobre la ficha,
+Precisiones del plan 3 (`docs/plans/terminados/2026-09-30-shadcn-mercado-plan-3-ficha.md`) sobre la ficha,
 decididas al planificarlo y ya en el código:
 
 1. **Panel sólo con el resumen.** Imagen a la izquierda; a la derecha el resumen (categoría,
@@ -97,7 +97,7 @@ decididas al planificarlo y ya en el código:
 4. **Migas de pan con las categorías como texto.** Sólo "Inicio" es enlace; `/categoria/<slug>`
    no existe (hoy da 404). El JSON-LD `BreadcrumbList` lleva sólo Inicio y el producto.
 
-Precisiones del plan 5 (`docs/plans/2026-09-30-shadcn-mercado-plan-5-cabecera.md`) sobre la
+Precisiones del plan 5 (`docs/plans/terminados/2026-09-30-shadcn-mercado-plan-5-cabecera.md`) sobre la
 cabecera, decididas al planificarlo y ya en el código:
 
 1. **Píldora compacta en ficha, tienda y cuenta.** `SearchPill compact` con "qué", "dónde" (abre

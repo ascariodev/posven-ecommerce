@@ -7,7 +7,7 @@ modo: ligero
 Fila 3 de la §6 de la spec `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md` (aprobada):
 la ficha `/p/[slug]` pasa a la dirección C "Mercado" (Trivago para comparar) sobre shadcn/ui. Parte
 del plan 2 cerrado y desplegado
-(`docs/plans/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda-resultado.md`): escala de radios,
+(`docs/plans/terminados/2026-09-30-shadcn-mercado-plan-2-inicio-busqueda-resultado.md`): escala de radios,
 tintes, `Sheet`, `Select`, `toggleVariants`, `ProductThumb` con tamaño `card`.
 
 Queda afuera: la página de tienda (`/tienda/[slug]`, sin cambio de diseño), la cabecera con su
@@ -87,7 +87,7 @@ en local; en la nube, la raíz del checkout), rama `feat/ui-shadcn-mercado-ficha
   `features/product/{OfferCard,ProductOffers,SortLinks}.tsx`, `features/product/ProductOffers.test.tsx`.
 - Task 3 (≈5): `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md`,
   `features/product/README.md`, `features/search/README.md` (tamaño `detail`), `docs/CAPABILITIES.md`,
-  `docs/plans/2026-09-30-shadcn-mercado-plan-3-ficha-resultado.md` (nuevo).
+  `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-3-ficha-resultado.md` (nuevo).
 
 ## Composición
 
@@ -218,7 +218,7 @@ Lee antes la spec, el resultado del plan 2 (formato) y `docs/conventions/README.
 - `docs/CAPABILITIES.md` regenerado con `generate-index.mjs`; si no está disponible, con la
   reproducción `gen-capabilities.mjs` del scratchpad de la sesión (validada contra el script real
   en el plan 2), y se declara cuál se usó.
-- `docs/plans/2026-09-30-shadcn-mercado-plan-3-ficha-resultado.md`, con el formato del resultado
+- `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-3-ficha-resultado.md`, con el formato del resultado
   del plan 2.
 
 **Verificación**: `tsc`, `eslint` de `app`, `features` y `components`, `vitest run` entero, `next

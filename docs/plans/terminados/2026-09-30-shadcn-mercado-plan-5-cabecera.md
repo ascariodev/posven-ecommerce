@@ -94,7 +94,7 @@ Todo en `posven-ecommerce` (`<repo>` = la raíz del checkout; en la nube,
   `features/account/AccountDropdown.tsx` (nuevo), `features/account/AccountMenu.test.tsx`,
   `e2e/account.spec.ts`, `.claude/rules/ui.md`.
 - Task 3 (≈7): spec, `features/{search,location,account}/README.md`, `docs/CAPABILITIES.md`,
-  `docs/plans/2026-09-30-shadcn-mercado-plan-5-cabecera-resultado.md` (nuevo).
+  `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-5-cabecera-resultado.md` (nuevo).
 
 ## Composición
 
@@ -231,7 +231,7 @@ Lee antes la spec, el resultado del plan 4 (formato) y `docs/conventions/README.
 - `docs/CAPABILITIES.md` regenerado con la reproducción `gen-capabilities.mjs` del traspaso
   (quitar `<SearchForm />` lo cambia), validada antes contra el archivo de `7fc83a4`; se declara
   cuál se usó.
-- `docs/plans/2026-09-30-shadcn-mercado-plan-5-cabecera-resultado.md`, con el formato del resultado
+- `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-5-cabecera-resultado.md`, con el formato del resultado
   del plan 4.
 
 **Verificación**: `tsc`, `eslint` de `app`, `features`, `components`, `lib` y `e2e`, `vitest run`

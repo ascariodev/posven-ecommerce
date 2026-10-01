@@ -1,6 +1,6 @@
 # Revisión del plan 4a de cuentas y compras (carrito)
 
-- Plan: `docs/plans/2026-09-30-cuentas-plan-4a-carrito.md` (modo completo)
+- Plan: `docs/plans/terminados/2026-09-30-cuentas-plan-4a-carrito.md` (modo completo)
 - Fuentes: spec cruzada `cuentas-y-compras` (copia de quien coordina) y la enmienda del 2026-09-30
   (`docs/delivery/2026-09-30-enmienda-cuentas-y-compras-s4.md`)
 - Revisor: independiente, sin modificar archivos. Veredicto del primer borrador:

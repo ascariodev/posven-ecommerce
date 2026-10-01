@@ -1,6 +1,6 @@
 # Resultado: plan 3 de shadcn Mercado (ficha en dirección C)
 
-- Plan: `docs/plans/2026-09-30-shadcn-mercado-plan-3-ficha.md` (modo ligero)
+- Plan: `docs/plans/terminados/2026-09-30-shadcn-mercado-plan-3-ficha.md` (modo ligero)
 - Spec: `docs/specs/2026-09-29-ecommerce-shadcn-mercado-design.md` (aprobada), fila 3 de su §6
 - Repo y rama: posven-ecommerce, `feat/ui-shadcn-mercado-ficha` (desde `143ed46`, la nota de CAPABILITIES del plan 2 que el espejo de Gitea había quitado de GitHub; viaja en esta rama); cada tarea se subió con push por pedido de quien coordina (la Restricción 10 lo pedía), sin merge
 - Commits del plan: `01e94ea` (plan); Task 1 `afcadc1` (ficha con imagen y panel fijo,

@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { searchProducts } from "@/lib/marketplace/client";
-import { SearchResults } from "./SearchResults";
+import { SearchResults } from "@/features/search/components/SearchResults";
 
 vi.mock("@/lib/marketplace/client", () => ({
   searchProducts: vi.fn(),

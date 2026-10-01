@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { searchHref } from "@/features/search/query";
+import { searchHref } from "@/features/search/lib/query";
 import { listCategories } from "@/lib/marketplace/client";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";

@@ -2,7 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { RadiusKm } from "@/lib/marketplace/params";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
-import { EmptyState } from "./EmptyState";
+import { EmptyState } from "@/features/search/components/EmptyState";
 
 const categories: CategoryNode[] = [
   {

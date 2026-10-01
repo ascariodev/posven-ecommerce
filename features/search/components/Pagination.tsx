@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import type { PageMeta } from "@/lib/marketplace/schemas";
-import { searchHref, type SearchQuery } from "./query";
+import { searchHref, type SearchQuery } from "../lib/query";
 
 export function Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta }) {
   const lastPage = Math.max(1, Math.ceil(meta.total / meta.per_page));

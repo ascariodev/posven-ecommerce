@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { CategoryRail } from "@/features/search/CategoryRail";
-import { SearchPill } from "@/features/search/SearchPill";
+import { CategoryRail } from "@/features/search/components/CategoryRail";
+import { SearchPill } from "@/features/search/components/SearchPill";
 import { NearbyStores, NearbyStoresSkeleton } from "@/features/store/components/NearbyStores";
 import { listCategories } from "@/lib/marketplace/client";
 

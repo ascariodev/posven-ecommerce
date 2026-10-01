@@ -2,7 +2,7 @@ import Link from "next/link";
 import { toggleVariants } from "@/components/ui/toggle";
 import { DEFAULT_RADIUS_KM, RADIUS_OPTIONS, type RadiusKm } from "@/lib/marketplace/params";
 import { cn } from "@/lib/utils";
-import { searchHref, type SearchQuery } from "./query";
+import { searchHref, type SearchQuery } from "../lib/query";
 
 type RadiusOption = { label: string; radio: RadiusKm | null; current: boolean };
 

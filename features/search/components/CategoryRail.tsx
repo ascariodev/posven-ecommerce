@@ -2,8 +2,8 @@ import Link from "next/link";
 import { createElement } from "react";
 import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
-import { categoryIcon } from "./categoryIcon";
-import { searchHref } from "./query";
+import { categoryIcon } from "../lib/categoryIcon";
+import { searchHref } from "../lib/query";
 
 export function CategoryRail({ categories }: { categories: CategoryNode[] }) {
   if (categories.length === 0) return null;

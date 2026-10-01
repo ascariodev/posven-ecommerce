@@ -4,8 +4,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
-import { categoryIcon } from "./categoryIcon";
-import { searchHref } from "./query";
+import { categoryIcon } from "../lib/categoryIcon";
+import { searchHref } from "../lib/query";
 
 export function CategoryLinks({ categories }: { categories: CategoryNode[] }) {
   return (

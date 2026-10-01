@@ -4,7 +4,7 @@ import { RADIUS_OPTIONS } from "@/lib/marketplace/params";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
 import { SITE_NAME } from "@/lib/site";
 import { CategoryLinks } from "./CategoryLinks";
-import { searchHref, type SearchQuery } from "./query";
+import { searchHref, type SearchQuery } from "../lib/query";
 
 const MAX_RELATED_CATEGORIES = 4;
 

@@ -3,9 +3,9 @@ module: "product"
 path: "features/product"
 type: "feature"
 exports: ["loadProduct", "productMetadata", "productJsonLd", "PriceSummary", "SortLinks", "OfferCard", "ProductOffers", "ProductOffersSkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "features/search/ProductThumb.tsx", "lib/jsonld.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "features/search/components/ProductThumb.tsx", "lib/jsonld.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts"]
 tests: "features/product/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/product/server/load.ts", "features/product/lib/metadata.ts", "features/product/lib/jsonld.ts", "features/product/components/PriceSummary.tsx", "features/product/components/SortLinks.tsx", "features/product/components/OfferCard.tsx", "features/product/components/ProductOffers.tsx", "app/p/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "features/search/ProductThumb.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx"]
+verified_against: ["features/product/server/load.ts", "features/product/lib/metadata.ts", "features/product/lib/jsonld.ts", "features/product/components/PriceSummary.tsx", "features/product/components/SortLinks.tsx", "features/product/components/OfferCard.tsx", "features/product/components/ProductOffers.tsx", "app/p/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "features/search/components/ProductThumb.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx"]
 capabilities:
   - intent: "cargar un producto por slug con su 404 y su redirección"
     intent_aliases: ["producto por slug", "pagina de producto", "redireccion de producto", "producto no existe"]
@@ -94,7 +94,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 - `lib/format.ts`, `lib/jsonld.ts`, `lib/site.ts`.
 - `features/location/server/location.ts` (`getEffectiveLocation`) y `features/location/lib/cookie.ts` (`toGeoFilter`).
 - `features/events/components/ContactButtons.tsx` y `features/events/components/ViewBeacon.tsx`.
-- `features/search/ProductThumb.tsx` (imagen o ícono de categoría de la ficha).
+- `features/search/components/ProductThumb.tsx` (imagen o ícono de categoría de la ficha).
 - `components/ui/` (`Badge`, `buttonVariants`, `toggleVariants`, `Card`, `Skeleton`).
 - `next/navigation`, `next/link`, `next/image`.
 

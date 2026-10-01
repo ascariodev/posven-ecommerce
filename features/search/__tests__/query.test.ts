@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseSearchQuery, searchHref } from "./query";
+import { parseSearchQuery, searchHref } from "@/features/search/lib/query";
 
 describe("parseSearchQuery", () => {
   it("lleva un radio que no está entre las opciones a 10", () => {

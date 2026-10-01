@@ -89,7 +89,7 @@ productos" })` corre en `/` y `/buscar`, donde sigue habiendo uno solo.
 - Importación nominal desde `lucide-react`, tamaño por clase (`size-4`, `size-5`), `aria-hidden`
   explícito en todo ícono decorativo. Usos: buscador (`Search`), ubicación (`MapPin`), contacto
   (`MessageCircle` WhatsApp, `Phone` llamar, `Navigation` ruta), tienda (`Store`).
-- `categoryIcon(category)` en `features/search/categoryIcon.ts` toma la raíz
+- `categoryIcon(category)` en `features/search/lib/categoryIcon.ts` toma la raíz
   (`category.parent_slug ?? category.slug`) y devuelve el componente del mapa, con `Package` para
   `null` o una raíz sin mapeo. Mapa con las raíces de posveapi
   (`posveapi/docs/specs/2026-09-28-marketplace-design.md` §2.4):

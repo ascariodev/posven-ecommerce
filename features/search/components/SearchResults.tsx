@@ -11,7 +11,7 @@ import { FeaturedCard } from "./FeaturedCard";
 import { FiltersSheet } from "./FiltersSheet";
 import { Pagination } from "./Pagination";
 import { ProductCard } from "./ProductCard";
-import { parseSearchQuery, searchHref } from "./query";
+import { parseSearchQuery, searchHref } from "../lib/query";
 import { RadiusFilter } from "./RadiusFilter";
 
 export async function SearchResults({

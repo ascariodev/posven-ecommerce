@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { parseSearchQuery } from "@/features/search/query";
-import { SearchPill } from "@/features/search/SearchPill";
-import { SearchResults } from "@/features/search/SearchResults";
+import { parseSearchQuery } from "@/features/search/lib/query";
+import { SearchPill } from "@/features/search/components/SearchPill";
+import { SearchResults } from "@/features/search/components/SearchResults";
 
 export const metadata: Metadata = {
   title: "Buscar",

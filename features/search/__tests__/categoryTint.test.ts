@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Category } from "@/lib/marketplace/schemas";
-import { categoryTint } from "./categoryTint";
+import { categoryTint } from "@/features/search/lib/categoryTint";
 
 function category(slug: string): Category {
   return { slug, name: slug, parent_slug: null };

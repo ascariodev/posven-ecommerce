@@ -11,7 +11,7 @@ import { loadProduct } from "@/features/product/server/load";
 import { productMetadata } from "@/features/product/lib/metadata";
 import { PriceSummary } from "@/features/product/components/PriceSummary";
 import { ProductOffers, ProductOffersSkeleton } from "@/features/product/components/ProductOffers";
-import { ProductThumb } from "@/features/search/ProductThumb";
+import { ProductThumb } from "@/features/search/components/ProductThumb";
 import { breadcrumbListJsonLd, serializeJsonLd } from "@/lib/jsonld";
 import { listCategories, listSitemap } from "@/lib/marketplace/client";
 import type { CategoryNode, ProductDetail } from "@/lib/marketplace/schemas";

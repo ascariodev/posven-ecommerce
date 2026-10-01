@@ -3,9 +3,9 @@ module: "site"
 path: "features/site"
 type: "feature"
 exports: ["SiteFooter", "FooterCategories", "footerYear", "MerchantContact", "LegalDocument", "LEGAL_DRAFT", "LEGAL_MARKERS", "LEGAL_PATHS", "legalMetadata", "legalSitemapPaths", "legalText", "termsDocument", "privacyDocument"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "features/search/query.ts", "components/ui/button.tsx", "lib/utils.ts"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "features/search/lib/query.ts", "components/ui/button.tsx", "lib/utils.ts"]
 tests: "features/site/__tests__/*.test.tsx"
-verified_against: ["features/site/components/SiteFooter.tsx", "features/site/lib/year.ts", "features/site/__tests__/SiteFooter.test.tsx", "features/site/components/MerchantContact.tsx", "features/site/__tests__/MerchantContact.test.tsx", "app/comercios/page.tsx", "lib/sitemap.ts", "app/layout.tsx", "lib/site.ts", "features/search/query.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "features/site/lib/legal.ts", "features/site/__tests__/legal.test.tsx", "features/site/components/LegalDocument.tsx", "features/site/lib/terms.ts", "app/terminos/page.tsx", "features/site/lib/privacy.ts", "app/privacidad/page.tsx", "features/account/session.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/location/lib/cookie.ts", "features/location/server/actions.ts", "app/api/events/route.ts", "features/events/lib/handle.ts"]
+verified_against: ["features/site/components/SiteFooter.tsx", "features/site/lib/year.ts", "features/site/__tests__/SiteFooter.test.tsx", "features/site/components/MerchantContact.tsx", "features/site/__tests__/MerchantContact.test.tsx", "app/comercios/page.tsx", "lib/sitemap.ts", "app/layout.tsx", "lib/site.ts", "features/search/lib/query.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "features/site/lib/legal.ts", "features/site/__tests__/legal.test.tsx", "features/site/components/LegalDocument.tsx", "features/site/lib/terms.ts", "app/terminos/page.tsx", "features/site/lib/privacy.ts", "app/privacidad/page.tsx", "features/account/session.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/location/lib/cookie.ts", "features/location/server/actions.ts", "app/api/events/route.ts", "features/events/lib/handle.ts"]
 capabilities:
   - intent: "mostrar el pie del sitio con sus columnas de enlaces"
     intent_aliases: ["pie de pagina", "footer", "enlaces legales", "categorias del pie", "para comercios"]
@@ -99,7 +99,7 @@ que enlaza.
 ## 6. Dependencias
 
 - `lib/marketplace/client.ts` (`listCategories`), `lib/marketplace/errors.ts`, `lib/marketplace/params.ts` (`DEFAULT_RADIUS_KM`) y `lib/marketplace/schemas.ts` (`CategoryNode`, sólo tipo).
-- `features/search/query.ts` (`searchHref`) y `lib/site.ts` (`SITE_NAME`, `SITE_DESCRIPTION`, `POS_NAME`, `merchantWhatsapp`, `merchantEmail`).
+- `features/search/lib/query.ts` (`searchHref`) y `lib/site.ts` (`SITE_NAME`, `SITE_DESCRIPTION`, `POS_NAME`, `merchantWhatsapp`, `merchantEmail`).
 - `next` (tipo `Metadata`) en `legal.ts`.
 - `components/ui/button.tsx` (`buttonVariants`) y `lib/utils.ts` (`cn`).
 - `next/link` y `next/cache` (`cacheLife`).

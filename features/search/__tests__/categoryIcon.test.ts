@@ -1,6 +1,6 @@
 import { CupSoda, Package, Pill } from "lucide-react";
 import { describe, expect, it } from "vitest";
-import { categoryIcon } from "./categoryIcon";
+import { categoryIcon } from "@/features/search/lib/categoryIcon";
 
 describe("categoryIcon", () => {
   it("una hija toma el ícono de su raíz", () => {

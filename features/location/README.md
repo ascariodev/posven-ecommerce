@@ -5,7 +5,7 @@ type: "feature"
 exports: ["LOCATION_COOKIE", "UserLocation", "isValidCoords", "parseLocationCookie", "serializeLocation", "toGeoFilter", "describeLocation", "getUserLocation", "getEffectiveLocation", "setLocationFromCoords", "setLocationCity", "clearLocation", "LocationPicker", "LocationSheet", "LocationBar", "LocationBarSkeleton"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/select.tsx", "components/ui/sheet.tsx", "components/ui/skeleton.tsx"]
 tests: "features/location/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/location/lib/cookie.ts", "features/location/server/location.ts", "features/location/server/actions.ts", "features/location/components/LocationPicker.tsx", "features/location/components/LocationBar.tsx", "features/location/components/LocationSheet.tsx", "features/location/__tests__/server.test.ts", "features/location/__tests__/LocationBar.test.tsx", "features/search/SearchPill.tsx", "app/layout.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
+verified_against: ["features/location/lib/cookie.ts", "features/location/server/location.ts", "features/location/server/actions.ts", "features/location/components/LocationPicker.tsx", "features/location/components/LocationBar.tsx", "features/location/components/LocationSheet.tsx", "features/location/__tests__/server.test.ts", "features/location/__tests__/LocationBar.test.tsx", "features/search/components/SearchPill.tsx", "app/layout.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
 capabilities:
   - intent: "leer la ubicación efectiva del usuario para filtrar por cercanía"
     intent_aliases: ["ubicacion del usuario", "ubicacion efectiva", "cookie de ubicacion", "donde esta el usuario", "filtro geo"]
@@ -59,7 +59,7 @@ para validar la ciudad con `listLocations()`; sin ubicación la búsqueda es nac
 | Textos o pasos del selector | `components/LocationPicker.tsx` | los nombres accesibles que busca `__tests__/LocationPicker.test.tsx` y `e2e/search.spec.ts` |
 | El botón o la hoja de ubicación | `components/LocationSheet.tsx` | su nombre accesible ("Ubicación: {label}" o "¿Dónde? Ubicación: sin elegir", que contiene el texto visible, WCAG 2.5.3) lo busca `e2e/search.spec.ts` |
 | Cómo llega la ubicación a la consulta | `toGeoFilter` en `lib/cookie.ts` | `GeoFilter` vive en `lib/marketplace/params.ts` y no se cambia desde acá |
-| Qué ubicación cuenta como efectiva | `getEffectiveLocation` en `server/location.ts` | sus casos en `__tests__/server.test.ts`; la consume `components/LocationBar.tsx` (`LocationBar`), `features/search/SearchResults.tsx`, `features/store/components/NearbyStores.tsx` y `features/product/components/ProductOffers.tsx` |
+| Qué ubicación cuenta como efectiva | `getEffectiveLocation` en `server/location.ts` | sus casos en `__tests__/server.test.ts`; la consume `components/LocationBar.tsx` (`LocationBar`), `features/search/components/SearchResults.tsx`, `features/store/components/NearbyStores.tsx` y `features/product/components/ProductOffers.tsx` |
 
 ## 4. API pública
 

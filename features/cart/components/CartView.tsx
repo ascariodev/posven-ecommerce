@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProductThumb } from "@/features/search/ProductThumb";
+import { ProductThumb } from "@/features/search/components/ProductThumb";
 import { formatRate, formatUsd, formatVes } from "@/lib/format";
 import {
   CART_MAX_QUANTITY as MAX_QUANTITY,

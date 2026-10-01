@@ -3,7 +3,7 @@ module: "cart"
 path: "features/cart"
 type: "feature"
 exports: ["cartEnabled", "CART_COOKIE", "cartCookieOptions", "parseCartCookie", "serializeCart", "readGuestCart", "writeGuestCart", "getSessionCart", "getCurrentCart", "mergeGuestCart", "addToCart", "setQuantity", "removeLine", "AddToCartState", "INITIAL_ADD_TO_CART_STATE", "AddToCartButton", "CartLink", "CartLinkSkeleton", "CartView", "CartContent", "CartViewSkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/session.ts", "features/account/returnPath.ts", "features/search/ProductThumb.tsx", "components/ui/button.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/session.ts", "features/account/returnPath.ts", "features/search/components/ProductThumb.tsx", "components/ui/button.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
 tests: "features/cart/__tests__/*.test.{ts,tsx}"
 verified_against: ["features/cart/lib/flag.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/cart/server/actions.ts", "features/cart/lib/addToCartState.ts", "features/cart/components/AddToCartButton.tsx", "features/cart/components/CartLink.tsx", "features/cart/components/CartView.tsx", "features/cart/__tests__/flag.test.ts", "features/cart/__tests__/cookie.test.ts", "features/cart/__tests__/actions.test.ts", "features/cart/__tests__/AddToCartButton.test.tsx", "features/cart/__tests__/CartLink.test.tsx", "features/cart/__tests__/CartView.test.tsx", "features/account/actions.ts", "features/product/components/OfferCard.tsx", "features/store/components/StoreProducts.tsx", "app/carrito/page.tsx", "app/layout.tsx", "app/robots.ts", "e2e/cart.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
 capabilities:
@@ -98,7 +98,7 @@ las líneas en 99).
 
 - `lib/marketplace/client.ts` (`quoteGuestCart`, `getCart`, `setCartItem`, `mergeCart`), `errors.ts`, `schemas.ts`, `params.ts`.
 - `features/account/session.ts` (`accountContext`, `SESSION_COOKIE`, `sessionCookieOptions`); `features/account/actions.ts` llama a `mergeGuestCart`.
-- `features/search/ProductThumb.tsx`; `lib/format.ts`; `components/ui/` (`Button`, `buttonVariants`, `Badge`, `Card`, `Skeleton`); `lucide-react`.
+- `features/search/components/ProductThumb.tsx`; `lib/format.ts`; `components/ui/` (`Button`, `buttonVariants`, `Badge`, `Card`, `Skeleton`); `lucide-react`.
 
 ## 7. Ejemplo de uso
 

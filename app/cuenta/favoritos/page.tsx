@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toggleFavorite } from "@/features/account/accountActions";
 import { requireCustomer } from "@/features/account/session";
-import { ProductThumb } from "@/features/search/ProductThumb";
+import { ProductThumb } from "@/features/search/components/ProductThumb";
 import { listFavorites } from "@/lib/marketplace/client";
 import type { FavoriteTarget } from "@/lib/marketplace/params";
 

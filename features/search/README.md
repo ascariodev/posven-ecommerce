@@ -4,13 +4,13 @@ path: "features/search"
 type: "feature"
 exports: ["SearchQuery", "parseSearchQuery", "searchHref", "SearchResults", "ProductCard", "FeaturedCard", "RadiusFilter", "Pagination", "EmptyState", "CategoryLinks", "categoryIcon", "categoryTint", "ProductThumb", "HeaderSearchSlot", "SearchPill", "CategoryRail", "FiltersSheet"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/location/components/LocationBar.tsx", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx", "components/ui/skeleton.tsx", "lib/utils.ts"]
-tests: "features/search/*.test.{ts,tsx}"
-verified_against: ["features/search/query.ts", "features/search/SearchResults.tsx", "features/search/ProductCard.tsx", "features/search/FeaturedCard.tsx", "features/search/RadiusFilter.tsx", "features/search/Pagination.tsx", "features/search/EmptyState.tsx", "features/search/CategoryLinks.tsx", "features/search/categoryIcon.ts", "features/search/ProductThumb.tsx", "features/search/HeaderSearchSlot.tsx", "features/search/SearchPill.tsx", "features/search/CategoryRail.tsx", "features/search/categoryTint.ts", "features/search/FiltersSheet.tsx", "app/layout.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/location/components/LocationBar.tsx", "components/ui/skeleton.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx"]
+tests: "features/search/__tests__/*.test.{ts,tsx}"
+verified_against: ["features/search/lib/query.ts", "features/search/components/SearchResults.tsx", "features/search/components/ProductCard.tsx", "features/search/components/FeaturedCard.tsx", "features/search/components/RadiusFilter.tsx", "features/search/components/Pagination.tsx", "features/search/components/EmptyState.tsx", "features/search/components/CategoryLinks.tsx", "features/search/lib/categoryIcon.ts", "features/search/components/ProductThumb.tsx", "features/search/components/HeaderSearchSlot.tsx", "features/search/components/SearchPill.tsx", "features/search/components/CategoryRail.tsx", "features/search/lib/categoryTint.ts", "features/search/components/FiltersSheet.tsx", "app/layout.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/location/components/LocationBar.tsx", "components/ui/skeleton.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx"]
 capabilities:
   - intent: "buscar productos por texto o categoría cerca del usuario"
     intent_aliases: ["buscar producto", "resultados de busqueda", "pagina buscar", "buscar por categoria"]
     entrypoint: "<SearchResults />"
-    file: "features/search/SearchResults.tsx"
+    file: "features/search/components/SearchResults.tsx"
     input: "searchParams: Promise<Record<string, string | string[] | undefined>> con q, categoria, radio (3 | 10 | 25 | 50 | pais) y pagina"
     output: "chips de categoría, RadiusFilter (en línea desde md, en el Sheet de FiltersSheet en móvil) si hay ubicación, total y línea de tasa, FeaturedCard por destacado, ProductCard por resultado en rejilla y Pagination; EmptyState si no hay nada"
     source: "searchProducts() de lib/marketplace con geo de getEffectiveLocation() (cookie loc)"
@@ -18,7 +18,7 @@ capabilities:
   - intent: "leer y escribir los parámetros de la URL de /buscar"
     intent_aliases: ["parametros de busqueda", "url de buscar", "radio de busqueda", "enlace a buscar"]
     entrypoint: "parseSearchQuery() / searchHref()"
-    file: "features/search/query.ts"
+    file: "features/search/lib/query.ts"
     input: "Record<string, string | string[] | undefined> | SearchQuery"
     output: "SearchQuery { q: string; categoria: string | null; radio: RadiusKm | null; pagina: number } | '/buscar?...'"
     source: "URL"
@@ -26,7 +26,7 @@ capabilities:
   - intent: "mostrar la píldora de búsqueda con el segmento de ubicación"
     intent_aliases: ["pildora de busqueda", "buscador del inicio", "buscador con ubicacion", "que y donde", "buscador de la cabecera", "caja de busqueda", "buscador"]
     entrypoint: "<SearchPill />"
-    file: "features/search/SearchPill.tsx"
+    file: "features/search/components/SearchPill.tsx"
     input: "defaultQuery?: string; compact?: boolean (por defecto false; true en /buscar y en la cabecera); degradeLocation?: boolean (por defecto false; true en la cabecera)"
     output: "contenedor redondeado con el Form de next/form (action /buscar, campo q), el segmento de ubicación (LocationBar en su Suspense; con degradeLocation, sin segmento si la API cae) y el botón 'Buscar' enlazado al formulario por form={id}"
     source: "URL y cookie loc"
@@ -34,7 +34,7 @@ capabilities:
   - intent: "mostrar el carril de categorías del inicio"
     intent_aliases: ["carril de categorias", "categorias del inicio", "categorias con icono"]
     entrypoint: "<CategoryRail />"
-    file: "features/search/CategoryRail.tsx"
+    file: "features/search/components/CategoryRail.tsx"
     input: "categories: CategoryNode[] (las raíz de listCategories())"
     output: "nav 'Categorías' con desplazamiento horizontal y un enlace por categoría con su ícono a /buscar?categoria={slug}; sin categorías no pinta nada"
     source: "props"
@@ -56,10 +56,10 @@ montos, y esto sólo los formatea.
 
 | Regla | Enunciado | Test que la hace cumplir |
 |---|---|---|
-| `RN-SEARCH-01` | Sin término ni categoría, `/buscar` no llama a la API y muestra la invitación a buscar. | `features/search/SearchResults.test.tsx` ("sin q ni categoría pide escribir y no llama a searchProducts") |
-| `RN-SEARCH-02` | Un radio fuera de 3, 10, 25, 50 o `pais` se toma como 10 km. | `features/search/query.test.ts` ("lleva un radio que no está entre las opciones a 10", "sin radio usa 10") |
-| `RN-SEARCH-03` | Un producto con `restriction` `recipe` muestra el aviso "Requiere récipe". | `features/search/ProductCard.test.tsx` ("avisa que requiere récipe") |
-| `RN-SEARCH-04` | "Desde" antecede al precio sólo si `offers_count` es mayor que 1. | `features/search/ProductCard.test.tsx` ("con una sola oferta no antepone Desde", "con varias ofertas antepone Desde") |
+| `RN-SEARCH-01` | Sin término ni categoría, `/buscar` no llama a la API y muestra la invitación a buscar. | `features/search/__tests__/SearchResults.test.tsx` ("sin q ni categoría pide escribir y no llama a searchProducts") |
+| `RN-SEARCH-02` | Un radio fuera de 3, 10, 25, 50 o `pais` se toma como 10 km. | `features/search/__tests__/query.test.ts` ("lleva un radio que no está entre las opciones a 10", "sin radio usa 10") |
+| `RN-SEARCH-03` | Un producto con `restriction` `recipe` muestra el aviso "Requiere récipe". | `features/search/__tests__/ProductCard.test.tsx` ("avisa que requiere récipe") |
+| `RN-SEARCH-04` | "Desde" antecede al precio sólo si `offers_count` es mayor que 1. | `features/search/__tests__/ProductCard.test.tsx` ("con una sola oferta no antepone Desde", "con varias ofertas antepone Desde") |
 
 ## 3. Dónde hacer cambios
 
@@ -79,7 +79,7 @@ montos, y esto sólo los formatea.
 
 ## 4. API pública
 
-URL de la búsqueda, `features/search/query.ts`:
+URL de la búsqueda, `features/search/lib/query.ts`:
 
 - `type SearchQuery = { q: string; categoria: string | null; radio: RadiusKm | null; pagina: number }`
 - `parseSearchQuery(raw: Record<string, string | string[] | undefined>): SearchQuery`: `q` recortado y cortado a 100 caracteres; `categoria` sólo si casa `^[a-z0-9-]+$`; `radio` `pais` es `null`, ausente o inválido es 10; `pagina` entero mayor o igual a 1, si no 1; de un arreglo toma el primer valor.
@@ -87,24 +87,24 @@ URL de la búsqueda, `features/search/query.ts`:
 
 Componentes:
 
-- `SearchPill({ defaultQuery, compact = false, degradeLocation = false }: { defaultQuery?: string; compact?: boolean; degradeLocation?: boolean })`, Server Component, `features/search/SearchPill.tsx`: píldora `rounded-full` con el `Form` de `next/form` (`role="search"`, campo `q`, "Buscar productos"), el segmento de ubicación (`LocationBar` en su `<Suspense>`) y el botón "Buscar" fuera del `<form>` con `form={id}` para no anidar formularios; `compact` usa controles de 44 px en móvil y 36 px desde `md` (`h-11 md:h-9`, `/buscar`), si no 44 px (inicio); `degradeLocation` (la cabecera) pasa `degrade` a `LocationBar`, que sin API no pinta el segmento ni su separador (L-02)
-- `CategoryRail({ categories }: { categories: CategoryNode[] })`, Server Component, `features/search/CategoryRail.tsx`: `<nav aria-label="Categorías">` con enlaces de ícono y nombre a `searchHref({ q: "", categoria, radio: DEFAULT_RADIUS_KM, pagina: 1 })`; `null` sin categorías
-- `FiltersSheet({ children }: { children: ReactNode })`, `features/search/FiltersSheet.tsx` (`"use client"`): botón "Filtros" (sólo bajo `md`) que abre un `Sheet` inferior con los hijos; el `RadiusFilter` sigue siendo de servidor
-- `SearchResults({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/search/SearchResults.tsx`
-- `ProductCard({ item }: { item: SearchItem })`, `features/search/ProductCard.tsx`
-- `FeaturedCard({ item }: { item: FeaturedProduct })`, `features/search/FeaturedCard.tsx`
-- `RadiusFilter({ query, geoKind, cityName }: { query: SearchQuery; geoKind: "coords" | "city"; cityName: string | null })`, `features/search/RadiusFilter.tsx`
-- `Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta })`, `features/search/Pagination.tsx`
-- `EmptyState({ query, geoKind, categories }: { query: SearchQuery; geoKind: "coords" | "city" | null; categories: CategoryNode[] })`, `features/search/EmptyState.tsx`
-- `CategoryLinks({ categories }: { categories: CategoryNode[] })`, `features/search/CategoryLinks.tsx`: chips de categoría como enlaces a `/buscar`, con `buttonVariants` outline `sm`, `rounded-full` y `shadow-card`
-- `ProductThumb({ imageUrl, category, size, alt, preload, className }: { imageUrl: string | null; category: Category | null; size: "md" | "card" | "detail"; alt?: string; preload?: boolean; className?: string })`, Server Component, `features/search/ProductThumb.tsx`: la imagen (96 px en `md`; `card` llena un contenedor `aspect-[4/3]`; `detail`, el de la ficha, llena uno `aspect-square` con `object-contain p-6`, `sizes` a su columna (`(min-width: 1024px) 540px, (min-width: 768px) 50vw, 100vw`) e ícono `size-24` sin imagen) con `alt` (por defecto `""`) y `preload` (por defecto `false`), que sólo se aplican a `<Image>`, o, sin imagen, el ícono de `categoryIcon(category)` sobre el tinte de `categoryTint(category)`, con `aria-hidden`
-- `HeaderSearchSlot({ children }: { children: ReactNode })`, `features/search/HeaderSearchSlot.tsx` (`"use client"`): `null` en `/` y en toda ruta que empieza por `/buscar`, que ya tienen su buscador; si no, sus hijos
+- `SearchPill({ defaultQuery, compact = false, degradeLocation = false }: { defaultQuery?: string; compact?: boolean; degradeLocation?: boolean })`, Server Component, `features/search/components/SearchPill.tsx`: píldora `rounded-full` con el `Form` de `next/form` (`role="search"`, campo `q`, "Buscar productos"), el segmento de ubicación (`LocationBar` en su `<Suspense>`) y el botón "Buscar" fuera del `<form>` con `form={id}` para no anidar formularios; `compact` usa controles de 44 px en móvil y 36 px desde `md` (`h-11 md:h-9`, `/buscar`), si no 44 px (inicio); `degradeLocation` (la cabecera) pasa `degrade` a `LocationBar`, que sin API no pinta el segmento ni su separador (L-02)
+- `CategoryRail({ categories }: { categories: CategoryNode[] })`, Server Component, `features/search/components/CategoryRail.tsx`: `<nav aria-label="Categorías">` con enlaces de ícono y nombre a `searchHref({ q: "", categoria, radio: DEFAULT_RADIUS_KM, pagina: 1 })`; `null` sin categorías
+- `FiltersSheet({ children }: { children: ReactNode })`, `features/search/components/FiltersSheet.tsx` (`"use client"`): botón "Filtros" (sólo bajo `md`) que abre un `Sheet` inferior con los hijos; el `RadiusFilter` sigue siendo de servidor
+- `SearchResults({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/search/components/SearchResults.tsx`
+- `ProductCard({ item }: { item: SearchItem })`, `features/search/components/ProductCard.tsx`
+- `FeaturedCard({ item }: { item: FeaturedProduct })`, `features/search/components/FeaturedCard.tsx`
+- `RadiusFilter({ query, geoKind, cityName }: { query: SearchQuery; geoKind: "coords" | "city"; cityName: string | null })`, `features/search/components/RadiusFilter.tsx`
+- `Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta })`, `features/search/components/Pagination.tsx`
+- `EmptyState({ query, geoKind, categories }: { query: SearchQuery; geoKind: "coords" | "city" | null; categories: CategoryNode[] })`, `features/search/components/EmptyState.tsx`
+- `CategoryLinks({ categories }: { categories: CategoryNode[] })`, `features/search/components/CategoryLinks.tsx`: chips de categoría como enlaces a `/buscar`, con `buttonVariants` outline `sm`, `rounded-full` y `shadow-card`
+- `ProductThumb({ imageUrl, category, size, alt, preload, className }: { imageUrl: string | null; category: Category | null; size: "md" | "card" | "detail"; alt?: string; preload?: boolean; className?: string })`, Server Component, `features/search/components/ProductThumb.tsx`: la imagen (96 px en `md`; `card` llena un contenedor `aspect-[4/3]`; `detail`, el de la ficha, llena uno `aspect-square` con `object-contain p-6`, `sizes` a su columna (`(min-width: 1024px) 540px, (min-width: 768px) 50vw, 100vw`) e ícono `size-24` sin imagen) con `alt` (por defecto `""`) y `preload` (por defecto `false`), que sólo se aplican a `<Image>`, o, sin imagen, el ícono de `categoryIcon(category)` sobre el tinte de `categoryTint(category)`, con `aria-hidden`
+- `HeaderSearchSlot({ children }: { children: ReactNode })`, `features/search/components/HeaderSearchSlot.tsx` (`"use client"`): `null` en `/` y en toda ruta que empieza por `/buscar`, que ya tienen su buscador; si no, sus hijos
 
-Tintes, `features/search/categoryTint.ts`:
+Tintes, `features/search/lib/categoryTint.ts`:
 
 - `categoryTint(category: Category | null): { bg: string; fg: string }`: una de cuatro parejas `bg-tint-N` / `text-tint-N-foreground` según un hash estable del `slug`; sin categoría, `tint-1`.
 
-Íconos, `features/search/categoryIcon.ts`:
+Íconos, `features/search/lib/categoryIcon.ts`:
 
 - `categoryIcon(category: Category | null): LucideIcon`: el ícono de `lucide-react` de la raíz (`parent_slug ?? slug`); `Package` sin categoría o con una raíz sin mapeo.
 
@@ -112,10 +112,10 @@ Tintes, `features/search/categoryTint.ts`:
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| `optionsFor` | `RadiusFilter.tsx` | con coordenadas, 3, 10, 25, 50 km y todo el país; con ciudad, "Sólo {ciudad}" (radio 10) y todo el país; el vigente lleva `aria-current="true"` |
-| `relatedCategories` | `EmptyState.tsx` | hasta cuatro: con `categoria`, sus hermanas; sin ella o si no está en el árbol, las raíz |
+| `optionsFor` | `components/RadiusFilter.tsx` | con coordenadas, 3, 10, 25, 50 km y todo el país; con ciudad, "Sólo {ciudad}" (radio 10) y todo el país; el vigente lleva `aria-current="true"` |
+| `relatedCategories` | `components/EmptyState.tsx` | hasta cuatro: con `categoria`, sus hermanas; sin ella o si no está en el árbol, las raíz |
 | Cabecera | `app/layout.tsx` | `SearchPill compact degradeLocation` dentro de `HeaderSearchSlot` (en móvil, segunda fila a todo el ancho; desde `sm`, centrada con `sm:max-w-xl`), en un `<Suspense fallback={null}>` porque `usePathname` suspende en las rutas con parámetros de respaldo |
-| Barra de filtros | `SearchResults.tsx` | chips de categoría raíz (`toggleVariants` sobre `<Link>`, el activo con `aria-current="true"` y `href` que la quita) y `RadiusFilter` en línea desde `md` o dentro de `FiltersSheet` en móvil |
+| Barra de filtros | `components/SearchResults.tsx` | chips de categoría raíz (`toggleVariants` sobre `<Link>`, el activo con `aria-current="true"` y `href` que la quita) y `RadiusFilter` en línea desde `md` o dentro de `FiltersSheet` en móvil |
 | Página | `app/buscar/page.tsx` | `metadata` estática con `robots` `noindex, follow`; `SearchPill compact` (con su segmento de ubicación) y resultados, cada uno en su `<Suspense>` |
 | Inicio | `app/page.tsx` | título, `SearchPill`, `CategoryRail` y `NearbyStores`; sin rejilla de productos (spec §7) |
 
@@ -134,8 +134,8 @@ Tintes, `features/search/categoryTint.ts`:
 
 ```tsx
 import { Suspense } from "react";
-import { SearchPill } from "@/features/search/SearchPill";
-import { SearchResults } from "@/features/search/SearchResults";
+import { SearchPill } from "@/features/search/components/SearchPill";
+import { SearchResults } from "@/features/search/components/SearchResults";
 
 export default function SearchPage({
   searchParams,
@@ -166,11 +166,11 @@ export default function SearchPage({
 ## 9. Pruebas
 
 - Comando: `npx vitest run features/search`
-- `features/search/query.test.ts`: radio inválido, `pais` y válido; página negativa; `q` largo y recortado; categoría inválida; `searchHref` con valores por defecto y `radio=pais`.
-- `features/search/ProductCard.test.tsx`: aviso de récipe, "Desde" según `offers_count` y "Fuera de tu zona".
-- `features/search/EmptyState.test.tsx`: ampliar radio, todo el país según ubicación y radio, categorías hermanas y enlace a `/comercios`.
-- `features/search/RadiusFilter.test.tsx`: cinco enlaces con coordenadas y dos con ciudad.
-- `features/search/SearchResults.test.tsx`: sin `q` ni `categoria` no llama a `searchProducts`.
-- `features/search/categoryTint.test.ts`: mismo slug, misma pareja; sin categoría, `tint-1`; las cuatro parejas son alcanzables.
-- `features/search/categoryIcon.test.ts`: hija por su raíz, raíz propia, `null` y raíz sin mapeo.
-- `features/search/HeaderSearchSlot.test.tsx`: oculto en `/` y `/buscar`, visible en la ficha de un producto.
+- `features/search/__tests__/query.test.ts`: radio inválido, `pais` y válido; página negativa; `q` largo y recortado; categoría inválida; `searchHref` con valores por defecto y `radio=pais`.
+- `features/search/__tests__/ProductCard.test.tsx`: aviso de récipe, "Desde" según `offers_count` y "Fuera de tu zona".
+- `features/search/__tests__/EmptyState.test.tsx`: ampliar radio, todo el país según ubicación y radio, categorías hermanas y enlace a `/comercios`.
+- `features/search/__tests__/RadiusFilter.test.tsx`: cinco enlaces con coordenadas y dos con ciudad.
+- `features/search/__tests__/SearchResults.test.tsx`: sin `q` ni `categoria` no llama a `searchProducts`.
+- `features/search/__tests__/categoryTint.test.ts`: mismo slug, misma pareja; sin categoría, `tint-1`; las cuatro parejas son alcanzables.
+- `features/search/__tests__/categoryIcon.test.ts`: hija por su raíz, raíz propia, `null` y raíz sin mapeo.
+- `features/search/__tests__/HeaderSearchSlot.test.tsx`: oculto en `/` y `/buscar`, visible en la ficha de un producto.

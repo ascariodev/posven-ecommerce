@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { RadiusFilter } from "./RadiusFilter";
+import { RadiusFilter } from "@/features/search/components/RadiusFilter";
 
 const query = { q: "acetaminofen", categoria: null, radio: 10 as const, pagina: 3 };
 

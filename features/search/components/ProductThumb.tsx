@@ -2,8 +2,8 @@ import Image from "next/image";
 import { createElement } from "react";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/lib/marketplace/schemas";
-import { categoryIcon } from "./categoryIcon";
-import { categoryTint } from "./categoryTint";
+import { categoryIcon } from "../lib/categoryIcon";
+import { categoryTint } from "../lib/categoryTint";
 
 const thumbSizes = {
   md: { px: 96, box: "size-24", icon: "size-10" },

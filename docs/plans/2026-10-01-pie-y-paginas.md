@@ -4,7 +4,7 @@ modo: ligero
 
 **Objetivo:** el pie en columnas de la dirección C en todas las páginas, y `/comercios`, `/terminos` y
 `/privacidad` respondiendo 200 (las legales como borrador con `noindex`).
-**Estado:** en curso · Fase actual: 5
+**Estado:** terminado
 
 ## Contexto mínimo
 
@@ -74,7 +74,7 @@ modo: ligero
   `legal.ts` y montada sobre `LegalDocument`; README.
 - **Terminado cuando:** tsc, eslint, `npx vitest run features/site` y `npx next build` pasan.
 
-### [ ] Fase 5: e2e y reglas de SEO y pruebas
+### [x] Fase 5: e2e y reglas de SEO y pruebas
 
 - **Repo:** posven-ecommerce
 - **Alcance:** `e2e/site.spec.ts` según spec §5 (enlaces del pie en 200, canónica de
@@ -109,16 +109,17 @@ modo: ligero
 - 2026-10-01 (fase 4): `privacy.ts` exporta `privacyDocument` (8 secciones) comprobado contra el
   código; `RN-SITE-06` exige las cuatro cookies y ninguna otra `mp_*`; no se afirma plazo de
   conservación (remite a `[CORREO LEGAL]`).
+- 2026-10-01 (fase 5): `e2e/site.spec.ts` con 7 casos; `/comercios` se prueba sin
+  `meta[name=robots]`; el sitemap se lee en `/sitemap/static.xml`. `npx playwright test` queda sin
+  correr por el coordinador (lo corre el usuario con el puerto 3000 libre), igual que la revisión
+  visual. Al pasar `LEGAL_DRAFT` a `false` se invierten los casos de `noindex` y sitemap legales.
 
 ## Notas para la próxima sesión
 
-- Fase 5: el e2e cubre `/comercios`, `/terminos` y `/privacidad`; las reglas `seo` 3 y 8 y `tests`
-  7 todavía no las mencionan.
-- `docs-check` marca RANCIO README de otros módulos por fecha de commit (no hay `verified_at`), y
-  ERROR en RN de más de 240 caracteres en cart, checkout, product, purchases y marketplace: es
-  anterior a este plan y queda fuera de alcance.
+- Plan cerrado. Pendiente del usuario: `npx playwright test` con el puerto 3000 libre, revisión
+  visual del pie y de las tres páginas, y revisar y commitear `.env.example` (sin commit desde la
+  fase 2 porque los permisos bloquean leerlo).
 - Para el área legal: términos §3 (tasa) y §4 (reembolsos); privacidad §2 (IP reenviada), §5
-  (terceros) y §6 (conservación). `mp_cart` puede sobrevivir al entrar si la API falla (caso
-  transitorio que el texto no menciona).
-- `.env.example` sigue sin commit desde la fase 2.
-- Si tsc falla por `.next/types` viejos (`app/preview/page.js`), `npx next build` los regenera.
+  (terceros) y §6 (conservación).
+- Fuera de alcance: `docs-check` marca ERROR en RN de más de 240 caracteres en cart, checkout,
+  product, purchases y marketplace.

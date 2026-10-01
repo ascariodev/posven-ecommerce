@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { formatUsd, formatVes } from "@/lib/format";
 import type { Purchase, PurchasePage } from "@/lib/marketplace/schemas";
-import { formatDateTime, purchaseStatusText, storeCountText } from "./labels";
+import { formatDateTime, purchaseStatusText, storeCountText } from "../lib/labels";
 
 // Los montos son las cadenas de la API formateadas: aquí no se suma nada.
 

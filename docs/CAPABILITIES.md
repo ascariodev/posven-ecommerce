@@ -71,9 +71,9 @@ README: `features/purchases/README.md`
 
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
-| listar las compras del comprador, paginadas | `<PurchaseList />` | `features/purchases/PurchaseList.tsx` | RN-PURCHASES-01 |
-| ver el detalle de una compra con el código de retiro y los reembolsos | `<PurchaseDetail />` | `features/purchases/PurchaseDetail.tsx` | RN-PURCHASES-02, RN-PURCHASES-03 |
-| mostrar las últimas compras en el resumen de la cuenta | `<RecentPurchases />` | `features/purchases/RecentPurchases.tsx` | RN-PURCHASES-01 |
+| listar las compras del comprador, paginadas | `<PurchaseList />` | `features/purchases/components/PurchaseList.tsx` | RN-PURCHASES-01 |
+| ver el detalle de una compra con el código de retiro y los reembolsos | `<PurchaseDetail />` | `features/purchases/components/PurchaseDetail.tsx` | RN-PURCHASES-02, RN-PURCHASES-03 |
+| mostrar las últimas compras en el resumen de la cuenta | `<RecentPurchases />` | `features/purchases/components/RecentPurchases.tsx` | RN-PURCHASES-01 |
 
 ## search
 

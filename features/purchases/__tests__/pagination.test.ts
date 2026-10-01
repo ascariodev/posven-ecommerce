@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { isPageOutOfRange, readPurchasesPage } from "./pagination";
-import { purchase } from "./testPurchase";
+import { isPageOutOfRange, readPurchasesPage } from "@/features/purchases/lib/pagination";
+import { purchase } from "@/features/purchases/__tests__/fixtures/testPurchase";
 
 describe("readPurchasesPage", () => {
   it("lee una página válida", () => {

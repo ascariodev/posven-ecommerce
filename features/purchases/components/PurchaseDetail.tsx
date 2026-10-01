@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatRate, formatUsd, formatVes } from "@/lib/format";
 import type { Charge, Purchase, StoreOrder } from "@/lib/marketplace/schemas";
-import { formatDateTime, FULFILLMENT_TEXT, ORDER_STATUS_TEXT, purchaseStatusText } from "./labels";
+import { formatDateTime, FULFILLMENT_TEXT, ORDER_STATUS_TEXT, purchaseStatusText } from "../lib/labels";
 
 // Los montos son las cadenas de la API formateadas: el reembolso y el envío no se restan ni se suman.
 

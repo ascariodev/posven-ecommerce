@@ -56,7 +56,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 | Un parámetro nuevo de la elección | `params.ts` (`readCheckoutParams` y `checkoutHref`) | su lectura en `server.ts` (`loadCheckout`) y su caso en `params.test.ts` |
 | Un error nuevo del pago | `stateFrom` en `actions.ts` y el tipo `CheckoutState` | cómo lo muestra `CheckoutForm.tsx` y su caso en `actions.test.ts` |
 | Textos de "sin entrega" | `DELIVERY_UNAVAILABLE_TEXT` en `CheckoutForm.tsx` | `CheckoutForm.test.tsx` y `e2e/checkout.spec.ts` |
-| Un estado nuevo de la compra | `CheckoutResult.tsx` y `features/purchases/labels.ts` | el esquema en `lib/marketplace/schemas.ts` primero (spec §4.1) |
+| Un estado nuevo de la compra | `CheckoutResult.tsx` y `features/purchases/lib/labels.ts` | el esquema en `lib/marketplace/schemas.ts` primero (spec §4.1) |
 
 ## 4. API pública
 

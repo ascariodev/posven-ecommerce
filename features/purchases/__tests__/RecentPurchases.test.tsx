@@ -2,8 +2,8 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { listPurchases } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
-import { RecentPurchases } from "./RecentPurchases";
-import { purchase } from "./testPurchase";
+import { RecentPurchases } from "@/features/purchases/components/RecentPurchases";
+import { purchase } from "@/features/purchases/__tests__/fixtures/testPurchase";
 
 vi.mock("@/lib/marketplace/client", () => ({ listPurchases: vi.fn() }));
 

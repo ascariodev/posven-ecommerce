@@ -1,8 +1,8 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { formatDateTime } from "./labels";
-import { PurchaseList } from "./PurchaseList";
-import { order, purchase } from "./testPurchase";
+import { formatDateTime } from "@/features/purchases/lib/labels";
+import { PurchaseList } from "@/features/purchases/components/PurchaseList";
+import { order, purchase } from "@/features/purchases/__tests__/fixtures/testPurchase";
 
 afterEach(() => {
   cleanup();

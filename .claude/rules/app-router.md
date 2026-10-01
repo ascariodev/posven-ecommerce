@@ -30,7 +30,7 @@ Rige al editar `app/` y `features/`.
    degrada, porque `app/error.tsx` no cubre el layout raíz (`LocationBar` con `degrade`, que la
    cabecera activa con `SearchPill degradeLocation`, `AccountSlot` y `CartLink`). Otra, un bloque
    secundario de una página que no debe tumbarla: "Últimas compras" de `/cuenta`
-   (`features/purchases/RecentPurchases.tsx`) no se pinta si la API falla.
+   (`features/purchases/components/RecentPurchases.tsx`) no se pinta si la API falla.
 8. **Marca por `SITE_NAME`** (`lib/site.ts`): ningún texto visible ni metadato escribe la marca
    literal. El título de una página es su parte propia; la plantilla `%s | SITE_NAME` la pone
    `app/layout.tsx`.

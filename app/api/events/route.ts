@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { after } from "next/server";
 import { z } from "zod";
-import { createDeduper, handleEvent } from "@/features/events/handle";
+import { createDeduper, handleEvent } from "@/features/events/lib/handle";
 import { sendEvent } from "@/lib/marketplace/client";
 
 const SESSION_COOKIE = "sid";

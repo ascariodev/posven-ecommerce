@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/FavoriteButton";
 import { cartEnabled } from "@/features/cart/lib/flag";
-import { ViewBeacon } from "@/features/events/ViewBeacon";
+import { ViewBeacon } from "@/features/events/components/ViewBeacon";
 import { productJsonLd } from "@/features/product/jsonld";
 import { loadProduct } from "@/features/product/load";
 import { productMetadata } from "@/features/product/metadata";

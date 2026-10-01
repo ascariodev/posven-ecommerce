@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
 import { cartEnabled } from "@/features/cart/lib/flag";
-import { ContactButtons } from "@/features/events/ContactButtons";
+import { ContactButtons } from "@/features/events/components/ContactButtons";
 import { formatDistance, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
 import type { ProductOffer, Restriction } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";

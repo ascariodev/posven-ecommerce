@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createDeduper, EVENT_DEDUP_WINDOW_MS, handleEvent } from "./handle";
+import { createDeduper, EVENT_DEDUP_WINDOW_MS, handleEvent } from "@/features/events/lib/handle";
 
 const SESSION_ID = "3f2b8c1e-6d4a-4f7b-9a0c-2e5d8b1f6a93";
 const BROWSER_UA = "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 Chrome/126.0 Mobile Safari/537.36";

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ContactButtons } from "@/features/events/ContactButtons";
+import { ContactButtons } from "@/features/events/components/ContactButtons";
 import type { Store } from "@/lib/marketplace/schemas";
 import { storeInitials } from "./initials";
 import { formatSchedule } from "./schedule";

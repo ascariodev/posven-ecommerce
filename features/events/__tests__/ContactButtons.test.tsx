@@ -2,10 +2,10 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { StoreSummary } from "@/lib/marketplace/schemas";
 import { SITE_NAME } from "@/lib/site";
-import { sendBeaconEvent } from "./beacon";
-import { ContactButtons } from "./ContactButtons";
+import { sendBeaconEvent } from "@/features/events/lib/beacon";
+import { ContactButtons } from "@/features/events/components/ContactButtons";
 
-vi.mock("./beacon", () => ({ sendBeaconEvent: vi.fn() }));
+vi.mock("@/features/events/lib/beacon", () => ({ sendBeaconEvent: vi.fn() }));
 
 function store(overrides: Partial<StoreSummary> = {}): StoreSummary {
   return {

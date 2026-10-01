@@ -4,7 +4,7 @@ import { MessageCircle, Navigation, Phone } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import type { EventType, Restriction, StoreSummary } from "@/lib/marketplace/schemas";
 import { SITE_NAME } from "@/lib/site";
-import { sendBeaconEvent } from "./beacon";
+import { sendBeaconEvent } from "../lib/beacon";
 
 type ContactProduct = { slug: string; name: string; restriction: Restriction };
 

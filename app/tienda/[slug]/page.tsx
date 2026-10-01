@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/FavoriteButton";
-import { ViewBeacon } from "@/features/events/ViewBeacon";
+import { ViewBeacon } from "@/features/events/components/ViewBeacon";
 import { storeJsonLd } from "@/features/store/jsonld";
 import { StoreHeader } from "@/features/store/StoreHeader";
 import { StoreProducts, StoreProductsSkeleton } from "@/features/store/StoreProducts";

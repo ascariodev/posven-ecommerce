@@ -3,9 +3,9 @@ module: "store"
 path: "features/store"
 type: "feature"
 exports: ["StoreCard", "NearbyStores", "NearbyStoresSkeleton", "storeInitials", "formatSchedule", "openingHoursJsonLd", "storeJsonLd", "StoreHeader", "StoreProducts", "StoreProductsSkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/ContactButtons.tsx", "features/events/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts"]
 tests: "features/store/*.test.{ts,tsx}"
-verified_against: ["features/store/StoreCard.tsx", "features/store/NearbyStores.tsx", "features/store/initials.ts", "features/store/schedule.ts", "features/store/jsonld.ts", "features/store/StoreHeader.tsx", "features/store/StoreProducts.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/ContactButtons.tsx", "features/events/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx"]
+verified_against: ["features/store/StoreCard.tsx", "features/store/NearbyStores.tsx", "features/store/initials.ts", "features/store/schedule.ts", "features/store/jsonld.ts", "features/store/StoreHeader.tsx", "features/store/StoreProducts.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx"]
 capabilities:
   - intent: "mostrar las tiendas cercanas en la portada"
     intent_aliases: ["tiendas cercanas", "tiendas cerca de mi", "comercios cercanos", "tiendas destacadas"]
@@ -112,7 +112,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 - `lib/marketplace/client.ts`: `listNearbyStores()` en `NearbyStores.tsx`, `getStore()` en `StoreProducts.tsx` y en la página, que usa además `listSitemap()`.
 - `lib/marketplace/params.ts` (`DEFAULT_RADIUS_KM`) y `lib/marketplace/schemas.ts` (`NearbyStore`, `Store`, `StoreProduct`, `ScheduleEntry`).
 - `features/location/server/location.ts` (`getEffectiveLocation`) y `features/location/lib/cookie.ts` (`toGeoFilter`).
-- `features/events/ContactButtons.tsx` en `StoreHeader.tsx` y `features/events/ViewBeacon.tsx` en la página.
+- `features/events/components/ContactButtons.tsx` en `StoreHeader.tsx` y `features/events/components/ViewBeacon.tsx` en la página.
 - `lib/format.ts` (`formatDistance`, `formatRate`, `formatUsd`, `formatVes`, `formatUpdatedAgo`), `lib/jsonld.ts` (`serializeJsonLd`, en la página) y `lib/site.ts` (`SITE_NAME`, `SITE_URL`).
 - `components/ui/badge.tsx`, `components/ui/button.tsx`, `components/ui/card.tsx` y `components/ui/skeleton.tsx`; `lib/utils.ts` (`cn`) en `StoreCard`.
 - `next/link`, `next/image` y `next/navigation`.

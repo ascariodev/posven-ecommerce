@@ -1,6 +1,6 @@
-import { LegalDocument } from "@/features/site/LegalDocument";
-import { legalMetadata } from "@/features/site/legal";
-import { privacyDocument } from "@/features/site/privacy";
+import { LegalDocument } from "@/features/site/components/LegalDocument";
+import { legalMetadata } from "@/features/site/lib/legal";
+import { privacyDocument } from "@/features/site/lib/privacy";
 
 export const metadata = legalMetadata({
   title: "Política de privacidad",

@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { MerchantContact } from "./MerchantContact";
+import { MerchantContact } from "@/features/site/components/MerchantContact";
 
 afterEach(cleanup);
 

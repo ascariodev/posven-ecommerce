@@ -6,7 +6,7 @@ import { AccountSlot, AccountSlotSkeleton } from "@/features/account/AccountMenu
 import { CartLink, CartLinkSkeleton } from "@/features/cart/components/CartLink";
 import { HeaderSearchSlot } from "@/features/search/HeaderSearchSlot";
 import { SearchPill } from "@/features/search/SearchPill";
-import { SiteFooter } from "@/features/site/SiteFooter";
+import { SiteFooter } from "@/features/site/components/SiteFooter";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 

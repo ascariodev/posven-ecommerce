@@ -3,13 +3,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { listCategories } from "@/lib/marketplace/client";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
-import { SiteFooter } from "./SiteFooter";
+import { SiteFooter } from "@/features/site/components/SiteFooter";
 
 vi.mock("@/lib/marketplace/client", () => ({
   listCategories: vi.fn(),
 }));
 
-vi.mock("./year", () => ({
+vi.mock("@/features/site/lib/year", () => ({
   footerYear: vi.fn().mockResolvedValue(2026),
 }));
 

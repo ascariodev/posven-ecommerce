@@ -5,7 +5,7 @@ import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
-import { footerYear } from "./year";
+import { footerYear } from "../lib/year";
 
 const MAX_FOOTER_CATEGORIES = 8;
 

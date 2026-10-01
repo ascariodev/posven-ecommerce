@@ -1,6 +1,6 @@
 import "server-only";
 import type { MetadataRoute } from "next";
-import { legalSitemapPaths } from "@/features/site/legal";
+import { legalSitemapPaths } from "@/features/site/lib/legal";
 import { listSitemap } from "@/lib/marketplace/client";
 import { sitemapTypeSchema, type SitemapType } from "@/lib/marketplace/schemas";
 import { SITE_URL } from "@/lib/site";

@@ -1,6 +1,6 @@
-import { LegalDocument } from "@/features/site/LegalDocument";
-import { legalMetadata } from "@/features/site/legal";
-import { termsDocument } from "@/features/site/terms";
+import { LegalDocument } from "@/features/site/components/LegalDocument";
+import { legalMetadata } from "@/features/site/lib/legal";
+import { termsDocument } from "@/features/site/lib/terms";
 
 export const metadata = legalMetadata({
   title: "Términos de uso",

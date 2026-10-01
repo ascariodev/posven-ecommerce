@@ -74,7 +74,7 @@ producto que se vende es el punto de venta, que no es la marca del buscador.
 Dos páginas de servidor con texto en TSX (sin dependencias nuevas de Markdown ni de tipografía),
 estilos de prosa propios del módulo.
 
-- **Interruptor único**: `LEGAL_DRAFT = true` en `features/site/legal.ts`. Mientras es `true`:
+- **Interruptor único**: `LEGAL_DRAFT = true` en `features/site/lib/legal.ts`. Mientras es `true`:
   aviso visible arriba de cada página ("Borrador pendiente de revisión legal"),
   `robots: { index: false, follow: true }` y ninguna de las dos entra al sitemap. Pasarlo a
   `false` las vuelve indexables (canónica propia) y las suma al grupo `static`.

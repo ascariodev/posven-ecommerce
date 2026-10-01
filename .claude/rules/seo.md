@@ -36,7 +36,7 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
    `/checkout` y `/checkout/resultado` exportan
    `robots: { index: false, follow: false }` y no entran al sitemap.
    `/terminos` y `/privacidad` exportan `robots: { index: false, follow: true }` por
-   `legalMetadata` mientras `LEGAL_DRAFT` (`features/site/legal.ts`) sea `true`, y tampoco entran.
+   `legalMetadata` mientras `LEGAL_DRAFT` (`features/site/lib/legal.ts`) sea `true`, y tampoco entran.
 4. **Metadatos estáticos (`export const metadata`) por defecto.** `generateMetadata` sólo cuando
    la ruta los saca de sus datos (el nombre del producto o de la tienda), y nunca de la cookie de
    ubicación: `productMetadata` en `features/product/metadata.ts`, que usa `app/p/[slug]/page.tsx`.

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { MerchantContact } from "@/features/site/MerchantContact";
+import { MerchantContact } from "@/features/site/components/MerchantContact";
 import { merchantEmail, merchantWhatsapp, POS_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {

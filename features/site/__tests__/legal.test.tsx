@@ -7,11 +7,11 @@ import {
   legalMetadata,
   legalSitemapPaths,
   legalText,
-} from "./legal";
+} from "@/features/site/lib/legal";
 import { LOCATION_COOKIE } from "@/features/location/lib/cookie";
-import { LegalDocument } from "./LegalDocument";
-import { privacyDocument } from "./privacy";
-import { termsDocument } from "./terms";
+import { LegalDocument } from "@/features/site/components/LegalDocument";
+import { privacyDocument } from "@/features/site/lib/privacy";
+import { termsDocument } from "@/features/site/lib/terms";
 
 afterEach(cleanup);
 

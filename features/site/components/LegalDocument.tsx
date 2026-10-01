@@ -1,4 +1,4 @@
-import { LEGAL_DRAFT, type LegalDocumentContent } from "./legal";
+import { LEGAL_DRAFT, type LegalDocumentContent } from "../lib/legal";
 
 export function LegalDocument({ document }: { document: LegalDocumentContent }) {
   return (

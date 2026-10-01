@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { formatUsd, formatVes } from "@/lib/format";
 import type { Purchase, PurchasePage } from "@/lib/marketplace/schemas";
-import { formatDateTime, PURCHASE_STATUS_TEXT, storeCountText } from "./labels";
+import { formatDateTime, purchaseStatusText, storeCountText } from "./labels";
 
 // Los montos son las cadenas de la API formateadas: aquí no se suma nada.
 
@@ -25,7 +25,7 @@ export function PurchaseRow({ purchase }: { purchase: Purchase }) {
         <span className="flex flex-col gap-1">
           <span className="flex flex-wrap items-center gap-2">
             <span className="font-bold tracking-tight text-foreground">{purchase.code}</span>
-            <Badge variant={purchase.status === "paid" ? "secondary" : "warning"}>{PURCHASE_STATUS_TEXT[purchase.status]}</Badge>
+            <Badge variant={purchase.status === "paid" ? "secondary" : "warning"}>{purchaseStatusText(purchase)}</Badge>
           </span>
           <span className="text-sm text-muted-foreground">
             {formatDateTime(purchase.created_at)} · {storeCountText(purchase.orders.length)}

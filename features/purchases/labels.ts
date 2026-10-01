@@ -1,4 +1,4 @@
-import type { Fulfillment, PurchaseStatus, StoreOrderStatus } from "@/lib/marketplace/schemas";
+import type { Fulfillment, Purchase, PurchaseStatus, StoreOrderStatus } from "@/lib/marketplace/schemas";
 
 export const PURCHASE_STATUS_TEXT: Record<PurchaseStatus, string> = {
   pending_payment: "Pago pendiente",
@@ -6,6 +6,11 @@ export const PURCHASE_STATUS_TEXT: Record<PurchaseStatus, string> = {
   expired: "Vencida",
   failed: "Pago fallido",
 };
+
+export function purchaseStatusText(purchase: Purchase): string {
+  const allCancelled = purchase.orders.length > 0 && purchase.orders.every((order) => order.status === "cancelled");
+  return purchase.status === "paid" && allCancelled ? "Cancelada" : PURCHASE_STATUS_TEXT[purchase.status];
+}
 
 export const ORDER_STATUS_TEXT: Record<StoreOrderStatus, string> = {
   pending_payment: "Pago pendiente",

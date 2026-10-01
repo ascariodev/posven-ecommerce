@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatRate, formatUsd, formatVes } from "@/lib/format";
 import type { Charge, Purchase, StoreOrder } from "@/lib/marketplace/schemas";
-import { formatDateTime, FULFILLMENT_TEXT, ORDER_STATUS_TEXT, PURCHASE_STATUS_TEXT } from "./labels";
+import { formatDateTime, FULFILLMENT_TEXT, ORDER_STATUS_TEXT, purchaseStatusText } from "./labels";
 
 // Los montos son las cadenas de la API formateadas: el reembolso y el envío no se restan ni se suman.
 
@@ -123,7 +123,7 @@ export function PurchaseDetail({ purchase }: { purchase: Purchase }) {
       <Card>
         <CardContent className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant={paid ? "secondary" : "warning"}>{PURCHASE_STATUS_TEXT[purchase.status]}</Badge>
+            <Badge variant={paid ? "secondary" : "warning"}>{purchaseStatusText(purchase)}</Badge>
             <span className="text-sm text-muted-foreground">{formatDateTime(purchase.created_at)}</span>
           </div>
           <dl className="flex flex-col gap-1">

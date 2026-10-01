@@ -95,6 +95,7 @@ README: `features/site/README.md`
 | mostrar el pie del sitio con sus columnas de enlaces | `<SiteFooter />` | `features/site/SiteFooter.tsx` | RN-SITE-01, RN-SITE-02 |
 | ofrecer contacto a un comercio que quiere aparecer en el buscador | `<MerchantContact whatsapp={string \| null} email={string \| null} />` | `features/site/MerchantContact.tsx` | RN-SITE-03 |
 | publicar los términos de uso como borrador legal | `<LegalDocument document={termsDocument} />` | `features/site/LegalDocument.tsx` | RN-SITE-04, RN-SITE-05 |
+| publicar la política de privacidad como borrador legal | `<LegalDocument document={privacyDocument} />` | `features/site/privacy.ts` | RN-SITE-04, RN-SITE-05, RN-SITE-06 |
 
 ## store
 

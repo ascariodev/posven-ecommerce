@@ -4,7 +4,7 @@ modo: ligero
 
 **Objetivo:** el pie en columnas de la dirección C en todas las páginas, y `/comercios`, `/terminos` y
 `/privacidad` respondiendo 200 (las legales como borrador con `noindex`).
-**Estado:** en curso · Fase actual: 4
+**Estado:** en curso · Fase actual: 5
 
 ## Contexto mínimo
 
@@ -66,7 +66,7 @@ modo: ligero
 - **Terminado cuando:** tsc, eslint, `npx vitest run features/site lib/sitemap.test.ts` y
   `npx next build` pasan.
 
-### [ ] Fase 4: página `/privacidad`
+### [x] Fase 4: página `/privacidad`
 
 - **Repo:** posven-ecommerce
 - **Alcance:** texto de privacidad según spec §4 (datos, cookies `mp_session`, `mp_cart`, `loc` y
@@ -106,15 +106,19 @@ modo: ligero
   para la guarda), no como TSX; `legalMetadata(args, draft = LEGAL_DRAFT)` y
   `legalSitemapPaths(draft = LEGAL_DRAFT)` reciben el interruptor para probar ambos estados; el
   grupo `static` es `/comercios` más `legalSitemapPaths()`; reglas `RN-SITE-04/05`.
+- 2026-10-01 (fase 4): `privacy.ts` exporta `privacyDocument` (8 secciones) comprobado contra el
+  código; `RN-SITE-06` exige las cuatro cookies y ninguna otra `mp_*`; no se afirma plazo de
+  conservación (remite a `[CORREO LEGAL]`).
 
 ## Notas para la próxima sesión
 
-- Fase 4: leer la skill `new-page`. Sumar `/privacidad` a `LEGAL_PATHS` y a `registered` en
-  `legal.test.tsx`, crear `privacy.ts` y `app/privacidad/**`, la ruta al `paths` de la regla `seo`,
-  y ampliar el README y regenerar `docs/CAPABILITIES.md` (`generate-index.mjs` recibe el nombre del
-  repo). Cada afirmación del texto se comprueba contra el código: en la fase 3 la revisión halló
-  dos que no coincidían (momento del `pickup_code`, entrega a domicilio).
-- `docs-check` marca RANCIO los README de `events`, `product` y `store` por el cambio de
-  `lib/site.ts` de la fase 2: refrescar su `verified_at` tras comprobarlos.
-- El texto de términos (secciones 3 tasa y 4 reembolsos) debe revisarlo el área legal.
+- Fase 5: el e2e cubre `/comercios`, `/terminos` y `/privacidad`; las reglas `seo` 3 y 8 y `tests`
+  7 todavía no las mencionan.
+- `docs-check` marca RANCIO README de otros módulos por fecha de commit (no hay `verified_at`), y
+  ERROR en RN de más de 240 caracteres en cart, checkout, product, purchases y marketplace: es
+  anterior a este plan y queda fuera de alcance.
+- Para el área legal: términos §3 (tasa) y §4 (reembolsos); privacidad §2 (IP reenviada), §5
+  (terceros) y §6 (conservación). `mp_cart` puede sobrevivir al entrar si la API falla (caso
+  transitorio que el texto no menciona).
+- `.env.example` sigue sin commit desde la fase 2.
 - Si tsc falla por `.next/types` viejos (`app/preview/page.js`), `npx next build` los regenera.

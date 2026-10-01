@@ -8,12 +8,14 @@ import {
   legalSitemapPaths,
   legalText,
 } from "./legal";
+import { LOCATION_COOKIE } from "@/features/location/cookie";
 import { LegalDocument } from "./LegalDocument";
+import { privacyDocument } from "./privacy";
 import { termsDocument } from "./terms";
 
 afterEach(cleanup);
 
-const registered = [termsDocument];
+const registered = [termsDocument, privacyDocument];
 
 describe("marcadores legales", () => {
   it("el texto sólo usa los cinco marcadores permitidos", () => {
@@ -43,6 +45,16 @@ describe("interruptor de borrador", () => {
     expect(metadata.robots).toBeUndefined();
     expect(metadata.alternates?.canonical).toBe("/terminos");
     expect(legalSitemapPaths(false)).toEqual(LEGAL_PATHS);
+  });
+});
+
+describe("privacidad", () => {
+  it("nombra las cuatro cookies del sitio y ninguna otra mp_", () => {
+    const text = legalText(privacyDocument);
+    for (const name of ["mp_session", "mp_cart", LOCATION_COOKIE, "sid"]) {
+      expect(text).toContain(`${name}:`);
+    }
+    expect(new Set(text.match(/mp_[a-z]+/g))).toEqual(new Set(["mp_session", "mp_cart"]));
   });
 });
 

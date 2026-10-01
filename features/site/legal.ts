@@ -10,7 +10,7 @@ export const LEGAL_MARKERS = [
   "[FECHA DE VIGENCIA]",
 ] as const;
 
-export const LEGAL_PATHS = ["/terminos"] as const;
+export const LEGAL_PATHS = ["/terminos", "/privacidad"] as const;
 
 export type LegalSection = {
   heading: string;

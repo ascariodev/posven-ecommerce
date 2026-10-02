@@ -3,7 +3,7 @@
 **Objetivo:** los formularios validan con zod en el servidor y en el cliente con mensajes en
 español, y todo resultado de una acción (error general o éxito) se avisa con un toast de sonner,
 incluidas las acciones que hoy fallan en silencio o tumban la página a `app/error.tsx`.
-**Estado:** en curso · Fase actual: 1
+**Estado:** en curso · Fase actual: 2
 
 ## Contexto mínimo
 - Spec: sin spec propia. Reglas de validación de la API: FormRequests de posveapi en
@@ -25,7 +25,7 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
 
 ## Fases
 
-### [ ] Fase 1 — Infraestructura de toasts
+### [x] Fase 1 — Infraestructura de toasts
 - **Repo:** posven-ecommerce
 - **Alcance:** `shadcn add sonner` (agrega la dependencia `sonner`); el componente generado se
   ajusta a `ui.md`: sin `next-themes` (no hay modo oscuro), colores por tokens, contraste AA.
@@ -108,7 +108,13 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
 - 2026-10-01 — Errores generales y éxitos van a toast; los errores de campo siguen en línea.
 - 2026-10-01 — Se incluyen las acciones silenciosas (direcciones, favoritos, carrito) y los códigos
   no mapeados.
+- 2026-10-01 — Fase 1: `next-themes` (traído por `shadcn add`) se desinstala; `Toaster` con
+  `theme="light"` y tokens (`--popover`, `--popover-foreground`, `--input-border`, `--radius`).
+  `useActionToast` deduplica por identidad con `useRef`, acepta `null`/`undefined` y exporta el
+  tipo `ActionNotice` desde `@/hooks/useActionToast`.
 
 ## Notas para la próxima sesión
+- Fase 2: importar `useActionToast` y `ActionNotice` de `@/hooks/useActionToast`; revisar en la
+  vista el contraste AA del ícono de error (`text-destructive` sobre `--popover`).
 - El grafo de posven-ecommerce es del 2026-09-28 y no tiene `features/account`, `cart` ni
   `checkout`: explorar con Grep/Read dirigidos.

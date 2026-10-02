@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Toaster } from "@/components/ui/sonner";
 import { AccountSlot, AccountSlotSkeleton } from "@/features/account/components/AccountMenu";
 import { CartLink, CartLinkSkeleton } from "@/features/cart/components/CartLink";
 import { HeaderSearchSlot } from "@/features/search/components/HeaderSearchSlot";
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </header>
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
         <SiteFooter />
+        <Toaster />
       </body>
     </html>
   );

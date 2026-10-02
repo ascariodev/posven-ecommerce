@@ -96,6 +96,10 @@ describe("AddressForm", () => {
 
     fireEvent.click(screen.getByRole("combobox", { name: "Ciudad" }));
     fireEvent.click(screen.getByRole("option", { name: "Caracas" }));
+    fireEvent.change(screen.getByLabelText("Nombre de la dirección"), { target: { value: "Casa" } });
+    fireEvent.change(screen.getByLabelText("Quién recibe"), { target: { value: "Ana Pérez" } });
+    fireEvent.change(screen.getByLabelText("Teléfono"), { target: { value: "04141234567" } });
+    fireEvent.change(screen.getByLabelText("Dirección"), { target: { value: "Calle 1" } });
     const form = container.querySelector("form");
     if (form === null) throw new Error("falta el formulario");
     fireEvent.submit(form);

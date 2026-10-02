@@ -14,9 +14,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Address } from "@/lib/marketplace/schemas";
+import { useFormValidation } from "@/hooks/useFormValidation";
 import { saveAddress } from "../server/accountActions";
 import { FieldError, FormNotice } from "./FormFeedback";
 import { INITIAL_FORM_STATE } from "../lib/formState";
+import { addressSchema } from "../lib/formSchemas";
 
 type City = { slug: string; name: string; state: string };
 type Coords = { lat: number; lng: number };
@@ -37,20 +39,21 @@ function groupByState(cities: City[]): { state: string; cities: City[] }[] {
 }
 
 export function AddressForm({ address, cities }: { address: Address | null; cities: City[] }) {
-  const [state, formAction, pending] = useActionState(saveAddress, INITIAL_FORM_STATE);
+  const [actionState, formAction, pending] = useActionState(saveAddress, INITIAL_FORM_STATE);
+  const { onSubmit, state } = useFormValidation(addressSchema, actionState);
   const prefijo = useId();
   const [coords, setCoords] = useState<Coords | null>(null);
   const [geoFailed, setGeoFailed] = useState(false);
-  const [seenState, setSeenState] = useState(state);
+  const [seenState, setSeenState] = useState(actionState);
   // Radix devuelve el Select al valor con que se montó cuando React resetea el formulario tras la
   // acción; montarlo de nuevo con cada respuesta le da el valor de la respuesta, como el
   // `defaultValue` de un campo nativo.
   const [responses, setResponses] = useState(0);
-  if (seenState !== state) {
-    setSeenState(state);
+  if (seenState !== actionState) {
+    setSeenState(actionState);
     setResponses((count) => count + 1);
     // Una dirección nueva guardada deja el formulario listo para la siguiente: pide la ubicación otra vez.
-    if (state.status === "success" && address === null) {
+    if (actionState.status === "success" && address === null) {
       setCoords(null);
       setGeoFailed(false);
     }
@@ -62,7 +65,7 @@ export function AddressForm({ address, cities }: { address: Address | null; citi
   const describedBy = (name: string): string | undefined =>
     hasError(name) ? `${prefijo}-${name}-error` : undefined;
   const isDefault =
-    state.status === "idle" ? (address?.is_default ?? false) : state.values.is_default === "on";
+    actionState.status === "idle" ? (address?.is_default ?? false) : actionState.values.is_default === "on";
   const groups = groupByState(cities);
 
   function requestPosition() {
@@ -81,8 +84,8 @@ export function AddressForm({ address, cities }: { address: Address | null; citi
   }
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <FormNotice state={state} />
+    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+      <FormNotice state={actionState} />
       <input type="hidden" name="address_id" value={address?.id ?? ""} />
       <input type="hidden" name="lat" value={coords === null ? "" : String(coords.lat)} />
       <input type="hidden" name="lng" value={coords === null ? "" : String(coords.lng)} />

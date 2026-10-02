@@ -1,15 +1,27 @@
 "use client";
 
 import { useActionState, useId } from "react";
+import { useFormValidation } from "@/hooks/useFormValidation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Customer } from "@/lib/marketplace/schemas";
 import { updateProfile } from "../server/accountActions";
 import { FieldError, FormNotice } from "./FormFeedback";
 import { INITIAL_FORM_STATE } from "../lib/formState";
+import { profileSchema } from "../lib/formSchemas";
+
+function profileInput(values: Record<string, string>): Record<string, string> {
+  const input: Record<string, string> = { name: values.name ?? "", phone: values.phone ?? "" };
+  if (values.email !== values.current_email) {
+    input.email = values.email ?? "";
+    input.current_password = values.current_password ?? "";
+  }
+  return input;
+}
 
 export function ProfileForm({ customer }: { customer: Customer }) {
-  const [state, formAction, pending] = useActionState(updateProfile, INITIAL_FORM_STATE);
+  const [actionState, formAction, pending] = useActionState(updateProfile, INITIAL_FORM_STATE);
+  const { onSubmit, state } = useFormValidation(profileSchema, actionState, profileInput);
   const prefijo = useId();
   const nameError = state.fields.name !== undefined;
   const phoneError = state.fields.phone !== undefined;
@@ -19,8 +31,8 @@ export function ProfileForm({ customer }: { customer: Customer }) {
   const helpId = `${prefijo}-current-password-help`;
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <FormNotice state={state} />
+    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+      <FormNotice state={actionState} />
       <input type="hidden" name="current_email" value={currentEmail} />
       <div className="flex flex-col gap-1">
         <label htmlFor={`${prefijo}-name`} className="text-sm font-medium text-foreground">

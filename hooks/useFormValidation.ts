@@ -12,16 +12,28 @@ function formValues(form: HTMLFormElement): Record<string, string> {
   return values;
 }
 
+function focusTarget(element: HTMLElement): HTMLElement {
+  if (element.getAttribute("aria-hidden") === "true") {
+    const trigger = element.parentElement?.querySelector<HTMLElement>('[role="combobox"]');
+    if (trigger) return trigger;
+  }
+  return element;
+}
+
 function firstInvalidControl(form: HTMLFormElement, fields: Record<string, string>): HTMLElement | null {
   for (const element of Array.from(form.elements)) {
     if (element instanceof HTMLElement && "name" in element && typeof element.name === "string" && element.name in fields) {
-      return element;
+      return focusTarget(element);
     }
   }
   return null;
 }
 
-export function useFormValidation(schema: ZodType, state: FormState) {
+export function useFormValidation(
+  schema: ZodType,
+  state: FormState,
+  prepare?: (values: Record<string, string>) => Record<string, string>,
+) {
   const [clientFields, setClientFields] = useState<Record<string, string>>({});
   const pendingFocus = useRef<HTMLElement | null>(null);
 
@@ -33,7 +45,7 @@ export function useFormValidation(schema: ZodType, state: FormState) {
   const onSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       const values = formValues(event.currentTarget);
-      const result = schema.safeParse(values);
+      const result = schema.safeParse(prepare ? prepare(values) : values);
       if (result.success) {
         setClientFields({});
         return;
@@ -43,7 +55,7 @@ export function useFormValidation(schema: ZodType, state: FormState) {
       pendingFocus.current = firstInvalidControl(event.currentTarget, fields);
       setClientFields(fields);
     },
-    [schema],
+    [schema, prepare],
   );
 
   const view = useMemo<FormState>(

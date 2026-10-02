@@ -3,7 +3,7 @@
 **Objetivo:** los formularios validan con zod en el servidor y en el cliente con mensajes en
 español, y todo resultado de una acción (error general o éxito) se avisa con un toast de sonner,
 incluidas las acciones que hoy fallan en silencio o tumban la página a `app/error.tsx`.
-**Estado:** en curso · Fase actual: 6
+**Estado:** en curso · Fase actual: 7
 
 ## Contexto mínimo
 - Spec: sin spec propia. Reglas de validación de la API: FormRequests de posveapi en
@@ -76,7 +76,7 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   envío si falla y combina sus errores con `state.fields`; aplicado a `LoginForm`, `RegisterForm`
   y `RecoveryForms`.
 
-### [ ] Fase 6 — Validación en cliente de los formularios de la cuenta
+### [x] Fase 6 — Validación en cliente de los formularios de la cuenta
 - **Repo:** posven-ecommerce
 - **Alcance:** el mismo hook en `ProfileForm`, `SettingsForms` y `AddressForm` (respetar L-04 con
   el Select de ciudad).
@@ -134,18 +134,20 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   válido; al fallar enfoca el primer control inválido en orden del DOM tras el render. Los
   formularios llevan `noValidate` y `FormNotice` recibe el estado crudo (sin toast repetido). El
   hook se documenta en el README de account; no hay README de `hooks/`.
+- 2026-10-01 — Fase 6: firma distinta del plan, `useFormValidation(schema, state, prepare?)`;
+  `ProfileForm` usa `prepare` para mandar `email`/`current_password` sólo si cambió el correo,
+  como `updateProfile`. El foco salta al `[role=combobox]` del contenedor si el control con nombre
+  es el select oculto de Radix (toma el primero del padre). `AddressForm` cuenta respuestas de
+  `actionState` para la `key` del Select (L-04), así un error de cliente no lo remonta.
+  `NotificationsForm` no valida. ESLint con `--config <árbol>/eslint.config.mjs` sí analiza los
+  archivos del repo aunque la sesión esté en `posven/`.
 
 ## Notas para la próxima sesión
 - Fase 9: `writeQuantity` (`setQuantity`, `removeLine`) aún lanza ante un código no mapeado
   salvo `not_orderable` y `product_restricted`.
-- Fase 6: el hook toma el `FormData` crudo; perfil puede necesitar una transformación antes de
-  validar. `firstInvalidControl` busca controles con `name`: revisar que el Select de ciudad de
-  Radix reciba el foco. Si el hook se usa fuera de account, mover `FormState` y
-  `formStateFromZod` a un lugar compartido.
+- Si el hook se usa fuera de account, mover `FormState` y `formStateFromZod` a un lugar compartido.
 - Fase 9: `docs-check` marca rancio `features/cart/README.md` porque `features/account/server/actions.ts`
   cambió en la Fase 4; sus afirmaciones siguen ciertas y se refresca al commitear el README de cart.
-- Fase 6: `profileSchema` necesita que el cliente arme `email` y `current_password` sólo
-  cuando cambia el correo, igual que `updateProfile`.
 - Fase 4 en adelante: `useActionToast` y `ActionNotice` en `@/hooks/useActionToast`; `FormNotice`
   ya dispara el toast. Pendiente menor sin fase: `VerifyEmailForm` en `success` queda sin texto de
   confirmación en línea una vez cerrado el toast.

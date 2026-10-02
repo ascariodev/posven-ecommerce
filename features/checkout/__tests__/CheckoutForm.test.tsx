@@ -9,7 +9,7 @@ const replace = vi.hoisted(() => vi.fn());
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace }) }));
 vi.mock("@/features/checkout/server/actions", () => ({ payCheckout: vi.fn() }));
-vi.mock("@/features/account/actions", () => ({ resendVerificationAction: vi.fn(), verifyEmailAction: vi.fn() }));
+vi.mock("@/features/account/server/actions", () => ({ resendVerificationAction: vi.fn(), verifyEmailAction: vi.fn() }));
 
 afterEach(() => {
   cleanup();

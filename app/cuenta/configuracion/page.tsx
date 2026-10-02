@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { requireCustomer } from "@/features/account/session";
+import { requireCustomer } from "@/features/account/server/session";
 import { DeleteAccountForm, NotificationsForm, PasswordChangeForm } from "@/features/account/components/SettingsForms";
 
 export const metadata: Metadata = {

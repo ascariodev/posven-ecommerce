@@ -7,9 +7,9 @@ import { listFavorites } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { FavoriteTarget } from "@/lib/marketplace/params";
 import type { FavoritesResponse } from "@/lib/marketplace/schemas";
-import { toggleFavorite } from "../accountActions";
-import { loginHref } from "../returnPath";
-import { accountContext } from "../session";
+import { toggleFavorite } from "../server/accountActions";
+import { loginHref } from "../lib/returnPath";
+import { accountContext } from "../server/session";
 
 const SAVE_LABEL = "Guardar en favoritos";
 const REMOVE_LABEL = "Quitar de favoritos";

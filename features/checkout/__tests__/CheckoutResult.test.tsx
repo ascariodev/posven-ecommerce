@@ -11,7 +11,7 @@ vi.mock("next/navigation", () => ({
   }),
   useRouter: () => ({ refresh: vi.fn() }),
 }));
-vi.mock("@/features/account/session", () => ({
+vi.mock("@/features/account/server/session", () => ({
   requireCustomer: vi.fn(async () => ({ ctx: { session: "7|token", clientIp: null }, customer: {} })),
 }));
 vi.mock("@/lib/marketplace/client", () => ({ getPurchase: vi.fn() }));

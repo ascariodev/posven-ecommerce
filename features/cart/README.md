@@ -3,9 +3,9 @@ module: "cart"
 path: "features/cart"
 type: "feature"
 exports: ["cartEnabled", "CART_COOKIE", "cartCookieOptions", "parseCartCookie", "serializeCart", "readGuestCart", "writeGuestCart", "getSessionCart", "getCurrentCart", "mergeGuestCart", "addToCart", "setQuantity", "removeLine", "AddToCartState", "INITIAL_ADD_TO_CART_STATE", "AddToCartButton", "CartLink", "CartLinkSkeleton", "CartView", "CartContent", "CartViewSkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/session.ts", "features/account/returnPath.ts", "features/search/components/ProductThumb.tsx", "components/ui/button.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/server/session.ts", "features/account/lib/returnPath.ts", "features/search/components/ProductThumb.tsx", "components/ui/button.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
 tests: "features/cart/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/cart/lib/flag.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/cart/server/actions.ts", "features/cart/lib/addToCartState.ts", "features/cart/components/AddToCartButton.tsx", "features/cart/components/CartLink.tsx", "features/cart/components/CartView.tsx", "features/cart/__tests__/flag.test.ts", "features/cart/__tests__/cookie.test.ts", "features/cart/__tests__/actions.test.ts", "features/cart/__tests__/AddToCartButton.test.tsx", "features/cart/__tests__/CartLink.test.tsx", "features/cart/__tests__/CartView.test.tsx", "features/account/actions.ts", "features/product/components/OfferCard.tsx", "features/store/components/StoreProducts.tsx", "app/carrito/page.tsx", "app/layout.tsx", "app/robots.ts", "e2e/cart.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
+verified_against: ["features/cart/lib/flag.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/cart/server/actions.ts", "features/cart/lib/addToCartState.ts", "features/cart/components/AddToCartButton.tsx", "features/cart/components/CartLink.tsx", "features/cart/components/CartView.tsx", "features/cart/__tests__/flag.test.ts", "features/cart/__tests__/cookie.test.ts", "features/cart/__tests__/actions.test.ts", "features/cart/__tests__/AddToCartButton.test.tsx", "features/cart/__tests__/CartLink.test.tsx", "features/cart/__tests__/CartView.test.tsx", "features/account/server/actions.ts", "features/product/components/OfferCard.tsx", "features/store/components/StoreProducts.tsx", "app/carrito/page.tsx", "app/layout.tsx", "app/robots.ts", "e2e/cart.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
 capabilities:
   - intent: "agregar un producto de una tienda al carrito"
     intent_aliases: ["agregar al carrito", "comprar", "anadir al carrito", "boton agregar"]
@@ -55,7 +55,7 @@ se va al checkout (módulo `features/checkout`, plan 4b).
 | Regla | Enunciado | Test que la hace cumplir |
 |---|---|---|
 | `RN-CART-01` | `mp_cart` es JSON de `[{ store_slug, product_slug, quantity }]`, sin precios, `httpOnly`, `SameSite=Lax`, raíz y 30 días, con los topes de abajo. Un valor inválido se ignora y se reescribe en la siguiente escritura. | `features/cart/__tests__/cookie.test.ts`; `features/cart/__tests__/actions.test.ts` ("suma sobre la línea existente y topa en 99", "la línea 21 responde carrito lleno sin escribir") |
-| `RN-CART-02` | Al entrar o registrarse, `mp_cart` se fusiona con el carrito del comprador (`mergeCart` con el token nuevo) y se borra. Con la API caída o un 429 se conserva para el próximo login; ante otro error de la API se borra. Nunca impide el acceso. | `features/account/actions.test.ts` (describe "fusión del carrito de invitado al entrar") |
+| `RN-CART-02` | Al entrar o registrarse, `mp_cart` se fusiona con el carrito del comprador (`mergeCart` con el token nuevo) y se borra. Con la API caída o un 429 se conserva para el próximo login; ante otro error de la API se borra. Nunca impide el acceso. | `features/account/__tests__/actions.test.ts` (describe "fusión del carrito de invitado al entrar") |
 | `RN-CART-03` | "Agregar al carrito" sale sólo si el carrito está encendido, la tienda tiene `accepts_orders` y el producto `restriction: "none"`; los `recipe` y `controlled` muestran su nota en la ficha. | `features/product/__tests__/ProductOffers.test.tsx` y `features/store/__tests__/StoreProducts.test.tsx` (describe "botón Agregar al carrito"); `e2e/cart.spec.ts` |
 | `RN-CART-04` | El carrito existe con `MARKETPLACE_CART_ENABLED=1` o en modo simulado (`MARKETPLACE_MODE` ausente o `mock`); apagado no hay botón, contador ni fusión, y `/carrito` da 404. | `features/cart/__tests__/flag.test.ts`; `features/cart/__tests__/CartLink.test.tsx` y `actions.test.ts` ("con el interruptor apagado...") |
 
@@ -97,7 +97,7 @@ las líneas en 99).
 ## 6. Dependencias
 
 - `lib/marketplace/client.ts` (`quoteGuestCart`, `getCart`, `setCartItem`, `mergeCart`), `errors.ts`, `schemas.ts`, `params.ts`.
-- `features/account/session.ts` (`accountContext`, `SESSION_COOKIE`, `sessionCookieOptions`); `features/account/actions.ts` llama a `mergeGuestCart`.
+- `features/account/server/session.ts` (`accountContext`, `SESSION_COOKIE`, `sessionCookieOptions`); `features/account/server/actions.ts` llama a `mergeGuestCart`.
 - `features/search/components/ProductThumb.tsx`; `lib/format.ts`; `components/ui/` (`Button`, `buttonVariants`, `Badge`, `Card`, `Skeleton`); `lucide-react`.
 
 ## 7. Ejemplo de uso

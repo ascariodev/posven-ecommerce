@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { clientIpFrom, readSession, sessionCookieOptions } from "./session";
+import { clientIpFrom, readSession, sessionCookieOptions } from "@/features/account/server/session";
 
 const cookieStore = vi.hoisted(() => ({ get: vi.fn() }));
 

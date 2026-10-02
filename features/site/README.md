@@ -5,7 +5,7 @@ type: "feature"
 exports: ["SiteFooter", "FooterCategories", "footerYear", "MerchantContact", "LegalDocument", "LEGAL_DRAFT", "LEGAL_MARKERS", "LEGAL_PATHS", "legalMetadata", "legalSitemapPaths", "legalText", "termsDocument", "privacyDocument"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "features/search/lib/query.ts", "components/ui/button.tsx", "lib/utils.ts"]
 tests: "features/site/__tests__/*.test.tsx"
-verified_against: ["features/site/components/SiteFooter.tsx", "features/site/lib/year.ts", "features/site/__tests__/SiteFooter.test.tsx", "features/site/components/MerchantContact.tsx", "features/site/__tests__/MerchantContact.test.tsx", "app/comercios/page.tsx", "lib/sitemap.ts", "app/layout.tsx", "lib/site.ts", "features/search/lib/query.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "features/site/lib/legal.ts", "features/site/__tests__/legal.test.tsx", "features/site/components/LegalDocument.tsx", "features/site/lib/terms.ts", "app/terminos/page.tsx", "features/site/lib/privacy.ts", "app/privacidad/page.tsx", "features/account/session.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/location/lib/cookie.ts", "features/location/server/actions.ts", "app/api/events/route.ts", "features/events/lib/handle.ts"]
+verified_against: ["features/site/components/SiteFooter.tsx", "features/site/lib/year.ts", "features/site/__tests__/SiteFooter.test.tsx", "features/site/components/MerchantContact.tsx", "features/site/__tests__/MerchantContact.test.tsx", "app/comercios/page.tsx", "lib/sitemap.ts", "app/layout.tsx", "lib/site.ts", "features/search/lib/query.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "features/site/lib/legal.ts", "features/site/__tests__/legal.test.tsx", "features/site/components/LegalDocument.tsx", "features/site/lib/terms.ts", "app/terminos/page.tsx", "features/site/lib/privacy.ts", "app/privacidad/page.tsx", "features/account/server/session.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/location/lib/cookie.ts", "features/location/server/actions.ts", "app/api/events/route.ts", "features/events/lib/handle.ts"]
 capabilities:
   - intent: "mostrar el pie del sitio con sus columnas de enlaces"
     intent_aliases: ["pie de pagina", "footer", "enlaces legales", "categorias del pie", "para comercios"]
@@ -37,7 +37,7 @@ capabilities:
     file: "features/site/lib/privacy.ts"
     input: "sin props; privacyDocument de features/site/lib/privacy.ts, que app/privacidad/page.tsx pasa a LegalDocument"
     output: "ocho secciones: responsable, datos, cookies (mp_session, mp_cart, loc y sid), finalidades, terceros, conservación, derechos y contacto con vigencia; mismo aviso, noindex y sitemap que los términos"
-    source: "lo que guardan features/account/session.ts, features/cart/server/cookie.ts, features/location/server/actions.ts y app/api/events/route.ts"
+    source: "lo que guardan features/account/server/session.ts, features/cart/server/cookie.ts, features/location/server/actions.ts y app/api/events/route.ts"
     rules: ["RN-SITE-04", "RN-SITE-05", "RN-SITE-06"]
 ---
 
@@ -128,7 +128,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 - Cada enlace mide al menos 44 px de alto en móvil.
 - Las variables de contacto se leen al construir la página (prerender): cambiarlas exige un build nuevo. Los clics de contacto no se registran: `POST /api/events` exige `store_slug`.
 - `/comercios` es indexable, con canónica propia y entrada en el grupo `static` de `lib/sitemap.ts`; la marca del punto de venta sale de `POS_NAME`.
-- `/terminos` y `/privacidad` son borradores: aviso visible, `noindex, follow` y fuera del sitemap hasta que el área legal apruebe el texto y se ponga `LEGAL_DRAFT` en `false`. Sus textos no afirman nada que el sitio no haga: las cookies y los datos de `/privacidad` salen de `features/account/session.ts`, `features/cart/server/cookie.ts`, `features/location/server/actions.ts` y `app/api/events/route.ts`.
+- `/terminos` y `/privacidad` son borradores: aviso visible, `noindex, follow` y fuera del sitemap hasta que el área legal apruebe el texto y se ponga `LEGAL_DRAFT` en `false`. Sus textos no afirman nada que el sitio no haga: las cookies y los datos de `/privacidad` salen de `features/account/server/session.ts`, `features/cart/server/cookie.ts`, `features/location/server/actions.ts` y `app/api/events/route.ts`.
 - Los enlaces a `/comercios`, `/terminos` y `/privacidad` son rutas fijas; la marca sale sólo de `SITE_NAME`.
 
 ## 9. Pruebas

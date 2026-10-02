@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
-import { resendVerificationAction, verifyEmailAction } from "../actions";
+import { resendVerificationAction, verifyEmailAction } from "../server/actions";
 import { FormNotice } from "./FormFeedback";
-import { INITIAL_FORM_STATE } from "../formState";
+import { INITIAL_FORM_STATE } from "../lib/formState";
 
 const linkClasses = "text-sm font-medium text-foreground underline underline-offset-4";
 

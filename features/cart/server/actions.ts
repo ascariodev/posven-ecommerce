@@ -10,7 +10,7 @@ import {
   CART_SLUG_MAX_LENGTH as MAX_SLUG_LENGTH,
   type Cart,
 } from "@/lib/marketplace/schemas";
-import { accountContext, SESSION_COOKIE, sessionCookieOptions } from "@/features/account/session";
+import { accountContext, SESSION_COOKIE, sessionCookieOptions } from "@/features/account/server/session";
 import { INITIAL_ADD_TO_CART_STATE, type AddToCartState } from "../lib/addToCartState";
 import { readGuestCart, serializeCart, writeGuestCart } from "./cookie";
 import { cartEnabled } from "../lib/flag";

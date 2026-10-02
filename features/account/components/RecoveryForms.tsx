@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useActionState, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { forgotPassword, resetPasswordAction } from "../actions";
+import { forgotPassword, resetPasswordAction } from "../server/actions";
 import { FieldError, FormNotice } from "./FormFeedback";
-import { INITIAL_FORM_STATE } from "../formState";
+import { INITIAL_FORM_STATE } from "../lib/formState";
 
 export function ForgotPasswordForm() {
   const [state, formAction, pending] = useActionState(forgotPassword, INITIAL_FORM_STATE);

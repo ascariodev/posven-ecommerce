@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { loginHref } from "@/features/account/returnPath";
+import { loginHref } from "@/features/account/lib/returnPath";
 
 const SESSION_COOKIE = "mp_session";
 

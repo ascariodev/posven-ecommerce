@@ -3,13 +3,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Customer } from "@/lib/marketplace/schemas";
 import { AccountSlot } from "../components/AccountMenu";
-import { getCurrentCustomer } from "../session";
+import { getCurrentCustomer } from "@/features/account/server/session";
 
-vi.mock("../session", () => ({
+vi.mock("@/features/account/server/session", () => ({
   getCurrentCustomer: vi.fn(),
 }));
 
-vi.mock("../actions", () => ({
+vi.mock("@/features/account/server/actions", () => ({
   logout: vi.fn(),
 }));
 

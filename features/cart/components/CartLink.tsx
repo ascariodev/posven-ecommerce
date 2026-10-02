@@ -3,7 +3,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
-import { accountContext } from "@/features/account/session";
+import { accountContext } from "@/features/account/server/session";
 import { cn } from "@/lib/utils";
 import { readGuestCart } from "../server/cookie";
 import { cartEnabled } from "../lib/flag";

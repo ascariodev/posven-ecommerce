@@ -7,7 +7,7 @@ import { getMe } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { Customer } from "@/lib/marketplace/schemas";
-import { loginHref } from "./returnPath";
+import { loginHref } from "../lib/returnPath";
 
 export const SESSION_COOKIE = "mp_session";
 

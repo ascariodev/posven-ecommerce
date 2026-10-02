@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { loginHref, safeReturnPath } from "@/features/account/returnPath";
-import { SESSION_COOKIE, sessionCookieOptions } from "@/features/account/session";
+import { loginHref, safeReturnPath } from "@/features/account/lib/returnPath";
+import { SESSION_COOKIE, sessionCookieOptions } from "@/features/account/server/session";
 
 export function GET(request: Request): NextResponse {
   const volver = safeReturnPath(new URL(request.url).searchParams.get("volver"));

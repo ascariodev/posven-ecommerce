@@ -1,10 +1,10 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Address } from "@/lib/marketplace/schemas";
-import { saveAddress } from "../accountActions";
+import { saveAddress } from "@/features/account/server/accountActions";
 import { AddressForm } from "../components/AddressForm";
 
-vi.mock("../accountActions", () => ({ saveAddress: vi.fn() }));
+vi.mock("@/features/account/server/accountActions", () => ({ saveAddress: vi.fn() }));
 
 const cities = [
   { slug: "valencia", name: "Valencia", state: "Carabobo" },

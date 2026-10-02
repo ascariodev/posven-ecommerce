@@ -3,9 +3,9 @@
 import { useActionState, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { login } from "../actions";
+import { login } from "../server/actions";
 import { FieldError, FormNotice } from "./FormFeedback";
-import { INITIAL_FORM_STATE } from "../formState";
+import { INITIAL_FORM_STATE } from "../lib/formState";
 
 export function LoginForm({ volver }: { volver: string }) {
   const [state, formAction, pending] = useActionState(login, INITIAL_FORM_STATE);

@@ -10,8 +10,8 @@ import {
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { Address, Customer } from "@/lib/marketplace/schemas";
 import { refresh } from "next/cache";
-import { deleteAccountAction, saveAddress, toggleFavorite, updateProfile } from "./accountActions";
-import { INITIAL_FORM_STATE } from "./formState";
+import { deleteAccountAction, saveAddress, toggleFavorite, updateProfile } from "@/features/account/server/accountActions";
+import { INITIAL_FORM_STATE } from "@/features/account/lib/formState";
 
 const cookieStore = vi.hoisted(() => ({ get: vi.fn(), set: vi.fn(), delete: vi.fn() }));
 

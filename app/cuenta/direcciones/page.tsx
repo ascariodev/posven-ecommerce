@@ -5,9 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { deleteAddressAction, setDefaultAddress } from "@/features/account/accountActions";
+import { deleteAddressAction, setDefaultAddress } from "@/features/account/server/accountActions";
 import { AddressForm } from "@/features/account/components/AddressForm";
-import { requireCustomer } from "@/features/account/session";
+import { requireCustomer } from "@/features/account/server/session";
 import { listAddresses, listLocations } from "@/lib/marketplace/client";
 
 export const metadata: Metadata = {

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { startCheckout } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import { checkoutInputSchema, type CheckoutInput, type CheckoutStart } from "@/lib/marketplace/schemas";
-import { withSession } from "@/features/account/session";
+import { withSession } from "@/features/account/server/session";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { INITIAL_CHECKOUT_STATE, PAY_FAILED, type CheckoutState } from "../lib/checkoutState";
 

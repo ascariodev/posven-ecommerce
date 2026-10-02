@@ -9,8 +9,8 @@ import {
 } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Customer } from "@/lib/marketplace/schemas";
-import { forgotPassword, login, logout, register, resendVerificationAction } from "./actions";
-import { INITIAL_FORM_STATE } from "./formState";
+import { forgotPassword, login, logout, register, resendVerificationAction } from "@/features/account/server/actions";
+import { INITIAL_FORM_STATE } from "@/features/account/lib/formState";
 
 const cookieStore = vi.hoisted(() => ({ get: vi.fn(), set: vi.fn(), delete: vi.fn() }));
 

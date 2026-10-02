@@ -5,7 +5,7 @@ import { getCart, mergeCart, quoteGuestCart } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { Cart } from "@/lib/marketplace/schemas";
-import { accountContext } from "@/features/account/session";
+import { accountContext } from "@/features/account/server/session";
 import { CART_COOKIE, cartCookieOptions, parseCartCookie, readGuestCart } from "./cookie";
 
 // Fuera de "use server" a propósito: `mergeGuestCart` recibe un AccountContext (token e IP) que no

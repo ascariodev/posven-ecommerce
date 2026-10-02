@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { requireCustomer } from "@/features/account/session";
+import { requireCustomer } from "@/features/account/server/session";
 import { formatUsd, formatVes } from "@/lib/format";
 import { getPurchase } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";

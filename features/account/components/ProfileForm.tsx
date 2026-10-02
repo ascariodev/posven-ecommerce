@@ -4,9 +4,9 @@ import { useActionState, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Customer } from "@/lib/marketplace/schemas";
-import { updateProfile } from "../accountActions";
+import { updateProfile } from "../server/accountActions";
 import { FieldError, FormNotice } from "./FormFeedback";
-import { INITIAL_FORM_STATE } from "../formState";
+import { INITIAL_FORM_STATE } from "../lib/formState";
 
 export function ProfileForm({ customer }: { customer: Customer }) {
   const [state, formAction, pending] = useActionState(updateProfile, INITIAL_FORM_STATE);

@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoginForm } from "@/features/account/components/LoginForm";
-import { safeReturnPath } from "@/features/account/returnPath";
+import { safeReturnPath } from "@/features/account/lib/returnPath";
 
 export const metadata: Metadata = {
   title: "Entrar",

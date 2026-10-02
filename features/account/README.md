@@ -4,13 +4,13 @@ path: "features/account"
 type: "feature"
 exports: ["safeReturnPath", "loginHref", "FormState", "INITIAL_FORM_STATE", "formStateFromError", "SESSION_COOKIE", "sessionCookieOptions", "readSession", "clientIpFrom", "clientIp", "accountContext", "getCurrentCustomer", "requireCustomer", "withSession", "endSession", "login", "register", "logout", "forgotPassword", "resetPasswordAction", "verifyEmailAction", "resendVerificationAction", "FormNotice", "FieldError", "LoginForm", "RegisterForm", "ForgotPasswordForm", "ResetPasswordForm", "VerifyEmailForm", "ResendVerificationForm", "updateProfile", "changePasswordAction", "updateSettingsAction", "deleteAccountAction", "saveAddress", "deleteAddressAction", "setDefaultAddress", "toggleFavorite", "AccountSlot", "AccountSlotSkeleton", "AccountDropdown", "FavoriteButton", "FavoriteButtonSkeleton", "ProfileForm", "AddressForm", "PasswordChangeForm", "NotificationsForm", "DeleteAccountForm"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/badge.tsx", "components/ui/select.tsx", "components/ui/dropdown-menu.tsx", "features/cart/lib/flag.ts", "features/purchases/components/RecentPurchases.tsx", "features/location/lib/cookie.ts", "features/search/components/ProductThumb.tsx", "features/cart/lib/flag.ts", "features/cart/server/cart.ts"]
-tests: ["features/account/*.test.ts", "features/account/__tests__/*.test.tsx"]
-verified_against: ["features/account/returnPath.ts", "features/account/formState.ts", "features/account/session.ts", "features/account/actions.ts", "features/account/components/FormFeedback.tsx", "features/account/components/LoginForm.tsx", "features/account/components/RegisterForm.tsx", "features/account/components/RecoveryForms.tsx", "features/account/components/VerifyEmailForm.tsx", "features/account/returnPath.test.ts", "features/account/session.test.ts", "features/account/actions.test.ts", "features/account/accountActions.ts", "features/account/components/AccountMenu.tsx", "features/account/components/AccountDropdown.tsx", "features/account/components/FavoriteButton.tsx", "features/account/components/ProfileForm.tsx", "features/account/components/AddressForm.tsx", "features/account/components/SettingsForms.tsx", "features/account/accountActions.test.ts", "features/account/__tests__/AccountMenu.test.tsx", "features/account/__tests__/AddressForm.test.tsx", "features/cart/lib/flag.ts", "features/purchases/components/RecentPurchases.tsx", "app/cuenta/layout.tsx", "app/cuenta/page.tsx", "app/cuenta/perfil/page.tsx", "app/cuenta/direcciones/page.tsx", "app/cuenta/favoritos/page.tsx", "app/cuenta/configuracion/page.tsx", "app/layout.tsx", "app/p/[slug]/page.tsx", "app/tienda/[slug]/page.tsx", "e2e/account.spec.ts", "app/entrar/page.tsx", "app/registro/page.tsx", "app/recuperar/page.tsx", "app/restablecer/[token]/page.tsx", "app/verificar/[token]/page.tsx", "app/api/sesion/vencida/route.ts", "proxy.ts", "app/robots.ts", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts"]
+tests: "features/account/__tests__/*.test.{ts,tsx}"
+verified_against: ["features/account/lib/returnPath.ts", "features/account/lib/formState.ts", "features/account/server/session.ts", "features/account/server/actions.ts", "features/account/components/FormFeedback.tsx", "features/account/components/LoginForm.tsx", "features/account/components/RegisterForm.tsx", "features/account/components/RecoveryForms.tsx", "features/account/components/VerifyEmailForm.tsx", "features/account/__tests__/returnPath.test.ts", "features/account/__tests__/session.test.ts", "features/account/__tests__/actions.test.ts", "features/account/server/accountActions.ts", "features/account/components/AccountMenu.tsx", "features/account/components/AccountDropdown.tsx", "features/account/components/FavoriteButton.tsx", "features/account/components/ProfileForm.tsx", "features/account/components/AddressForm.tsx", "features/account/components/SettingsForms.tsx", "features/account/__tests__/accountActions.test.ts", "features/account/__tests__/AccountMenu.test.tsx", "features/account/__tests__/AddressForm.test.tsx", "features/cart/lib/flag.ts", "features/purchases/components/RecentPurchases.tsx", "app/cuenta/layout.tsx", "app/cuenta/page.tsx", "app/cuenta/perfil/page.tsx", "app/cuenta/direcciones/page.tsx", "app/cuenta/favoritos/page.tsx", "app/cuenta/configuracion/page.tsx", "app/layout.tsx", "app/p/[slug]/page.tsx", "app/tienda/[slug]/page.tsx", "e2e/account.spec.ts", "app/entrar/page.tsx", "app/registro/page.tsx", "app/recuperar/page.tsx", "app/restablecer/[token]/page.tsx", "app/verificar/[token]/page.tsx", "app/api/sesion/vencida/route.ts", "proxy.ts", "app/robots.ts", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts"]
 capabilities:
   - intent: "leer el comprador de la sesión"
     intent_aliases: ["comprador actual", "usuario logueado", "sesion del comprador", "esta logueado", "cookie mp_session", "exigir sesion"]
     entrypoint: "getCurrentCustomer()"
-    file: "features/account/session.ts"
+    file: "features/account/server/session.ts"
     input: "sin parámetros; lee la cookie mp_session y x-forwarded-for de la petición"
     output: "Customer ({ name, email, phone, email_verified, pending_email, settings: { order_status_emails } }) o null sin sesión, con sesión inválida o con 401 unauthenticated; requireCustomer(path) devuelve { customer, ctx } o redirige"
     source: "cookie mp_session y getMe() de lib/marketplace"
@@ -18,7 +18,7 @@ capabilities:
   - intent: "entrar, crear cuenta y recuperar la contraseña"
     intent_aliases: ["login", "iniciar sesion", "registro", "crear cuenta", "olvide mi contrasena", "restablecer contrasena", "verificar correo", "cerrar sesion"]
     entrypoint: "login() / register() / logout() / forgotPassword() / resetPasswordAction() / verifyEmailAction() / resendVerificationAction()"
-    file: "features/account/actions.ts"
+    file: "features/account/server/actions.ts"
     input: "(prev: FormState, formData: FormData) con email, password, name, phone, token o volver según la acción; logout sin parámetros"
     output: "FormState { status: idle | error | success; message; fields; values sin password ni current_password }; login y register fijan mp_session y redirigen a safeReturnPath(volver)"
     source: "API de posveapi vía lib/marketplace/client.ts; cookie mp_session"
@@ -29,12 +29,12 @@ capabilities:
     file: "features/account/components/AccountMenu.tsx"
     input: "sin props; se monta dentro de <Suspense fallback={<AccountSlotSkeleton />}> en app/layout.tsx"
     output: "enlace Entrar sin comprador o con la API caída (L-02); con comprador, AccountDropdown: botón Mi cuenta que abre un DropdownMenu de shadcn con Resumen, Mis compras (con el carrito encendido), Perfil, Direcciones, Favoritos, Configuración y Salir"
-    source: "getCurrentCustomer() de features/account/session.ts"
+    source: "getCurrentCustomer() de features/account/server/session.ts"
     rules: ["RN-ACCOUNT-05"]
   - intent: "editar el perfil, la contraseña, los avisos, las direcciones del comprador o eliminar su cuenta"
     intent_aliases: ["direcciones del comprador", "guardar direccion", "cambiar contrasena", "editar perfil", "eliminar cuenta", "avisos por correo"]
     entrypoint: "updateProfile() / changePasswordAction() / updateSettingsAction() / deleteAccountAction() / saveAddress() / deleteAddressAction() / setDefaultAddress()"
-    file: "features/account/accountActions.ts"
+    file: "features/account/server/accountActions.ts"
     input: "(prev: FormState, formData: FormData) con los campos de cada formulario; deleteAddressAction y setDefaultAddress reciben sólo formData con address_id"
     output: "FormState { status; message; fields; values } con lo escrito sin contraseñas; una dirección nueva sólo se envía con lat y lng válidas"
     source: "API de posveapi vía lib/marketplace/client.ts (updateMe, changePassword, updateSettings, deleteAccount, createAddress, updateAddress, deleteAddress)"
@@ -45,7 +45,7 @@ capabilities:
     file: "features/account/components/FavoriteButton.tsx"
     input: "target: { kind: \"product\" | \"store\"; slug: string } y returnTo: string; se monta dentro de <Suspense fallback={<FavoriteButtonSkeleton />}>"
     output: "sin sesión, enlace a /entrar?volver=<returnTo>; con sesión, botón Guardar en favoritos o Quitar de favoritos; con la API caída no pinta nada"
-    source: "listFavorites() de lib/marketplace y toggleFavorite() de features/account/accountActions.ts"
+    source: "listFavorites() de lib/marketplace y toggleFavorite() de features/account/server/accountActions.ts"
     rules: ["RN-ACCOUNT-03", "RN-ACCOUNT-05"]
 ---
 
@@ -64,42 +64,42 @@ direcciones: lo hace la API.
 
 | Regla | Enunciado | Test que la hace cumplir |
 |---|---|---|
-| `RN-ACCOUNT-01` | `mp_session` es `httpOnly`, `SameSite=Lax`, `Path=/`, de 30 días y `Secure` en producción; un valor sin la forma del token de posveapi o de más de 512 caracteres equivale a no tener sesión. | `features/account/session.test.ts` ("trata un valor sin la forma del token como sin sesión", "en producción trae secure y las demás opciones exactas"); `features/account/actions.test.ts` ("fija mp_session con las opciones exactas y redirige a volver") |
-| `RN-ACCOUNT-02` | `volver` sólo acepta rutas internas: empieza con `/` y no con `//` ni `/\`; cualquier otro valor vuelve a `/cuenta`. | `features/account/returnPath.test.ts` ("acepta una ruta interna con consulta", "devuelve /cuenta ante %j"); `features/account/actions.test.ts` ("con volver externo redirige a /cuenta") |
-| `RN-ACCOUNT-03` | Un 401 `unauthenticated` borra `mp_session` y lleva a `/entrar?volver=`; un 401 sin esa forma es API caída y conserva la cookie. | `features/account/actions.test.ts` ("con unauthenticated borra la cookie y lleva a entrar", "con un 401 que llega como API caída conserva la cookie") |
-| `RN-ACCOUNT-04` | La IP del cliente es el último valor de `x-forwarded-for` si `isIP` lo acepta; si no, no se manda `X-Client-IP`. | `features/account/session.test.ts` ("toma el último valor de x-forwarded-for", "devuelve null ante un valor que no es IP o sin encabezado") |
+| `RN-ACCOUNT-01` | `mp_session` es `httpOnly`, `SameSite=Lax`, `Path=/`, de 30 días y `Secure` en producción; un valor sin la forma del token de posveapi o de más de 512 caracteres equivale a no tener sesión. | `features/account/__tests__/session.test.ts` ("trata un valor sin la forma del token como sin sesión", "en producción trae secure y las demás opciones exactas"); `features/account/__tests__/actions.test.ts` ("fija mp_session con las opciones exactas y redirige a volver") |
+| `RN-ACCOUNT-02` | `volver` sólo acepta rutas internas: empieza con `/` y no con `//` ni `/\`; cualquier otro valor vuelve a `/cuenta`. | `features/account/__tests__/returnPath.test.ts` ("acepta una ruta interna con consulta", "devuelve /cuenta ante %j"); `features/account/__tests__/actions.test.ts` ("con volver externo redirige a /cuenta") |
+| `RN-ACCOUNT-03` | Un 401 `unauthenticated` borra `mp_session` y lleva a `/entrar?volver=`; un 401 sin esa forma es API caída y conserva la cookie. | `features/account/__tests__/actions.test.ts` ("con unauthenticated borra la cookie y lleva a entrar", "con un 401 que llega como API caída conserva la cookie") |
+| `RN-ACCOUNT-04` | La IP del cliente es el último valor de `x-forwarded-for` si `isIP` lo acepta; si no, no se manda `X-Client-IP`. | `features/account/__tests__/session.test.ts` ("toma el último valor de x-forwarded-for", "devuelve null ante un valor que no es IP o sin encabezado") |
 | `RN-ACCOUNT-05` | La cabecera y el botón de favorito leen la sesión en su `<Suspense>`; con la API caída la cabecera muestra "Entrar" y el botón no se pinta. | `features/account/__tests__/AccountMenu.test.tsx` ("con la API caída muestra Entrar (RN-ACCOUNT-05)"); el botón de favorito lo cubren `next build` (◐ en `/p/[slug]` y `/tienda/[slug]`) y `e2e/account.spec.ts` |
-| `RN-ACCOUNT-06` | Una dirección nueva sólo se envía con las coordenadas de "Usar mi ubicación"; sin ellas el botón de guardar queda deshabilitado. | `features/account/accountActions.test.ts` ("una dirección nueva sin coordenadas devuelve el aviso sin llamar a la API (RN-ACCOUNT-06)"); el botón deshabilitado, `e2e/account.spec.ts` |
+| `RN-ACCOUNT-06` | Una dirección nueva sólo se envía con las coordenadas de "Usar mi ubicación"; sin ellas el botón de guardar queda deshabilitado. | `features/account/__tests__/accountActions.test.ts` ("una dirección nueva sin coordenadas devuelve el aviso sin llamar a la API (RN-ACCOUNT-06)"); el botón deshabilitado, `e2e/account.spec.ts` |
 
 ## 3. Dónde hacer cambios
 
 | Tipo de cambio | Dónde va | Además hay que |
 |---|---|---|
-| Opciones o forma válida de la cookie | `sessionCookieOptions` y `readSession` en `session.ts` | el `toHaveBeenCalledWith` de `actions.test.ts` y los casos de `session.test.ts`; la constante `SESSION_COOKIE` de `proxy.ts` repite el nombre |
-| Qué rutas de vuelta se aceptan | `safeReturnPath` en `returnPath.ts` | sus casos en `returnPath.test.ts` |
-| Traducción de un error de la API a mensaje de formulario | `formStateFromError` en `formState.ts` | los casos de error de `actions.test.ts` |
-| Una acción nueva de cuenta con sesión | `actions.ts`, envuelta en `withSession(returnTo, run)` | el 401 `unauthenticated` lo resuelve `withSession`; `formStateFromError` lo relanza |
-| Textos o campos de un formulario | `components/LoginForm.tsx`, `components/RegisterForm.tsx`, `components/RecoveryForms.tsx`, `components/VerifyEmailForm.tsx` | el `pick` de su acción en `actions.ts` (qué valores vuelven al formulario) |
+| Opciones o forma válida de la cookie | `sessionCookieOptions` y `readSession` en `server/session.ts` | el `toHaveBeenCalledWith` de `__tests__/actions.test.ts` y los casos de `__tests__/session.test.ts`; la constante `SESSION_COOKIE` de `proxy.ts` repite el nombre |
+| Qué rutas de vuelta se aceptan | `safeReturnPath` en `lib/returnPath.ts` | sus casos en `__tests__/returnPath.test.ts` |
+| Traducción de un error de la API a mensaje de formulario | `formStateFromError` en `lib/formState.ts` | los casos de error de `__tests__/actions.test.ts` |
+| Una acción nueva de cuenta con sesión | `server/actions.ts`, envuelta en `withSession(returnTo, run)` | el 401 `unauthenticated` lo resuelve `withSession`; `formStateFromError` lo relanza |
+| Textos o campos de un formulario | `components/LoginForm.tsx`, `components/RegisterForm.tsx`, `components/RecoveryForms.tsx`, `components/VerifyEmailForm.tsx` | el `pick` de su acción en `server/actions.ts` (qué valores vuelven al formulario) |
 | Rutas que exigen sesión | `matcher` de `proxy.ts` y `requireCustomer(path)` en la página | `disallow` de `app/robots.ts` si la ruta no se indexa |
 | Una pantalla nueva de `/cuenta` | `app/cuenta/<ruta>/page.tsx`, con `metadata` `noindex` y el cuerpo async en un `<Suspense>` que empieza con `requireCustomer("<su ruta>")` | el enlace en `app/cuenta/layout.tsx`, en `app/cuenta/page.tsx` y en `MENU_LINKS` de `components/AccountDropdown.tsx`; las de compras (`/cuenta/compras*`, módulo `features/purchases`) sólo con `cartEnabled()` |
-| Una mutación de cuenta | `accountActions.ts`, envuelta en `withSession(returnTo, ...)`; errores de negocio por `formStateFromError` | su formulario `"use client"` con `useActionState` y su prefijo de `useId()`; el caso en `accountActions.test.ts` |
-| Campos o textos de perfil, dirección o configuración | `components/ProfileForm.tsx`, `components/AddressForm.tsx`, `components/SettingsForms.tsx` | el `pick` o los campos que lee su acción en `accountActions.ts` |
+| Una mutación de cuenta | `server/accountActions.ts`, envuelta en `withSession(returnTo, ...)`; errores de negocio por `formStateFromError` | su formulario `"use client"` con `useActionState` y su prefijo de `useId()`; el caso en `__tests__/accountActions.test.ts` |
+| Campos o textos de perfil, dirección o configuración | `components/ProfileForm.tsx`, `components/AddressForm.tsx`, `components/SettingsForms.tsx` | el `pick` o los campos que lee su acción en `server/accountActions.ts` |
 | Dónde se ofrece el favorito | `<FavoriteButton />` dentro de su propio `<Suspense fallback={<FavoriteButtonSkeleton />}>` en la ficha | nada de `<Suspense>` por encima de la página (`seo.md` regla 7) |
 
 ## 4. API pública
 
-Ruta de vuelta, `features/account/returnPath.ts` (puro, usable en cliente y en `proxy.ts`):
+Ruta de vuelta, `features/account/lib/returnPath.ts` (puro, usable en cliente y en `proxy.ts`):
 
 - `safeReturnPath(raw: unknown, fallback = "/cuenta"): string` (RN-ACCOUNT-02; además rechaza `\`, caracteres de control y más de 512 caracteres)
 - `loginHref(path: string): string`: `/entrar?volver=<path codificado>`
 
-Estado de formulario, `features/account/formState.ts` (puro):
+Estado de formulario, `features/account/lib/formState.ts` (puro):
 
 - `type FormState = { status: "idle" | "error" | "success"; message: string | null; fields: Record<string, string>; values: Record<string, string> }`
 - `INITIAL_FORM_STATE: FormState`: `idle`, `null`, `{}`, `{}`
 - `formStateFromError(error: unknown, values: Record<string, string>): FormState`: `validation_failed` da el mensaje y `fields` de la API; `invalid_credentials`, `token_invalid`, `token_expired`, `not_found` y `open_orders` (eliminar la cuenta con pedidos en curso), el mensaje de la API; `too_many_attempts`, "Demasiados intentos, prueba en {retryAfter} segundos"; `MarketplaceUnavailableError`, "No pudimos conectar con el servicio. Intenta de nuevo en unos segundos."; lo demás se relanza.
 
-Sesión, `features/account/session.ts` (`import "server-only"`):
+Sesión, `features/account/server/session.ts` (`import "server-only"`):
 
 - `SESSION_COOKIE = "mp_session"`
 - `sessionCookieOptions(): { httpOnly: true; secure: boolean; sameSite: "lax"; path: "/"; maxAge: number }`
@@ -112,7 +112,7 @@ Sesión, `features/account/session.ts` (`import "server-only"`):
 - `withSession<T>(returnTo: string, run: (ctx: AccountContext) => Promise<T>): Promise<T>`: sin sesión, `redirect(loginHref(returnTo))`; si `run` lanza `unauthenticated`, `endSession(loginHref(returnTo))`
 - `endSession(to: string): Promise<never>`: borra `mp_session` con `path: "/"` y redirige; sólo desde una Server Action
 
-Acciones de servidor, `features/account/actions.ts` (`"use server"`), `(prev: FormState, formData: FormData) => Promise<FormState>` salvo `logout`:
+Acciones de servidor, `features/account/server/actions.ts` (`"use server"`), `(prev: FormState, formData: FormData) => Promise<FormState>` salvo `logout`:
 
 - `login`: `email`, `password`, `volver`; éxito, fija `mp_session`, fusiona el carrito de invitado (`mergeGuestCart` de `features/cart/server/cart.ts` con el token nuevo, si el carrito está encendido; `RN-CART-02`) y `redirect(safeReturnPath(volver))`
 - `register`: `name`, `email`, `phone`, `password`, `volver`; éxito, igual que `login`
@@ -127,7 +127,7 @@ Componentes, `features/account/components/FormFeedback.tsx` (sin estado, usable 
 - `FormNotice({ state }: { state: FormState })`: nada en `idle`; `role="alert"` en `error` y `role="status"` en `success`
 - `FieldError({ id, state, name }: { id: string; state: FormState; name: string })`: `<p id={id}>` con `state.fields[name]` si existe
 
-Acciones de cuenta, `features/account/accountActions.ts` (`"use server"`), todas con `withSession`:
+Acciones de cuenta, `features/account/server/accountActions.ts` (`"use server"`), todas con `withSession`:
 
 - `updateProfile`: `name`, `phone`, `email`, `current_email` (oculto), `current_password`; manda `name` y `phone`, y `email` con `current_password` sólo si `email` difiere de `current_email`
 - `changePasswordAction`: `current_password`, `password`
@@ -157,8 +157,8 @@ Formularios `"use client"` con `useActionState`:
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| `startSession` | `features/account/actions.ts` | escribe `mp_session` con `sessionCookieOptions()` tras `login` o `register` y fusiona `mp_cart` (`RN-CART-02`) |
-| `pick` | `features/account/actions.ts` | arma `values` sólo con los campos nombrados, así las contraseñas nunca vuelven al formulario |
+| `startSession` | `features/account/server/actions.ts` | escribe `mp_session` con `sessionCookieOptions()` tras `login` o `register` y fusiona `mp_cart` (`RN-CART-02`) |
+| `pick` | `features/account/server/actions.ts` | arma `values` sólo con los campos nombrados, así las contraseñas nunca vuelven al formulario |
 | Guardia de `/cuenta` | `proxy.ts` | sin la cookie `mp_session` redirige a `loginHref(pathname)`; con cookie sigue y la validez la resuelve `requireCustomer` |
 | Sesión vencida | `app/api/sesion/vencida/route.ts` | `GET` borra `mp_session` y responde 303 a `/entrar?volver=<safeReturnPath(volver)>&aviso=sesion` |
 | Pantallas de cuenta | `app/cuenta/layout.tsx`, `app/cuenta/page.tsx`, `app/cuenta/{perfil,direcciones,favoritos,configuracion}/page.tsx` | `metadata` `noindex, nofollow`; el layout pinta la navegación estática sin leer la sesión; cada página empieza con `requireCustomer("<su ruta>")` en un hijo dentro de `<Suspense>` |
@@ -180,7 +180,7 @@ Formularios `"use client"` con `useActionState`:
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoginForm } from "@/features/account/components/LoginForm";
-import { safeReturnPath } from "@/features/account/returnPath";
+import { safeReturnPath } from "@/features/account/lib/returnPath";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -215,9 +215,9 @@ export default function LoginPage({ searchParams }: { searchParams: SearchParams
 ## 9. Pruebas
 
 - Comando: `npx vitest run features/account`
-- `features/account/returnPath.test.ts`: ruta interna aceptada y los valores que vuelven a `/cuenta`.
-- `features/account/session.test.ts`: IP de `x-forwarded-for`, validez del valor de `mp_session` y opciones de la cookie en producción.
-- `features/account/actions.test.ts`: `login` con cookie y redirección, `volver` externo, credenciales inválidas, 429 y API caída; `logout` con la API caída; `resendVerificationAction` con 401 `unauthenticated` y con API caída; `forgotPassword` con cualquier correo.
-- `features/account/accountActions.test.ts`: `updateProfile` con y sin cambio de correo, `saveAddress` nueva sin coordenadas y edición sin `coords_changed`, `toggleFavorite` con `unauthenticated` y con `not_found`, `deleteAccountAction` con contraseña errada, con pedidos en curso (`open_orders`) y con éxito.
+- `features/account/__tests__/returnPath.test.ts`: ruta interna aceptada y los valores que vuelven a `/cuenta`.
+- `features/account/__tests__/session.test.ts`: IP de `x-forwarded-for`, validez del valor de `mp_session` y opciones de la cookie en producción.
+- `features/account/__tests__/actions.test.ts`: `login` con cookie y redirección, `volver` externo, credenciales inválidas, 429 y API caída; `logout` con la API caída; `resendVerificationAction` con 401 `unauthenticated` y con API caída; `forgotPassword` con cualquier correo.
+- `features/account/__tests__/accountActions.test.ts`: `updateProfile` con y sin cambio de correo, `saveAddress` nueva sin coordenadas y edición sin `coords_changed`, `toggleFavorite` con `unauthenticated` y con `not_found`, `deleteAccountAction` con contraseña errada, con pedidos en curso (`open_orders`) y con éxito.
 - `features/account/__tests__/AccountMenu.test.tsx`: `AccountSlot` sin comprador, con la API caída y con comprador (abre el menú con Enter y comprueba los seis `menuitem` y sus `href`). "Salir" lo cubre `e2e/account.spec.ts` con movimiento normal; con movimiento reducido se comprobó a mano al cerrar el plan 5 y no queda en el e2e.
 - `e2e/account.spec.ts` (en serie, `npx playwright test`): el recorrido de la cuenta en simulado, de registrarse a favoritos, `noindex` y cabecera en móvil.

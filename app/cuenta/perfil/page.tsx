@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileForm } from "@/features/account/components/ProfileForm";
-import { requireCustomer } from "@/features/account/session";
+import { requireCustomer } from "@/features/account/server/session";
 
 export const metadata: Metadata = {
   title: "Perfil",

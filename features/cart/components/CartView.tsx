@@ -13,8 +13,8 @@ import {
   type CartStore,
   type UnavailableReason,
 } from "@/lib/marketplace/schemas";
-import { accountContext } from "@/features/account/session";
-import { loginHref } from "@/features/account/returnPath";
+import { accountContext } from "@/features/account/server/session";
+import { loginHref } from "@/features/account/lib/returnPath";
 import { cn } from "@/lib/utils";
 import { removeLine, setQuantity } from "../server/actions";
 import { getCurrentCart } from "../server/cart";

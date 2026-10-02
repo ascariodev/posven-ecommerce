@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { loginHref, safeReturnPath } from "./returnPath";
+import { loginHref, safeReturnPath } from "@/features/account/lib/returnPath";
 
 describe("safeReturnPath (RN-ACCOUNT-02)", () => {
   it("acepta una ruta interna con consulta", () => {

@@ -14,9 +14,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Address } from "@/lib/marketplace/schemas";
-import { saveAddress } from "../accountActions";
+import { saveAddress } from "../server/accountActions";
 import { FieldError, FormNotice } from "./FormFeedback";
-import { INITIAL_FORM_STATE } from "../formState";
+import { INITIAL_FORM_STATE } from "../lib/formState";
 
 type City = { slug: string; name: string; state: string };
 type Coords = { lat: number; lng: number };

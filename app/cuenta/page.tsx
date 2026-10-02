@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { requireCustomer } from "@/features/account/session";
+import { requireCustomer } from "@/features/account/server/session";
 import { ResendVerificationForm } from "@/features/account/components/VerifyEmailForm";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { RecentPurchases } from "@/features/purchases/components/RecentPurchases";

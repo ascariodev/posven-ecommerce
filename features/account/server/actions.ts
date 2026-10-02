@@ -15,8 +15,8 @@ import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/mark
 import type { AccountContext } from "@/lib/marketplace/params";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { mergeGuestCart } from "@/features/cart/server/cart";
-import { formStateFromError, type FormState } from "./formState";
-import { safeReturnPath } from "./returnPath";
+import { formStateFromError, type FormState } from "../lib/formState";
+import { safeReturnPath } from "../lib/returnPath";
 import { accountContext, endSession, SESSION_COOKIE, sessionCookieOptions, withSession } from "./session";
 
 const FORGOT_PASSWORD_SUCCESS =

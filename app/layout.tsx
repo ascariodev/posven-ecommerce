@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Outfit, Inter } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
@@ -11,8 +11,13 @@ import { SiteFooter } from "@/features/site/components/SiteFooter";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const brandSans = Plus_Jakarta_Sans({
-  variable: "--font-sans-brand",
+const fontHeading = Outfit({
+  variable: "--font-heading",
+  subsets: ["latin"],
+});
+
+const fontSans = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
@@ -26,16 +31,16 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f7900a",
+  themeColor: "#4f46e5",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${brandSans.variable} h-full antialiased`}>
+    <html lang="es" className={`${fontSans.variable} ${fontHeading.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <header className="header-elevate sticky top-0 z-40 border-b border-glass-border bg-glass backdrop-blur-md">
+        <header className="header-elevate sticky top-0 z-40 border-b border-glass-border bg-glass text-foreground backdrop-blur-md shadow-sm">
           <div className="mx-auto flex min-h-14 w-full max-w-5xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2">
-            <Link href="/" className="text-xl font-bold tracking-tight text-foreground">
+            <Link href="/" className="text-xl font-bold tracking-tight text-primary">
               {SITE_NAME}
             </Link>
             <Suspense fallback={null}>

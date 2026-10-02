@@ -4,6 +4,7 @@ import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useActionToast } from "@/hooks/useActionToast";
 import { addToCart } from "../server/actions";
 import { INITIAL_ADD_TO_CART_STATE } from "../lib/addToCartState";
@@ -17,11 +18,17 @@ export function AddToCartButton({
   storeName,
   productSlug,
   productName,
+  variant = "outline",
+  size = "sm",
+  className,
 }: {
   storeSlug: string;
   storeName: string;
   productSlug: string;
   productName: string;
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  className?: string;
 }) {
   const [state, formAction, pending] = useActionState(addToCart, INITIAL_ADD_TO_CART_STATE);
   // Cada respuesta vuelve a montar el aviso, para que el lector de pantalla lo anuncie aunque el
@@ -39,17 +46,18 @@ export function AddToCartButton({
   useActionToast(errorNotice);
   const label = pending ? "Agregando…" : state.status === "added" ? "Agregar otro" : "Agregar al carrito";
   return (
-    <form action={formAction} className="flex flex-wrap items-center gap-x-3 gap-y-1">
+    <form action={formAction} className={cn("flex flex-wrap items-center gap-x-3 gap-y-1", className)}>
       <input type="hidden" name="store_slug" value={storeSlug} />
       <input type="hidden" name="product_slug" value={productSlug} />
       <Button
         type="submit"
-        variant="outline"
-        size="sm"
+        variant={variant}
+        size={size}
         disabled={pending}
         aria-label={`${label}: ${productName} de ${storeName}`}
+        className="w-full sm:w-auto font-bold transition-transform active:scale-95"
       >
-        <ShoppingCart aria-hidden="true" className="size-4" />
+        <ShoppingCart aria-hidden="true" className={cn("mr-2", size === "lg" ? "size-5" : "size-4")} />
         {label}
       </Button>
       <p role="status" className="text-sm">

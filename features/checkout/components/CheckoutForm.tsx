@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LockIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useId, useMemo, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -328,8 +329,9 @@ export function CheckoutForm({
                   </p>
                 )}
               </div>
-              <Button type="submit" size="lg" className="w-full" disabled={busy}>
-                {paying ? "Pagando…" : `Pagar ${chargeText(quote.charge)}`}
+              <Button type="submit" size="lg" className="w-full bg-best text-best-foreground hover:bg-best/90 shadow-lg" disabled={busy}>
+                <LockIcon className="mr-2 h-4 w-4" />
+                {paying ? "Procesando pago seguro…" : `Pagar ${chargeText(quote.charge)} de forma segura`}
               </Button>
             </form>
           )}

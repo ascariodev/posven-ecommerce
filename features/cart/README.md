@@ -2,10 +2,10 @@
 module: "cart"
 path: "features/cart"
 type: "feature"
-exports: ["cartEnabled", "CART_COOKIE", "cartCookieOptions", "parseCartCookie", "serializeCart", "readGuestCart", "writeGuestCart", "getSessionCart", "getCurrentCart", "mergeGuestCart", "addToCart", "setQuantity", "removeLine", "AddToCartState", "INITIAL_ADD_TO_CART_STATE", "AddToCartButton", "CartLink", "CartLinkSkeleton", "CartView", "CartContent", "CartViewSkeleton"]
+exports: ["cartEnabled", "CART_COOKIE", "cartCookieOptions", "parseCartCookie", "serializeCart", "readGuestCart", "writeGuestCart", "getSessionCart", "getCurrentCart", "mergeGuestCart", "addToCart", "setQuantity", "removeLine", "AddToCartState", "INITIAL_ADD_TO_CART_STATE", "AddToCartButton", "CartLink", "CartLinkSkeleton", "CartView", "CartContent", "CartViewSkeleton", "LineForm"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/server/session.ts", "features/account/lib/returnPath.ts", "features/search/components/ProductThumb.tsx", "components/ui/button.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
 tests: "features/cart/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/cart/lib/flag.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/cart/server/actions.ts", "features/cart/lib/addToCartState.ts", "features/cart/components/AddToCartButton.tsx", "features/cart/components/CartLink.tsx", "features/cart/components/CartView.tsx", "features/cart/__tests__/flag.test.ts", "features/cart/__tests__/cookie.test.ts", "features/cart/__tests__/actions.test.ts", "features/cart/__tests__/AddToCartButton.test.tsx", "features/cart/__tests__/CartLink.test.tsx", "features/cart/__tests__/CartView.test.tsx", "features/account/server/actions.ts", "features/product/components/OfferCard.tsx", "features/store/components/StoreProducts.tsx", "app/carrito/page.tsx", "app/layout.tsx", "app/robots.ts", "e2e/cart.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
+verified_against: ["features/cart/lib/flag.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/cart/server/actions.ts", "features/cart/lib/addToCartState.ts", "features/cart/components/AddToCartButton.tsx", "features/cart/components/CartLink.tsx", "features/cart/components/CartView.tsx", "features/cart/components/LineForm.tsx", "features/cart/__tests__/flag.test.ts", "features/cart/__tests__/cookie.test.ts", "features/cart/__tests__/actions.test.ts", "features/cart/__tests__/AddToCartButton.test.tsx", "features/cart/__tests__/CartLink.test.tsx", "features/cart/__tests__/CartView.test.tsx", "features/cart/__tests__/LineForm.test.tsx", "features/account/server/actions.ts", "features/product/components/OfferCard.tsx", "features/store/components/StoreProducts.tsx", "app/carrito/page.tsx", "app/layout.tsx", "app/robots.ts", "e2e/cart.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
 capabilities:
   - intent: "agregar un producto de una tienda al carrito"
     intent_aliases: ["agregar al carrito", "comprar", "anadir al carrito", "boton agregar"]
@@ -37,7 +37,7 @@ capabilities:
     file: "features/cart/components/CartView.tsx"
     input: "sin props; en app/carrito/page.tsx dentro de <Suspense>"
     output: "tiendas con sus líneas (cantidad, Quitar uno, Agregar uno, Quitar; las no disponibles con su motivo), subtotales, total en USD y Bs, la tasa e 'Ir a pagar' (con sesión) o 'Entra para pagar' (sin ella) si hay líneas ok; vacío con 'Buscar productos'"
-    source: "getCurrentCart(); las Server Actions setQuantity y removeLine"
+    source: "getCurrentCart(); las Server Actions setQuantity y removeLine, que devuelven su estado y avisan el error por toast"
     rules: ["RN-CART-01"]
 ---
 
@@ -77,7 +77,8 @@ las líneas en 99).
 - `cartEnabled(): boolean`, `features/cart/lib/flag.ts`: interruptor (RN-CART-04); lo prerenderizado lo fija al construir.
 - `CART_COOKIE`, `cartCookieOptions()`, `parseCartCookie(value: string | undefined): CartItem[]`, `serializeCart(items: CartItem[]): string | null` (`null` si pasa de 3800 bytes codificados), `readGuestCart(): Promise<CartItem[]>` y `writeGuestCart(items: CartItem[]): Promise<boolean>` (sólo desde una Server Action), `features/cart/server/cookie.ts` (`server-only`).
 - `getSessionCart(): Promise<Cart | null>` (`cache` de React; `null` sin sesión; una sola lectura por petición para `/carrito` y el contador), `getCurrentCart(): Promise<Cart | null>` (`cache` de React) y `mergeGuestCart(ctx: AccountContext): Promise<void>` (sólo desde una Server Action), `features/cart/server/cart.ts` (`server-only`, sin `"use server"`).
-- `addToCart(prev: AddToCartState, formData: FormData): Promise<AddToCartState>`, `setQuantity(formData: FormData): Promise<void>` y `removeLine(formData: FormData): Promise<void>`, `features/cart/server/actions.ts` (`"use server"`): campos `store_slug`, `product_slug` y `quantity`.
+- `addToCart`, `setQuantity` y `removeLine`, todas `(prev: AddToCartState, formData: FormData): Promise<AddToCartState>`, `features/cart/server/actions.ts` (`"use server"`): campos `store_slug`, `product_slug` y `quantity`. Un error devuelve `status: "error"` con su mensaje: el de la API para `not_orderable`, `product_restricted`, `cart_full` y `validation_failed`, y uno genérico para el resto; sólo `unauthenticated` no se devuelve (borra la sesión y sigue como invitado).
+- `LineForm({ action, storeSlug, productSlug, quantity?, children })`, `features/cart/components/LineForm.tsx`, Client Component: formulario por línea que manda `store_slug`, `product_slug` y `quantity` y abre el toast de error dentro de la acción, porque el `refresh()` puede quitar la línea (L-06).
 - `AddToCartState` e `INITIAL_ADD_TO_CART_STATE`, `features/cart/lib/addToCartState.ts`.
 - `AddToCartButton({ storeSlug, storeName, productSlug, productName })`, Client Component; nombre accesible "Agregar al carrito: {producto} de {tienda}".
 - `CartLink()` y `CartLinkSkeleton()`, `CartView()`, `CartContent({ cart, signedIn }: { cart: Cart | null; signedIn: boolean })` y `CartViewSkeleton()`. Con `line_count > 0`, `CartContent` enlaza "Ir a pagar" a `/checkout` con sesión, o "Entra para pagar" a `/entrar?volver=%2Fcheckout` sin ella.
@@ -89,10 +90,11 @@ las líneas en 99).
 | Interruptor | `lib/flag.ts` | misma regla que `usesMock()` de `lib/marketplace/client.ts` más `MARKETPLACE_CART_ENABLED` |
 | Cookie | `server/cookie.ts` | parseo estricto, tope de bytes, escritura y borrado |
 | Lectura y fusión | `server/cart.ts` | carrito de la petición (401 sigue como invitado) y fusión al entrar |
-| Acciones | `server/actions.ts` | agregar (+1), fijar cantidad y quitar, repartidas entre comprador (API) e invitado (cookie); 401 borra `mp_session` y sigue como invitado; `refresh()` tras escribir |
+| Acciones | `server/actions.ts` | agregar (+1), fijar cantidad y quitar, repartidas entre comprador (API) e invitado (cookie); devuelven `AddToCartState`; 401 borra `mp_session` y sigue como invitado; `refresh()` tras escribir |
+| Línea | `components/LineForm.tsx` | `useActionState` por formulario de línea; el toast de error va dentro de la acción |
 | Botón | `components/AddToCartButton.tsx` | `useActionState`; vuelve a montar el aviso en cada respuesta para que se anuncie |
 | Contador | `components/CartLink.tsx` | L-02: degrada a "Carrito" ante cualquier error de la API |
-| Página | `components/CartView.tsx` | agrupación por tienda tal como llega; formularios por línea; la línea no disponible atenúa sólo la imagen (el texto conserva el contraste AA) |
+| Página | `components/CartView.tsx` | agrupación por tienda tal como llega; `LineForm` por línea; la línea no disponible atenúa sólo la imagen (el texto conserva el contraste AA) |
 
 ## 6. Dependencias
 
@@ -131,8 +133,9 @@ export default function Page() {
 - Comando: el de la sección Verificación de `posven-ecommerce/CLAUDE.md` (`npx vitest run features/cart`).
 - `features/cart/__tests__/flag.test.ts`: interruptor con y sin `MARKETPLACE_MODE` y `MARKETPLACE_CART_ENABLED`.
 - `features/cart/__tests__/cookie.test.ts`: opciones de la cookie, ida y vuelta, valores inválidos y el tope de bytes.
-- `features/cart/__tests__/actions.test.ts`: agregar como invitado y con sesión, topes, errores de la API, 401 en `addToCart` y `setQuantity`, `removeLine` y cantidades fuera de rango.
+- `features/cart/__tests__/actions.test.ts`: agregar como invitado y con sesión, topes, errores de la API, 401 en `addToCart` y `setQuantity`, y los avisos de `setQuantity` y `removeLine` (mensaje de la API, genérico, API caída, `retryAfter`, cantidad y referencia inválidas).
+- `features/cart/__tests__/LineForm.test.tsx`: campos enviados, toast de error y ninguno en un cambio exitoso.
 - `features/cart/__tests__/AddToCartButton.test.tsx`: nombre accesible, estado agregado y error por toast.
 - `features/cart/__tests__/CartView.test.tsx`: vacío, montos formateados que no salen de la aritmética (subtotal y total incluidos), una línea `ok` y una no disponible en la misma tienda (grupo "Cantidad de X" sólo en la `ok`), topes de cantidad, tienda cerrada, "Ir a pagar" y "Entra para pagar", y nada sin líneas disponibles.
 - `features/cart/__tests__/CartLink.test.tsx`: `line_count`, invitado sin API, degradación y el interruptor.
-- `e2e/cart.spec.ts` (en serie): invitado en ficha, tienda y `/carrito`; sin botón en tienda que no vende ni en restringidos; fusión al registrarse y al entrar; `noindex`, `robots.txt` y sitemap; y un `test.fixme` sin JavaScript.
+- `e2e/cart.spec.ts` (en serie): invitado en ficha, tienda y `/carrito` (sin toast al cambiar y quitar líneas); sin botón en tienda que no vende ni en restringidos; fusión al registrarse y al entrar; `noindex`, `robots.txt` y sitemap; y un `test.fixme` sin JavaScript.

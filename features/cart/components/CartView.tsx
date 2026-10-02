@@ -18,6 +18,7 @@ import { loginHref } from "@/features/account/lib/returnPath";
 import { cn } from "@/lib/utils";
 import { removeLine, setQuantity } from "../server/actions";
 import { getCurrentCart } from "../server/cart";
+import { LineForm } from "./LineForm";
 
 const CHECKOUT_PATH = "/checkout";
 
@@ -29,29 +30,6 @@ const UNAVAILABLE_TEXT: Record<UnavailableReason, string> = {
 };
 
 // Los montos son las cadenas de la API formateadas: aquí no se suma ni se multiplica nada.
-
-function LineForm({
-  action,
-  storeSlug,
-  productSlug,
-  quantity,
-  children,
-}: {
-  action: (formData: FormData) => Promise<void>;
-  storeSlug: string;
-  productSlug: string;
-  quantity?: number;
-  children: React.ReactNode;
-}) {
-  return (
-    <form action={action}>
-      <input type="hidden" name="store_slug" value={storeSlug} />
-      <input type="hidden" name="product_slug" value={productSlug} />
-      {quantity !== undefined && <input type="hidden" name="quantity" value={quantity} />}
-      {children}
-    </form>
-  );
-}
 
 function Line({ line, storeSlug }: { line: CartLine; storeSlug: string }) {
   const { product } = line;

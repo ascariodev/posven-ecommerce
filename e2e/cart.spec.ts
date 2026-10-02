@@ -45,6 +45,7 @@ test.describe("carrito", () => {
     await page.getByRole("button", { name: "Quitar: Harina de maíz precocida 1 kg" }).click();
     await expect(page.getByRole("list", { name: "Productos de Abasto La Esquina" })).toHaveCount(0);
     await expect(cartLink(page, "Carrito, 1 producto")).toBeVisible();
+    await expect(page.locator("[data-sonner-toast]")).toHaveCount(0);
   });
 
   test("sin botón en una tienda que no vende ni en productos restringidos", async ({ page }) => {

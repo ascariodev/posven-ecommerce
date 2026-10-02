@@ -22,8 +22,12 @@ import { cartEnabled } from "../lib/flag";
 const CART_FULL = "Tu carrito admite hasta 20 productos.";
 const AT_MAX_QUANTITY = "Ya tienes 99 unidades de este producto.";
 const ADD_FAILED = "No pudimos agregar el producto. Intenta de nuevo.";
+const LINE_FAILED = "No pudimos actualizar el carrito. Intenta de nuevo.";
+const QUANTITY_RANGE = "La cantidad debe estar entre 1 y 99.";
 
 const API_MESSAGE_CODES: readonly AccountErrorCode[] = ["not_orderable", "product_restricted", "cart_full", "validation_failed"];
+
+const LINE_REFRESH_CODES: readonly AccountErrorCode[] = ["not_orderable", "product_restricted"];
 
 type LineRef = { store_slug: string; product_slug: string };
 
@@ -66,11 +70,11 @@ function failed(message: string): AddToCartState {
 }
 
 // El mensaje de la API puede no traer los segundos: se arman con `retryAfter` (spec §6).
-function accountFailure(error: MarketplaceAccountError): AddToCartState {
+function accountFailure(error: MarketplaceAccountError, fallback: string = ADD_FAILED): AddToCartState {
   if (error.code === "too_many_attempts" && error.retryAfter !== null) {
     return failed(`Demasiados intentos. Prueba de nuevo en ${error.retryAfter} segundos.`);
   }
-  return failed(API_MESSAGE_CODES.includes(error.code) ? error.message : ADD_FAILED);
+  return failed(API_MESSAGE_CODES.includes(error.code) ? error.message : fallback);
 }
 
 async function addAsGuest(ref: LineRef): Promise<AddToCartState> {
@@ -114,24 +118,24 @@ export async function addToCart(prev: AddToCartState, formData: FormData): Promi
   return addAsGuest(ref);
 }
 
-async function writeQuantity(formData: FormData, quantity: number): Promise<void> {
-  if (!cartEnabled()) return;
+async function writeQuantity(formData: FormData, quantity: number): Promise<AddToCartState> {
+  if (!cartEnabled()) return INITIAL_ADD_TO_CART_STATE;
   const ref = lineRef(formData);
-  if (ref === null || !Number.isInteger(quantity) || quantity < 0 || quantity > MAX_QUANTITY) return;
+  if (ref === null) return failed(LINE_FAILED);
+  if (!Number.isInteger(quantity) || quantity < 0 || quantity > MAX_QUANTITY) return failed(QUANTITY_RANGE);
   const ctx = await accountContext();
   if (ctx.session !== null) {
     try {
       await setCartItem(ctx, { ...ref, quantity });
-      refresh();
-      return;
+      return added();
     } catch (error) {
-      // La línea dejó de poder comprarse: el siguiente render la pinta `unavailable`. La API caída
-      // sube a error.tsx.
-      if (error instanceof MarketplaceAccountError && ["not_orderable", "product_restricted"].includes(error.code)) {
-        refresh();
-        return;
+      if (error instanceof MarketplaceUnavailableError) return failed(LINE_FAILED);
+      if (!(error instanceof MarketplaceAccountError)) throw error;
+      if (!isUnauthenticated(error)) {
+        // La línea dejó de poder comprarse: el siguiente render la pinta `unavailable`.
+        if (LINE_REFRESH_CODES.includes(error.code)) refresh();
+        return accountFailure(error, LINE_FAILED);
       }
-      if (!isUnauthenticated(error)) throw error;
       await dropSession();
     }
   }
@@ -141,15 +145,16 @@ async function writeQuantity(formData: FormData, quantity: number): Promise<void
       ? items.filter((item) => !sameLine(item, ref))
       : items.map((item) => (sameLine(item, ref) ? { ...item, quantity } : item));
   await writeGuestCart(next);
-  refresh();
+  return added();
 }
 
-export async function setQuantity(formData: FormData): Promise<void> {
+export async function setQuantity(prev: AddToCartState, formData: FormData): Promise<AddToCartState> {
   const value = formData.get("quantity");
   const quantity = typeof value === "string" && /^\d{1,2}$/.test(value) ? Number(value) : Number.NaN;
-  if (quantity >= 1) await writeQuantity(formData, quantity);
+  if (!(quantity >= 1)) return cartEnabled() ? failed(QUANTITY_RANGE) : INITIAL_ADD_TO_CART_STATE;
+  return writeQuantity(formData, quantity);
 }
 
-export async function removeLine(formData: FormData): Promise<void> {
-  await writeQuantity(formData, 0);
+export async function removeLine(prev: AddToCartState, formData: FormData): Promise<AddToCartState> {
+  return writeQuantity(formData, 0);
 }

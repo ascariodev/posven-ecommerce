@@ -242,7 +242,7 @@ describe("setQuantity y removeLine", () => {
     withCookies({ session: "7|vencido", cart: [{ ...ref, quantity: 1 }] });
     vi.mocked(setCartItem).mockRejectedValue(unauthenticated());
 
-    await setQuantity(form({ ...ref, quantity: "4" }));
+    await setQuantity(INITIAL_ADD_TO_CART_STATE, form({ ...ref, quantity: "4" }));
 
     expect(deleted("mp_session")).toBe(true);
     expect(writtenCart()).toEqual([{ ...ref, quantity: 4 }]);
@@ -251,28 +251,82 @@ describe("setQuantity y removeLine", () => {
   it("removeLine de invitado quita la línea y borra la cookie vacía", async () => {
     withCookies({ cart: [{ ...ref, quantity: 1 }] });
 
-    await removeLine(form(ref));
+    await removeLine(INITIAL_ADD_TO_CART_STATE, form(ref));
 
     expect(deleted("mp_cart")).toBe(true);
     expect(refresh).toHaveBeenCalledOnce();
   });
 
-  it("removeLine con not_orderable no lanza y refresca", async () => {
+  it.each([
+    ["not_orderable", "Esta tienda no vende este producto en línea."],
+    ["product_restricted", "Este producto se vende sólo en tienda."],
+  ] as const)("removeLine con %s devuelve el mensaje de la API y refresca", async (code, message) => {
     withCookies({ session: "7|token" });
-    vi.mocked(setCartItem).mockRejectedValue(
-      new MarketplaceAccountError({ status: 422, code: "not_orderable", message: "Esta tienda no vende este producto en línea." }),
-    );
+    vi.mocked(setCartItem).mockRejectedValue(new MarketplaceAccountError({ status: 422, code, message }));
 
-    await expect(removeLine(form(ref))).resolves.toBeUndefined();
+    await expect(removeLine(INITIAL_ADD_TO_CART_STATE, form(ref))).resolves.toEqual({ status: "error", message });
     expect(refresh).toHaveBeenCalledOnce();
   });
 
-  it("una cantidad fuera de rango no hace nada", async () => {
+  it("setQuantity con sesión devuelve added y refresca", async () => {
+    withCookies({ session: "7|token" });
+    vi.mocked(setCartItem).mockResolvedValue(cartWith(4));
+
+    await expect(setQuantity(INITIAL_ADD_TO_CART_STATE, form({ ...ref, quantity: "4" }))).resolves.toEqual({ status: "added", message: null });
+    expect(refresh).toHaveBeenCalledOnce();
+  });
+
+  it("un código no mapeado da el mensaje genérico, sin lanzar ni refrescar", async () => {
+    withCookies({ session: "7|token" });
+    vi.mocked(setCartItem).mockRejectedValue(new MarketplaceAccountError({ status: 500, code: "open_orders", message: "texto de la API" }));
+
+    await expect(setQuantity(INITIAL_ADD_TO_CART_STATE, form({ ...ref, quantity: "2" }))).resolves.toEqual({
+      status: "error",
+      message: "No pudimos actualizar el carrito. Intenta de nuevo.",
+    });
+    expect(refresh).not.toHaveBeenCalled();
+  });
+
+  it("too_many_attempts arma los segundos con retryAfter", async () => {
+    withCookies({ session: "7|token" });
+    vi.mocked(setCartItem).mockRejectedValue(
+      new MarketplaceAccountError({ status: 429, code: "too_many_attempts", message: "x", retryAfter: 30 }),
+    );
+
+    const state = await removeLine(INITIAL_ADD_TO_CART_STATE, form(ref));
+    expect(state.message).toBe("Demasiados intentos. Prueba de nuevo en 30 segundos.");
+  });
+
+  it("la API caída da un aviso en vez de subir a error.tsx", async () => {
+    withCookies({ session: "7|token" });
+    vi.mocked(setCartItem).mockRejectedValue(new MarketplaceUnavailableError("/me/cart/items"));
+
+    await expect(removeLine(INITIAL_ADD_TO_CART_STATE, form(ref))).resolves.toEqual({
+      status: "error",
+      message: "No pudimos actualizar el carrito. Intenta de nuevo.",
+    });
+  });
+
+  it("una cantidad fuera de rango avisa y no escribe", async () => {
     withCookies({ cart: [{ ...ref, quantity: 1 }] });
 
-    await setQuantity(form({ ...ref, quantity: "100" }));
+    await expect(setQuantity(INITIAL_ADD_TO_CART_STATE, form({ ...ref, quantity: "100" }))).resolves.toEqual({
+      status: "error",
+      message: "La cantidad debe estar entre 1 y 99.",
+    });
+    await expect(setQuantity(INITIAL_ADD_TO_CART_STATE, form({ ...ref, quantity: "0" }))).resolves.toMatchObject({ status: "error" });
 
     expect(cookieStore.set).not.toHaveBeenCalled();
     expect(refresh).not.toHaveBeenCalled();
+  });
+
+  it("una referencia inválida avisa y no llama a la API", async () => {
+    withCookies({ session: "7|token" });
+
+    await expect(removeLine(INITIAL_ADD_TO_CART_STATE, form({ store_slug: "", product_slug: PRODUCT }))).resolves.toEqual({
+      status: "error",
+      message: "No pudimos actualizar el carrito. Intenta de nuevo.",
+    });
+    expect(setCartItem).not.toHaveBeenCalled();
   });
 });

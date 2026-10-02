@@ -3,7 +3,7 @@
 **Objetivo:** los formularios validan con zod en el servidor y en el cliente con mensajes en
 español, y todo resultado de una acción (error general o éxito) se avisa con un toast de sonner,
 incluidas las acciones que hoy fallan en silencio o tumban la página a `app/error.tsx`.
-**Estado:** en curso · Fase actual: 9
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: sin spec propia. Reglas de validación de la API: FormRequests de posveapi en
@@ -92,7 +92,7 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
 - **Alcance:** `toggleFavorite` devuelve estado; `FavoriteButton` y el formulario de
   `app/cuenta/favoritos/page.tsx` muestran el resultado en toast.
 
-### [ ] Fase 9 — Líneas del carrito con aviso
+### [x] Fase 9 — Líneas del carrito con aviso
 - **Repo:** posven-ecommerce
 - **Alcance:** `setQuantity` y `removeLine` devuelven estado (incluidos `not_orderable`,
   `product_restricted`, cantidad fuera de rango y referencia inválida); `LineForm` de `CartView`
@@ -149,19 +149,14 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   (cliente, L-06) lo usan `FavoriteButton` (sigue Server Component en `/p/[slug]` y
   `/tienda/[slug]`) y `/cuenta/favoritos`. `not_found` da "No encontrado."; se quitó
   `isNotFound`. Queda duplicada la constante `NOT_FOUND` con `ADDRESS_NOT_FOUND` (mismo texto).
+- 2026-10-01 — Fase 9: `setQuantity`/`removeLine(prev, formData)` devuelven `AddToCartState`;
+  `writeQuantity` ya no lanza (API caída y código no mapeado: mensaje genérico; `not_orderable` y
+  `product_restricted`: mensaje de la API y `refresh()`; `unauthenticated`: sigue como invitado);
+  cantidad fuera de 1 a 99 da su mensaje. `LineForm` (cliente, L-06) sólo avisa errores. Cierre:
+  `next build` en simulado y `playwright test` entero (37 pasan, 1 omitido previo).
 
 ## Notas para la próxima sesión
-- Fase 9: aplicar L-06; la línea del carrito puede desmontarse con el `refresh()`, así que el
-  toast va dentro de la acción y se prueba con e2e.
-- Cierre del plan: `docs-check` marca rancios los README de cart, checkout (Fase 3) y location,
-  search y site (`app/layout.tsx`, Fase 1); el de product ya lo estaba antes del plan.
-- Fase 9: `writeQuantity` (`setQuantity`, `removeLine`) aún lanza ante un código no mapeado
-  salvo `not_orderable` y `product_restricted`.
-- Si el hook se usa fuera de account, mover `FormState` y `formStateFromZod` a un lugar compartido.
-- Fase 9: `docs-check` marca rancio `features/cart/README.md` porque `features/account/server/actions.ts`
-  cambió en la Fase 4; sus afirmaciones siguen ciertas y se refresca al commitear el README de cart.
-- Fase 4 en adelante: `useActionToast` y `ActionNotice` en `@/hooks/useActionToast`; `FormNotice`
-  ya dispara el toast. Pendiente menor sin fase: `VerifyEmailForm` en `success` queda sin texto de
-  confirmación en línea una vez cerrado el toast.
-- El grafo de posven-ecommerce es del 2026-09-28 y no tiene `features/account`, `cart` ni
-  `checkout`: explorar con Grep/Read dirigidos.
+- Pendientes fuera del plan: `VerifyEmailForm` en `success` sin texto en línea tras cerrar el
+  toast; constantes duplicadas `NOT_FOUND`/`ADDRESS_NOT_FOUND`; `docs-check` marca rancios los
+  README de checkout, location, search y site; el dev server avisa `blocking-route` en
+  `app/p/[slug]/page.tsx:75` (`await params` fuera de `Suspense`), anterior al plan.

@@ -12,7 +12,6 @@ import {
   updateMe,
   updateSettings,
 } from "@/lib/marketplace/client";
-import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { AddressInput, AddressPatch, ProfilePatch } from "@/lib/marketplace/schemas";
 import {
@@ -38,6 +37,9 @@ const ADDRESS_SAVED = "Guardamos la dirección.";
 const COORDS_REQUIRED =
   "Toca Usar mi ubicación para guardar la dirección. Sin ubicación sólo podrás retirar en tienda.";
 const ADDRESS_NOT_FOUND = "No encontrado.";
+const NOT_FOUND = "No encontrado.";
+const FAVORITE_ADDED = "Guardamos el favorito.";
+const FAVORITE_REMOVED = "Quitamos el favorito.";
 const ADDRESS_DELETED = "Eliminamos la dirección.";
 const ADDRESS_DEFAULTED = "Marcamos la dirección como predeterminada.";
 
@@ -67,10 +69,6 @@ function addressId(formData: FormData): number | null {
   const raw = field(formData, "address_id");
   const id = raw.trim() === "" ? Number.NaN : Number(raw);
   return Number.isInteger(id) && id >= 1 ? id : null;
-}
-
-function isNotFound(error: unknown): boolean {
-  return error instanceof MarketplaceAccountError && error.code === "not_found";
 }
 
 export async function updateProfile(prev: FormState, formData: FormData): Promise<FormState> {
@@ -238,18 +236,26 @@ export async function setDefaultAddress(prev: FormState, formData: FormData): Pr
   return addressAction(formData, (ctx, id) => updateAddress(ctx, id, { is_default: true }), ADDRESS_DEFAULTED);
 }
 
-export async function toggleFavorite(formData: FormData): Promise<void> {
+export async function toggleFavorite(prev: FormState, formData: FormData): Promise<FormState> {
+  void prev;
   const kind = field(formData, "kind");
   const mode = field(formData, "mode");
   const slug = field(formData, "slug");
-  if ((kind !== "product" && kind !== "store") || (mode !== "add" && mode !== "remove") || slug === "") return;
+  if ((kind !== "product" && kind !== "store") || (mode !== "add" && mode !== "remove") || slug === "") {
+    return failure(NOT_FOUND, {});
+  }
   const target = { kind, slug } as const;
-  await withSession(safeReturnPath(field(formData, "volver"), FAVORITES_PATH), async (ctx) => {
-    try {
-      await (mode === "add" ? addFavorite(ctx, target) : removeFavorite(ctx, target));
-    } catch (error) {
-      if (!isNotFound(error)) throw error;
-    }
-  });
+  const state = await withSession(
+    safeReturnPath(field(formData, "volver"), FAVORITES_PATH),
+    async (ctx): Promise<FormState> => {
+      try {
+        await (mode === "add" ? addFavorite(ctx, target) : removeFavorite(ctx, target));
+      } catch (error) {
+        return formStateFromError(error, {});
+      }
+      return success(mode === "add" ? FAVORITE_ADDED : FAVORITE_REMOVED);
+    },
+  );
   refresh();
+  return state;
 }

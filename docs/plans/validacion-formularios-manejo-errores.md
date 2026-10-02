@@ -3,7 +3,7 @@
 **Objetivo:** los formularios validan con zod en el servidor y en el cliente con mensajes en
 español, y todo resultado de una acción (error general o éxito) se avisa con un toast de sonner,
 incluidas las acciones que hoy fallan en silencio o tumban la página a `app/error.tsx`.
-**Estado:** en curso · Fase actual: 8
+**Estado:** en curso · Fase actual: 9
 
 ## Contexto mínimo
 - Spec: sin spec propia. Reglas de validación de la API: FormRequests de posveapi en
@@ -87,7 +87,7 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   botones de `app/cuenta/direcciones/page.tsx` pasan a un componente cliente con `useActionState` y
   toast. `not_found` deja de tragarse.
 
-### [ ] Fase 8 — Favoritos con aviso
+### [x] Fase 8 — Favoritos con aviso
 - **Repo:** posven-ecommerce
 - **Alcance:** `toggleFavorite` devuelve estado; `FavoriteButton` y el formulario de
   `app/cuenta/favoritos/page.tsx` muestran el resultado en toast.
@@ -145,10 +145,16 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   devuelven `FormState`; `not_found` y `address_id` inválido dan "No encontrado."; `refresh()`
   siempre. `AddressActionButton` (cliente) dispara el toast dentro de la acción de
   `useActionState`, no con `useActionToast`, porque `refresh()` desmonta la tarjeta (L-06).
+- 2026-10-01 — Fase 8: `toggleFavorite(prev, formData): Promise<FormState>`; `FavoriteToggleForm`
+  (cliente, L-06) lo usan `FavoriteButton` (sigue Server Component en `/p/[slug]` y
+  `/tienda/[slug]`) y `/cuenta/favoritos`. `not_found` da "No encontrado."; se quitó
+  `isNotFound`. Queda duplicada la constante `NOT_FOUND` con `ADDRESS_NOT_FOUND` (mismo texto).
 
 ## Notas para la próxima sesión
-- Fases 8 y 9: aplicar L-06; el favorito en `/cuenta/favoritos` y la línea del carrito pueden
-  desmontarse con el `refresh()`, así que el toast va dentro de la acción y se prueba con e2e.
+- Fase 9: aplicar L-06; la línea del carrito puede desmontarse con el `refresh()`, así que el
+  toast va dentro de la acción y se prueba con e2e.
+- Cierre del plan: `docs-check` marca rancios los README de cart, checkout (Fase 3) y location,
+  search y site (`app/layout.tsx`, Fase 1); el de product ya lo estaba antes del plan.
 - Fase 9: `writeQuantity` (`setQuantity`, `removeLine`) aún lanza ante un código no mapeado
   salvo `not_orderable` y `product_restricted`.
 - Si el hook se usa fuera de account, mover `FormState` y `formStateFromZod` a un lugar compartido.

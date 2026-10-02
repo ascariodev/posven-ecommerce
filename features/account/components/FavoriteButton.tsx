@@ -1,15 +1,15 @@
 import { Heart } from "lucide-react";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { listFavorites } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { FavoriteTarget } from "@/lib/marketplace/params";
 import type { FavoritesResponse } from "@/lib/marketplace/schemas";
-import { toggleFavorite } from "../server/accountActions";
 import { loginHref } from "../lib/returnPath";
 import { accountContext } from "../server/session";
+import { FavoriteToggleForm } from "./FavoriteToggleForm";
 
 const SAVE_LABEL = "Guardar en favoritos";
 const REMOVE_LABEL = "Quitar de favoritos";
@@ -45,16 +45,16 @@ export async function FavoriteButton({ target, returnTo }: { target: FavoriteTar
 
   const saved = isSaved(favorites, target);
   return (
-    <form action={toggleFavorite} className="self-start">
-      <input type="hidden" name="kind" value={target.kind} />
-      <input type="hidden" name="slug" value={target.slug} />
-      <input type="hidden" name="mode" value={saved ? "remove" : "add"} />
-      <input type="hidden" name="volver" value={returnTo} />
-      <Button type="submit" variant="outline" size="sm" aria-pressed={saved}>
-        <Heart aria-hidden="true" className={cn("size-4", saved && "fill-current")} />
-        {saved ? REMOVE_LABEL : SAVE_LABEL}
-      </Button>
-    </form>
+    <FavoriteToggleForm
+      target={target}
+      mode={saved ? "remove" : "add"}
+      returnTo={returnTo}
+      pressed={saved}
+      className="self-start"
+    >
+      <Heart aria-hidden="true" className={cn("size-4", saved && "fill-current")} />
+      {saved ? REMOVE_LABEL : SAVE_LABEL}
+    </FavoriteToggleForm>
   );
 }
 

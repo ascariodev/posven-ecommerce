@@ -125,10 +125,15 @@ test.describe("cuenta del comprador", () => {
     const favorite = page.getByRole("button", { name: "Guardar en favoritos" });
     await expect(favorite).toBeVisible();
     await favorite.click();
+    await expect(page.getByText("Guardamos el favorito.")).toBeVisible();
     await expect(page.getByRole("button", { name: "Quitar de favoritos" })).toBeVisible();
 
     await page.goto("/cuenta/favoritos");
     await expect(page.getByRole("link", { name: /Acetaminofén 500 mg x 20 tabletas/ })).toBeVisible();
+
+    await page.getByRole("button", { name: /^Quitar Acetaminofén 500 mg x 20 tabletas de favoritos$/ }).click();
+    await expect(page.getByText("Quitamos el favorito.")).toBeVisible();
+    await expect(page.getByRole("link", { name: /Acetaminofén 500 mg x 20 tabletas/ })).toHaveCount(0);
   });
 
   test("las rutas de acceso y de cuenta van con noindex y fuera de robots y sitemap", async ({ page, request }) => {

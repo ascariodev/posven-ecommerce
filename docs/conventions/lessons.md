@@ -36,4 +36,5 @@ aplicada en: `features/account/components/AccountDropdown.tsx`
 Si la acción llama a `refresh()` y la respuesta desmonta el componente que la envió (la tarjeta
 eliminada), el efecto de `useActionToast` nunca corre y el toast se pierde. El toast se dispara
 dentro de la función pasada a `useActionState`, tras el `await`, y se prueba con e2e.
-aplicada en: `features/account/components/AddressActionButton.tsx`
+aplicada en: `features/account/components/AddressActionButton.tsx`,
+`features/account/components/FavoriteToggleForm.tsx`

@@ -210,22 +210,57 @@ describe("toggleFavorite", () => {
 
     await expect(
       toggleFavorite(
+        INITIAL_FORM_STATE,
         form({ kind: "product", slug: "acetaminofen-500-mg-20-tabletas", mode: "add", volver: productPath }),
       ),
     ).rejects.toThrow("NEXT_REDIRECT:/entrar?volver=%2Fp%2Facetaminofen-500-mg-20-tabletas");
     expect(cookieStore.delete).toHaveBeenCalledWith({ name: "mp_session", path: "/" });
   });
 
-  it("con not_found no lanza", async () => {
+  it("guardar y quitar devuelven éxito y refrescan", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(addFavorite).mockResolvedValue(undefined);
+    vi.mocked(removeFavorite).mockResolvedValue(undefined);
+
+    const added = await toggleFavorite(INITIAL_FORM_STATE, form({ kind: "product", slug: "a", mode: "add", volver: productPath }));
+    const removed = await toggleFavorite(INITIAL_FORM_STATE, form({ kind: "store", slug: "b", mode: "remove", volver: productPath }));
+
+    expect(added).toMatchObject({ status: "success", message: "Guardamos el favorito." });
+    expect(removed).toMatchObject({ status: "success", message: "Quitamos el favorito." });
+    expect(refresh).toHaveBeenCalledTimes(2);
+  });
+
+  it("con not_found devuelve error y refresca", async () => {
     withSessionCookie("12|abc");
     vi.mocked(removeFavorite).mockRejectedValue(
       new MarketplaceAccountError({ status: 404, code: "not_found", message: "No encontrado." }),
     );
 
-    await expect(
-      toggleFavorite(form({ kind: "store", slug: "ya-no-existe", mode: "remove", volver: "/cuenta/favoritos" })),
-    ).resolves.toBeUndefined();
+    const state = await toggleFavorite(
+      INITIAL_FORM_STATE,
+      form({ kind: "store", slug: "ya-no-existe", mode: "remove", volver: "/cuenta/favoritos" }),
+    );
+
+    expect(state).toMatchObject({ status: "error", message: "No encontrado." });
     expect(refresh).toHaveBeenCalled();
+  });
+
+  it("con un código sin mapear devuelve el mensaje genérico", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(addFavorite).mockRejectedValue(
+      new MarketplaceAccountError({ status: 409, code: "cart_empty", message: "interno" }),
+    );
+
+    const state = await toggleFavorite(INITIAL_FORM_STATE, form({ kind: "product", slug: "a", mode: "add", volver: productPath }));
+
+    expect(state).toMatchObject({ status: "error", message: "No pudimos completar la acción. Intenta de nuevo." });
+  });
+
+  it("con datos inválidos devuelve error sin llamar a la API", async () => {
+    const state = await toggleFavorite(INITIAL_FORM_STATE, form({ kind: "otro", slug: "a", mode: "add" }));
+
+    expect(state).toMatchObject({ status: "error", message: "No encontrado." });
+    expect(addFavorite).not.toHaveBeenCalled();
   });
 });
 

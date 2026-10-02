@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toggleFavorite } from "@/features/account/server/accountActions";
+import { FavoriteToggleForm } from "@/features/account/components/FavoriteToggleForm";
 import { requireCustomer } from "@/features/account/server/session";
 import { ProductThumb } from "@/features/search/components/ProductThumb";
 import { listFavorites } from "@/lib/marketplace/client";
@@ -19,15 +18,14 @@ const linkClasses = "text-sm font-medium text-foreground underline underline-off
 
 function RemoveFavoriteForm({ target, name }: { target: FavoriteTarget; name: string }) {
   return (
-    <form action={toggleFavorite}>
-      <input type="hidden" name="kind" value={target.kind} />
-      <input type="hidden" name="slug" value={target.slug} />
-      <input type="hidden" name="mode" value="remove" />
-      <input type="hidden" name="volver" value="/cuenta/favoritos" />
-      <Button type="submit" variant="outline" size="sm" aria-label={`Quitar ${name} de favoritos`}>
-        Quitar
-      </Button>
-    </form>
+    <FavoriteToggleForm
+      target={target}
+      mode="remove"
+      returnTo="/cuenta/favoritos"
+      ariaLabel={`Quitar ${name} de favoritos`}
+    >
+      Quitar
+    </FavoriteToggleForm>
   );
 }
 

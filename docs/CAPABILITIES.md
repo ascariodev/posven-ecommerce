@@ -12,6 +12,7 @@ README: `features/account/README.md`
 | leer el comprador de la sesión | `getCurrentCustomer()` | `features/account/server/session.ts` | RN-ACCOUNT-01, RN-ACCOUNT-03, RN-ACCOUNT-04 |
 | entrar, crear cuenta y recuperar la contraseña | `login() / register() / logout() / forgotPassword() / resetPasswordAction() / verifyEmailAction() / resendVerificationAction()` | `features/account/server/actions.ts` | RN-ACCOUNT-01, RN-ACCOUNT-02, RN-ACCOUNT-03 |
 | mostrar el acceso o el menú de la cuenta en la cabecera | `<AccountSlot />` | `features/account/components/AccountMenu.tsx` | RN-ACCOUNT-05 |
+| editar o borrar los datos de facturación del comprador | `<BillingForm billing={customer.billing} /> / updateBilling() / clearBilling()` | `features/account/components/BillingForm.tsx` | RN-ACCOUNT-07 |
 | editar el perfil, la contraseña, los avisos, las direcciones del comprador o eliminar su cuenta | `updateProfile() / changePasswordAction() / updateSettingsAction() / deleteAccountAction() / saveAddress() / deleteAddressAction() / setDefaultAddress()` | `features/account/server/accountActions.ts` | RN-ACCOUNT-03, RN-ACCOUNT-06 |
 | marcar o quitar un producto o una tienda de favoritos | `<FavoriteButton /> / toggleFavorite()` | `features/account/components/FavoriteButton.tsx` | RN-ACCOUNT-03, RN-ACCOUNT-05 |
 

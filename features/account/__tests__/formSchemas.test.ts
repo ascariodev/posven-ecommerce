@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   addressCoordsSchema,
   addressSchema,
+  billingFormSchema,
   deleteAccountSchema,
   loginSchema,
   profileSchema,
@@ -54,5 +55,55 @@ describe("formSchemas no son más estrictos que la API", () => {
     expect(addressCoordsSchema.safeParse({ lat: 90, lng: 180 }).success).toBe(true);
     expect(addressCoordsSchema.safeParse({ lat: 90.1, lng: 0 }).success).toBe(false);
     expect(addressCoordsSchema.safeParse({ lat: 0, lng: -180.1 }).success).toBe(false);
+  });
+});
+
+describe("billingFormSchema", () => {
+  const BILLING = {
+    "billing.document_type": "V",
+    "billing.document": "12345678",
+    "billing.name": "Ana Pérez",
+    "billing.phone": "04141234567",
+    "billing.address": "Av. Principal, Valencia",
+    "billing.taxpayer_type": "ordinary",
+  };
+  const failing = (patch: Record<string, string>): string[] => {
+    const result = billingFormSchema.safeParse({ ...BILLING, ...patch });
+    return result.success ? [] : result.error.issues.map((issue) => String(issue.path[0]));
+  };
+
+  it("acepta datos válidos y los bordes de documento, nombre y dirección", () => {
+    expect(failing({})).toEqual([]);
+    expect(failing({ "billing.document": "12345" })).toEqual([]);
+    expect(failing({ "billing.document": "123456789" })).toEqual([]);
+    expect(failing({ "billing.name": "a".repeat(100) })).toEqual([]);
+    expect(failing({ "billing.address": "12345678" })).toEqual([]);
+    expect(failing({ "billing.address": "a".repeat(250) })).toEqual([]);
+  });
+
+  it("rechaza fuera de rango", () => {
+    expect(failing({ "billing.document": "1234" })).toEqual(["billing.document"]);
+    expect(failing({ "billing.document": "1234567890" })).toEqual(["billing.document"]);
+    expect(failing({ "billing.document": "12a45" })).toEqual(["billing.document"]);
+    expect(failing({ "billing.name": "a".repeat(101) })).toEqual(["billing.name"]);
+    expect(failing({ "billing.address": "1234567" })).toEqual(["billing.address"]);
+    expect(failing({ "billing.address": "a".repeat(251) })).toEqual(["billing.address"]);
+  });
+
+  it("el teléfono acepta los siete prefijos con 11 dígitos y rechaza el resto", () => {
+    for (const prefix of ["0212", "0412", "0422", "0414", "0424", "0416", "0426"]) {
+      expect(failing({ "billing.phone": `${prefix}1234567` })).toEqual([]);
+    }
+    expect(failing({ "billing.phone": "02511234567" })).toEqual(["billing.phone"]);
+    expect(failing({ "billing.phone": "0414123456" })).toEqual(["billing.phone"]);
+    expect(failing({ "billing.phone": "041412345678" })).toEqual(["billing.phone"]);
+    expect(failing({ "billing.phone": "+584141234567" })).toEqual(["billing.phone"]);
+  });
+
+  it("tipo de documento y de contribuyente sólo aceptan el catálogo", () => {
+    for (const type of ["V", "E", "J", "G"]) expect(failing({ "billing.document_type": type })).toEqual([]);
+    for (const type of ["", "P", "v"]) expect(failing({ "billing.document_type": type })).toEqual(["billing.document_type"]);
+    for (const type of ["special", "ordinary"]) expect(failing({ "billing.taxpayer_type": type })).toEqual([]);
+    expect(failing({ "billing.taxpayer_type": "formal" })).toEqual(["billing.taxpayer_type"]);
   });
 });

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BillingForm } from "@/features/account/components/BillingForm";
 import { ProfileForm } from "@/features/account/components/ProfileForm";
 import { requireCustomer } from "@/features/account/server/session";
 
@@ -19,6 +20,15 @@ async function ProfilePanel() {
       <Card>
         <CardContent>
           <ProfileForm customer={customer} />
+        </CardContent>
+      </Card>
+      <h2 className="text-xl font-semibold tracking-tight text-foreground">Datos de facturación</h2>
+      <p className="text-sm text-muted-foreground">
+        Los usamos para facturar tus compras a tu nombre cuando lo pidas al pagar.
+      </p>
+      <Card>
+        <CardContent>
+          <BillingForm billing={customer.billing} />
         </CardContent>
       </Card>
     </div>

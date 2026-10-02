@@ -12,11 +12,13 @@ import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { Address, Customer } from "@/lib/marketplace/schemas";
 import { refresh } from "next/cache";
 import {
+  clearBilling,
   deleteAccountAction,
   deleteAddressAction,
   saveAddress,
   setDefaultAddress,
   toggleFavorite,
+  updateBilling,
   updateProfile,
 } from "@/features/account/server/accountActions";
 import { INITIAL_FORM_STATE } from "@/features/account/lib/formState";
@@ -392,5 +394,56 @@ describe("deleteAccountAction", () => {
     );
     expect(deleteAccount).toHaveBeenCalledWith(ctx, { password: "clave-segura-1" });
     expect(cookieStore.delete).toHaveBeenCalledWith({ name: "mp_session", path: "/" });
+  });
+});
+
+describe("updateBilling y clearBilling", () => {
+  const billingFields = {
+    "billing.document_type": "V",
+    "billing.document": " 12345678 ",
+    "billing.name": "Ana Pérez",
+    "billing.phone": "04141234567",
+    "billing.address": "Av. Principal, Valencia",
+    "billing.taxpayer_type": "ordinary",
+  };
+
+  it("manda billing completo y recortado, y refresca", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(updateMe).mockResolvedValue(customer);
+
+    const state = await updateBilling(INITIAL_FORM_STATE, form(billingFields));
+
+    expect(updateMe).toHaveBeenCalledWith(ctx, {
+      billing: {
+        document_type: "V",
+        document: "12345678",
+        name: "Ana Pérez",
+        phone: "04141234567",
+        address: "Av. Principal, Valencia",
+        taxpayer_type: "ordinary",
+      },
+    });
+    expect(refresh).toHaveBeenCalled();
+    expect(state.status).toBe("success");
+  });
+
+  it("con un dato inválido devuelve la clave billing.<campo> sin llamar a la API", async () => {
+    withSessionCookie("12|abc");
+
+    const state = await updateBilling(INITIAL_FORM_STATE, form({ ...billingFields, "billing.phone": "0511234567" }));
+
+    expect(updateMe).not.toHaveBeenCalled();
+    expect(state.status).toBe("error");
+    expect(Object.keys(state.fields)).toEqual(["billing.phone"]);
+  });
+
+  it("clearBilling envía billing null", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(updateMe).mockResolvedValue(customer);
+
+    const state = await clearBilling(INITIAL_FORM_STATE, form({}));
+
+    expect(updateMe).toHaveBeenCalledWith(ctx, { billing: null });
+    expect(state.status).toBe("success");
   });
 });

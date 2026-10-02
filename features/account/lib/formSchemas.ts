@@ -100,3 +100,22 @@ export const addressCoordsSchema = z.object({
   lat: z.number().min(-90).max(90),
   lng: z.number().min(-180).max(180),
 });
+
+// Reglas de facturación alineadas con el formulario de cliente del TPV; las claves son las de la
+// API (`billing.<campo>`), así que `fields` se pinta igual que un validation_failed.
+const BILLING_DOCUMENT_PATTERN = /^\d{5,9}$/;
+const BILLING_PHONE_PATTERN = /^(0212|0412|0422|0414|0424|0416|0426)\d{7}$/;
+
+export const billingFormSchema = z.object({
+  "billing.document_type": z.string().refine((value) => ["V", "E", "J", "G"].includes(value), "Elige el tipo de documento."),
+  "billing.document": z.string().refine((value) => BILLING_DOCUMENT_PATTERN.test(value.trim()), "El documento debe tener de 5 a 9 dígitos."),
+  "billing.name": requiredText(100, "Escribe el nombre o la razón social."),
+  "billing.phone": z
+    .string()
+    .refine((value) => BILLING_PHONE_PATTERN.test(value.trim()), "Escribe un teléfono venezolano de 11 dígitos, como 04141234567."),
+  "billing.address": z
+    .string()
+    .refine((value) => charCount(value.trim()) >= 8, "La dirección fiscal debe tener al menos 8 caracteres.")
+    .refine((value) => charCount(value.trim()) <= 250, tooLong(250)),
+  "billing.taxpayer_type": z.string().refine((value) => ["special", "ordinary"].includes(value), "Elige el tipo de contribuyente."),
+});

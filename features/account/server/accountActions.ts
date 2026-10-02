@@ -13,10 +13,11 @@ import {
   updateSettings,
 } from "@/lib/marketplace/client";
 import type { AccountContext } from "@/lib/marketplace/params";
-import type { AddressInput, AddressPatch, ProfilePatch } from "@/lib/marketplace/schemas";
+import type { AddressInput, AddressPatch, Billing, ProfilePatch } from "@/lib/marketplace/schemas";
 import {
   addressCoordsSchema,
   addressSchema,
+  billingFormSchema,
   changePasswordSchema,
   deleteAccountSchema,
   profileSchema,
@@ -32,6 +33,8 @@ const FAVORITES_PATH = "/cuenta/favoritos";
 
 const PROFILE_SAVED = "Guardamos tus datos.";
 const PASSWORD_CHANGED = "Cambiamos tu contraseña y cerramos tus otras sesiones.";
+const BILLING_SAVED = "Guardamos tus datos de facturación.";
+const BILLING_CLEARED = "Borramos tus datos de facturación.";
 const SETTINGS_SAVED = "Guardamos tus avisos.";
 const ADDRESS_SAVED = "Guardamos la dirección.";
 const COORDS_REQUIRED =
@@ -94,6 +97,53 @@ export async function updateProfile(prev: FormState, formData: FormData): Promis
     }
     refresh();
     return success(message, values);
+  });
+}
+
+const BILLING_VALUE_NAMES = [
+  "billing.document_type",
+  "billing.document",
+  "billing.name",
+  "billing.phone",
+  "billing.address",
+  "billing.taxpayer_type",
+];
+
+export async function updateBilling(prev: FormState, formData: FormData): Promise<FormState> {
+  void prev;
+  const values = pick(formData, BILLING_VALUE_NAMES);
+  const parsed = billingFormSchema.safeParse(values);
+  if (!parsed.success) return formStateFromZod(parsed.error, values);
+  const billing = {
+    document_type: values["billing.document_type"],
+    document: values["billing.document"].trim(),
+    name: values["billing.name"].trim(),
+    phone: values["billing.phone"].trim(),
+    address: values["billing.address"].trim(),
+    taxpayer_type: values["billing.taxpayer_type"],
+  } as Billing;
+  return withSession(PROFILE_PATH, async (ctx) => {
+    try {
+      await updateMe(ctx, { billing });
+    } catch (error) {
+      return formStateFromError(error, values);
+    }
+    refresh();
+    return success(BILLING_SAVED, values);
+  });
+}
+
+export async function clearBilling(prev: FormState, formData: FormData): Promise<FormState> {
+  void prev;
+  void formData;
+  return withSession(PROFILE_PATH, async (ctx) => {
+    try {
+      await updateMe(ctx, { billing: null });
+    } catch (error) {
+      return formStateFromError(error, {});
+    }
+    refresh();
+    return success(BILLING_CLEARED);
   });
 }
 

@@ -15,6 +15,7 @@ import {
   loginCustomer,
   registerCustomer,
   searchProducts,
+  updateMe,
 } from "@/lib/marketplace/mock/adapter";
 import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "@/lib/marketplace/mock/cart";
 import { getPurchase, listPurchases, quoteCheckout, resetMockPurchases, startCheckout } from "@/lib/marketplace/mock/checkout";
@@ -184,6 +185,22 @@ describe("el simulado de cuentas pasa los esquemas del contrato", () => {
       password: "otra-clave-1",
     });
     expect(authResponseSchema.safeParse(response).success).toBe(true);
+  });
+
+  it("perfil con datos de facturación", async () => {
+    const ctx = await seededSession();
+    const customer = await updateMe(ctx, {
+      billing: {
+        document_type: "V",
+        document: "12345678",
+        name: "Comprador de prueba",
+        phone: "04141234567",
+        address: "Av. Bolívar Norte, edificio Sol, Valencia",
+        taxpayer_type: "ordinary",
+      },
+    });
+    expect(customerSchema.safeParse(customer).success).toBe(true);
+    expect(customer.billing).not.toBeNull();
   });
 
   it("perfil", async () => {

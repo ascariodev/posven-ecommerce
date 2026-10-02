@@ -60,6 +60,7 @@ const customer: Customer = {
   email_verified: true,
   pending_email: null,
   settings: { order_status_emails: true },
+  billing: null,
 };
 
 const address: Address = {

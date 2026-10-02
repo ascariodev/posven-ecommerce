@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
-import type { AddressInput } from "@/lib/marketplace/schemas";
+import type { AddressInput, Billing } from "@/lib/marketplace/schemas";
 import {
   addFavorite,
   createAddress,
@@ -218,5 +218,47 @@ describe("simulado de cuentas: favoritos", () => {
 
     expect(error.status).toBe(404);
     expect(error.code).toBe("not_found");
+  });
+});
+
+describe("simulado de cuentas: datos de facturación", () => {
+  const billing: Billing = {
+    document_type: "J",
+    document: "123456789",
+    name: "Farmacia Sol, C.A.",
+    phone: "04141234567",
+    address: "Av. Bolívar Norte, edificio Sol, Valencia",
+    taxpayer_type: "special",
+  };
+
+  it("guarda un billing válido y getMe lo devuelve", async () => {
+    const ctx = await sessionOf(seeded);
+
+    const customer = await updateMe(ctx, { billing });
+
+    expect(customer.billing).toEqual(billing);
+    expect((await getMe(ctx)).billing).toEqual(billing);
+  });
+
+  it("un billing inválido da validation_failed con claves billing.<campo> y no guarda nada", async () => {
+    const ctx = await sessionOf(seeded);
+
+    const error = await captureAccountError(
+      updateMe(ctx, { billing: { ...billing, document: "12", phone: "0511234567", address: "corta" } }),
+    );
+
+    expect(error.status).toBe(422);
+    expect(error.code).toBe("validation_failed");
+    expect(Object.keys(error.fields ?? {}).sort()).toEqual(["billing.address", "billing.document", "billing.phone"]);
+    expect((await getMe(ctx)).billing).toBeNull();
+  });
+
+  it("billing null borra los datos", async () => {
+    const ctx = await sessionOf(seeded);
+    await updateMe(ctx, { billing });
+
+    const customer = await updateMe(ctx, { billing: null });
+
+    expect(customer.billing).toBeNull();
   });
 });

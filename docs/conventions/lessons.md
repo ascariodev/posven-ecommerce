@@ -38,3 +38,10 @@ eliminada), el efecto de `useActionToast` nunca corre y el toast se pierde. El t
 dentro de la función pasada a `useActionState`, tras el `await`, y se prueba con e2e.
 aplicada en: `features/account/components/AddressActionButton.tsx`,
 `features/account/components/FavoriteToggleForm.tsx`
+
+## L-07
+
+Una validación nueva del simulado (`lib/marketplace/mock/`) lleva su prueba en la misma fase: sin
+ella, una regex que perdió el escape (`d{7}` por `\d{7}`) rechaza todo lo válido y la suite sigue
+en verde. Tras escribir una regex, se relee el archivo para confirmar las barras invertidas.
+aplicada en: pendiente: el usuario decide promoverla a `posven-ecommerce/.claude/rules/contract.md` (punto 5), propuesto al cerrar el plan del registro del comprador

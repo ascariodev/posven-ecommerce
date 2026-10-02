@@ -46,6 +46,7 @@ const customer: Customer = {
   email_verified: false,
   pending_email: null,
   settings: { order_status_emails: true },
+  billing: null,
 };
 
 const unavailableMessage = "No pudimos conectar con el servicio. Intenta de nuevo en unos segundos.";

@@ -213,7 +213,7 @@ export async function startCheckout(ctx: AccountContext, input: CheckoutInput): 
   const account = mockAccountFor(ctx);
   const parsed = checkoutInputSchema.safeParse(input);
   if (!parsed.success) throw accountError("validation_failed", { stores: "Revisa los datos del checkout." });
-  const { quote_hash, idempotency_key, ...quoteInput } = parsed.data;
+  const { quote_hash, idempotency_key, bill_to_me, ...quoteInput } = parsed.data;
 
   const current = state();
   const startedKey = `${account.id}:${idempotency_key}`;
@@ -221,6 +221,7 @@ export async function startCheckout(ctx: AccountContext, input: CheckoutInput): 
   if (repeated !== undefined) return structuredClone(repeated);
 
   if (!account.customer.email_verified) throw accountError("email_unverified");
+  if (bill_to_me === true && account.customer.billing === null) throw accountError("billing_incomplete");
   const quoted = buildQuote(ctx, quoteInput);
   if (quoted.quote.quote_hash !== quote_hash) throw accountError("quote_changed", null, quoted.quote);
 

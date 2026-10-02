@@ -759,6 +759,7 @@ export const MOCK_ACCOUNT_SEED: MockAccount[] = [
       email_verified: true,
       pending_email: null,
       settings: { order_status_emails: true },
+      billing: null,
     },
     password: "clave-segura-1",
     addresses: [
@@ -788,6 +789,7 @@ export const MOCK_ACCOUNT_SEED: MockAccount[] = [
       email_verified: true,
       pending_email: null,
       settings: { order_status_emails: true },
+      billing: null,
     },
     password: "clave-segura-3",
     addresses: [],
@@ -802,6 +804,7 @@ export const MOCK_ACCOUNT_SEED: MockAccount[] = [
       email_verified: true,
       pending_email: null,
       settings: { order_status_emails: true },
+      billing: null,
     },
     password: "clave-segura-3",
     addresses: [

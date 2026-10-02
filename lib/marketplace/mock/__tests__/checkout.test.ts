@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { CheckoutQuoteInput, Fulfillment } from "@/lib/marketplace/schemas";
-import { loginCustomer, registerCustomer, resetMockAccounts } from "@/lib/marketplace/mock/accounts";
+import { loginCustomer, registerCustomer, resetMockAccounts, updateMe } from "@/lib/marketplace/mock/accounts";
 import { deleteAccount } from "@/lib/marketplace/mock/adapter";
 import { cartItemsFor, resetMockCarts, setCartItem } from "@/lib/marketplace/mock/cart";
 import {
@@ -351,5 +351,47 @@ describe("eliminar la cuenta con compras (spec §5.8)", () => {
 
     expect(cartItemsFor(2)).toEqual([]);
     expect((await accountError(failingBuyer())).code).toBe("invalid_credentials");
+  });
+});
+
+describe("checkout simulado: Factura a mi nombre", () => {
+  const billing = {
+    document_type: "V" as const,
+    document: "12345678",
+    name: "Comprador de prueba",
+    phone: "04141234567",
+    address: "Av. Bolívar Norte, edificio Sol, Valencia",
+    taxpayer_type: "ordinary" as const,
+  };
+
+  async function payBilling(ctx: AccountContext) {
+    await add(ctx, CENTRAL, ACETAMINOFEN);
+    const quoteInput = input([[CENTRAL, "pickup"]]);
+    const quote = await quoteCheckout(ctx, quoteInput);
+    return startCheckout(ctx, {
+      ...quoteInput,
+      quote_hash: quote.quote_hash,
+      idempotency_key: crypto.randomUUID(),
+      bill_to_me: true,
+    });
+  }
+
+  it("bill_to_me sin datos de facturación da billing_incomplete y no crea la compra", async () => {
+    const ctx = await buyer();
+
+    const error = await accountError(payBilling(ctx));
+
+    expect(error.status).toBe(422);
+    expect(error.code).toBe("billing_incomplete");
+    expect((await listPurchases(ctx, 1)).meta.total).toBe(0);
+  });
+
+  it("bill_to_me con datos de facturación continúa", async () => {
+    const ctx = await buyer();
+    await updateMe(ctx, { billing });
+
+    const started = await payBilling(ctx);
+
+    expect(started.purchase_code).toMatch(PURCHASE_CODE);
   });
 });

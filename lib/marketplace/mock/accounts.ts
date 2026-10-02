@@ -6,6 +6,7 @@ import type {
   AddressInput,
   AddressPatch,
   AuthResponse,
+  Billing,
   CityRef,
   Customer,
   FavoritesResponse,
@@ -82,6 +83,7 @@ const ERROR_MESSAGES: Record<SimpleErrorCode, string> = {
   quote_changed: "Tu compra cambió. Revisa los precios y la entrega.",
   cart_empty: "Tu carrito no tiene productos disponibles.",
   open_orders: "Tienes pedidos en curso. Podrás eliminar tu cuenta cuando se entreguen.",
+  billing_incomplete: "Completa tus datos de facturación en tu perfil para facturar a tu nombre.",
 };
 
 const ERROR_STATUSES: Partial<Record<SimpleErrorCode, number>> = {
@@ -130,6 +132,17 @@ function requiredMessage(field: string): string {
 
 function requireText(errors: FieldErrors, field: string, value: string | undefined): void {
   if (isBlank(value)) flag(errors, field, requiredMessage(field));
+}
+
+const BILLING_PHONE_PATTERN = /^(0212|0412|0422|0414|0424|0416|0426)\d{7}$/;
+
+function checkBilling(errors: FieldErrors, billing: Billing): void {
+  const name = billing.name.trim();
+  const address = billing.address.trim();
+  if (!/^\d{5,9}$/.test(billing.document.trim())) flag(errors, "billing.document", "El documento debe tener de 5 a 9 dígitos.");
+  if (name === "" || name.length > 100) flag(errors, "billing.name", "El nombre o razón social admite hasta 100 caracteres.");
+  if (!BILLING_PHONE_PATTERN.test(billing.phone.trim())) flag(errors, "billing.phone", "El teléfono no es válido.");
+  if (address.length < 8 || address.length > 250) flag(errors, "billing.address", "La dirección fiscal debe tener de 8 a 250 caracteres.");
 }
 
 function normalizeEmail(email: string): string {
@@ -227,6 +240,7 @@ export async function registerCustomer(_ctx: AccountContext, input: RegisterInpu
       email_verified: false,
       pending_email: null,
       settings: { order_status_emails: true },
+      billing: null,
     },
     password: input.password,
     addresses: [],
@@ -330,6 +344,7 @@ export async function updateMe(ctx: AccountContext, patch: ProfilePatch): Promis
   const errors: FieldErrors = {};
   if (patch.name !== undefined) requireText(errors, "name", patch.name);
   if (patch.phone !== undefined) requireText(errors, "phone", patch.phone);
+  if (patch.billing) checkBilling(errors, patch.billing);
   if (patch.email !== undefined) {
     const checked = checkEmail(errors, patch.email);
     if (checked !== null) checkRegistrableEmail(errors, checked, account.id);
@@ -353,6 +368,18 @@ export async function updateMe(ctx: AccountContext, patch: ProfilePatch): Promis
 
   if (patch.name !== undefined) account.customer.name = patch.name.trim();
   if (patch.phone !== undefined) account.customer.phone = patch.phone.trim();
+  if (patch.billing !== undefined) {
+    account.customer.billing =
+      patch.billing === null
+        ? null
+        : {
+            ...patch.billing,
+            document: patch.billing.document.trim(),
+            name: patch.billing.name.trim(),
+            phone: patch.billing.phone.trim(),
+            address: patch.billing.address.trim(),
+          };
+  }
   if (email !== null) account.customer.pending_email = changesEmail ? email : null;
   if (changesEmail) state().pendingVerification = { customerId: account.id, email };
   return toCustomer(account);

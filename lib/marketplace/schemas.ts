@@ -261,8 +261,23 @@ export const accountErrorCodeSchema = z.enum([
   "quote_changed",
   "cart_empty",
   "open_orders",
+  "billing_incomplete",
 ]);
 export type AccountErrorCode = z.infer<typeof accountErrorCodeSchema>;
+
+export const billingDocumentTypeSchema = z.enum(["V", "E", "J", "G"]);
+export const billingTaxpayerTypeSchema = z.enum(["special", "ordinary"]);
+
+// Datos fiscales del comprador (spec cuentas-y-compras §4.1 Billing); las seis claves o ninguna.
+export const billingSchema = z.object({
+  document_type: billingDocumentTypeSchema,
+  document: z.string(),
+  name: z.string(),
+  phone: z.string(),
+  address: z.string(),
+  taxpayer_type: billingTaxpayerTypeSchema,
+});
+export type Billing = z.infer<typeof billingSchema>;
 
 export const customerSchema = z.object({
   name: z.string(),
@@ -273,6 +288,7 @@ export const customerSchema = z.object({
   settings: z.object({
     order_status_emails: z.boolean(),
   }),
+  billing: billingSchema.nullable(),
 });
 export type Customer = z.infer<typeof customerSchema>;
 
@@ -337,6 +353,7 @@ export const profilePatchSchema = z.object({
   phone: z.string().optional(),
   email: z.string().optional(),
   current_password: z.string().optional(),
+  billing: billingSchema.nullable().optional(),
 });
 export type ProfilePatch = z.infer<typeof profilePatchSchema>;
 
@@ -475,6 +492,7 @@ export type CheckoutQuoteInput = z.infer<typeof checkoutQuoteInputSchema>;
 export const checkoutInputSchema = checkoutQuoteInputSchema.extend({
   quote_hash: z.string().min(1).max(200),
   idempotency_key: z.uuid({ version: "v4" }),
+  bill_to_me: z.boolean().optional(),
 });
 export type CheckoutInput = z.infer<typeof checkoutInputSchema>;
 

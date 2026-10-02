@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getCart, listAddresses, quoteCheckout } from "@/lib/marketplace/client";
+import { listAddresses, quoteCheckout } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { Address, Cart } from "@/lib/marketplace/schemas";
+import { getSessionCart } from "@/features/cart/server/cart";
 import { loadCheckout } from "@/features/checkout/server/checkout";
 import { ABASTO, CENTRAL, cartStore, quote, quoteStore } from "@/features/checkout/__tests__/fixtures/testQuote";
 
@@ -10,6 +11,8 @@ vi.mock("@/lib/marketplace/client", () => ({
   listAddresses: vi.fn(),
   quoteCheckout: vi.fn(),
 }));
+
+vi.mock("@/features/cart/server/cart", () => ({ getSessionCart: vi.fn() }));
 
 const ctx = { session: "7|token", clientIp: null };
 
@@ -33,14 +36,14 @@ function cart(stores = [cartStore(CENTRAL, "Farmacia Central"), cartStore(ABASTO
 }
 
 afterEach(() => {
-  vi.mocked(getCart).mockReset();
+  vi.mocked(getSessionCart).mockReset();
   vi.mocked(listAddresses).mockReset();
   vi.mocked(quoteCheckout).mockReset();
 });
 
 describe("loadCheckout", () => {
   it("usa la dirección pedida si es del comprador y pide entrega sólo donde se eligió", async () => {
-    vi.mocked(getCart).mockResolvedValue(cart());
+    vi.mocked(getSessionCart).mockResolvedValue(cart());
     vi.mocked(listAddresses).mockResolvedValue([address(1, true), address(2, false)]);
     vi.mocked(quoteCheckout).mockResolvedValue(quote([quoteStore()]));
 
@@ -57,7 +60,7 @@ describe("loadCheckout", () => {
   });
 
   it("con una dirección ajena usa la predeterminada", async () => {
-    vi.mocked(getCart).mockResolvedValue(cart());
+    vi.mocked(getSessionCart).mockResolvedValue(cart());
     vi.mocked(listAddresses).mockResolvedValue([address(1, false), address(2, true)]);
     vi.mocked(quoteCheckout).mockResolvedValue(quote([quoteStore()]));
 
@@ -67,7 +70,7 @@ describe("loadCheckout", () => {
   });
 
   it("sin direcciones pide retiro en todas", async () => {
-    vi.mocked(getCart).mockResolvedValue(cart());
+    vi.mocked(getSessionCart).mockResolvedValue(cart());
     vi.mocked(listAddresses).mockResolvedValue([]);
     vi.mocked(quoteCheckout).mockResolvedValue(quote([quoteStore()]));
 
@@ -85,7 +88,7 @@ describe("loadCheckout", () => {
   it("sin líneas disponibles queda vacío sin cotizar", async () => {
     const gone = cartStore(CENTRAL, "Farmacia Central");
     gone.lines = gone.lines.map((line) => ({ ...line, status: "unavailable", unavailable_reason: "offer_gone" }));
-    vi.mocked(getCart).mockResolvedValue(cart([gone]));
+    vi.mocked(getSessionCart).mockResolvedValue(cart([gone]));
     vi.mocked(listAddresses).mockResolvedValue([]);
 
     expect(await loadCheckout(ctx, { addressId: null, delivery: [] })).toEqual({ kind: "empty" });
@@ -93,7 +96,7 @@ describe("loadCheckout", () => {
   });
 
   it("cart_empty de la API queda vacío", async () => {
-    vi.mocked(getCart).mockResolvedValue(cart());
+    vi.mocked(getSessionCart).mockResolvedValue(cart());
     vi.mocked(listAddresses).mockResolvedValue([]);
     vi.mocked(quoteCheckout).mockRejectedValue(
       new MarketplaceAccountError({ status: 422, code: "cart_empty", message: "Tu carrito no tiene productos disponibles." }),
@@ -103,7 +106,7 @@ describe("loadCheckout", () => {
   });
 
   it("si la dirección deja de ser válida al cotizar, vuelve a cotizar sin ella", async () => {
-    vi.mocked(getCart).mockResolvedValue(cart());
+    vi.mocked(getSessionCart).mockResolvedValue(cart());
     vi.mocked(listAddresses).mockResolvedValue([address(1, true)]);
     vi.mocked(quoteCheckout)
       .mockRejectedValueOnce(

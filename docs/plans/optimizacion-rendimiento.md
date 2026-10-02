@@ -3,7 +3,7 @@
 **Objetivo:** menos llamadas a posveapi y menos peso por página: lecturas públicas en caché, ficha
 sin precio viejo, checkout sin lecturas duplicadas ni sondeo infinito y el árbol de ubicaciones
 fuera del payload de cada página.
-**Estado:** en curso · Fase actual: 1
+**Estado:** en curso · Fase actual: 2
 
 ## Contexto mínimo
 - Spec: `posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md#4.4` (caché por
@@ -19,7 +19,7 @@ fuera del payload de cada página.
 
 ## Fases
 
-### [ ] Fase 1 — Caché de lecturas públicas del marketplace
+### [x] Fase 1 — Caché de lecturas públicas del marketplace
 - **Repo:** posven-ecommerce
 - **Alcance:**
   - `searchProducts` y `listNearbyStores`: `'use cache'`, `cacheLife("minutes")`,
@@ -75,7 +75,11 @@ fuera del payload de cada página.
 - 2026-10-02 — Sondeo del pago: 3, 5 y 10 s, tope de 2 minutos, pausa con la pestaña oculta.
 - 2026-10-02 — Árbol de ubicaciones por server action al abrir la hoja: el dato es público y
   `listLocations` ya está cacheado en el servidor.
+- 2026-10-02 — Fase 1: firmas sin cambios. `next build` se verifica con `MARKETPLACE_MODE=mock`
+  (con el `.env` cae en modo api y `/sitemap/products` no responde); `/p/[slug]` queda parcial con
+  revalidación de 1 minuto. Los tags nuevos no tienen invalidación todavía (punto 3, fuera).
 
 ## Notas para la próxima sesión
-- Plan sin empezar. Fuera de este plan quedaron los puntos 3 (invalidación por `revalidateTag`
-  desde posveapi) y 8 (incremento del carrito en la API), que cruzan repos.
+- Fase 1 hecha. Sigue la fase 2 (checkout). Fuera de este plan quedaron los puntos 3
+  (invalidación por `revalidateTag` desde posveapi) y 8 (incremento del carrito en la API), que
+  cruzan repos.

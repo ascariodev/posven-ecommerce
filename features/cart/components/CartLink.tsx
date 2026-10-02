@@ -37,12 +37,15 @@ export async function CartLink() {
       href="/carrito"
       rel="nofollow"
       aria-label={label}
-      className={cn(buttonVariants({ variant: "outline", size: "sm" }), "min-w-11")}
+      className={cn(
+        buttonVariants({ variant: "ghost", size: "sm" }),
+        "relative min-w-11 rounded-full border border-primary/20 text-primary hover:bg-primary/10 hover:text-primary"
+      )}
     >
       <ShoppingCart aria-hidden="true" className="size-4" />
       <span className="hidden sm:inline">Carrito</span>
       {count !== null && count > 0 && (
-        <span className="min-w-5 rounded-full bg-primary px-1.5 text-center text-xs font-bold text-primary-foreground">
+        <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground shadow-sm">
           {count}
         </span>
       )}

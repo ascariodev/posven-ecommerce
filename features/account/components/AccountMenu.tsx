@@ -1,5 +1,6 @@
 import { User } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
@@ -22,7 +23,14 @@ export async function AccountSlot() {
   const customer = await currentCustomerOrGuest();
   if (customer === null) {
     return (
-      <Link href="/entrar" rel="nofollow" className={buttonVariants({ variant: "outline", size: "sm" })}>
+      <Link
+        href="/entrar"
+        rel="nofollow"
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "sm" }),
+          "rounded-full border border-primary/20 text-primary hover:bg-primary/10 hover:text-primary"
+        )}
+      >
         <User aria-hidden="true" className="size-4" />
         Entrar
       </Link>

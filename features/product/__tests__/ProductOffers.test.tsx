@@ -75,22 +75,22 @@ afterEach(() => {
 
 describe("ProductOffers", () => {
   it("las destacadas van primero con Destacado y las de fuera del radio bajo Fuera de tu zona", async () => {
-    const premium = offer("farmacia-central-valencia", "Farmacia Central");
-    const near = offer("abasto-la-esquina", "Abasto La Esquina");
-    const far = offer("farmacia-altamira", "Farmacia Altamira", { outside_radius: true });
+    const premium = offer("farmacia-central-valencia", "Farmacia Central", { price_usd: "2.60" });
+    const near = offer("abasto-la-esquina", "Abasto La Esquina", { price_usd: "2.50" });
+    const far = offer("farmacia-altamira", "Farmacia Altamira", { price_usd: "2.70", outside_radius: true });
     vi.mocked(getProductOffers).mockResolvedValue(page([near, far], [premium]));
 
     render(await ProductOffers({ product, searchParams: searchParams({}) }));
 
     const items = within(screen.getByRole("list", { name: "Ofertas" })).getAllByRole("listitem");
-    expect(within(items[0]).getByText("Farmacia Central")).toBeTruthy();
+    expect(within(items[0]).getByText("$ 2,60")).toBeTruthy();
     expect(within(items[0]).getByText("Destacado")).toBeTruthy();
-    expect(within(items[1]).getByText("Abasto La Esquina")).toBeTruthy();
+    expect(within(items[1]).getByText("$ 2,50")).toBeTruthy();
     expect(within(items[1]).queryByText("Destacado")).toBeNull();
 
     expect(screen.getByRole("heading", { level: 3, name: "Fuera de tu zona" })).toBeTruthy();
     const outside = screen.getByRole("list", { name: "Fuera de tu zona" });
-    expect(within(outside).getByText("Farmacia Altamira")).toBeTruthy();
+    expect(within(outside).getByText("$ 2,70")).toBeTruthy();
   });
 
   it("sin ubicación no ofrece Más cerca y pide sort price aunque venga orden=cerca", async () => {
@@ -126,15 +126,15 @@ describe("ProductOffers", () => {
   });
 
   it("con orden por precio y sin destacadas marca Mejor precio una sola vez, en la primera oferta", async () => {
-    const first = offer("abasto-la-esquina", "Abasto La Esquina");
-    const second = offer("farmacia-altamira", "Farmacia Altamira");
+    const first = offer("abasto-la-esquina", "Abasto La Esquina", { price_usd: "2.50" });
+    const second = offer("farmacia-altamira", "Farmacia Altamira", { price_usd: "2.70" });
     vi.mocked(getProductOffers).mockResolvedValue(page([first, second], []));
 
     render(await ProductOffers({ product, searchParams: searchParams({}) }));
 
     expect(screen.getAllByText("Mejor precio")).toHaveLength(1);
     const items = within(screen.getByRole("list", { name: "Ofertas" })).getAllByRole("listitem");
-    expect(within(items[0]).getByText("Abasto La Esquina")).toBeTruthy();
+    expect(within(items[0]).getByText("$ 2,50")).toBeTruthy();
     expect(within(items[0]).getByText("Mejor precio")).toBeTruthy();
     expect(within(items[1]).queryByText("Mejor precio")).toBeNull();
   });

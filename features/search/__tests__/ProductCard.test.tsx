@@ -30,7 +30,7 @@ afterEach(() => {
 describe("ProductCard", () => {
   it("avisa que requiere récipe", () => {
     render(<ProductCard item={item({ restriction: "recipe" })} />);
-    expect(screen.getByText("Requiere récipe")).toBeTruthy();
+    expect(screen.getByText("Récipe")).toBeTruthy();
   });
 
   it("con una sola oferta no antepone Desde", () => {
@@ -42,13 +42,14 @@ describe("ProductCard", () => {
 
   it("con varias ofertas antepone Desde", () => {
     render(<ProductCard item={item({ offers_count: 3 })} />);
-    expect(screen.getByText("Desde $ 1,50")).toBeTruthy();
-    expect(screen.getByText("Desde Bs 54,75")).toBeTruthy();
+    expect(screen.getByText("Desde")).toBeTruthy();
+    expect(screen.getByText("$ 1,50")).toBeTruthy();
+    expect(screen.getByText("Bs 54,75")).toBeTruthy();
     expect(screen.getByText("En 3 tiendas", { exact: false })).toBeTruthy();
   });
 
   it("marca lo que queda fuera del radio", () => {
     render(<ProductCard item={item({ outside_radius: true })} />);
-    expect(screen.getByText("Fuera de tu zona")).toBeTruthy();
+    expect(screen.getByText("Fuera zona")).toBeTruthy();
   });
 });

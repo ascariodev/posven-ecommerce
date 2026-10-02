@@ -50,7 +50,7 @@ describe("CheckoutForm", () => {
     expect(screen.getByText("Se cobrará Bs 255,60")).toBeTruthy();
     expect(screen.getByText("$ 1,70 · Bs 62,05")).toBeTruthy();
     expect(screen.getAllByText("$ 5,10 · Bs 186,15")).toHaveLength(4);
-    expect(screen.getByRole("button", { name: "Pagar Bs 255,60" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Pagar Bs 255,60 de forma segura" })).toBeTruthy();
   });
 
   it.each<[DeliveryUnavailableReason, string]>([
@@ -123,7 +123,7 @@ describe("CheckoutForm", () => {
     const { container } = renderForm();
 
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Pagar Bs 255,60" }));
+      fireEvent.click(screen.getByRole("button", { name: "Pagar Bs 255,60 de forma segura" }));
     });
 
     expect(screen.getByRole("alert").textContent).toBe("Tu compra cambió. Revisa los precios y la entrega.");
@@ -165,7 +165,7 @@ describe("CheckoutForm", () => {
     renderForm();
 
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Pagar Bs 255,60" }));
+      fireEvent.click(screen.getByRole("button", { name: "Pagar Bs 255,60 de forma segura" }));
     });
 
     expect(screen.getByRole("alert").textContent).toBe("Verifica tu correo para comprar.");
@@ -205,12 +205,12 @@ describe("CheckoutForm", () => {
     renderForm({ hasBilling: true });
 
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Pagar Bs 255,60" }));
+      fireEvent.click(screen.getByRole("button", { name: "Pagar Bs 255,60 de forma segura" }));
     });
 
     expect(screen.getByRole("alert").textContent).toContain("Completa tus datos de facturación.");
     expect(screen.getByRole("link", { name: "Completar mis datos" }).getAttribute("href")).toBe("/cuenta/perfil");
-    expect(screen.getByRole("button", { name: "Pagar Bs 255,60" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Pagar Bs 255,60 de forma segura" })).toBeTruthy();
   });
 
   it("sin el correo verificado no ofrece pagar", () => {

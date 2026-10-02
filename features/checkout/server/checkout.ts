@@ -1,6 +1,7 @@
 import "server-only";
-import { getCart, listAddresses, quoteCheckout } from "@/lib/marketplace/client";
+import { listAddresses, quoteCheckout } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
+import { getSessionCart } from "@/features/cart/server/cart";
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { Address, CartStore, CheckoutQuoteInput, Fulfillment, Quote } from "@/lib/marketplace/schemas";
 import type { CheckoutParams } from "../lib/params";
@@ -26,7 +27,8 @@ function isAccountError(error: unknown, code: string): boolean {
 }
 
 export async function loadCheckout(ctx: AccountContext, params: CheckoutParams): Promise<CheckoutData> {
-  const [cart, addresses] = await Promise.all([getCart(ctx), listAddresses(ctx)]);
+  const [cart, addresses] = await Promise.all([getSessionCart(), listAddresses(ctx)]);
+  if (cart === null) return { kind: "empty" };
   const stores = cart.stores.filter((store) => store.lines.some((line) => line.status === "ok"));
   if (stores.length === 0) return { kind: "empty" };
 

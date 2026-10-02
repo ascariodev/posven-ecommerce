@@ -73,6 +73,9 @@ export async function searchProducts(p: {
   radiusKm: RadiusKm | null;
   page: number;
 }): Promise<SearchResponse> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("marketplace:search");
   if (usesMock()) return mock.searchProducts(p);
   return requestJson("/search", searchQuery(p), searchResponseSchema);
 }
@@ -82,6 +85,9 @@ export async function listNearbyStores(p: {
   radiusKm: RadiusKm | null;
   page: number;
 }): Promise<StoresResponse> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("marketplace:stores");
   if (usesMock()) return mock.listNearbyStores(p);
   return requestJson("/stores", storesQuery(p), storesResponseSchema);
 }
@@ -105,15 +111,7 @@ export async function listLocations(): Promise<LocationState[]> {
 }
 
 export async function getProduct(slug: string): Promise<ProductResponse | null> {
-  "use cache";
-  cacheLife("hours");
-  cacheTag(`marketplace:product:${slug}`);
-  if (usesMock()) return mock.getProduct(slug);
-  return requestJsonOrNull(
-    `/products/${encodeURIComponent(slug)}`,
-    productQuery({ geo: null, radiusKm: null, sort: "price" }),
-    productResponseSchema,
-  );
+  return getProductOffers({ slug, geo: null, radiusKm: null, sort: "price" });
 }
 
 export async function getProductOffers(p: {

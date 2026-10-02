@@ -2,10 +2,10 @@
 module: "checkout"
 path: "features/checkout"
 type: "feature"
-exports: ["readCheckoutParams", "checkoutHref", "FULFILLMENT_PARAM_PREFIX", "CheckoutParams", "loadCheckout", "CheckoutData", "payCheckout", "CheckoutState", "INITIAL_CHECKOUT_STATE", "PAY_FAILED", "CheckoutView", "CheckoutViewSkeleton", "EMAIL_UNVERIFIED_MESSAGE", "CheckoutForm", "DELIVERY_UNAVAILABLE_TEXT", "CheckoutEmpty", "CART_EMPTY_MESSAGE", "CheckoutResult", "CheckoutResultSkeleton", "PURCHASE_CODE_PATTERN", "resultHref", "PurchasePoller", "POLL_INTERVAL_MS"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/server/session.ts", "features/account/components/VerifyEmailForm.tsx", "features/account/server/actions.ts", "features/cart/lib/flag.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/radio-group.tsx", "components/ui/select.tsx", "components/ui/skeleton.tsx"]
+exports: ["readCheckoutParams", "checkoutHref", "FULFILLMENT_PARAM_PREFIX", "CheckoutParams", "loadCheckout", "CheckoutData", "payCheckout", "CheckoutState", "INITIAL_CHECKOUT_STATE", "PAY_FAILED", "CheckoutView", "CheckoutViewSkeleton", "EMAIL_UNVERIFIED_MESSAGE", "CheckoutForm", "DELIVERY_UNAVAILABLE_TEXT", "CheckoutEmpty", "CART_EMPTY_MESSAGE", "CheckoutResult", "CheckoutResultSkeleton", "PURCHASE_CODE_PATTERN", "resultHref", "PurchasePoller", "POLL_DELAYS_MS", "POLL_MAX_MS"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/server/session.ts", "features/cart/server/cart.ts", "features/account/components/VerifyEmailForm.tsx", "features/account/server/actions.ts", "features/cart/lib/flag.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/radio-group.tsx", "components/ui/select.tsx", "components/ui/skeleton.tsx"]
 tests: "features/checkout/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/checkout/lib/params.ts", "features/checkout/server/checkout.ts", "features/checkout/server/actions.ts", "features/checkout/lib/checkoutState.ts", "features/checkout/components/CheckoutView.tsx", "features/checkout/components/CheckoutForm.tsx", "features/checkout/components/CheckoutEmpty.tsx", "features/checkout/components/CheckoutResult.tsx", "features/checkout/components/PurchasePoller.tsx", "features/checkout/__tests__/params.test.ts", "features/checkout/__tests__/server.test.ts", "features/checkout/__tests__/actions.test.ts", "features/checkout/__tests__/CheckoutForm.test.tsx", "features/checkout/__tests__/CheckoutResult.test.tsx", "features/checkout/__tests__/PurchasePoller.test.tsx", "app/checkout/page.tsx", "app/checkout/resultado/page.tsx", "app/robots.ts", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
+verified_against: ["features/checkout/lib/params.ts", "features/checkout/server/checkout.ts", "features/cart/server/cart.ts", "features/checkout/server/actions.ts", "features/checkout/lib/checkoutState.ts", "features/checkout/components/CheckoutView.tsx", "features/checkout/components/CheckoutForm.tsx", "features/checkout/components/CheckoutEmpty.tsx", "features/checkout/components/CheckoutResult.tsx", "features/checkout/components/PurchasePoller.tsx", "features/checkout/__tests__/params.test.ts", "features/checkout/__tests__/server.test.ts", "features/checkout/__tests__/actions.test.ts", "features/checkout/__tests__/CheckoutForm.test.tsx", "features/checkout/__tests__/CheckoutResult.test.tsx", "features/checkout/__tests__/PurchasePoller.test.tsx", "app/checkout/page.tsx", "app/checkout/resultado/page.tsx", "app/robots.ts", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
 capabilities:
   - intent: "pagar el carrito: elegir dirección y retiro o entrega por tienda, ver la cotización e iniciar el pago"
     intent_aliases: ["checkout", "pagar", "finalizar compra", "cotizar envio", "retiro o entrega"]
@@ -20,7 +20,7 @@ capabilities:
     entrypoint: "<CheckoutResult />"
     file: "features/checkout/components/CheckoutResult.tsx"
     input: "code (el ?compra= validado con PURCHASE_CODE_PATTERN en app/checkout/resultado/page.tsx)"
-    output: "pendiente con PurchasePoller (refresca cada 3 s); pagada con 'Ver tu compra'; fallida o vencida con 'Volver al carrito'; 404 si no es del comprador"
+    output: "pendiente con PurchasePoller (refresca a los 3 s, 5 s y luego cada 10 s; se rinde a los 2 min); pagada con 'Ver tu compra'; fallida o vencida con 'Volver al carrito'; 404 si no es del comprador"
     source: "GET /me/purchases/{code} vía BFF"
     rules: ["RN-CHECKOUT-04"]
 ---
@@ -41,7 +41,7 @@ de la Quote y de la compra. Las compras (`/cuenta/compras`) viven en `features/p
 | `RN-CHECKOUT-01` | Pagar exige sesión (`requireCustomer`; un 401 al pagar borra la sesión y lleva a `/entrar?volver=%2Fcheckout`) y correo verificado: sin verificar, o ante un 403 `email_unverified`, se muestra el aviso de abajo y no se ofrece pagar. | `features/checkout/__tests__/actions.test.ts` ("un 401 borra la sesión...", "mapea %s a su estado"); `features/checkout/__tests__/CheckoutForm.test.tsx` ("sin el correo verificado no ofrece pagar", "un email_unverified de la acción..."); `e2e/checkout.spec.ts` ("sin el correo verificado no se puede pagar") |
 | `RN-CHECKOUT-02` | La elección vive en la URL (`direccion`, `f-<tienda>=delivery`) y cada cambio vuelve a cotizar en el servidor; sin dirección todo es retiro. Un 409 `quote_changed` reemplaza la Quote, marca "Cambió" y pide confirmar otra vez. | `features/checkout/__tests__/params.test.ts`; `features/checkout/__tests__/server.test.ts`; `features/checkout/__tests__/CheckoutForm.test.tsx` ("elegir entrega vuelve a cotizar...", "tras quote_changed...", "tras dos quote_changed seguidos...") |
 | `RN-CHECKOUT-03` | Cada página pintada de `/checkout` genera una `idempotency_key` (UUID v4) y la reenvía igual en cada intento de pago de esa página; el formulario de pago manda la dirección, las entregas y el `quote_hash` de la Quote que se muestra. | `features/checkout/__tests__/CheckoutForm.test.tsx` ("los campos ocultos llevan lo de la Quote vigente"); `features/checkout/__tests__/actions.test.ts` ("manda lo cotizado y redirige a la pasarela", "con %s no llama a la API") |
-| `RN-CHECKOUT-04` | `/checkout/resultado` consulta la compra cada 3 s mientras está `pending_payment` y para en un estado final (`paid`, `failed`, `expired`); sin JavaScript queda "Consultar de nuevo". | `features/checkout/__tests__/PurchasePoller.test.tsx`; `features/checkout/__tests__/CheckoutResult.test.tsx`; `e2e/checkout.spec.ts` |
+| `RN-CHECKOUT-04` | `/checkout/resultado` consulta la compra a los 3 s, 5 s y luego cada 10 s mientras está `pending_payment` (pausa con la pestaña oculta y se detiene a los 2 minutos) y para en un estado final (`paid`, `failed`, `expired`); sin JavaScript o agotado el tiempo queda "Consultar de nuevo". | `features/checkout/__tests__/PurchasePoller.test.tsx`; `features/checkout/__tests__/CheckoutResult.test.tsx`; `e2e/checkout.spec.ts` |
 
 Aviso sin correo verificado (`RN-CHECKOUT-01`): "Verifica tu correo para comprar." con "Reenviar
 verificación" y sin "Pagar".
@@ -65,7 +65,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 - `payCheckout(prev: CheckoutState, formData: FormData): Promise<CheckoutState>`, `features/checkout/server/actions.ts` (`"use server"`, sólo esta acción): campos `address_id`, `store_slug` repetido, `f-<tienda>`, `quote_hash` e `idempotency_key`; redirige a `redirect_url` o devuelve las instrucciones.
 - `CheckoutState`, `INITIAL_CHECKOUT_STATE` y `PAY_FAILED`, `features/checkout/lib/checkoutState.ts`.
 - `CheckoutView({ searchParams })`, `CheckoutViewSkeleton()` y `EMAIL_UNVERIFIED_MESSAGE`; `CheckoutForm(props)` (`"use client"`; el estado `error` sale por toast con `useActionToast`, y `quote_changed` y `email_unverified` se quedan en línea con `role="alert"`) y `DELIVERY_UNAVAILABLE_TEXT`; `CheckoutEmpty({ message? })` y `CART_EMPTY_MESSAGE`.
-- `CheckoutResult({ code })`, `CheckoutResultSkeleton()`, `PURCHASE_CODE_PATTERN` (`^[A-Za-z0-9-]{1,40}$`) y `resultHref(code)`; `PurchasePoller({ href })` (`"use client"`) y `POLL_INTERVAL_MS` (3000).
+- `CheckoutResult({ code })`, `CheckoutResultSkeleton()`, `PURCHASE_CODE_PATTERN` (`^[A-Za-z0-9-]{1,40}$`) y `resultHref(code)`; `PurchasePoller({ href })` (`"use client"`), `POLL_DELAYS_MS` (3000, 5000, 10000) y `POLL_MAX_MS` (120000).
 
 ## 5. Estructura interna
 
@@ -80,7 +80,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 
 ## 6. Dependencias
 
-- `lib/marketplace/client.ts` (`getCart`, `listAddresses`, `quoteCheckout`, `startCheckout`, `getPurchase`), `errors.ts`, `schemas.ts`, `params.ts`.
+- `features/cart/server/cart.ts` (`getSessionCart`, memoizado por petición) y `lib/marketplace/client.ts` (`listAddresses`, `quoteCheckout`, `startCheckout`, `getPurchase`), `errors.ts`, `schemas.ts`, `params.ts`.
 - `features/account/server/session.ts` (`requireCustomer`, `withSession`), `features/account/components/VerifyEmailForm.tsx` (`ResendVerificationForm`), `features/cart/lib/flag.ts` (`cartEnabled`).
 - `lib/format.ts`; `components/ui/` (`Badge`, `Button`, `Card`, `RadioGroup`, `Select`, `Skeleton`).
 
@@ -102,7 +102,7 @@ export default function Page({ searchParams }: PageProps<"/checkout">) {
 ## 8. Restricciones
 
 - El módulo no calcula montos: los de la Quote y de la compra se muestran con `lib/format.ts`. "Cambió" compara cadenas de la Quote vieja y la nueva.
-- El navegador nunca llama a posveapi: la cotización es un Server Component y la consulta cada 3 s es `router.refresh()`.
+- El navegador nunca llama a posveapi: la cotización es un Server Component y la consulta periódica es `router.refresh()`.
 - Nada de un comprador en `'use cache'`; las páginas leen cookies y `searchParams` dentro de `<Suspense>`.
 - Con el carrito apagado (`cartEnabled()`), `/checkout` y `/checkout/resultado` dan 404 y `payCheckout` no hace nada.
 - Sin JavaScript el checkout no se ve (hallazgo del plan 4a: con PPR el contenido del `<Suspense>` lo revela un script), así que no hay botón "Actualizar".
@@ -115,5 +115,5 @@ export default function Page({ searchParams }: PageProps<"/checkout">) {
 - `features/checkout/__tests__/server.test.ts`: dirección pedida, ajena y ausente; retiro sin dirección; vacío sin líneas y con `cart_empty`; nueva cotización sin dirección.
 - `features/checkout/__tests__/actions.test.ts`: redirección a la pasarela, instrucciones, `quote_changed`, 403, `cart_empty`, 429 con segundos, API caída, 401, entradas inválidas e interruptor apagado.
 - `features/checkout/__tests__/CheckoutForm.test.tsx`: montos sin calcular, entrega deshabilitada con cada motivo, "Agregar dirección", navegación al elegir entrega, campos ocultos, "Cambió" tras uno y tras dos `quote_changed` seguidos, "Reenviar verificación" ante un `email_unverified` de la acción y sin pagar con el correo sin verificar.
-- `features/checkout/__tests__/CheckoutResult.test.tsx` y `__tests__/PurchasePoller.test.tsx`: los cuatro estados, 404 y el intervalo de 3 s.
+- `features/checkout/__tests__/CheckoutResult.test.tsx` y `__tests__/PurchasePoller.test.tsx`: los cuatro estados, 404 y el intervalo creciente, el tope y la pausa.
 - `e2e/checkout.spec.ts` (en serie): compra completa con código de retiro y reembolso, sin verificar, entrega con envío, pago fallido y `noindex`.

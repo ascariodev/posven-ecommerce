@@ -11,13 +11,13 @@ import { loginSchema } from "../lib/formSchemas";
 
 export function LoginForm({ volver }: { volver: string }) {
   const [actionState, formAction, pending] = useActionState(login, INITIAL_FORM_STATE);
-  const { onSubmit, state } = useFormValidation(loginSchema, actionState);
+  const { onSubmit, onChange, state } = useFormValidation(loginSchema, actionState);
   const prefijo = useId();
   const emailError = state.fields.email !== undefined;
   const passwordError = state.fields.password !== undefined;
 
   return (
-    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+    <form action={formAction} onSubmit={onSubmit} onChange={onChange} noValidate className="flex flex-col gap-4">
       <FormNotice state={actionState} />
       <input type="hidden" name="volver" value={volver} />
       <div className="flex flex-col gap-1">

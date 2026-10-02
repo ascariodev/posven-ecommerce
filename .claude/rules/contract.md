@@ -33,6 +33,7 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
    `pageQuery` fijan las claves y cuándo se envía la ubicación (RN-MARKETPLACE-03); `client.ts`
    las usa todas y el simulado lee la ubicación de las tres primeras con `readScope`.
 7. **`'use cache'` sólo en funciones que reciben todo por argumento** y no leen la petición, con
-   `cacheLife` y `cacheTag` explícitos: `"hours"` en `listCategories`, `listLocations`,
-   `getProduct` y `listSitemap`; `"minutes"` en `getProductOffers` y `getStore`, que traen
-   precios por tienda.
+   `cacheLife` y `cacheTag` explícitos: `"hours"` en `listCategories`, `listLocations` y
+   `listSitemap`; `"minutes"` en `searchProducts`, `listNearbyStores`, `getProductOffers` y
+   `getStore`, que traen precios por tienda. `getProduct` no tiene caché propia: delega en
+   `getProductOffers` sin ubicación.

@@ -13,7 +13,7 @@ capabilities:
     file: "lib/marketplace/client.ts"
     input: "{ q: string, category: string|null, geo: GeoFilter, radiusKm: RadiusKm|null, page: number }"
     output: "SearchResponse { data: SearchItem[], featured: { product: Product, offer: Offer }[] (máx. 2), meta: PageMeta, rate: Rate }"
-    source: "GET /search de posveapi vía BFF, o el simulado con MARKETPLACE_MODE=mock"
+    source: "GET /search de posveapi vía BFF, o el simulado con MARKETPLACE_MODE=mock; cache 'minutes' con tag marketplace:search"
     rules: ["RN-MARKETPLACE-01", "RN-MARKETPLACE-02", "RN-MARKETPLACE-03"]
   - intent: "listar las tiendas cercanas o de una ciudad con su distancia y las premium destacadas"
     intent_aliases: ["tiendas cercanas", "comercios", "stores de posveapi"]
@@ -21,7 +21,7 @@ capabilities:
     file: "lib/marketplace/client.ts"
     input: "{ geo: GeoFilter, radiusKm: RadiusKm|null, page: number }"
     output: "StoresResponse { data: NearbyStore[], featured: NearbyStore[] (máx. 2), meta: PageMeta }"
-    source: "GET /stores de posveapi vía BFF, o el simulado con MARKETPLACE_MODE=mock"
+    source: "GET /stores de posveapi vía BFF, o el simulado con MARKETPLACE_MODE=mock; cache 'minutes' con tag marketplace:stores"
     rules: ["RN-MARKETPLACE-01", "RN-MARKETPLACE-02", "RN-MARKETPLACE-03"]
   - intent: "obtener el árbol de categorías globales"
     intent_aliases: ["categorias", "taxonomia", "arbol de categorias"]
@@ -45,7 +45,7 @@ capabilities:
     file: "lib/marketplace/client.ts"
     input: "slug: string"
     output: "ProductResponse | null: { redirect_to: string } o ProductPage { data: ProductDetail (Product + offers_summary { offer_count, low_price_usd: Money|null, high_price_usd: Money|null }), featured: ProductOffer[] (máx. 2), offers: ProductOffer[] (máx. 50), rate: Rate }; null si la API responde 404"
-    source: "GET /products/{slug}?sort=price de posveapi vía BFF, o el simulado; cache 'hours' con tag marketplace:product:{slug}"
+    source: "GET /products/{slug}?sort=price de posveapi vía BFF, o el simulado; delega en getProductOffers sin ubicación: cache 'minutes' con tag marketplace:product:{slug}"
     rules: ["RN-MARKETPLACE-01", "RN-MARKETPLACE-02", "RN-MARKETPLACE-04"]
   - intent: "listar las ofertas de un producto según la ubicación, por precio o por distancia"
     intent_aliases: ["ofertas de un producto", "donde comprar", "tiendas que lo venden", "comparar precios"]
@@ -177,11 +177,11 @@ la tercera, retiro `ready_for_pickup` con `pickup_code` y entrega `out_for_deliv
 
 Cliente de servidor, `lib/marketplace/client.ts` (`import "server-only"`):
 
-- `searchProducts(p: { q: string; category: string | null; geo: GeoFilter; radiusKm: RadiusKm | null; page: number }): Promise<SearchResponse>`
-- `listNearbyStores(p: { geo: GeoFilter; radiusKm: RadiusKm | null; page: number }): Promise<StoresResponse>`
+- `searchProducts(p: { q: string; category: string | null; geo: GeoFilter; radiusKm: RadiusKm | null; page: number }): Promise<SearchResponse>`: `'use cache'`, `cacheLife("minutes")`, `cacheTag("marketplace:search")`.
+- `listNearbyStores(p: { geo: GeoFilter; radiusKm: RadiusKm | null; page: number }): Promise<StoresResponse>`: `'use cache'`, `cacheLife("minutes")`, `cacheTag("marketplace:stores")`.
 - `listCategories(): Promise<CategoryNode[]>`: `'use cache'`, `cacheLife("hours")`, `cacheTag("marketplace:categories")`.
 - `listLocations(): Promise<LocationState[]>`: `'use cache'`, `cacheLife("hours")`, `cacheTag("marketplace:locations")`.
-- `getProduct(slug: string): Promise<ProductResponse | null>`: `'use cache'`, `cacheLife("hours")`, `cacheTag("marketplace:product:{slug}")`; nacional y por precio.
+- `getProduct(slug: string): Promise<ProductResponse | null>`: sin caché propia; llama a `getProductOffers({ slug, geo: null, radiusKm: null, sort: "price" })`, así que comparte su entrada; nacional y por precio.
 - `getProductOffers(p: { slug: string; geo: GeoFilter; radiusKm: RadiusKm | null; sort: OfferSort }): Promise<ProductResponse | null>`: `'use cache'`, `cacheLife("minutes")`, `cacheTag("marketplace:product:{slug}")`.
 - `getStore(p: { slug: string; page: number }): Promise<StoreResponse | null>`: `'use cache'`, `cacheLife("minutes")`, `cacheTag("marketplace:store:{slug}")`.
 - `listSitemap(p: { type: SitemapType; page: number }): Promise<SitemapResponse>`: `'use cache'`, `cacheLife("hours")`, `cacheTag("marketplace:sitemap:{type}")`.
@@ -326,10 +326,10 @@ const newSlug = "redirect_to" in product ? product.redirect_to : null;
 - `client.ts` y `http.ts` abren con `import "server-only"`: `MARKETPLACE_API_KEY` no llega al navegador.
 - Fuera de `lib/marketplace/` sólo se importa `client.ts`, `params.ts`, `errors.ts` y `schemas.ts`; nunca `http.ts` ni `mock/`.
 - Con ciudad, `radius_km` no se envía; con ciudad y todo el país (`radiusKm` null), tampoco `city`.
-- `searchProducts`, `listNearbyStores` y `sendEvent` no se cachean; `listCategories`, `listLocations`, `getProduct`, `getProductOffers`, `getStore` y `listSitemap` sí, y `cacheLife` exige `cacheComponents: true`.
+- `sendEvent` no se cachea; `searchProducts`, `listNearbyStores`, `listCategories`, `listLocations`, `getProductOffers`, `getStore` y `listSitemap` sí (`getProduct` usa la de `getProductOffers`), y `cacheLife` exige `cacheComponents: true`.
 - Las funciones de cuenta no se cachean: dependen de la sesión del comprador.
 - `X-Marketplace-Customer` y `X-Client-IP` sólo salen de `AccountContext`; `Content-Type: application/json` sólo va con cuerpo.
-- `getProductOffers` y `getStore` usan `cacheLife("minutes")` porque traen precios por tienda; `getProduct` y `listSitemap`, `"hours"`.
+- `searchProducts`, `listNearbyStores`, `getProductOffers` y `getStore` usan `cacheLife("minutes")` porque traen precios por tienda; `listCategories`, `listLocations` y `listSitemap`, `"hours"`.
 - Los slugs van en la ruta con `encodeURIComponent`.
 - `offers_summary` cubre todo el país, sin depender de la ubicación.
 - Dos excepciones a "sin cálculo", porque simulan lo que calcula la API: `mock/adapter.ts` compara montos con `Number()` para ordenar y elegir mínimo y máximo, y `mock/money.ts` multiplica y suma los montos del carrito y del checkout en céntimos enteros. `mock/checkout.ts` calcula además la distancia haversine para decidir la entrega.

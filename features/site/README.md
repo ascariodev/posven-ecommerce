@@ -133,7 +133,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
 ## 9. Pruebas
 
-- Comando: `npx vitest run features/site lib/sitemap.test.ts`
-- `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, y cada botón sólo con su dato. `lib/sitemap.test.ts` cubre la entrada `/comercios` del grupo `static`.
+- Comando: `npx vitest run features/site lib/__tests__/sitemap.test.ts`
+- `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, y cada botón sólo con su dato. `lib/__tests__/sitemap.test.ts` cubre la entrada `/comercios` del grupo `static`.
 - `features/site/__tests__/legal.test.tsx`: marcadores permitidos, guarda sin borrador, metadatos y sitemap según el interruptor, el aviso de `LegalDocument` y las cuatro cookies de privacidad.
 - `features/site/__tests__/SiteFooter.test.tsx`: categorías y enlaces, corte en 8, columna omitida con API caída o sin raíces, error ajeno relanzado; simula `@/lib/marketplace/client` y `@/features/site/lib/year` (`cacheLife` no corre en vitest).

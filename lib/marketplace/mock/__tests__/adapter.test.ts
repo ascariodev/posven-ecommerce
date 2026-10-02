@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { ProductPage, ProductResponse } from "../schemas";
-import { getProduct, getProductOffers, getStore, listNearbyStores, searchProducts } from "./adapter";
+import type { ProductPage, ProductResponse } from "@/lib/marketplace/schemas";
+import { getProduct, getProductOffers, getStore, listNearbyStores, searchProducts } from "@/lib/marketplace/mock/adapter";
 
 describe("adaptador simulado", () => {
   it("la búsqueda no distingue mayúsculas ni acentos", async () => {

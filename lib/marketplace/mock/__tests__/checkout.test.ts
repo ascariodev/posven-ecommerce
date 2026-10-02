@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { MarketplaceAccountError } from "../errors";
-import type { AccountContext } from "../params";
-import type { CheckoutQuoteInput, Fulfillment } from "../schemas";
-import { loginCustomer, registerCustomer, resetMockAccounts } from "./accounts";
-import { deleteAccount } from "./adapter";
-import { cartItemsFor, resetMockCarts, setCartItem } from "./cart";
+import { MarketplaceAccountError } from "@/lib/marketplace/errors";
+import type { AccountContext } from "@/lib/marketplace/params";
+import type { CheckoutQuoteInput, Fulfillment } from "@/lib/marketplace/schemas";
+import { loginCustomer, registerCustomer, resetMockAccounts } from "@/lib/marketplace/mock/accounts";
+import { deleteAccount } from "@/lib/marketplace/mock/adapter";
+import { cartItemsFor, resetMockCarts, setCartItem } from "@/lib/marketplace/mock/cart";
 import {
   getPurchase,
   hasOpenOrders,
@@ -12,7 +12,7 @@ import {
   quoteCheckout,
   resetMockPurchases,
   startCheckout,
-} from "./checkout";
+} from "@/lib/marketplace/mock/checkout";
 
 const anonymous: AccountContext = { session: null, clientIp: null };
 

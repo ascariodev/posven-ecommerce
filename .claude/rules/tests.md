@@ -18,7 +18,7 @@ paths:
    `npm test` corre la suite entera.
 4. `fetch` y `next/headers` se simulan con `vi` (`vi.stubGlobal`, `vi.mock`); las variables de
    entorno con `vi.stubEnv`, y todo se restaura en `afterEach`, como en
-   `lib/marketplace/http.test.ts`. `useRouter` y las acciones de servidor se simulan con
+   `lib/marketplace/__tests__/http.test.ts`. `useRouter` y las acciones de servidor se simulan con
    `vi.mock('next/navigation')` y `vi.mock('<ruta de actions>')`, como en
    `features/location/__tests__/LocationPicker.test.tsx`.
 5. `lib/marketplace/client.ts` no se prueba en vitest: sus funciones con `'use cache'` llaman a

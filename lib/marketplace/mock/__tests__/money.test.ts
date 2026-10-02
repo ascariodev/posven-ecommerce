@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fromCents, multiply, sum, toCents } from "./money";
+import { fromCents, multiply, sum, toCents } from "@/lib/marketplace/mock/money";
 
 describe("money del simulado", () => {
   it.each(["0.00", "0.10", "2.35", "1234.50"])("ida y vuelta de %s en céntimos", (value) => {

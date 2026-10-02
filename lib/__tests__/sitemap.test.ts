@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { listSitemap } from "@/lib/marketplace/client";
 import type { SitemapResponse } from "@/lib/marketplace/schemas";
 import { SITE_URL } from "@/lib/site";
-import { sitemapEntries, sitemapIds } from "./sitemap";
+import { sitemapEntries, sitemapIds } from "@/lib/sitemap";
 
 vi.mock("@/lib/marketplace/client", () => ({
   listSitemap: vi.fn(),

@@ -27,7 +27,7 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
    `posven/.claude/docs/specs/2026-09-29-cuentas-y-compras-design.md` si es de cuentas, y después
    en `schemas.ts`. Ningún campo se renombra ni se quita (spec §3.1, ítem 7).
 5. **El simulado pasa los mismos esquemas.** `mock/adapter.ts` exporta las mismas funciones con
-   las mismas firmas que `client.ts`, y `schemas.test.ts` valida cada respuesta simulada contra su
+   las mismas firmas que `client.ts`, y `__tests__/schemas.test.ts` valida cada respuesta simulada contra su
    esquema. Un campo nuevo se agrega también a `mock/fixtures.ts`.
 6. **Consultas sólo por `params.ts`.** `searchQuery`, `storesQuery`, `productQuery` y
    `pageQuery` fijan las claves y cuándo se envía la ubicación (RN-MARKETPLACE-03); `client.ts`

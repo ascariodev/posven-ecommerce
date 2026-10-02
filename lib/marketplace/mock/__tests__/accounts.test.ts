@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { MarketplaceAccountError } from "../errors";
-import type { AccountContext } from "../params";
-import type { AddressInput } from "../schemas";
+import { MarketplaceAccountError } from "@/lib/marketplace/errors";
+import type { AccountContext } from "@/lib/marketplace/params";
+import type { AddressInput } from "@/lib/marketplace/schemas";
 import {
   addFavorite,
   createAddress,
@@ -16,13 +16,13 @@ import {
   updateAddress,
   updateMe,
   verifyEmail,
-} from "./accounts";
+} from "@/lib/marketplace/mock/accounts";
 import {
   MOCK_EXPIRED_TOKEN,
   MOCK_RATE_LIMITED_EMAIL,
   MOCK_RESET_TOKEN,
   MOCK_VERIFY_TOKEN,
-} from "./fixtures";
+} from "@/lib/marketplace/mock/fixtures";
 
 const anonymous: AccountContext = { session: null, clientIp: null };
 const seeded = { email: "comprador@posven.test", password: "clave-segura-1" };

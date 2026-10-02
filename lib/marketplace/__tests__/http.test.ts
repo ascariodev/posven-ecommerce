@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { MarketplaceAccountError, MarketplaceUnavailableError } from "./errors";
-import { accountCommand, accountRequest, postJson, requestJson, requestJsonOrNull } from "./http";
+import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
+import { accountCommand, accountRequest, postJson, requestJson, requestJsonOrNull } from "@/lib/marketplace/http";
 
 const schema = z.object({ data: z.array(z.string()) });
 const fetchMock = vi.fn<typeof fetch>();

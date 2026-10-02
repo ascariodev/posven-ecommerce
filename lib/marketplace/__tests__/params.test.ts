@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { productQuery, searchQuery, storesQuery } from "./params";
+import { productQuery, searchQuery, storesQuery } from "@/lib/marketplace/params";
 
 const LOCATION_KEYS = ["lat", "lng", "city", "radius_km"];
 

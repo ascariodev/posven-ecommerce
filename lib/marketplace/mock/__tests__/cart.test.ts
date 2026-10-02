@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { MarketplaceAccountError } from "../errors";
-import type { AccountContext } from "../params";
-import type { CartItem } from "../schemas";
-import { loginCustomer, resetMockAccounts } from "./accounts";
-import { MOCK_PRODUCTS, MOCK_RATE } from "./fixtures";
-import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "./cart";
+import { MarketplaceAccountError } from "@/lib/marketplace/errors";
+import type { AccountContext } from "@/lib/marketplace/params";
+import type { CartItem } from "@/lib/marketplace/schemas";
+import { loginCustomer, resetMockAccounts } from "@/lib/marketplace/mock/accounts";
+import { MOCK_PRODUCTS, MOCK_RATE } from "@/lib/marketplace/mock/fixtures";
+import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "@/lib/marketplace/mock/cart";
 
 const anonymous: AccountContext = { session: null, clientIp: null };
 

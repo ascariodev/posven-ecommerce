@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { resetMockAccounts } from "./mock/accounts";
+import { resetMockAccounts } from "@/lib/marketplace/mock/accounts";
 import {
   addFavorite,
   createAddress,
@@ -15,10 +15,10 @@ import {
   loginCustomer,
   registerCustomer,
   searchProducts,
-} from "./mock/adapter";
-import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "./mock/cart";
-import { getPurchase, listPurchases, quoteCheckout, resetMockPurchases, startCheckout } from "./mock/checkout";
-import { MOCK_STORES } from "./mock/fixtures";
+} from "@/lib/marketplace/mock/adapter";
+import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "@/lib/marketplace/mock/cart";
+import { getPurchase, listPurchases, quoteCheckout, resetMockPurchases, startCheckout } from "@/lib/marketplace/mock/checkout";
+import { MOCK_STORES } from "@/lib/marketplace/mock/fixtures";
 import {
   accountErrorBodySchema,
   addressSchema,
@@ -42,7 +42,7 @@ import {
   storeResponseSchema,
   storesResponseSchema,
   storeSummarySchema,
-} from "./schemas";
+} from "@/lib/marketplace/schemas";
 
 const noFilters = { category: null, geo: null, radiusKm: null, page: 1 } as const;
 

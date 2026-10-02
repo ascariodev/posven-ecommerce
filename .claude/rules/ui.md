@@ -37,8 +37,9 @@ nueva se agrega con `shadcn add` y se ajusta a los tokens y a las reglas de abaj
    sólo en la cabecera.
 5. **Contraste AA.** El texto sobre el naranja de marca es oscuro (`text-primary-foreground`),
    nunca blanco. El foco visible usa `outline-foreground`, no el primario, porque el naranja sobre
-   blanco no llega a 3:1; el ring de shadcn no reemplaza ese outline. Los bordes de controles de
-   formulario usan `border-input-border` (`--border` no llega a 3:1 sobre blanco); `border-border`
+   blanco no llega a 3:1; el ring de shadcn no reemplaza ese outline. Un control con
+   `aria-invalid` lo cambia a `outline-destructive` (sí llega a 3:1) para no mezclar negro y rojo.
+   Los bordes de controles de formulario usan `border-input-border` (`--border` no llega a 3:1 sobre blanco); `border-border`
    queda para tarjetas y separadores. Los controles principales miden al menos 44 px de alto
    (`h-11`). El tamaño `sm` de `Button`, `Toggle` y `SelectTrigger` mide 44 px en móvil y 36 px
    desde `md` (`h-11 md:h-9`); un control o esqueleto con altura escrita a mano sigue esa misma

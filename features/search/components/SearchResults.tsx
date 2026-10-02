@@ -45,25 +45,27 @@ export async function SearchResults({
   ]);
   const isEmpty = data.length === 0 && featured.length === 0;
 
-  const gridClasses = "grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3 lg:grid-cols-4";
+  const gridClasses = "grid grid-cols-2 gap-4 lg:grid-cols-3";
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3">
-        <nav
-          aria-label="Categorías"
-          className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          <ul className="flex gap-2 p-1">
+    <div className="flex flex-col md:flex-row md:items-start gap-8">
+      {/* SIDEBAR PARA DESKTOP */}
+      <aside className="hidden md:flex w-64 flex-col gap-8 shrink-0 sticky top-24">
+        <div className="flex flex-col gap-4">
+          <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wider">Categorías</h3>
+          <ul className="flex flex-col gap-1">
             {categories.map((category) => {
               const active = category.slug === query.categoria;
               return (
-                <li key={category.slug} className="shrink-0">
+                <li key={category.slug}>
                   <Link
                     href={searchHref({ ...query, categoria: active ? null : category.slug, pagina: 1 })}
-                    data-state={active ? "on" : "off"}
-                    aria-current={active ? "true" : undefined}
-                    className={cn(toggleVariants({ variant: "outline", size: "sm" }), "rounded-full")}
+                    className={cn(
+                      "block px-3 py-2 text-sm rounded-lg transition-colors",
+                      active 
+                        ? "bg-primary/10 text-primary font-bold" 
+                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                    )}
                   >
                     {category.name}
                   </Link>
@@ -71,18 +73,46 @@ export async function SearchResults({
               );
             })}
           </ul>
-        </nav>
+        </div>
         {geoKind !== null && (
-          <div>
-            <div className="hidden md:block">
-              <RadiusFilter query={query} geoKind={geoKind} cityName={geoKind === "city" ? locationName : null} />
-            </div>
+          <div className="flex flex-col gap-4">
+            <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wider">Distancia máxima</h3>
+            <RadiusFilter query={query} geoKind={geoKind} cityName={geoKind === "city" ? locationName : null} />
+          </div>
+        )}
+      </aside>
+
+      {/* CONTENIDO PRINCIPAL Y FILTROS MOBILE */}
+      <div className="flex-1 min-w-0 flex flex-col gap-6">
+        <div className="md:hidden flex flex-col gap-3">
+          <nav
+            aria-label="Categorías"
+            className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            <ul className="flex gap-2 p-1">
+              {categories.map((category) => {
+                const active = category.slug === query.categoria;
+                return (
+                  <li key={category.slug} className="shrink-0">
+                    <Link
+                      href={searchHref({ ...query, categoria: active ? null : category.slug, pagina: 1 })}
+                      data-state={active ? "on" : "off"}
+                      aria-current={active ? "true" : undefined}
+                      className={cn(toggleVariants({ variant: "outline", size: "sm" }), "rounded-full")}
+                    >
+                      {category.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+          {geoKind !== null && (
             <FiltersSheet key={searchHref(query)}>
               <RadiusFilter query={query} geoKind={geoKind} cityName={geoKind === "city" ? locationName : null} />
             </FiltersSheet>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         {!isEmpty && (
           <h2 className="text-lg font-semibold text-foreground">
@@ -117,5 +147,6 @@ export async function SearchResults({
         </>
       )}
     </div>
+  </div>
   );
 }

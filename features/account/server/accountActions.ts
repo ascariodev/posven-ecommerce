@@ -13,6 +13,7 @@ import {
   updateSettings,
 } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
+import type { AccountContext } from "@/lib/marketplace/params";
 import type { AddressInput, AddressPatch, ProfilePatch } from "@/lib/marketplace/schemas";
 import {
   addressCoordsSchema,
@@ -37,6 +38,8 @@ const ADDRESS_SAVED = "Guardamos la dirección.";
 const COORDS_REQUIRED =
   "Toca Usar mi ubicación para guardar la dirección. Sin ubicación sólo podrás retirar en tienda.";
 const ADDRESS_NOT_FOUND = "No encontrado.";
+const ADDRESS_DELETED = "Eliminamos la dirección.";
+const ADDRESS_DEFAULTED = "Marcamos la dirección como predeterminada.";
 
 function field(formData: FormData, name: string): string {
   const value = formData.get(name);
@@ -206,30 +209,33 @@ export async function saveAddress(prev: FormState, formData: FormData): Promise<
   });
 }
 
-export async function deleteAddressAction(formData: FormData): Promise<void> {
+async function addressAction(
+  formData: FormData,
+  run: (ctx: AccountContext, id: number) => Promise<unknown>,
+  doneMessage: string,
+): Promise<FormState> {
   const id = addressId(formData);
-  if (id === null) return;
-  await withSession(ADDRESSES_PATH, async (ctx) => {
+  if (id === null) return failure(ADDRESS_NOT_FOUND, {});
+  const state = await withSession(ADDRESSES_PATH, async (ctx): Promise<FormState> => {
     try {
-      await deleteAddress(ctx, id);
+      await run(ctx, id);
     } catch (error) {
-      if (!isNotFound(error)) throw error;
+      return formStateFromError(error, {});
     }
+    return success(doneMessage);
   });
   refresh();
+  return state;
 }
 
-export async function setDefaultAddress(formData: FormData): Promise<void> {
-  const id = addressId(formData);
-  if (id === null) return;
-  await withSession(ADDRESSES_PATH, async (ctx) => {
-    try {
-      await updateAddress(ctx, id, { is_default: true });
-    } catch (error) {
-      if (!isNotFound(error)) throw error;
-    }
-  });
-  refresh();
+export async function deleteAddressAction(prev: FormState, formData: FormData): Promise<FormState> {
+  void prev;
+  return addressAction(formData, (ctx, id) => deleteAddress(ctx, id), ADDRESS_DELETED);
+}
+
+export async function setDefaultAddress(prev: FormState, formData: FormData): Promise<FormState> {
+  void prev;
+  return addressAction(formData, (ctx, id) => updateAddress(ctx, id, { is_default: true }), ADDRESS_DEFAULTED);
 }
 
 export async function toggleFavorite(formData: FormData): Promise<void> {

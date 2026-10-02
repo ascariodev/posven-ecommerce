@@ -102,6 +102,16 @@ test.describe("cuenta del comprador", () => {
     await expect(saved.getByText("Predeterminada", { exact: true })).toBeVisible();
   });
 
+  test("eliminar una dirección avisa con un toast y la quita de la lista", async ({ page }) => {
+    await signIn(page, email, password, "/cuenta/direcciones");
+    await expect(page).toHaveURL("/cuenta/direcciones");
+
+    await page.getByRole("button", { name: "Eliminar Trabajo" }).click();
+
+    await expect(page.getByText("Eliminamos la dirección.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Trabajo" })).toHaveCount(0);
+  });
+
   test("un favorito pide entrar, vuelve a la ficha y se guarda", async ({ page }) => {
     await page.goto(PRODUCT_PATH);
     await page.getByRole("link", { name: "Guardar en favoritos" }).click();

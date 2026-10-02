@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { deleteAddressAction, setDefaultAddress } from "@/features/account/server/accountActions";
+import { AddressActionButton } from "@/features/account/components/AddressActionButton";
 import { AddressForm } from "@/features/account/components/AddressForm";
 import { requireCustomer } from "@/features/account/server/session";
 import { listAddresses, listLocations } from "@/lib/marketplace/client";
@@ -65,24 +64,9 @@ async function AddressesPanel({ searchParams }: { searchParams: PageProps<"/cuen
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {!address.is_default && (
-                      <form action={setDefaultAddress}>
-                        <input type="hidden" name="address_id" value={address.id} />
-                        <Button
-                          type="submit"
-                          variant="outline"
-                          size="sm"
-                          aria-label={`Marcar como predeterminada: ${address.label}`}
-                        >
-                          Marcar como predeterminada
-                        </Button>
-                      </form>
+                      <AddressActionButton kind="default" addressId={address.id} addressLabel={address.label} />
                     )}
-                    <form action={deleteAddressAction}>
-                      <input type="hidden" name="address_id" value={address.id} />
-                      <Button type="submit" variant="outline" size="sm" aria-label={`Eliminar ${address.label}`}>
-                        Eliminar
-                      </Button>
-                    </form>
+                    <AddressActionButton kind="delete" addressId={address.id} addressLabel={address.label} />
                   </div>
                   <details>
                     <summary className="cursor-pointer text-sm font-medium text-foreground underline underline-offset-4">

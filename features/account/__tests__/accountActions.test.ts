@@ -3,6 +3,7 @@ import {
   addFavorite,
   createAddress,
   deleteAccount,
+  deleteAddress,
   removeFavorite,
   updateAddress,
   updateMe,
@@ -10,7 +11,14 @@ import {
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { Address, Customer } from "@/lib/marketplace/schemas";
 import { refresh } from "next/cache";
-import { deleteAccountAction, saveAddress, toggleFavorite, updateProfile } from "@/features/account/server/accountActions";
+import {
+  deleteAccountAction,
+  deleteAddressAction,
+  saveAddress,
+  setDefaultAddress,
+  toggleFavorite,
+  updateProfile,
+} from "@/features/account/server/accountActions";
 import { INITIAL_FORM_STATE } from "@/features/account/lib/formState";
 
 const cookieStore = vi.hoisted(() => ({ get: vi.fn(), set: vi.fn(), delete: vi.fn() }));
@@ -102,6 +110,7 @@ afterEach(() => {
   vi.mocked(updateMe).mockReset();
   vi.mocked(createAddress).mockReset();
   vi.mocked(updateAddress).mockReset();
+  vi.mocked(deleteAddress).mockReset();
   vi.mocked(addFavorite).mockReset();
   vi.mocked(removeFavorite).mockReset();
   vi.mocked(deleteAccount).mockReset();
@@ -216,6 +225,86 @@ describe("toggleFavorite", () => {
     await expect(
       toggleFavorite(form({ kind: "store", slug: "ya-no-existe", mode: "remove", volver: "/cuenta/favoritos" })),
     ).resolves.toBeUndefined();
+    expect(refresh).toHaveBeenCalled();
+  });
+});
+
+describe("deleteAddressAction", () => {
+  const notFound = new MarketplaceAccountError({ status: 404, code: "not_found", message: "No encontrado." });
+
+  it("elimina, refresca y devuelve éxito", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(deleteAddress).mockResolvedValue(undefined);
+
+    const state = await deleteAddressAction(INITIAL_FORM_STATE, form({ address_id: "3" }));
+
+    expect(deleteAddress).toHaveBeenCalledWith(expect.anything(), 3);
+    expect(state).toMatchObject({ status: "success", message: "Eliminamos la dirección." });
+    expect(refresh).toHaveBeenCalled();
+  });
+
+  it("con not_found devuelve error y refresca la lista", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(deleteAddress).mockRejectedValue(notFound);
+
+    const state = await deleteAddressAction(INITIAL_FORM_STATE, form({ address_id: "3" }));
+
+    expect(state).toMatchObject({ status: "error", message: "No encontrado." });
+    expect(refresh).toHaveBeenCalled();
+  });
+
+  it("con un código sin mapear devuelve el mensaje genérico", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(deleteAddress).mockRejectedValue(
+      new MarketplaceAccountError({ status: 409, code: "cart_empty", message: "texto de la API" }),
+    );
+
+    const state = await deleteAddressAction(INITIAL_FORM_STATE, form({ address_id: "3" }));
+
+    expect(state).toMatchObject({ status: "error", message: "No pudimos completar la acción. Intenta de nuevo." });
+  });
+
+  it("con un id inválido devuelve error sin llamar a la API", async () => {
+    withSessionCookie("12|abc");
+
+    const state = await deleteAddressAction(INITIAL_FORM_STATE, form({ address_id: "abc" }));
+
+    expect(state).toMatchObject({ status: "error", message: "No encontrado." });
+    expect(deleteAddress).not.toHaveBeenCalled();
+  });
+
+  it("con unauthenticated borra mp_session y lleva a entrar", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(deleteAddress).mockRejectedValue(unauthenticated);
+
+    await expect(deleteAddressAction(INITIAL_FORM_STATE, form({ address_id: "3" }))).rejects.toThrow(
+      "NEXT_REDIRECT:/entrar?volver=%2Fcuenta%2Fdirecciones",
+    );
+    expect(cookieStore.delete).toHaveBeenCalledWith({ name: "mp_session", path: "/" });
+  });
+});
+
+describe("setDefaultAddress", () => {
+  it("marca como predeterminada, refresca y devuelve éxito", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(updateAddress).mockResolvedValue(address);
+
+    const state = await setDefaultAddress(INITIAL_FORM_STATE, form({ address_id: "3" }));
+
+    expect(updateAddress).toHaveBeenCalledWith(expect.anything(), 3, { is_default: true });
+    expect(state).toMatchObject({ status: "success", message: "Marcamos la dirección como predeterminada." });
+    expect(refresh).toHaveBeenCalled();
+  });
+
+  it("con not_found devuelve error y refresca la lista", async () => {
+    withSessionCookie("12|abc");
+    vi.mocked(updateAddress).mockRejectedValue(
+      new MarketplaceAccountError({ status: 404, code: "not_found", message: "No encontrado." }),
+    );
+
+    const state = await setDefaultAddress(INITIAL_FORM_STATE, form({ address_id: "3" }));
+
+    expect(state).toMatchObject({ status: "error", message: "No encontrado." });
     expect(refresh).toHaveBeenCalled();
   });
 });

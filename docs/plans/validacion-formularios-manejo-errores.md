@@ -3,7 +3,7 @@
 **Objetivo:** los formularios validan con zod en el servidor y en el cliente con mensajes en
 español, y todo resultado de una acción (error general o éxito) se avisa con un toast de sonner,
 incluidas las acciones que hoy fallan en silencio o tumban la página a `app/error.tsx`.
-**Estado:** en curso · Fase actual: 7
+**Estado:** en curso · Fase actual: 8
 
 ## Contexto mínimo
 - Spec: sin spec propia. Reglas de validación de la API: FormRequests de posveapi en
@@ -81,7 +81,7 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
 - **Alcance:** el mismo hook en `ProfileForm`, `SettingsForms` y `AddressForm` (respetar L-04 con
   el Select de ciudad).
 
-### [ ] Fase 7 — Acciones de direcciones con aviso
+### [x] Fase 7 — Acciones de direcciones con aviso
 - **Repo:** posven-ecommerce
 - **Alcance:** `setDefaultAddress` y `deleteAddressAction` devuelven estado en vez de `void`; sus
   botones de `app/cuenta/direcciones/page.tsx` pasan a un componente cliente con `useActionState` y
@@ -141,8 +141,14 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   `actionState` para la `key` del Select (L-04), así un error de cliente no lo remonta.
   `NotificationsForm` no valida. ESLint con `--config <árbol>/eslint.config.mjs` sí analiza los
   archivos del repo aunque la sesión esté en `posven/`.
+- 2026-10-01 — Fase 7: `setDefaultAddress(prev, formData)` y `deleteAddressAction(prev, formData)`
+  devuelven `FormState`; `not_found` y `address_id` inválido dan "No encontrado."; `refresh()`
+  siempre. `AddressActionButton` (cliente) dispara el toast dentro de la acción de
+  `useActionState`, no con `useActionToast`, porque `refresh()` desmonta la tarjeta (L-06).
 
 ## Notas para la próxima sesión
+- Fases 8 y 9: aplicar L-06; el favorito en `/cuenta/favoritos` y la línea del carrito pueden
+  desmontarse con el `refresh()`, así que el toast va dentro de la acción y se prueba con e2e.
 - Fase 9: `writeQuantity` (`setQuantity`, `removeLine`) aún lanza ante un código no mapeado
   salvo `not_orderable` y `product_restricted`.
 - Si el hook se usa fuera de account, mover `FormState` y `formStateFromZod` a un lugar compartido.

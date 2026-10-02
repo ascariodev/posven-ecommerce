@@ -1,6 +1,40 @@
 import { describe, expect, it } from "vitest";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
-import { formStateFromError } from "../lib/formState";
+import { addressSchema, registerSchema } from "../lib/formSchemas";
+import { formStateFromError, formStateFromZod } from "../lib/formState";
+
+describe("formStateFromZod", () => {
+  it("deja el primer mensaje de cada campo con la clave de la API y el mensaje general", () => {
+    const result = registerSchema.safeParse({ name: "", email: "x", phone: "1", password: "" });
+    if (result.success) throw new Error("debía fallar");
+
+    expect(formStateFromZod(result.error, { email: "x" })).toEqual({
+      status: "error",
+      message: "Revisa los datos del formulario.",
+      fields: {
+        name: "Completa este campo.",
+        email: "Escribe un correo válido.",
+        phone: "Escribe un teléfono de 7 a 20 caracteres: números, espacios, paréntesis, guiones y + al inicio.",
+        password: "Completa este campo.",
+      },
+      values: { email: "x" },
+    });
+  });
+
+  it("usa las claves con guion bajo de la API", () => {
+    const result = addressSchema.safeParse({
+      label: "Casa",
+      recipient_name: "",
+      phone: "04121234567",
+      city_slug: "",
+      line: "Av.",
+      reference: "",
+    });
+    if (result.success) throw new Error("debía fallar");
+
+    expect(Object.keys(formStateFromZod(result.error, {}).fields).sort()).toEqual(["city_slug", "recipient_name"]);
+  });
+});
 
 describe("formStateFromError", () => {
   it("un código sin mapear devuelve un mensaje genérico en vez de lanzar", () => {

@@ -15,7 +15,8 @@ import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/mark
 import type { AccountContext } from "@/lib/marketplace/params";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { mergeGuestCart } from "@/features/cart/server/cart";
-import { formStateFromError, type FormState } from "../lib/formState";
+import { forgotPasswordSchema, loginSchema, registerSchema, resetPasswordSchema } from "../lib/formSchemas";
+import { formStateFromError, formStateFromZod, type FormState } from "../lib/formState";
 import { safeReturnPath } from "../lib/returnPath";
 import { accountContext, endSession, SESSION_COOKIE, sessionCookieOptions, withSession } from "./session";
 
@@ -45,10 +46,13 @@ async function startSession(ctx: AccountContext, token: string): Promise<void> {
 
 export async function login(prev: FormState, formData: FormData): Promise<FormState> {
   const values = pick(formData, ["email", "volver"]);
+  const input = { email: values.email, password: field(formData, "password") };
+  const parsed = loginSchema.safeParse(input);
+  if (!parsed.success) return formStateFromZod(parsed.error, values);
   const ctx = await accountContext();
   let token: string;
   try {
-    ({ token } = await loginCustomer(ctx, { email: values.email, password: field(formData, "password") }));
+    ({ token } = await loginCustomer(ctx, input));
   } catch (error) {
     return formStateFromError(error, values);
   }
@@ -58,15 +62,13 @@ export async function login(prev: FormState, formData: FormData): Promise<FormSt
 
 export async function register(prev: FormState, formData: FormData): Promise<FormState> {
   const values = pick(formData, ["name", "email", "phone", "volver"]);
+  const input = { name: values.name, email: values.email, phone: values.phone, password: field(formData, "password") };
+  const parsed = registerSchema.safeParse(input);
+  if (!parsed.success) return formStateFromZod(parsed.error, values);
   const ctx = await accountContext();
   let token: string;
   try {
-    ({ token } = await registerCustomer(ctx, {
-      name: values.name,
-      email: values.email,
-      phone: values.phone,
-      password: field(formData, "password"),
-    }));
+    ({ token } = await registerCustomer(ctx, input));
   } catch (error) {
     return formStateFromError(error, values);
   }
@@ -88,6 +90,8 @@ export async function logout(): Promise<void> {
 
 export async function forgotPassword(prev: FormState, formData: FormData): Promise<FormState> {
   const values = pick(formData, ["email"]);
+  const parsed = forgotPasswordSchema.safeParse(values);
+  if (!parsed.success) return formStateFromZod(parsed.error, values);
   const ctx = await accountContext();
   try {
     await requestPasswordReset(ctx, values.email);
@@ -99,9 +103,12 @@ export async function forgotPassword(prev: FormState, formData: FormData): Promi
 
 export async function resetPasswordAction(prev: FormState, formData: FormData): Promise<FormState> {
   const values = pick(formData, ["token"]);
+  const input = { token: values.token, password: field(formData, "password") };
+  const parsed = resetPasswordSchema.safeParse(input);
+  if (!parsed.success) return formStateFromZod(parsed.error, values);
   const ctx = await accountContext();
   try {
-    await resetPassword(ctx, { token: values.token, password: field(formData, "password") });
+    await resetPassword(ctx, input);
   } catch (error) {
     const state = formStateFromError(error, values);
     const tokenRejected =

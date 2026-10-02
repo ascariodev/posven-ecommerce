@@ -14,8 +14,14 @@ import {
 } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { AddressInput, AddressPatch, ProfilePatch } from "@/lib/marketplace/schemas";
-import { isValidCoords } from "@/features/location/lib/cookie";
-import { formStateFromError, type FormState } from "../lib/formState";
+import {
+  addressCoordsSchema,
+  addressSchema,
+  changePasswordSchema,
+  deleteAccountSchema,
+  profileSchema,
+} from "../lib/formSchemas";
+import { formStateFromError, formStateFromZod, type FormState } from "../lib/formState";
 import { safeReturnPath } from "../lib/returnPath";
 import { endSession, withSession } from "./session";
 
@@ -73,6 +79,8 @@ export async function updateProfile(prev: FormState, formData: FormData): Promis
     patch.email = values.email;
     patch.current_password = field(formData, "current_password");
   }
+  const parsed = profileSchema.safeParse(patch);
+  if (!parsed.success) return formStateFromZod(parsed.error, values);
   return withSession(PROFILE_PATH, async (ctx) => {
     let message = PROFILE_SAVED;
     try {
@@ -91,6 +99,8 @@ export async function updateProfile(prev: FormState, formData: FormData): Promis
 export async function changePasswordAction(prev: FormState, formData: FormData): Promise<FormState> {
   void prev;
   const input = { current_password: field(formData, "current_password"), password: field(formData, "password") };
+  const parsed = changePasswordSchema.safeParse(input);
+  if (!parsed.success) return formStateFromZod(parsed.error, {});
   return withSession(SETTINGS_PATH, async (ctx) => {
     try {
       await changePassword(ctx, input);
@@ -118,6 +128,8 @@ export async function updateSettingsAction(prev: FormState, formData: FormData):
 export async function deleteAccountAction(prev: FormState, formData: FormData): Promise<FormState> {
   void prev;
   const password = field(formData, "password");
+  const parsed = deleteAccountSchema.safeParse({ password });
+  if (!parsed.success) return formStateFromZod(parsed.error, {});
   return withSession(SETTINGS_PATH, async (ctx) => {
     try {
       await deleteAccount(ctx, { password });
@@ -138,11 +150,13 @@ export async function saveAddress(prev: FormState, formData: FormData): Promise<
   const reference = values.reference.trim() === "" ? null : values.reference;
   const id = values.address_id.trim() === "" ? null : addressId(formData);
   if (values.address_id.trim() !== "" && id === null) return failure(ADDRESS_NOT_FOUND, values);
+  const parsed = addressSchema.safeParse(values);
+  if (!parsed.success) return formStateFromZod(parsed.error, values);
 
   if (id === null) {
     const lat = coordinate(field(formData, "lat"));
     const lng = coordinate(field(formData, "lng"));
-    if (!isValidCoords(lat, lng)) return failure(COORDS_REQUIRED, values);
+    if (!addressCoordsSchema.safeParse({ lat, lng }).success) return failure(COORDS_REQUIRED, values);
     const input: AddressInput = {
       label: values.label,
       recipient_name: values.recipient_name,
@@ -177,7 +191,7 @@ export async function saveAddress(prev: FormState, formData: FormData): Promise<
   if (field(formData, "coords_changed") === "1") {
     const lat = coordinate(field(formData, "lat"));
     const lng = coordinate(field(formData, "lng"));
-    if (!isValidCoords(lat, lng)) return failure(COORDS_REQUIRED, values);
+    if (!addressCoordsSchema.safeParse({ lat, lng }).success) return failure(COORDS_REQUIRED, values);
     patch.lat = lat;
     patch.lng = lng;
   }

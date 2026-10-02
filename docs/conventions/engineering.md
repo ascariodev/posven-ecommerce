@@ -8,7 +8,9 @@ Datos de entorno y flujo que `posven-ecommerce/CLAUDE.md` no repite. Versiones e
 - Next.js 16.3.6 (App Router), React 19.2.8, TypeScript 5.
 - Tailwind CSS 4 vía `@tailwindcss/postcss`.
 - ESLint 9 con `eslint-config-next`.
-- zod para los esquemas del contrato con posveapi (`lib/marketplace/`).
+- zod para los esquemas del contrato con posveapi (`lib/marketplace/`) y, aparte, para los
+  formularios (`features/<f>/lib/formSchemas.ts`): espejo de los FormRequests de posveapi, nunca
+  más estrictos, con las mismas claves de campo que la API.
 - Vitest con Testing Library y jsdom para las pruebas (`vitest.config.mts`).
 
 ## 2. Comandos

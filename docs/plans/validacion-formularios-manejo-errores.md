@@ -3,7 +3,7 @@
 **Objetivo:** los formularios validan con zod en el servidor y en el cliente con mensajes en
 español, y todo resultado de una acción (error general o éxito) se avisa con un toast de sonner,
 incluidas las acciones que hoy fallan en silencio o tumban la página a `app/error.tsx`.
-**Estado:** en curso · Fase actual: 4
+**Estado:** en curso · Fase actual: 5
 
 ## Contexto mínimo
 - Spec: sin spec propia. Reglas de validación de la API: FormRequests de posveapi en
@@ -61,7 +61,7 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   `error.tsx`.
 - **Terminado cuando:** tests de cada mapeador con un código no mapeado y con `unauthenticated`.
 
-### [ ] Fase 4 [riesgo] — Esquemas zod de cuenta y validación en las acciones
+### [x] Fase 4 [riesgo] — Esquemas zod de cuenta y validación en las acciones
 - **Repo:** posven-ecommerce
 - **Alcance:** `features/account/lib/formSchemas.ts` con login, registro, recuperar, restablecer,
   perfil, contraseña, borrar cuenta y dirección, espejo de los FormRequests (máximos, regex de
@@ -121,10 +121,20 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   sólo para `API_MESSAGE_CODES`: `not_orderable`, `product_restricted`, `cart_full`,
   `validation_failed`) y `PAY_FAILED` en `stateFrom` (conserva el de la API para
   `validation_failed` y `not_found`). Sólo `unauthenticated` se relanza.
+- 2026-10-01 — Fase 4: esquemas en `features/account/lib/formSchemas.ts` (zod 4.6.5), espejo de
+  los FormRequests con `TrimStrings` (no recorta `password` ni `current_password`) y longitudes por
+  `Array.from(v).length`; el email sólo exige texto a ambos lados de `@` (RFC, `unique` y `exists`
+  quedan para la API); `@anonimo.invalid` se rechaza sólo en registro y perfil.
+  `formStateFromZod(error, values)` da "Revisa los datos del formulario." y el primer mensaje por
+  clave de la API. Las acciones validan antes de `accountContext`/`withSession` y mandan los
+  valores crudos. `addressCoordsSchema` reemplaza a `isValidCoords` en account. Quien coordina
+  pidió `formSchemas.test.ts` como criterio verificable del riesgo.
 
 ## Notas para la próxima sesión
 - Fase 9: `writeQuantity` (`setQuantity`, `removeLine`) aún lanza ante un código no mapeado
   salvo `not_orderable` y `product_restricted`.
+- Fases 5 y 6: `profileSchema` necesita que el cliente arme `email` y `current_password` sólo
+  cuando cambia el correo, igual que `updateProfile`.
 - Fase 4 en adelante: `useActionToast` y `ActionNotice` en `@/hooks/useActionToast`; `FormNotice`
   ya dispara el toast. Pendiente menor sin fase: `VerifyEmailForm` en `success` queda sin texto de
   confirmación en línea una vez cerrado el toast.

@@ -1,3 +1,4 @@
+import type { ZodError } from "zod";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 
 export type FormState = {
@@ -10,11 +11,22 @@ export type FormState = {
 export const INITIAL_FORM_STATE: FormState = { status: "idle", message: null, fields: {}, values: {} };
 
 const UNAVAILABLE_MESSAGE = "No pudimos conectar con el servicio. Intenta de nuevo en unos segundos.";
+const VALIDATION_MESSAGE = "Revisa los datos del formulario.";
 const GENERIC_MESSAGE = "No pudimos completar la acción. Intenta de nuevo.";
 const DEFAULT_RETRY_AFTER = 60;
 
 function errorState(message: string, values: Record<string, string>, fields: Record<string, string> = {}): FormState {
   return { status: "error", message, fields, values };
+}
+
+// Las claves de los esquemas son las de la API, así que `fields` se pinta igual que un validation_failed.
+export function formStateFromZod(error: ZodError, values: Record<string, string>): FormState {
+  const fields: Record<string, string> = {};
+  for (const issue of error.issues) {
+    const key = issue.path[0];
+    if (typeof key === "string" && !(key in fields)) fields[key] = issue.message;
+  }
+  return errorState(VALIDATION_MESSAGE, values, fields);
 }
 
 export function formStateFromError(error: unknown, values: Record<string, string>): FormState {

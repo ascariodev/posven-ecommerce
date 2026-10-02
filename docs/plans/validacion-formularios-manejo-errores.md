@@ -3,7 +3,7 @@
 **Objetivo:** los formularios validan con zod en el servidor y en el cliente con mensajes en
 español, y todo resultado de una acción (error general o éxito) se avisa con un toast de sonner,
 incluidas las acciones que hoy fallan en silencio o tumban la página a `app/error.tsx`.
-**Estado:** en curso · Fase actual: 3
+**Estado:** en curso · Fase actual: 4
 
 ## Contexto mínimo
 - Spec: sin spec propia. Reglas de validación de la API: FormRequests de posveapi en
@@ -53,7 +53,7 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
 - **Terminado cuando:** `vitest run features/account features/cart features/checkout` y los e2e
   ajustados pasan.
 
-### [ ] Fase 3 — Códigos de la API sin mapear dan mensaje, no `error.tsx`
+### [x] Fase 3 — Códigos de la API sin mapear dan mensaje, no `error.tsx`
 - **Repo:** posven-ecommerce
 - **Alcance:** `formStateFromError`, `failed` del carrito y `stateFrom` del pago devuelven un
   mensaje genérico ante un código no mapeado en lugar de relanzar; `unauthenticated` se sigue
@@ -116,9 +116,16 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   sigue en línea porque lleva enlace. En `CheckoutForm` sólo `status: "error"` va a toast. El e2e
   "pago fallido" no cambió (afirma la vista de resultado); en `account.spec.ts` el aviso se busca
   con `page.getByText`. Contraste del ícono de error: `#b42318` sobre `#ffffff`, ~6,5:1 (AA).
+- 2026-10-01 — Fase 3: un código no mapeado da mensaje genérico en español, no el texto de la API:
+  `GENERIC_MESSAGE` en `formStateFromError`, `ADD_FAILED` en el carrito (conserva el de la API
+  sólo para `API_MESSAGE_CODES`: `not_orderable`, `product_restricted`, `cart_full`,
+  `validation_failed`) y `PAY_FAILED` en `stateFrom` (conserva el de la API para
+  `validation_failed` y `not_found`). Sólo `unauthenticated` se relanza.
 
 ## Notas para la próxima sesión
-- Fase 3 en adelante: `useActionToast` y `ActionNotice` en `@/hooks/useActionToast`; `FormNotice`
+- Fase 9: `writeQuantity` (`setQuantity`, `removeLine`) aún lanza ante un código no mapeado
+  salvo `not_orderable` y `product_restricted`.
+- Fase 4 en adelante: `useActionToast` y `ActionNotice` en `@/hooks/useActionToast`; `FormNotice`
   ya dispara el toast. Pendiente menor sin fase: `VerifyEmailForm` en `success` queda sin texto de
   confirmación en línea una vez cerrado el toast.
 - El grafo de posven-ecommerce es del 2026-09-28 y no tiene `features/account`, `cart` ni

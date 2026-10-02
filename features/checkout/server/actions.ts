@@ -47,8 +47,11 @@ function stateFrom(error: unknown): CheckoutState {
       return error.retryAfter === null
         ? { status: "error", message: error.message }
         : { status: "error", message: `Demasiados intentos. Prueba de nuevo en ${error.retryAfter} segundos.` };
-    default:
+    case "validation_failed":
+    case "not_found":
       return { status: "error", message: error.message };
+    default:
+      return { status: "error", message: PAY_FAILED };
   }
 }
 

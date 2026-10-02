@@ -216,6 +216,15 @@ describe("addToCart con sesión", () => {
     expect(state).toEqual({ status: "error", message: "No pudimos agregar el producto. Intenta de nuevo." });
   });
 
+  it("un código sin mapear responde el aviso genérico y no lanza", async () => {
+    withCookies({ session: "7|token" });
+    vi.mocked(getCart).mockRejectedValue(
+      new MarketplaceAccountError({ status: 409, code: "quote_changed", message: "Algo cambió." }),
+    );
+
+    expect(await addToCart(INITIAL_ADD_TO_CART_STATE, form(ref))).toEqual({ status: "error", message: "No pudimos agregar el producto. Intenta de nuevo." });
+  });
+
   it("un 401 borra mp_session y agrega como invitado", async () => {
     withCookies({ session: "7|vencido", cart: [] });
     vi.mocked(getCart).mockRejectedValue(unauthenticated());

@@ -10,6 +10,7 @@ export type FormState = {
 export const INITIAL_FORM_STATE: FormState = { status: "idle", message: null, fields: {}, values: {} };
 
 const UNAVAILABLE_MESSAGE = "No pudimos conectar con el servicio. Intenta de nuevo en unos segundos.";
+const GENERIC_MESSAGE = "No pudimos completar la acción. Intenta de nuevo.";
 const DEFAULT_RETRY_AFTER = 60;
 
 function errorState(message: string, values: Record<string, string>, fields: Record<string, string> = {}): FormState {
@@ -34,6 +35,10 @@ export function formStateFromError(error: unknown, values: Record<string, string
           `Demasiados intentos, prueba en ${error.retryAfter ?? DEFAULT_RETRY_AFTER} segundos`,
           values,
         );
+      case "unauthenticated":
+        throw error;
+      default:
+        return errorState(GENERIC_MESSAGE, values);
     }
   }
   throw error;

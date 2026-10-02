@@ -8,6 +8,7 @@ import {
   CART_MAX_LINES as MAX_LINES,
   CART_MAX_QUANTITY as MAX_QUANTITY,
   CART_SLUG_MAX_LENGTH as MAX_SLUG_LENGTH,
+  type AccountErrorCode,
   type Cart,
 } from "@/lib/marketplace/schemas";
 import { accountContext, SESSION_COOKIE, sessionCookieOptions } from "@/features/account/server/session";
@@ -21,6 +22,8 @@ import { cartEnabled } from "../lib/flag";
 const CART_FULL = "Tu carrito admite hasta 20 productos.";
 const AT_MAX_QUANTITY = "Ya tienes 99 unidades de este producto.";
 const ADD_FAILED = "No pudimos agregar el producto. Intenta de nuevo.";
+
+const API_MESSAGE_CODES: readonly AccountErrorCode[] = ["not_orderable", "product_restricted", "cart_full", "validation_failed"];
 
 type LineRef = { store_slug: string; product_slug: string };
 
@@ -67,7 +70,7 @@ function accountFailure(error: MarketplaceAccountError): AddToCartState {
   if (error.code === "too_many_attempts" && error.retryAfter !== null) {
     return failed(`Demasiados intentos. Prueba de nuevo en ${error.retryAfter} segundos.`);
   }
-  return failed(error.message);
+  return failed(API_MESSAGE_CODES.includes(error.code) ? error.message : ADD_FAILED);
 }
 
 async function addAsGuest(ref: LineRef): Promise<AddToCartState> {

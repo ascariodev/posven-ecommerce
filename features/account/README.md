@@ -97,7 +97,7 @@ Estado de formulario, `features/account/lib/formState.ts` (puro):
 
 - `type FormState = { status: "idle" | "error" | "success"; message: string | null; fields: Record<string, string>; values: Record<string, string> }`
 - `INITIAL_FORM_STATE: FormState`: `idle`, `null`, `{}`, `{}`
-- `formStateFromError(error: unknown, values: Record<string, string>): FormState`: `validation_failed` da el mensaje y `fields` de la API; `invalid_credentials`, `token_invalid`, `token_expired`, `not_found` y `open_orders` (eliminar la cuenta con pedidos en curso), el mensaje de la API; `too_many_attempts`, "Demasiados intentos, prueba en {retryAfter} segundos"; `MarketplaceUnavailableError`, "No pudimos conectar con el servicio. Intenta de nuevo en unos segundos."; lo demás se relanza.
+- `formStateFromError(error: unknown, values: Record<string, string>): FormState`: `validation_failed` da el mensaje y `fields` de la API; `invalid_credentials`, `token_invalid`, `token_expired`, `not_found` y `open_orders` (eliminar la cuenta con pedidos en curso), el mensaje de la API; `too_many_attempts`, "Demasiados intentos, prueba en {retryAfter} segundos"; `MarketplaceUnavailableError`, "No pudimos conectar con el servicio. Intenta de nuevo en unos segundos."; `unauthenticated` se relanza para que `withSession` redirija; cualquier otro código, "No pudimos completar la acción. Intenta de nuevo."; un error que no es de la API se relanza.
 
 Sesión, `features/account/server/session.ts` (`import "server-only"`):
 

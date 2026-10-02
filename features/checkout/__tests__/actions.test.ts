@@ -104,6 +104,9 @@ describe("payCheckout", () => {
     [accountError(403, "email_unverified", "Verifica tu correo para comprar."), { status: "email_unverified", message: "Verifica tu correo para comprar." }],
     [accountError(422, "cart_empty", "Tu carrito no tiene productos disponibles."), { status: "cart_empty", message: "Tu carrito no tiene productos disponibles." }],
     [accountError(429, "too_many_attempts", "Demasiados intentos.", { retryAfter: 42 }), { status: "error", message: "Demasiados intentos. Prueba de nuevo en 42 segundos." }],
+    [accountError(409, "open_orders", "Texto de la API."), { status: "error", message: "No pudimos iniciar el pago. Intenta de nuevo." }],
+    [accountError(422, "validation_failed", "Elige una dirección válida."), { status: "error", message: "Elige una dirección válida." }],
+    [accountError(404, "not_found", "La dirección no existe."), { status: "error", message: "La dirección no existe." }],
     [new MarketplaceUnavailableError("/checkout"), { status: "error", message: "No pudimos iniciar el pago. Intenta de nuevo." }],
   ])("mapea %s a su estado", async (error, expected) => {
     vi.mocked(startCheckout).mockRejectedValue(error);

@@ -25,7 +25,9 @@ Rige al editar `app/` y `features/`.
    `formatDistance`): ni `Number()` ni `parseFloat` sobre un monto.
 7. **Los errores de la API llegan a `app/error.tsx`**: `lib/marketplace/http.ts` lanza
    `MarketplaceUnavailableError` y no se atrapa en la página; la frontera muestra el reintento y
-   `noindex`. Un recurso inexistente es `notFound()`, que pinta `app/not-found.tsx`. Excepción:
+   `noindex`. Las acciones de servidor no suben a `error.tsx`: un código no mapeado devuelve un
+   mensaje genérico y sólo `unauthenticated` se lanza para que `withSession` redirija. Un recurso
+   inexistente es `notFound()`, que pinta `app/not-found.tsx`. Excepción:
    lo que lee la API desde `app/layout.tsx` (la cabecera) atrapa `MarketplaceUnavailableError` y
    degrada, porque `app/error.tsx` no cubre el layout raíz (`LocationBar` con `degrade`, que la
    cabecera activa con `SearchPill degradeLocation`, `AccountSlot` y `CartLink`). Otra, un bloque

@@ -64,7 +64,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 - `loadCheckout(ctx: AccountContext, params: CheckoutParams): Promise<CheckoutData>` y `type CheckoutData`, `features/checkout/server/checkout.ts` (`server-only`): carrito, direcciones y Quote; vacío si no hay líneas `ok` o la API responde `cart_empty`; si la dirección deja de valer al cotizar, cotiza sin ella.
 - `payCheckout(prev: CheckoutState, formData: FormData): Promise<CheckoutState>`, `features/checkout/server/actions.ts` (`"use server"`, sólo esta acción): campos `address_id`, `store_slug` repetido, `f-<tienda>`, `quote_hash` e `idempotency_key`; redirige a `redirect_url` o devuelve las instrucciones.
 - `CheckoutState`, `INITIAL_CHECKOUT_STATE` y `PAY_FAILED`, `features/checkout/lib/checkoutState.ts`.
-- `CheckoutView({ searchParams })`, `CheckoutViewSkeleton()` y `EMAIL_UNVERIFIED_MESSAGE`; `CheckoutForm(props)` (`"use client"`) y `DELIVERY_UNAVAILABLE_TEXT`; `CheckoutEmpty({ message? })` y `CART_EMPTY_MESSAGE`.
+- `CheckoutView({ searchParams })`, `CheckoutViewSkeleton()` y `EMAIL_UNVERIFIED_MESSAGE`; `CheckoutForm(props)` (`"use client"`; el estado `error` sale por toast con `useActionToast`, y `quote_changed` y `email_unverified` se quedan en línea con `role="alert"`) y `DELIVERY_UNAVAILABLE_TEXT`; `CheckoutEmpty({ message? })` y `CART_EMPTY_MESSAGE`.
 - `CheckoutResult({ code })`, `CheckoutResultSkeleton()`, `PURCHASE_CODE_PATTERN` (`^[A-Za-z0-9-]{1,40}$`) y `resultHref(code)`; `PurchasePoller({ href })` (`"use client"`) y `POLL_INTERVAL_MS` (3000).
 
 ## 5. Estructura interna

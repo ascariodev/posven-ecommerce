@@ -1,19 +1,16 @@
+"use client";
+
+import { useMemo } from "react";
+import { useActionToast, type ActionNotice } from "@/hooks/useActionToast";
 import type { FormState } from "../lib/formState";
 
 export function FormNotice({ state }: { state: FormState }) {
-  if (state.status === "idle" || state.message === null) return null;
-  if (state.status === "error") {
-    return (
-      <p role="alert" className="text-sm text-warning">
-        {state.message}
-      </p>
-    );
-  }
-  return (
-    <p role="status" className="text-sm text-foreground">
-      {state.message}
-    </p>
+  const notice = useMemo<ActionNotice | null>(
+    () => (state.status === "idle" || state.message === null ? null : { kind: state.status, message: state.message }),
+    [state],
   );
+  useActionToast(notice);
+  return null;
 }
 
 export function FieldError({ id, state, name }: { id: string; state: FormState; name: string }) {

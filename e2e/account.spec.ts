@@ -96,7 +96,7 @@ test.describe("cuenta del comprador", () => {
     await newAddress.getByLabel("Usar como predeterminada").check();
     await newAddress.getByRole("button", { name: "Guardar dirección" }).click();
 
-    await expect(newAddress.getByText("Guardamos la dirección.")).toBeVisible();
+    await expect(page.getByText("Guardamos la dirección.")).toBeVisible();
     const saved = page.getByRole("listitem").filter({ has: page.getByRole("heading", { name: "Trabajo" }) });
     await expect(saved).toBeVisible();
     await expect(saved.getByText("Predeterminada", { exact: true })).toBeVisible();

@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useActionState, useId, useState, useTransition } from "react";
+import { useActionState, useId, useMemo, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useActionToast } from "@/hooks/useActionToast";
 import { formatRate, formatUsd, formatVes } from "@/lib/format";
 import type {
   Address,
@@ -170,6 +171,12 @@ export function CheckoutForm({
     startTransition(() => router.replace(checkoutHref(next.addressId, next.delivery), { scroll: false }));
   }
 
+  const errorNotice = useMemo(
+    () => (state.status === "error" ? { kind: "error" as const, message: state.message } : null),
+    [state],
+  );
+  useActionToast(errorNotice);
+
   if (state.status === "cart_empty") return <CheckoutEmpty message={state.message} />;
   if (state.status === "instructions") {
     return (
@@ -186,7 +193,7 @@ export function CheckoutForm({
   }
 
   const busy = updating || paying;
-  const message = state.status === "idle" ? null : state.message;
+  const message = state.status === "quote_changed" || state.status === "email_unverified" ? state.message : null;
 
   return (
     <div className="flex flex-col gap-4">

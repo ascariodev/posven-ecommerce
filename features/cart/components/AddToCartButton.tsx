@@ -2,8 +2,9 @@
 
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useActionToast } from "@/hooks/useActionToast";
 import { addToCart } from "../server/actions";
 import { INITIAL_ADD_TO_CART_STATE } from "../lib/addToCartState";
 
@@ -31,6 +32,11 @@ export function AddToCartButton({
     setSeenState(state);
     setResponses((count) => count + 1);
   }
+  const errorNotice = useMemo(
+    () => (state.status === "error" && state.message !== null ? { kind: "error" as const, message: state.message } : null),
+    [state],
+  );
+  useActionToast(errorNotice);
   const label = pending ? "Agregando…" : state.status === "added" ? "Agregar otro" : "Agregar al carrito";
   return (
     <form action={formAction} className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -60,7 +66,6 @@ export function AddToCartButton({
               </Link>
             </>
           )}
-          {state.status === "error" && <span className="text-destructive">{state.message}</span>}
         </span>
       </p>
     </form>

@@ -12,7 +12,7 @@ capabilities:
     entrypoint: "<AddToCartButton />"
     file: "features/cart/components/AddToCartButton.tsx"
     input: "storeSlug, storeName, productSlug, productName; se pinta sólo con cartEnabled(), store.accepts_orders y restriction none"
-    output: "formulario con la Server Action addToCart (suma 1 y se queda); 'Agregado' con 'Ver carrito' o el mensaje de error en un role=status"
+    output: "formulario con la Server Action addToCart (suma 1 y se queda); 'Agregado' con 'Ver carrito' en un role=status; el mensaje de error sale por toast (useActionToast)"
     source: "mp_cart del invitado o PUT /me/cart/items del comprador vía BFF"
     rules: ["RN-CART-01", "RN-CART-03", "RN-CART-04"]
   - intent: "leer el carrito de la petición"
@@ -132,7 +132,7 @@ export default function Page() {
 - `features/cart/__tests__/flag.test.ts`: interruptor con y sin `MARKETPLACE_MODE` y `MARKETPLACE_CART_ENABLED`.
 - `features/cart/__tests__/cookie.test.ts`: opciones de la cookie, ida y vuelta, valores inválidos y el tope de bytes.
 - `features/cart/__tests__/actions.test.ts`: agregar como invitado y con sesión, topes, errores de la API, 401 en `addToCart` y `setQuantity`, `removeLine` y cantidades fuera de rango.
-- `features/cart/__tests__/AddToCartButton.test.tsx`: nombre accesible, estado agregado y error.
+- `features/cart/__tests__/AddToCartButton.test.tsx`: nombre accesible, estado agregado y error por toast.
 - `features/cart/__tests__/CartView.test.tsx`: vacío, montos formateados que no salen de la aritmética (subtotal y total incluidos), una línea `ok` y una no disponible en la misma tienda (grupo "Cantidad de X" sólo en la `ok`), topes de cantidad, tienda cerrada, "Ir a pagar" y "Entra para pagar", y nada sin líneas disponibles.
 - `features/cart/__tests__/CartLink.test.tsx`: `line_count`, invitado sin API, degradación y el interruptor.
 - `e2e/cart.spec.ts` (en serie): invitado en ficha, tienda y `/carrito`; sin botón en tienda que no vende ni en restringidos; fusión al registrarse y al entrar; `noindex`, `robots.txt` y sitemap; y un `test.fixme` sin JavaScript.

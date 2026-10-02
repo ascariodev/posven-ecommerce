@@ -3,7 +3,7 @@
 **Objetivo:** los formularios validan con zod en el servidor y en el cliente con mensajes en
 español, y todo resultado de una acción (error general o éxito) se avisa con un toast de sonner,
 incluidas las acciones que hoy fallan en silencio o tumban la página a `app/error.tsx`.
-**Estado:** en curso · Fase actual: 2
+**Estado:** en curso · Fase actual: 3
 
 ## Contexto mínimo
 - Spec: sin spec propia. Reglas de validación de la API: FormRequests de posveapi en
@@ -42,7 +42,7 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   correcto); `tsc` y `eslint` limpios sobre los archivos tocados; `vitest run hooks`.
 - **Commit:** `feat(ui): toasts con sonner y hook useActionToast`
 
-### [ ] Fase 2 — Avisos de formularios con estado a toast
+### [x] Fase 2 — Avisos de formularios con estado a toast
 - **Repo:** posven-ecommerce
 - **Alcance:** `FormNotice` pasa a disparar el toast (error y éxito) en vez de pintar el párrafo,
   lo que cubre los 11 formularios de cuenta sin tocarlos; `FieldError` sigue en línea.
@@ -112,9 +112,14 @@ incluidas las acciones que hoy fallan en silencio o tumban la página a `app/err
   `theme="light"` y tokens (`--popover`, `--popover-foreground`, `--input-border`, `--radius`).
   `useActionToast` deduplica por identidad con `useRef`, acepta `null`/`undefined` y exporta el
   tipo `ActionNotice` desde `@/hooks/useActionToast`.
+- 2026-10-01 — Fase 2: excepción a "éxitos a toast": "Agregado · Ver carrito" de `AddToCartButton`
+  sigue en línea porque lleva enlace. En `CheckoutForm` sólo `status: "error"` va a toast. El e2e
+  "pago fallido" no cambió (afirma la vista de resultado); en `account.spec.ts` el aviso se busca
+  con `page.getByText`. Contraste del ícono de error: `#b42318` sobre `#ffffff`, ~6,5:1 (AA).
 
 ## Notas para la próxima sesión
-- Fase 2: importar `useActionToast` y `ActionNotice` de `@/hooks/useActionToast`; revisar en la
-  vista el contraste AA del ícono de error (`text-destructive` sobre `--popover`).
+- Fase 3 en adelante: `useActionToast` y `ActionNotice` en `@/hooks/useActionToast`; `FormNotice`
+  ya dispara el toast. Pendiente menor sin fase: `VerifyEmailForm` en `success` queda sin texto de
+  confirmación en línea una vez cerrado el toast.
 - El grafo de posven-ecommerce es del 2026-09-28 y no tiene `features/account`, `cart` ni
   `checkout`: explorar con Grep/Read dirigidos.

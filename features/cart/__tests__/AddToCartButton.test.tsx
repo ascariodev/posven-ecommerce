@@ -1,9 +1,11 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { toast } from "sonner";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { addToCart } from "@/features/cart/server/actions";
 import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
 
 vi.mock("@/features/cart/server/actions", () => ({ addToCart: vi.fn() }));
+vi.mock("sonner", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
 
 afterEach(() => {
   cleanup();
@@ -47,12 +49,12 @@ describe("AddToCartButton", () => {
     expect(data.get("product_slug")).toBe("acetaminofen-500-mg-20-tabletas");
   });
 
-  it("con error muestra el mensaje", async () => {
+  it("con error avisa por toast", async () => {
     vi.mocked(addToCart).mockResolvedValue({ status: "error", message: "Tu carrito admite hasta 20 productos." });
     const { container } = renderButton();
 
     submit(container);
 
-    expect(await screen.findByText("Tu carrito admite hasta 20 productos.")).toBeTruthy();
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith("Tu carrito admite hasta 20 productos."));
   });
 });

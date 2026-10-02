@@ -124,7 +124,7 @@ Acciones de servidor, `features/account/server/actions.ts` (`"use server"`), `(p
 
 Componentes, `features/account/components/FormFeedback.tsx` (sin estado, usable desde cliente):
 
-- `FormNotice({ state }: { state: FormState })`: nada en `idle`; `role="alert"` en `error` y `role="status"` en `success`
+- `FormNotice({ state }: { state: FormState })`: no pinta nada; en `error` y `success` dispara el toast con `useActionToast` (nada en `idle`)
 - `FieldError({ id, state, name }: { id: string; state: FormState; name: string })`: `<p id={id}>` con `state.fields[name]` si existe
 
 Acciones de cuenta, `features/account/server/accountActions.ts` (`"use server"`), todas con `withSession`:

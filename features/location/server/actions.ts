@@ -2,6 +2,8 @@
 
 import { cookies } from "next/headers";
 import { listLocations } from "@/lib/marketplace/client";
+import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
+import type { LocationState } from "@/lib/marketplace/schemas";
 import {
   LOCATION_COOKIE,
   describeLocation,
@@ -33,6 +35,15 @@ export async function setLocationCity(citySlug: string): Promise<{ ok: boolean }
   if (describeLocation(location, states) === null) return { ok: false };
   await saveLocation(location);
   return { ok: true };
+}
+
+export async function loadLocationStates(): Promise<LocationState[] | null> {
+  try {
+    return await listLocations();
+  } catch (error) {
+    if (error instanceof MarketplaceUnavailableError) return null;
+    throw error;
+  }
 }
 
 export async function clearLocation(): Promise<void> {

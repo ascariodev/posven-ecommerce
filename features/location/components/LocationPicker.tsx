@@ -12,10 +12,12 @@ type Mode = "summary" | "choose" | "select";
 export function LocationPicker({
   label,
   states,
+  statesFailed = false,
   onDone,
 }: {
   label: string | null;
-  states: LocationState[];
+  states: LocationState[] | null;
+  statesFailed?: boolean;
   onDone?: () => void;
 }) {
   const router = useRouter();
@@ -27,7 +29,7 @@ export function LocationPicker({
   const [citySlug, setCitySlug] = useState("");
   const fieldId = useId();
 
-  const municipalities = states.find((state) => state.slug === stateSlug)?.municipalities ?? [];
+  const municipalities = (states ?? []).find((state) => state.slug === stateSlug)?.municipalities ?? [];
   const cities = municipalities.find((municipality) => municipality.slug === municipalitySlug)?.cities ?? [];
 
   function showCitySelector(text: string | null) {
@@ -100,10 +102,16 @@ export function LocationPicker({
           <Button size="sm" onClick={requestCurrentPosition} disabled={isPending}>
             Usar mi ubicación
           </Button>
-          <Button variant="outline" size="sm" onClick={() => showCitySelector(null)} disabled={isPending}>
+          <Button variant="outline" size="sm" onClick={() => showCitySelector(null)} disabled={isPending || states === null}>
             Elegir ciudad
           </Button>
         </div>
+      )}
+
+      {states === null && !showSummary && (
+        <p role={statesFailed ? "alert" : "status"} className="text-sm text-foreground">
+          {statesFailed ? "No pudimos cargar las ciudades. Cierra y vuelve a abrir." : "Cargando ciudades..."}
+        </p>
       )}
 
       {message !== null && (
@@ -136,7 +144,7 @@ export function LocationPicker({
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
-                {states.map((state) => (
+                {(states ?? []).map((state) => (
                   <SelectItem key={state.slug} value={state.slug}>
                     {state.name}
                   </SelectItem>

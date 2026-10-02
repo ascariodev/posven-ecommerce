@@ -3,7 +3,7 @@
 **Objetivo:** menos llamadas a posveapi y menos peso por página: lecturas públicas en caché, ficha
 sin precio viejo, checkout sin lecturas duplicadas ni sondeo infinito y el árbol de ubicaciones
 fuera del payload de cada página.
-**Estado:** en curso · Fase actual: 3
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: `posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md#4.4` (caché por
@@ -52,7 +52,7 @@ fuera del payload de cada página.
   nuevos del intervalo creciente, el tope y la pausa.
 - **Commit:** `perf(checkout): reutilizar el carrito de la petición y acotar el sondeo del pago`
 
-### [ ] Fase 3 — Árbol de ubicaciones bajo demanda
+### [x] Fase 3 — Árbol de ubicaciones bajo demanda
 - **Repo:** posven-ecommerce
 - **Alcance:** `LocationBar` deja de pasar `states`; una server action pública
   `loadLocationStates()` lo trae (desde `listLocations`, ya cacheado) cuando se abre la hoja, y
@@ -82,8 +82,12 @@ fuera del payload de cada página.
   y `POLL_MAX_MS` (120000); el tope cuenta sólo tiempo con la pestaña visible y "Consultar de
   nuevo" queda siempre. `loadCheckout` responde `{kind:"empty"}` si `getSessionCart()` da `null`.
   Al volver la pestaña no se refresca al instante, sino tras el retraso que toca.
+- 2026-10-02 — Fase 3: `loadLocationStates(): Promise<LocationState[] | null>` (`null` ante
+  `MarketplaceUnavailableError`). `LocationPicker` recibe `states: LocationState[] | null` y
+  `statesFailed?`; `LocationSheet` ya no recibe `states` y pide el árbol al abrirse, reintentando
+  al reabrir si falló. `loadLocationStates` sin prueba propia en `actions.test.ts`.
+  Playwright: 37 pasan, 1 omitida.
 
 ## Notas para la próxima sesión
-- Fases 1 y 2 hechas. Sigue la fase 3 (árbol de ubicaciones); al cerrarla, `npx playwright test`.
-  Fuera de este plan quedaron los puntos 3 (invalidación por `revalidateTag` desde posveapi) y 8
-  (incremento del carrito en la API), que cruzan repos.
+- Plan terminado. Fuera quedaron los puntos 3 (invalidación por `revalidateTag` desde posveapi) y
+  8 (incremento del carrito en la API), que cruzan repos.

@@ -1,8 +1,9 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import { listLocations } from "@/lib/marketplace/client";
 import { LocationBar } from "@/features/location/components/LocationBar";
+import { loadLocationStates } from "@/features/location/server/actions";
 import { getEffectiveLocation } from "@/features/location/server/location";
 
 vi.mock("@/lib/marketplace/client", () => ({
@@ -11,6 +12,10 @@ vi.mock("@/lib/marketplace/client", () => ({
 
 vi.mock("@/features/location/components/LocationPicker", () => ({
   LocationPicker: () => null,
+}));
+
+vi.mock("@/features/location/server/actions", () => ({
+  loadLocationStates: vi.fn(async () => []),
 }));
 
 vi.mock("@/features/location/server/location", () => ({
@@ -40,6 +45,19 @@ describe("LocationBar", () => {
     render(await LocationBar({ compact: true, degrade: true }));
 
     expect(screen.getByRole("button", { name: "Ubicación: Valencia" })).toBeTruthy();
+    expect(listLocations).not.toHaveBeenCalled();
+    expect(loadLocationStates).not.toHaveBeenCalled();
+  });
+
+  it("el árbol de ubicaciones se pide sólo al abrir la hoja", async () => {
+    vi.mocked(getEffectiveLocation).mockResolvedValue({ location: null, name: null });
+    vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener: () => {}, removeEventListener: () => {} }));
+
+    render(await LocationBar({ degrade: true }));
+    expect(loadLocationStates).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "¿Dónde? Ubicación: sin elegir" }));
+    await waitFor(() => expect(loadLocationStates).toHaveBeenCalledTimes(1));
   });
 
   it("con degrade y la API caída no pinta nada en vez de romper la cabecera", async () => {

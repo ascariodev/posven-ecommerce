@@ -64,6 +64,18 @@ function choose(field: string, option: string) {
 }
 
 describe("LocationPicker", () => {
+  it("mientras el árbol no llega deshabilita Elegir ciudad", () => {
+    render(<LocationPicker label={null} states={null} />);
+    expect((screen.getByRole("button", { name: "Elegir ciudad" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByRole("status").textContent).toBe("Cargando ciudades...");
+  });
+
+  it("si el árbol falla deja Elegir ciudad deshabilitado y avisa", () => {
+    render(<LocationPicker label={null} states={null} statesFailed />);
+    expect((screen.getByRole("button", { name: "Elegir ciudad" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByRole("alert").textContent).toContain("No pudimos cargar las ciudades");
+  });
+
   it("sin ubicación muestra los dos botones", () => {
     render(<LocationPicker label={null} states={states} />);
     expect(screen.getByRole("button", { name: "Usar mi ubicación" })).toBeTruthy();

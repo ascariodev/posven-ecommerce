@@ -6,16 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { forgotPassword, resetPasswordAction } from "../server/actions";
 import { FieldError, FormNotice } from "./FormFeedback";
+import { useFormValidation } from "@/hooks/useFormValidation";
 import { INITIAL_FORM_STATE } from "../lib/formState";
+import { forgotPasswordSchema, resetPasswordSchema } from "../lib/formSchemas";
 
 export function ForgotPasswordForm() {
-  const [state, formAction, pending] = useActionState(forgotPassword, INITIAL_FORM_STATE);
+  const [actionState, formAction, pending] = useActionState(forgotPassword, INITIAL_FORM_STATE);
+  const { onSubmit, state } = useFormValidation(forgotPasswordSchema, actionState);
   const prefijo = useId();
   const emailError = state.fields.email !== undefined;
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <FormNotice state={state} />
+    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+      <FormNotice state={actionState} />
       <div className="flex flex-col gap-1">
         <label htmlFor={`${prefijo}-email`} className="text-sm font-medium text-foreground">
           Correo
@@ -40,14 +43,15 @@ export function ForgotPasswordForm() {
 }
 
 export function ResetPasswordForm({ token }: { token: string }) {
-  const [state, formAction, pending] = useActionState(resetPasswordAction, INITIAL_FORM_STATE);
+  const [actionState, formAction, pending] = useActionState(resetPasswordAction, INITIAL_FORM_STATE);
+  const { onSubmit, state } = useFormValidation(resetPasswordSchema, actionState);
   const prefijo = useId();
   const passwordError = state.fields.password !== undefined;
   const tokenRejected = state.fields.token !== undefined;
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <FormNotice state={state} />
+    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+      <FormNotice state={actionState} />
       {tokenRejected && (
         <Link href="/recuperar" className="text-sm font-medium text-foreground underline underline-offset-4">
           Pedir un enlace nuevo

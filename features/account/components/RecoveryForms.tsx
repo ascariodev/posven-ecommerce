@@ -12,12 +12,12 @@ import { forgotPasswordSchema, resetPasswordSchema } from "../lib/formSchemas";
 
 export function ForgotPasswordForm() {
   const [actionState, formAction, pending] = useActionState(forgotPassword, INITIAL_FORM_STATE);
-  const { onSubmit, state } = useFormValidation(forgotPasswordSchema, actionState);
+  const { onSubmit, onChange, state } = useFormValidation(forgotPasswordSchema, actionState);
   const prefijo = useId();
   const emailError = state.fields.email !== undefined;
 
   return (
-    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+    <form action={formAction} onSubmit={onSubmit} onChange={onChange} noValidate className="flex flex-col gap-4">
       <FormNotice state={actionState} />
       <div className="flex flex-col gap-1">
         <label htmlFor={`${prefijo}-email`} className="text-sm font-medium text-foreground">
@@ -44,13 +44,13 @@ export function ForgotPasswordForm() {
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const [actionState, formAction, pending] = useActionState(resetPasswordAction, INITIAL_FORM_STATE);
-  const { onSubmit, state } = useFormValidation(resetPasswordSchema, actionState);
+  const { onSubmit, onChange, state } = useFormValidation(resetPasswordSchema, actionState);
   const prefijo = useId();
   const passwordError = state.fields.password !== undefined;
   const tokenRejected = state.fields.token !== undefined;
 
   return (
-    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+    <form action={formAction} onSubmit={onSubmit} onChange={onChange} noValidate className="flex flex-col gap-4">
       <FormNotice state={actionState} />
       {tokenRejected && (
         <Link href="/recuperar" className="text-sm font-medium text-foreground underline underline-offset-4">

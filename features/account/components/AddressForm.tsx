@@ -40,7 +40,7 @@ function groupByState(cities: City[]): { state: string; cities: City[] }[] {
 
 export function AddressForm({ address, cities }: { address: Address | null; cities: City[] }) {
   const [actionState, formAction, pending] = useActionState(saveAddress, INITIAL_FORM_STATE);
-  const { onSubmit, state } = useFormValidation(addressSchema, actionState);
+  const { onSubmit, onChange, state } = useFormValidation(addressSchema, actionState);
   const prefijo = useId();
   const [coords, setCoords] = useState<Coords | null>(null);
   const [geoFailed, setGeoFailed] = useState(false);
@@ -84,7 +84,7 @@ export function AddressForm({ address, cities }: { address: Address | null; citi
   }
 
   return (
-    <form action={formAction} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+    <form action={formAction} onSubmit={onSubmit} onChange={onChange} noValidate className="flex flex-col gap-4">
       <FormNotice state={actionState} />
       <input type="hidden" name="address_id" value={address?.id ?? ""} />
       <input type="hidden" name="lat" value={coords === null ? "" : String(coords.lat)} />

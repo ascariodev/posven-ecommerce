@@ -29,12 +29,25 @@ function firstInvalidControl(form: HTMLFormElement, fields: Record<string, strin
   return null;
 }
 
+const NO_NAMES: ReadonlySet<string> = new Set();
+
+function isNamedControl(target: EventTarget): target is HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement {
+  return (
+    target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement
+  );
+}
+
 export function useFormValidation(
   schema: ZodType,
   state: FormState,
   prepare?: (values: Record<string, string>) => Record<string, string>,
 ) {
   const [clientFields, setClientFields] = useState<Record<string, string>>({});
+  // Atado a la respuesta que lo originó: una respuesta nueva del servidor vuelve a mostrar todos sus errores.
+  const [dismissed, setDismissed] = useState<{ source: FormState; names: ReadonlySet<string> }>({
+    source: state,
+    names: NO_NAMES,
+  });
   const pendingFocus = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -58,10 +71,41 @@ export function useFormValidation(
     [schema, prepare],
   );
 
-  const view = useMemo<FormState>(
-    () => ({ ...state, fields: { ...state.fields, ...clientFields } }),
-    [state, clientFields],
+  // Al corregir, un error del cliente se quita o se actualiza, pero escribir no muestra errores en
+  // campos que no los tenían. Uno del servidor se quita sólo en el campo editado, porque el esquema
+  // no sabe, por ejemplo, si el correo ya está registrado.
+  const onChange = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      const target = event.target;
+      if (!isNamedControl(target) || target.name === "") return;
+      const values = formValues(event.currentTarget);
+      const result = schema.safeParse(prepare ? prepare(values) : values);
+      const invalid = result.success ? {} : formStateFromZod(result.error, values).fields;
+      setClientFields((fields) => {
+        const kept = Object.keys(fields)
+          .filter((name) => name in invalid)
+          .map((name) => [name, invalid[name]] as const);
+        const unchanged =
+          kept.length === Object.keys(fields).length && kept.every(([name, message]) => fields[name] === message);
+        return unchanged ? fields : Object.fromEntries(kept);
+      });
+      if (target.name in state.fields && !(target.name in invalid)) {
+        setDismissed((current) => {
+          const names = current.source === state ? current.names : NO_NAMES;
+          return names.has(target.name) ? current : { source: state, names: new Set([...names, target.name]) };
+        });
+      }
+    },
+    [schema, prepare, state],
   );
 
-  return { onSubmit, state: view };
+  const view = useMemo<FormState>(() => {
+    const dismissedNames = dismissed.source === state ? dismissed.names : NO_NAMES;
+    const serverFields = Object.fromEntries(
+      Object.entries(state.fields).filter(([name]) => !dismissedNames.has(name)),
+    );
+    return { ...state, fields: { ...serverFields, ...clientFields } };
+  }, [state, clientFields, dismissed]);
+
+  return { onSubmit, onChange, state: view };
 }

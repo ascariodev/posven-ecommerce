@@ -12,9 +12,9 @@ capabilities:
     entrypoint: "<CheckoutView />"
     file: "features/checkout/components/CheckoutView.tsx"
     input: "searchParams de /checkout (direccion=<id>, f-<tienda>=delivery); dentro de <Suspense> en app/checkout/page.tsx"
-    output: "tiendas con sus líneas, retiro o entrega (con el motivo si no hay entrega), totales de la Quote y 'Pagar Bs X'; sin correo verificado, el aviso con 'Reenviar verificación' y sin botón; sin líneas disponibles, 'Volver al carrito'"
+    output: "tiendas con sus líneas, retiro o entrega (con el motivo si no hay entrega), casilla 'Factura a mi nombre', totales de la Quote y 'Pagar Bs X'; sin correo verificado, el aviso con 'Reenviar verificación' y sin botón; sin líneas disponibles, 'Volver al carrito'"
     source: "GET /me/cart, GET /me/addresses y POST /checkout/quote vía BFF; la Server Action payCheckout llama a POST /checkout"
-    rules: ["RN-CHECKOUT-01", "RN-CHECKOUT-02", "RN-CHECKOUT-03"]
+    rules: ["RN-CHECKOUT-01", "RN-CHECKOUT-02", "RN-CHECKOUT-03", "RN-CHECKOUT-05"]
   - intent: "mostrar el resultado del pago y consultarlo hasta un estado final"
     intent_aliases: ["resultado del pago", "pago confirmado", "pago fallido", "estado de la compra"]
     entrypoint: "<CheckoutResult />"
@@ -42,6 +42,7 @@ de la Quote y de la compra. Las compras (`/cuenta/compras`) viven en `features/p
 | `RN-CHECKOUT-02` | La elección vive en la URL (`direccion`, `f-<tienda>=delivery`) y cada cambio vuelve a cotizar en el servidor; sin dirección todo es retiro. Un 409 `quote_changed` reemplaza la Quote, marca "Cambió" y pide confirmar otra vez. | `features/checkout/__tests__/params.test.ts`; `features/checkout/__tests__/server.test.ts`; `features/checkout/__tests__/CheckoutForm.test.tsx` ("elegir entrega vuelve a cotizar...", "tras quote_changed...", "tras dos quote_changed seguidos...") |
 | `RN-CHECKOUT-03` | Cada página pintada de `/checkout` genera una `idempotency_key` (UUID v4) y la reenvía igual en cada intento de pago de esa página; el formulario de pago manda la dirección, las entregas y el `quote_hash` de la Quote que se muestra. | `features/checkout/__tests__/CheckoutForm.test.tsx` ("los campos ocultos llevan lo de la Quote vigente"); `features/checkout/__tests__/actions.test.ts` ("manda lo cotizado y redirige a la pasarela", "con %s no llama a la API") |
 | `RN-CHECKOUT-04` | `/checkout/resultado` consulta la compra a los 3 s, 5 s y luego cada 10 s mientras está `pending_payment` (pausa con la pestaña oculta y se detiene a los 2 minutos) y para en un estado final (`paid`, `failed`, `expired`); sin JavaScript o agotado el tiempo queda "Consultar de nuevo". | `features/checkout/__tests__/PurchasePoller.test.tsx`; `features/checkout/__tests__/CheckoutResult.test.tsx`; `e2e/checkout.spec.ts` |
+| `RN-CHECKOUT-05` | "Factura a mi nombre" sale marcada si `customer.billing` existe; sin datos, deshabilitada con enlace a `/cuenta/perfil`. Marcada se envía `bill_to_me`; un 422 `billing_incomplete` avisa con ese enlace. | `features/checkout/__tests__/CheckoutForm.test.tsx` ("con datos de facturación...", "sin datos de facturación...", "un billing_incomplete..."); `features/checkout/__tests__/actions.test.ts` ("con la casilla marcada..."); `e2e/checkout.spec.ts` ("Factura a mi nombre...") |
 
 Aviso sin correo verificado (`RN-CHECKOUT-01`): "Verifica tu correo para comprar." con "Reenviar
 verificación" y sin "Pagar".
@@ -55,6 +56,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 |---|---|---|
 | Un parámetro nuevo de la elección | `lib/params.ts` (`readCheckoutParams` y `checkoutHref`) | su lectura en `server/checkout.ts` (`loadCheckout`) y su caso en `__tests__/params.test.ts` |
 | Un error nuevo del pago | `stateFrom` en `server/actions.ts` y el tipo `CheckoutState` | cómo lo muestra `components/CheckoutForm.tsx` y su caso en `__tests__/actions.test.ts` |
+| Un error nuevo de facturación o de la casilla | `components/CheckoutForm.tsx` (casilla y aviso) y `stateFrom` en `server/actions.ts` | `__tests__/CheckoutForm.test.tsx`, `__tests__/actions.test.ts` y `e2e/checkout.spec.ts` |
 | Textos de "sin entrega" | `DELIVERY_UNAVAILABLE_TEXT` en `components/CheckoutForm.tsx` | `__tests__/CheckoutForm.test.tsx` y `e2e/checkout.spec.ts` |
 | Un estado nuevo de la compra | `components/CheckoutResult.tsx` y `features/purchases/lib/labels.ts` | el esquema en `lib/marketplace/schemas.ts` primero (spec §4.1) |
 
@@ -62,9 +64,9 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 
 - `readCheckoutParams(searchParams): CheckoutParams`, `checkoutHref(addressId: number | null, delivery: string[]): string`, `FULFILLMENT_PARAM_PREFIX` y `type CheckoutParams = { addressId: number | null; delivery: string[] }`, `features/checkout/lib/params.ts` (sin `server-only`: lo usa el formulario del cliente).
 - `loadCheckout(ctx: AccountContext, params: CheckoutParams): Promise<CheckoutData>` y `type CheckoutData`, `features/checkout/server/checkout.ts` (`server-only`): carrito, direcciones y Quote; vacío si no hay líneas `ok` o la API responde `cart_empty`; si la dirección deja de valer al cotizar, cotiza sin ella.
-- `payCheckout(prev: CheckoutState, formData: FormData): Promise<CheckoutState>`, `features/checkout/server/actions.ts` (`"use server"`, sólo esta acción): campos `address_id`, `store_slug` repetido, `f-<tienda>`, `quote_hash` e `idempotency_key`; redirige a `redirect_url` o devuelve las instrucciones.
+- `payCheckout(prev: CheckoutState, formData: FormData): Promise<CheckoutState>`, `features/checkout/server/actions.ts` (`"use server"`, sólo esta acción): campos `address_id`, `store_slug` repetido, `f-<tienda>`, `quote_hash`, `idempotency_key` y, si la casilla va marcada, `bill_to_me=on` (que `readInput` convierte en `bill_to_me: true`; sin ella se omite); redirige a `redirect_url` o devuelve las instrucciones.
 - `CheckoutState`, `INITIAL_CHECKOUT_STATE` y `PAY_FAILED`, `features/checkout/lib/checkoutState.ts`.
-- `CheckoutView({ searchParams })`, `CheckoutViewSkeleton()` y `EMAIL_UNVERIFIED_MESSAGE`; `CheckoutForm(props)` (`"use client"`; el estado `error` sale por toast con `useActionToast`, y `quote_changed` y `email_unverified` se quedan en línea con `role="alert"`) y `DELIVERY_UNAVAILABLE_TEXT`; `CheckoutEmpty({ message? })` y `CART_EMPTY_MESSAGE`.
+- `CheckoutView({ searchParams })`, `CheckoutViewSkeleton()` y `EMAIL_UNVERIFIED_MESSAGE`; `CheckoutForm(props)` (`"use client"`; el estado `error` sale por toast con `useActionToast`, y `quote_changed`, `email_unverified` y `billing_incomplete` se quedan en línea con `role="alert"`; `hasBilling` viene de `customer.billing !== null`) y `DELIVERY_UNAVAILABLE_TEXT`; `CheckoutEmpty({ message? })` y `CART_EMPTY_MESSAGE`.
 - `CheckoutResult({ code })`, `CheckoutResultSkeleton()`, `PURCHASE_CODE_PATTERN` (`^[A-Za-z0-9-]{1,40}$`) y `resultHref(code)`; `PurchasePoller({ href })` (`"use client"`), `POLL_DELAYS_MS` (3000, 5000, 10000) y `POLL_MAX_MS` (120000).
 
 ## 5. Estructura interna
@@ -113,7 +115,7 @@ export default function Page({ searchParams }: PageProps<"/checkout">) {
 - Comando: el de la sección Verificación de `posven-ecommerce/CLAUDE.md` (`npx vitest run features/checkout`).
 - `features/checkout/__tests__/params.test.ts`: lectura de la dirección y las entregas, valores ignorados y la URL de vuelta.
 - `features/checkout/__tests__/server.test.ts`: dirección pedida, ajena y ausente; retiro sin dirección; vacío sin líneas y con `cart_empty`; nueva cotización sin dirección.
-- `features/checkout/__tests__/actions.test.ts`: redirección a la pasarela, instrucciones, `quote_changed`, 403, `cart_empty`, 429 con segundos, API caída, 401, entradas inválidas e interruptor apagado.
-- `features/checkout/__tests__/CheckoutForm.test.tsx`: montos sin calcular, entrega deshabilitada con cada motivo, "Agregar dirección", navegación al elegir entrega, campos ocultos, "Cambió" tras uno y tras dos `quote_changed` seguidos, "Reenviar verificación" ante un `email_unverified` de la acción y sin pagar con el correo sin verificar.
+- `features/checkout/__tests__/actions.test.ts`: redirección a la pasarela, `bill_to_me`, instrucciones, `quote_changed`, 403, `billing_incomplete`, `cart_empty`, 429 con segundos, API caída, 401, entradas inválidas e interruptor apagado.
+- `features/checkout/__tests__/CheckoutForm.test.tsx`: montos sin calcular, entrega deshabilitada con cada motivo, "Agregar dirección", navegación al elegir entrega, campos ocultos, "Cambió" tras uno y tras dos `quote_changed` seguidos, "Reenviar verificación" ante un `email_unverified` de la acción, sin pagar con el correo sin verificar, y la casilla con datos, sin datos y ante `billing_incomplete`.
 - `features/checkout/__tests__/CheckoutResult.test.tsx` y `__tests__/PurchasePoller.test.tsx`: los cuatro estados, 404 y el intervalo creciente, el tope y la pausa.
-- `e2e/checkout.spec.ts` (en serie): compra completa con código de retiro y reembolso, sin verificar, entrega con envío, pago fallido y `noindex`.
+- `e2e/checkout.spec.ts` (en serie): compra completa con código de retiro y reembolso, sin verificar, casilla "Factura a mi nombre" con y sin datos (y campos vacíos tras borrarlos en el perfil), entrega con envío, pago fallido y `noindex`.

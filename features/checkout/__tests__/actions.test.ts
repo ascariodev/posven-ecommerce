@@ -73,6 +73,16 @@ describe("payCheckout", () => {
     });
   });
 
+  it("con la casilla marcada manda bill_to_me y sin ella lo omite", async () => {
+    vi.mocked(startCheckout).mockRejectedValue(accountError(422, "billing_incomplete", "x"));
+
+    await payCheckout(INITIAL_CHECKOUT_STATE, form({ bill_to_me: "on" }));
+    await payCheckout(INITIAL_CHECKOUT_STATE, form());
+
+    expect(vi.mocked(startCheckout).mock.calls[0][1]).toHaveProperty("bill_to_me", true);
+    expect(vi.mocked(startCheckout).mock.calls[1][1]).not.toHaveProperty("bill_to_me");
+  });
+
   it("con instrucciones las devuelve con el código de la compra", async () => {
     vi.mocked(startCheckout).mockResolvedValue({
       purchase_code: "PV-000002",
@@ -102,6 +112,7 @@ describe("payCheckout", () => {
 
   it.each([
     [accountError(403, "email_unverified", "Verifica tu correo para comprar."), { status: "email_unverified", message: "Verifica tu correo para comprar." }],
+    [accountError(422, "billing_incomplete", "Completa tus datos de facturación."), { status: "billing_incomplete", message: "Completa tus datos de facturación." }],
     [accountError(422, "cart_empty", "Tu carrito no tiene productos disponibles."), { status: "cart_empty", message: "Tu carrito no tiene productos disponibles." }],
     [accountError(429, "too_many_attempts", "Demasiados intentos.", { retryAfter: 42 }), { status: "error", message: "Demasiados intentos. Prueba de nuevo en 42 segundos." }],
     [accountError(409, "open_orders", "Texto de la API."), { status: "error", message: "No pudimos iniciar el pago. Intenta de nuevo." }],

@@ -27,6 +27,7 @@ function renderForm(overrides: Partial<Parameters<typeof CheckoutForm>[0]> = {})
       addresses={[]}
       addressId={null}
       verified
+      hasBilling={false}
       idempotencyKey="3f1c2a9e-8b7d-4c6a-9e2f-1a2b3c4d5e6f"
       {...overrides}
     />,
@@ -170,6 +171,46 @@ describe("CheckoutForm", () => {
     expect(screen.getByRole("alert").textContent).toBe("Verifica tu correo para comprar.");
     expect(screen.getByRole("button", { name: "Reenviar verificación" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /^Pagar/ })).toBeNull();
+  });
+
+  it("con datos de facturación la casilla viene marcada y se envía", () => {
+    const { container } = renderForm({ hasBilling: true });
+
+    const box = screen.getByRole("checkbox", { name: "Factura a mi nombre" }) as HTMLInputElement;
+    expect(box.checked).toBe(true);
+    expect(box.disabled).toBe(false);
+    expect(box.name).toBe("bill_to_me");
+    expect(container.querySelector('a[href="/cuenta/perfil"]')).toBeNull();
+  });
+
+  it("se puede desmarcar la casilla", () => {
+    renderForm({ hasBilling: true });
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Factura a mi nombre" }));
+
+    expect((screen.getByRole("checkbox", { name: "Factura a mi nombre" }) as HTMLInputElement).checked).toBe(false);
+  });
+
+  it("sin datos de facturación la casilla está deshabilitada y enlaza al perfil", () => {
+    renderForm({ hasBilling: false });
+
+    const box = screen.getByRole("checkbox", { name: "Factura a mi nombre" }) as HTMLInputElement;
+    expect(box.checked).toBe(false);
+    expect(box.disabled).toBe(true);
+    expect(screen.getByRole("link", { name: "Agregar mis datos" }).getAttribute("href")).toBe("/cuenta/perfil");
+  });
+
+  it("un billing_incomplete de la acción muestra el aviso con enlace al perfil y deja pagar", async () => {
+    vi.mocked(payCheckout).mockResolvedValue({ status: "billing_incomplete", message: "Completa tus datos de facturación." });
+    renderForm({ hasBilling: true });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Pagar Bs 255,60" }));
+    });
+
+    expect(screen.getByRole("alert").textContent).toContain("Completa tus datos de facturación.");
+    expect(screen.getByRole("link", { name: "Completar mis datos" }).getAttribute("href")).toBe("/cuenta/perfil");
+    expect(screen.getByRole("button", { name: "Pagar Bs 255,60" })).toBeTruthy();
   });
 
   it("sin el correo verificado no ofrece pagar", () => {

@@ -34,6 +34,7 @@ export const DELIVERY_UNAVAILABLE_TEXT: Record<DeliveryUnavailableReason, string
 };
 
 const ADD_ADDRESS_HREF = "/cuenta/direcciones?volver=/checkout";
+const PROFILE_HREF = "/cuenta/perfil";
 const linkClasses = "text-sm font-medium text-foreground underline underline-offset-4";
 
 function chargeText(charge: Charge): string {
@@ -138,6 +139,7 @@ export function CheckoutForm({
   addresses,
   addressId,
   verified,
+  hasBilling,
   idempotencyKey,
 }: {
   quote: Quote;
@@ -145,10 +147,13 @@ export function CheckoutForm({
   addresses: Address[];
   addressId: number | null;
   verified: boolean;
+  hasBilling: boolean;
   idempotencyKey: string;
 }) {
   const router = useRouter();
   const addressLabelId = useId();
+  const billToMeId = useId();
+  const [billToMe, setBillToMe] = useState(hasBilling);
   const [updating, startTransition] = useTransition();
   const [state, formAction, paying] = useActionState(payCheckout, INITIAL_CHECKOUT_STATE);
   // La página monta este formulario con `key` = quote_hash: una Quote nueva del servidor lo reinicia.
@@ -193,7 +198,10 @@ export function CheckoutForm({
   }
 
   const busy = updating || paying;
-  const message = state.status === "quote_changed" || state.status === "email_unverified" ? state.message : null;
+  const message =
+    state.status === "quote_changed" || state.status === "email_unverified" || state.status === "billing_incomplete"
+      ? state.message
+      : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -270,6 +278,14 @@ export function CheckoutForm({
           {message !== null && (
             <p role="alert" className="text-sm font-medium text-foreground">
               {message}
+              {state.status === "billing_incomplete" && (
+                <>
+                  {" "}
+                  <Link href={PROFILE_HREF} className={linkClasses}>
+                    Completar mis datos
+                  </Link>
+                </>
+              )}
             </p>
           )}
           {/* El servidor puede responder que el correo no está verificado aunque la página se pintó
@@ -288,6 +304,30 @@ export function CheckoutForm({
               ))}
               <input type="hidden" name="quote_hash" value={quote.quote_hash} />
               <input type="hidden" name="idempotency_key" value={idempotencyKey} />
+              <div className="mb-3 flex flex-col gap-1">
+                <div className="flex min-h-11 items-center gap-2 md:min-h-9">
+                  <input
+                    id={billToMeId}
+                    name="bill_to_me"
+                    type="checkbox"
+                    checked={hasBilling && billToMe}
+                    disabled={!hasBilling}
+                    onChange={(event) => setBillToMe(event.target.checked)}
+                    className="size-4 accent-primary"
+                  />
+                  <label htmlFor={billToMeId} className="text-sm text-foreground">
+                    Factura a mi nombre
+                  </label>
+                </div>
+                {!hasBilling && (
+                  <p className="text-sm text-muted-foreground">
+                    Sin datos de facturación la compra sale a consumidor final.{" "}
+                    <Link href={PROFILE_HREF} className={linkClasses}>
+                      Agregar mis datos
+                    </Link>
+                  </p>
+                )}
+              </div>
               <Button type="submit" size="lg" className="w-full" disabled={busy}>
                 {paying ? "Pagando…" : `Pagar ${chargeText(quote.charge)}`}
               </Button>

@@ -125,6 +125,44 @@ test.describe("checkout y compras", () => {
     await expect(page.getByRole("button", { name: /^Pagar/ })).toHaveCount(0);
   });
 
+  test("Factura a mi nombre: deshabilitada sin datos, marcada con datos, y borrar los datos deja los campos vacíos", async ({ page }) => {
+    await add(page, ACETAMINOFEN_PATH, "Farmacia Central");
+    await register(page, `e2e-factura-${Date.now()}@posven.test`, "clave-segura-4");
+    await verifyEmail(page);
+    const box = page.getByRole("checkbox", { name: "Factura a mi nombre" });
+
+    await page.goto("/checkout");
+    await expect(box).toBeDisabled();
+    await expect(box).not.toBeChecked();
+    await page.getByRole("link", { name: "Agregar mis datos" }).click();
+    await expect(page).toHaveURL("/cuenta/perfil");
+
+    await page.getByLabel("Tipo de documento").click();
+    await page.getByRole("option", { name: /^V / }).click();
+    await page.getByLabel("Documento", { exact: true }).fill("12345678");
+    await page.getByLabel("Nombre o razón social").fill("Comprador Facturado");
+    await page.getByLabel("Teléfono").last().fill("04141234567");
+    await page.getByLabel("Dirección fiscal").fill("Avenida Bolívar, edificio Central, Valencia");
+    await page.getByLabel("Tipo de contribuyente").click();
+    await page.getByRole("option", { name: "Ordinario" }).click();
+    await page.getByRole("button", { name: "Guardar datos de facturación" }).click();
+    await expect(page.getByRole("button", { name: "Borrar mis datos de facturación" })).toBeEnabled();
+
+    await page.goto("/checkout");
+    await expect(box).toBeEnabled();
+    await expect(box).toBeChecked();
+
+    await page.goto("/cuenta/perfil");
+    await page.getByRole("button", { name: "Borrar mis datos de facturación" }).click();
+    await expect(page.getByRole("button", { name: "Borrar mis datos de facturación" })).toBeDisabled();
+    await expect(page.getByLabel("Documento", { exact: true })).toHaveValue("");
+    await expect(page.getByLabel("Nombre o razón social")).toHaveValue("");
+    await expect(page.getByLabel("Dirección fiscal")).toHaveValue("");
+
+    await page.goto("/checkout");
+    await expect(box).toBeDisabled();
+  });
+
   test("la entrega a domicilio suma el envío donde la tienda reparte", async ({ page }) => {
     await signIn(page, "entrega@posven.test", SEEDED_PASSWORD);
     await add(page, ACETAMINOFEN_PATH, "Farmacia Central");

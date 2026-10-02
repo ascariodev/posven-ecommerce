@@ -24,6 +24,7 @@ function readInput(formData: FormData): CheckoutInput | null {
     address_id,
     quote_hash: formData.get("quote_hash"),
     idempotency_key: formData.get("idempotency_key"),
+    ...(formData.get("bill_to_me") === "on" ? { bill_to_me: true } : {}),
   });
   return parsed.success ? parsed.data : null;
 }
@@ -41,6 +42,8 @@ function stateFrom(error: unknown): CheckoutState {
         : { status: "quote_changed", message: error.message, quote: error.quote };
     case "email_unverified":
       return { status: "email_unverified", message: error.message };
+    case "billing_incomplete":
+      return { status: "billing_incomplete", message: error.message };
     case "cart_empty":
       return { status: "cart_empty", message: error.message };
     case "too_many_attempts":

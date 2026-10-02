@@ -40,6 +40,7 @@ export async function CheckoutView({
         addresses={data.addresses}
         addressId={data.addressId}
         verified={customer.email_verified}
+        hasBilling={customer.billing !== null}
         idempotencyKey={idempotencyKey}
       />
     </div>

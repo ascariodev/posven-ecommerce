@@ -7,6 +7,7 @@ export type CheckoutState =
   | { status: "error"; message: string }
   | { status: "quote_changed"; message: string; quote: Quote }
   | { status: "email_unverified"; message: string }
+  | { status: "billing_incomplete"; message: string }
   | { status: "cart_empty"; message: string }
   | { status: "instructions"; purchaseCode: string; instructions: string };
 

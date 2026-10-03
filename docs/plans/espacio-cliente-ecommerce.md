@@ -3,7 +3,7 @@
 **Objetivo:** `/cuenta` con la dirección B "Ficha de cliente": barra lateral con la ficha del
 cliente en escritorio, pestañas subrayadas en el teléfono, páginas en panel y resumen que destaca
 el código de retiro. Sin cambios de contrato.
-**Estado:** en curso · Fase actual: 3
+**Estado:** en curso · Fase actual: 4
 
 ## Contexto mínimo
 - Spec: sin spec (camino acotado de `design-phase`, sólo visual). Referencia aprobada: dirección B
@@ -64,7 +64,7 @@ el código de retiro. Sin cambios de contrato.
   README de `features/account`.
 - **Terminado cuando:** tsc, eslint y `npx vitest run features/account` en verde; `npx next build`.
 
-### [ ] Fase 3 — Código de retiro en el resumen
+### [x] Fase 3 — Código de retiro en el resumen
 - **Repo:** posven-ecommerce
 - **Alcance:** `RecentPurchases` lee la página 1 una sola vez y pinta arriba la tarjeta "Para
   retirar" (`bg-primary-soft`, tienda, compra, código grande con enlace al detalle) del primer
@@ -98,13 +98,15 @@ el código de retiro. Sin cambios de contrato.
 - 2026-10-03 — La tarjeta de retiro muestra sólo el primer pedido listo; los demás siguen en "Últimas compras".
 - 2026-10-03 — Fase 1: `accountLinks(showPurchases)` e `isActiveLink(href, pathname)` en `features/account/lib/accountLinks.ts` (módulo puro). `AccountNav` va en `<Suspense fallback={<AccountNavSkeleton />}>` en el layout (lo exige `usePathname` en `/cuenta/compras/[codigo]`). Barra lateral y pestañas son dos `<nav aria-label="Mi cuenta">` alternados con `hidden lg:block` / `lg:hidden`.
 - 2026-10-03 — Fase 2: `AccountNav` recibe además `identity` y `compactIdentity` (ReactNode); el layout pasa `<AccountIdentity />` y `<AccountIdentity compact />`, cada una en su `<Suspense>`. `getCurrentCustomer` ya va en `cache()`, así que hay una sola lectura de `getMe` por petición. Iniciales calculadas en el componente, sin `storeInitials`.
+- 2026-10-03 — Fase 3: `RecentPurchases` devuelve un fragmento con dos secciones, la tarjeta (`region` "Para retirar") fuera de la lista "Últimas compras" (no cambia el conteo de `checkout.spec.ts:107`). Regla nueva `RN-PURCHASES-04` en el README de `features/purchases`.
 
 ## Notas para la próxima sesión
-- Fases 1 y 2 cerradas. Los 6 e2e rotos por el rediseño de Jose (tienda oculta como "Comercio
+- Fases 1 a 3 cerradas. Los 6 e2e rotos por el rediseño de Jose (tienda oculta como "Comercio
   Aliado", sin contacto) siguen fallando y no son de este plan. `docs-check` marca rancio el README
   de `features/account` por archivos ajenos al plan; ya venía así.
-- El refresco de la ficha tras guardar el perfil se comprobó por lectura de código (`refresh()` en
-  `accountActions.ts`), no en el navegador; verificarlo en el e2e de cierre o a mano.
+- El refresco de la ficha tras guardar el perfil y el diseño de la tarjeta "Para retirar" no se
+  vieron en el navegador; verificarlos en el e2e de cierre o a mano.
+- Fase 4: `PurchaseRow` aparece ahora bajo la tarjeta "Para retirar" en el resumen.
 
 ## Mejoras propuestas
 - [ ] M-1 — `AccountNav`: el `useEffect` que desplaza la pestaña activa depende de `[]`; el layout
@@ -117,3 +119,10 @@ el código de retiro. Sin cambios de contrato.
   comprador) en `features/account/__tests__/AccountIdentity.test.tsx`; hoy el paso de `identity` y
   `compactIdentity` del layout a `AccountNav` sólo lo cubre el build.
   posven-ecommerce · baja · sonnet
+- [ ] M-4 — `PickupCard` en `RecentPurchases.tsx` pone el `<h2>` dentro del `<Link>` y el enlace se
+  lee como encabezado más código: sacar el `h2` del enlace. De paso, una sola línea en blanco en
+  `app/cuenta/page.tsx:15-16`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-5 — e2e de la tarjeta "Para retirar" en `/cuenta` (`e2e/checkout.spec.ts`, flujo de compra
+  completa) si el simulado deja un pedido `ready_for_pickup`.
+  posven-ecommerce · media · sonnet

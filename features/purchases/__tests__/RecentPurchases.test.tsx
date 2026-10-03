@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { listPurchases } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import { RecentPurchases } from "@/features/purchases/components/RecentPurchases";
-import { purchase } from "@/features/purchases/__tests__/fixtures/testPurchase";
+import { order, purchase } from "@/features/purchases/__tests__/fixtures/testPurchase";
 
 vi.mock("@/lib/marketplace/client", () => ({ listPurchases: vi.fn() }));
 
@@ -32,6 +32,37 @@ describe("RecentPurchases", () => {
       "/cuenta/compras/PV-000003",
     ]);
     expect(screen.getByRole("link", { name: "Ver todas" }).getAttribute("href")).toBe("/cuenta/compras");
+  });
+
+  it("pinta la tarjeta Para retirar con el primer pedido listo y su código", async () => {
+    vi.mocked(listPurchases).mockResolvedValue({
+      data: [
+        purchase({ code: "PV-000009", orders: [order({ status: "accepted", pickup_code: null })] }),
+        purchase({ code: "PV-000008", orders: [order({ pickup_code: "111222" }), order({ pickup_code: "333444" })] }),
+      ],
+      meta: { page: 1, per_page: 10, total: 2 },
+    });
+
+    render((await RecentPurchases({ ctx }))!);
+
+    expect(listPurchases).toHaveBeenCalledTimes(1);
+    const card = screen.getByRole("region", { name: "Para retirar" });
+    expect(within(card).getByText("111222")).toBeTruthy();
+    expect(within(card).queryByText("333444")).toBeNull();
+    expect(within(card).getByText(/Farmacia Central · PV-000008/)).toBeTruthy();
+    expect(within(card).getByRole("link").getAttribute("href")).toBe("/cuenta/compras/PV-000008");
+  });
+
+  it("sin pedido listo con código no pinta Para retirar", async () => {
+    vi.mocked(listPurchases).mockResolvedValue({
+      data: [purchase({ orders: [order({ status: "ready_for_pickup", pickup_code: null }), order({ status: "accepted" })] })],
+      meta: { page: 1, per_page: 10, total: 1 },
+    });
+
+    render((await RecentPurchases({ ctx }))!);
+
+    expect(screen.queryByRole("region", { name: "Para retirar" })).toBeNull();
+    expect(screen.getByRole("list", { name: "Últimas compras" })).toBeTruthy();
   });
 
   it.each([

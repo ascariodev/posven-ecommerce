@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { useActionState, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { register } from "../server/actions";
+import { BillingFields } from "./BillingFields";
 import { FieldError, FormNotice } from "./FormFeedback";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import { INITIAL_FORM_STATE } from "../lib/formState";
@@ -13,6 +14,14 @@ export function RegisterForm({ volver }: { volver: string }) {
   const [actionState, formAction, pending] = useActionState(register, INITIAL_FORM_STATE);
   const { onSubmit, onChange, state } = useFormValidation(registerSchema, actionState);
   const prefijo = useId();
+  const [seenState, setSeenState] = useState(actionState);
+  // Radix devuelve el Select al valor con que se montó cuando React resetea el formulario tras la
+  // acción; montarlo de nuevo con cada respuesta le da el valor de la respuesta (L-04).
+  const [responses, setResponses] = useState(0);
+  if (seenState !== actionState) {
+    setSeenState(actionState);
+    setResponses((count) => count + 1);
+  }
   const nameError = state.fields.name !== undefined;
   const emailError = state.fields.email !== undefined;
   const phoneError = state.fields.phone !== undefined;
@@ -23,9 +32,15 @@ export function RegisterForm({ volver }: { volver: string }) {
     <form action={formAction} onSubmit={onSubmit} onChange={onChange} noValidate className="flex flex-col gap-4">
       <FormNotice state={actionState} />
       <input type="hidden" name="volver" value={volver} />
+      <BillingFields
+        state={state}
+        billing={null}
+        fields={["document_type", "document"]}
+        selectKey={responses}
+      />
       <div className="flex flex-col gap-1">
         <label htmlFor={`${prefijo}-name`} className="text-sm font-medium text-foreground">
-          Nombre
+          Nombre o razón social
         </label>
         <Input
           id={`${prefijo}-name`}
@@ -64,6 +79,7 @@ export function RegisterForm({ volver }: { volver: string }) {
           name="phone"
           type="tel"
           autoComplete="tel"
+          placeholder="04141234567"
           required
           defaultValue={state.values.phone ?? ""}
           aria-invalid={phoneError || undefined}
@@ -90,6 +106,12 @@ export function RegisterForm({ volver }: { volver: string }) {
         </p>
         <FieldError id={`${prefijo}-password-error`} state={state} name="password" />
       </div>
+      <BillingFields
+        state={state}
+        billing={null}
+        fields={["address", "taxpayer_type"]}
+        selectKey={responses}
+      />
       <Button type="submit" disabled={pending}>
         {pending ? "Creando..." : "Crear cuenta"}
       </Button>

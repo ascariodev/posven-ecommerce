@@ -213,6 +213,14 @@ describe("fusión del carrito de invitado al entrar (RN-CART-02)", () => {
     { store_slug: "farmacia-central-valencia", product_slug: "acetaminofen-500-mg-20-tabletas", quantity: 2 },
   ]);
   const form = { email: customer.email, password: "secreta123", volver: "/carrito" };
+  const registerFields = {
+    name: "Comprador",
+    phone: "04141234567",
+    "billing.document_type": "V",
+    "billing.document": "12345678",
+    "billing.address": "Av. Principal, Valencia",
+    "billing.taxpayer_type": "ordinary",
+  };
 
   beforeEach(() => {
     vi.stubEnv("MARKETPLACE_MODE", "mock");
@@ -243,12 +251,24 @@ describe("fusión del carrito de invitado al entrar (RN-CART-02)", () => {
     expect(cartDeleted()).toBe(true);
   });
 
+  it("register sin datos de facturación devuelve los valores escritos sin llamar a la API (RN-ACCOUNT-08)", async () => {
+    const state = await register(
+      INITIAL_FORM_STATE,
+      loginForm({ ...form, ...registerFields, "billing.document": "12", "billing.taxpayer_type": "" }),
+    );
+
+    expect(state.status).toBe("error");
+    expect(Object.keys(state.fields).sort()).toEqual(["billing.document", "billing.taxpayer_type"]);
+    expect(state.values["billing.address"]).toBe(registerFields["billing.address"]);
+    expect(registerCustomer).not.toHaveBeenCalled();
+  });
+
   it("register también fusiona", async () => {
     withGuestCart(guestCart);
     vi.mocked(registerCustomer).mockResolvedValue({ token: "8|nuevo", customer });
 
     await expect(
-      register(INITIAL_FORM_STATE, loginForm({ ...form, name: "Comprador", phone: "04141234567" })),
+      register(INITIAL_FORM_STATE, loginForm({ ...form, ...registerFields })),
     ).rejects.toThrow("NEXT_REDIRECT:/carrito");
 
     expect(mergeCart).toHaveBeenCalledOnce();

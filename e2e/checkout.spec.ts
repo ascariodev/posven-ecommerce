@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { fillRegistration } from "./registration";
 
 // Spec cuentas-y-compras §7: registrar, verificar, carrito de invitado, entrar, fusionar, pagar,
 // ver la compra y el código, reembolso de una línea faltante. El simulado avanza la compra por
@@ -26,10 +27,7 @@ async function signIn(page: Page, email: string, password: string): Promise<void
 
 async function register(page: Page, email: string, password: string): Promise<void> {
   await page.goto("/registro");
-  await page.getByLabel("Nombre").fill("Compra E2E");
-  await page.getByLabel("Correo").fill(email);
-  await page.getByLabel("Teléfono").fill("+584141112255");
-  await page.getByLabel("Contraseña").fill(password);
+  await fillRegistration(page, { name: "Compra E2E", email, phone: "04141112255", password });
   await page.getByRole("button", { name: "Crear cuenta", exact: true }).click();
   await expect(page).toHaveURL("/cuenta");
 }

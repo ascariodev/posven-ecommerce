@@ -5,7 +5,16 @@ import { formStateFromError, formStateFromZod } from "../lib/formState";
 
 describe("formStateFromZod", () => {
   it("deja el primer mensaje de cada campo con la clave de la API y el mensaje general", () => {
-    const result = registerSchema.safeParse({ name: "", email: "x", phone: "1", password: "" });
+    const result = registerSchema.safeParse({
+      name: "",
+      email: "x",
+      phone: "1",
+      password: "",
+      "billing.document_type": "V",
+      "billing.document": "12345678",
+      "billing.address": "Av. Principal, Valencia",
+      "billing.taxpayer_type": "ordinary",
+    });
     if (result.success) throw new Error("debía fallar");
 
     expect(formStateFromZod(result.error, { email: "x" })).toEqual({
@@ -14,7 +23,7 @@ describe("formStateFromZod", () => {
       fields: {
         name: "Completa este campo.",
         email: "Escribe un correo válido.",
-        phone: "Escribe un teléfono de 7 a 20 caracteres: números, espacios, paréntesis, guiones y + al inicio.",
+        phone: "Escribe un teléfono venezolano de 11 dígitos, como 04141234567.",
         password: "Completa este campo.",
       },
       values: { email: "x" },

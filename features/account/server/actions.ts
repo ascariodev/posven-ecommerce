@@ -61,14 +61,23 @@ export async function login(prev: FormState, formData: FormData): Promise<FormSt
 }
 
 export async function register(prev: FormState, formData: FormData): Promise<FormState> {
-  const values = pick(formData, ["name", "email", "phone", "volver"]);
-  const input = { name: values.name, email: values.email, phone: values.phone, password: field(formData, "password") };
-  const parsed = registerSchema.safeParse(input);
+  const values = pick(formData, [
+    "name",
+    "email",
+    "phone",
+    "billing.document_type",
+    "billing.document",
+    "billing.address",
+    "billing.taxpayer_type",
+    "volver",
+  ]);
+  const password = field(formData, "password");
+  const parsed = registerSchema.safeParse({ ...values, password });
   if (!parsed.success) return formStateFromZod(parsed.error, values);
   const ctx = await accountContext();
   let token: string;
   try {
-    ({ token } = await registerCustomer(ctx, input));
+    ({ token } = await registerCustomer(ctx, { name: values.name, email: values.email, phone: values.phone, password }));
   } catch (error) {
     return formStateFromError(error, values);
   }

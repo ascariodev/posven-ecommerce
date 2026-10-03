@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { fillRegistration } from "./registration";
 
 const PRODUCT_SLUG = "acetaminofen-500-mg-20-tabletas";
 const PRODUCT_PATH = `/p/${PRODUCT_SLUG}`;
@@ -25,7 +26,7 @@ test.describe("cuenta del comprador", () => {
 
   const email = `e2e-${Date.now()}@posven.test`;
   const name = "Prueba E2E";
-  const phone = "+584141112233";
+  const phone = "04141112233";
   const password = "clave-segura-2";
 
   test("sin sesión, /cuenta/perfil lleva a entrar con volver", async ({ page }) => {
@@ -37,10 +38,7 @@ test.describe("cuenta del comprador", () => {
 
   test("registrar un comprador lo lleva a su cuenta y verificar el correo quita el aviso", async ({ page }) => {
     await page.goto("/registro");
-    await page.getByLabel("Nombre").fill(name);
-    await page.getByLabel("Correo").fill(email);
-    await page.getByLabel("Teléfono").fill(phone);
-    await page.getByLabel("Contraseña").fill(password);
+    await fillRegistration(page, { name, email, phone, password });
     await page.getByRole("button", { name: "Crear cuenta", exact: true }).click();
 
     await expect(page).toHaveURL("/cuenta");

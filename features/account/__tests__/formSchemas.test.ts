@@ -9,7 +9,16 @@ import {
   registerSchema,
 } from "../lib/formSchemas";
 
-const REGISTER = { name: "Ana", email: "ana@example.com", phone: "04121234567", password: "secreta-123" };
+const REGISTER = {
+  name: "Ana",
+  email: "ana@example.com",
+  phone: "04121234567",
+  password: "secreta-123",
+  "billing.document_type": "V",
+  "billing.document": "12345678",
+  "billing.address": "Av. Principal, Valencia",
+  "billing.taxpayer_type": "ordinary",
+};
 const ADDRESS = {
   label: "Casa",
   recipient_name: "Ana",
@@ -34,8 +43,20 @@ describe("formSchemas no son más estrictos que la API", () => {
     expect(deleteAccountSchema.safeParse({ password: "x" }).success).toBe(true);
   });
 
-  it("teléfono con +, espacios, paréntesis y guiones pasa", () => {
-    expect(registerSchema.safeParse({ ...REGISTER, phone: "+58 (412) 123-4567" }).success).toBe(true);
+  it("el registro toma el nombre y el teléfono del TPV (RN-ACCOUNT-08)", () => {
+    const failing = (patch: Record<string, string>): string[] => {
+      const result = registerSchema.safeParse({ ...REGISTER, ...patch });
+      return result.success ? [] : result.error.issues.map((issue) => String(issue.path[0]));
+    };
+    expect(failing({})).toEqual([]);
+    expect(failing({ name: "a".repeat(100) })).toEqual([]);
+    expect(failing({ name: "a".repeat(101) })).toEqual(["name"]);
+    expect(failing({ phone: "+58 (412) 123-4567" })).toEqual(["phone"]);
+    expect(failing({ phone: "02511234567" })).toEqual(["phone"]);
+    expect(failing({ "billing.document": "1234" })).toEqual(["billing.document"]);
+    expect(failing({ "billing.document_type": "" })).toEqual(["billing.document_type"]);
+    expect(failing({ "billing.address": "corta" })).toEqual(["billing.address"]);
+    expect(failing({ "billing.taxpayer_type": "" })).toEqual(["billing.taxpayer_type"]);
   });
 
   it("correo sin dominio de nivel superior pasa", () => {

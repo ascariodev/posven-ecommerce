@@ -83,7 +83,7 @@ capabilities:
     intent_aliases: ["login", "registro", "crear cuenta", "cerrar sesion", "olvide mi contrasena", "verificar correo", "restablecer contrasena"]
     entrypoint: "loginCustomer()"
     file: "lib/marketplace/client.ts"
-    input: "ctx: AccountContext { session: string|null, clientIp: string|null } en todas; registerCustomer: RegisterInput { name, email, phone, password }; loginCustomer: { email, password }; requestPasswordReset: email; resetPassword: { token, password }; verifyEmail: token; logoutCustomer y resendVerification: sólo ctx"
+    input: "ctx: AccountContext { session: string|null, clientIp: string|null } en todas; registerCustomer: RegisterInput { name, email, phone, password, billing: { document_type, document, address, taxpayer_type } }; loginCustomer: { email, password }; requestPasswordReset: email; resetPassword: { token, password }; verifyEmail: token; logoutCustomer y resendVerification: sólo ctx"
     output: "registerCustomer y loginCustomer: AuthResponse { token: string, customer: Customer }; las demás, void; un error de cuenta llega como MarketplaceAccountError { status, code: AccountErrorCode, message, fields: Record<string,string>|null, retryAfter: number|null }"
     source: "POST /customers, /auth/login, /auth/logout, /auth/password/forgot, /auth/password/reset, /auth/email/verify y /auth/email/resend de posveapi vía BFF, o el simulado (mock/accounts.ts); sin caché"
     rules: ["RN-MARKETPLACE-02", "RN-MARKETPLACE-05", "RN-MARKETPLACE-06", "RN-MARKETPLACE-07"]
@@ -189,7 +189,7 @@ Cliente de servidor, `lib/marketplace/client.ts` (`import "server-only"`):
 
 Cuentas del comprador, `lib/marketplace/client.ts`, sin caché; cada una lanza `MarketplaceAccountError` o `MarketplaceUnavailableError`:
 
-- `registerCustomer(ctx: AccountContext, input: RegisterInput): Promise<AuthResponse>`: `POST /customers`.
+- `registerCustomer(ctx: AccountContext, input: RegisterInput): Promise<AuthResponse>`: `POST /customers`; el cuerpo lleva `billing` anidado y la cuenta nace con las seis claves de facturación (nombre y teléfono, los de la cuenta). El simulado valida con las reglas de facturación: errores de documento, dirección, tipo y contribuyente como `billing.<campo>`, y los de nombre y teléfono como `name` y `phone`.
 - `loginCustomer(ctx: AccountContext, input: { email: string; password: string }): Promise<AuthResponse>`: `POST /auth/login`.
 - `logoutCustomer(ctx: AccountContext): Promise<void>`: `POST /auth/logout`.
 - `requestPasswordReset(ctx: AccountContext, email: string): Promise<void>`: `POST /auth/password/forgot` con `{ email }`.
@@ -256,7 +256,7 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 - `customerSchema` / `Customer` (con `billing: Billing|null`); `customerEnvelopeSchema` (`{ data: Customer }`); `authResponseSchema` / `AuthResponse` (`token` con `^\d{1,18}\|.+$`)
 - `addressSchema` / `Address`; `addressEnvelopeSchema` (`{ data: Address }`); `addressListSchema` (`{ data: Address[] }`)
 - `addressInputSchema` / `AddressInput`; `addressPatchSchema` / `AddressPatch` (`AddressInput` parcial)
-- `registerInputSchema` / `RegisterInput`; `profilePatchSchema` / `ProfilePatch`
+- `registerInputSchema` / `RegisterInput` (`billing` con cuatro campos: `document_type`, `document`, `address`, `taxpayer_type`); `profilePatchSchema` / `ProfilePatch`
 - `favoritesResponseSchema` / `FavoritesResponse`
 - `storeSummarySchema.accepts_orders` (`default(false)`, RN-MARKETPLACE-08)
 - `cartItemSchema` / `CartItem` (`strictObject`, slugs de 1 a 120, cantidad 1 a 99); `cartItemsSchema` (hasta 20, sin repetidos); `cartItemPutSchema` / `CartItemPut` (cantidad 0 a 99)
@@ -344,7 +344,7 @@ const newSlug = "redirect_to" in product ? product.redirect_to : null;
 - `lib/marketplace/__tests__/schemas.test.ts`: cada respuesta del simulado pasa su esquema (producto con ofertas, sin ofertas y redirección, tienda, sitemap, login, registro, perfil, direcciones, favoritos, carrito, Quote, inicio del pago, compra en cada estado y página de compras); una Quote, compras (también una sin pagar con pedidos `pending_payment`) y el inicio del pago escritos a mano, con sus rechazos; `accepts_orders` ausente como `false`; `cartItemsSchema` y sus rechazos; el cuerpo de error de cuenta, `moneySchema`, el tope de dos destacados y los slugs que exige cada evento.
 - `lib/marketplace/__tests__/params.test.ts`: claves de consulta según ubicación y radio, también en `productQuery`.
 - `lib/marketplace/__tests__/http.test.ts`: Bearer, URL, tope de 5 s, errores de red, estado y esquema, falta de configuración, 404 como `null` y `POST` JSON; en cuenta, encabezados según `AccountContext`, 422, 401 con y sin cuerpo de error, 409 `quote_changed` con su Quote, 403 `email_unverified`, la consulta en la URL, `retryAfter` del cuerpo, del encabezado y 60, 500 y 503 como API caída y 204 en `accountCommand`.
-- `lib/marketplace/mock/__tests__/accounts.test.ts`: correo repetido, login errado, verificación, enlace vencido e inválido, restablecer revoca la sesión, límite con `retryAfter` 42, cambio de correo sin contraseña actual, predeterminada de las direcciones y su orden, orden y 404 de favoritos y sesión desconocida.
+- `lib/marketplace/mock/__tests__/accounts.test.ts`: correo repetido, registro con `billing` (guardado con nombre y teléfono de la cuenta, errores `billing.<campo>`, `name` y `phone`, regla de teléfono del TPV), login errado, verificación, enlace vencido e inválido, restablecer revoca la sesión, límite con `retryAfter` 42, cambio de correo sin contraseña actual, predeterminada de las direcciones y su orden, orden y 404 de favoritos y sesión desconocida.
 - `lib/marketplace/mock/__tests__/money.test.ts`: ida y vuelta en céntimos, multiplicar y sumar sin error de coma flotante, céntimos negativos o no enteros.
 - `lib/marketplace/mock/__tests__/cart.test.ts`: carrito vacío, totales sólo de `ok`, `offer_gone` con montos nulos, restringido en la cotización, inexistentes omitidos, más de 20 entradas, techo de stock (50 y 3), errores por campo, `product_restricted` (`recipe` y `controlled`), `not_orderable`, fusión que topa en 20 y conserva el orden con `cart_full` en la línea 21, `quantity: 0` que borra líneas no comprables y fusión que suma con techo.
 - `lib/marketplace/mock/__tests__/checkout.test.ts`: cotización de retiro y de entrega con envío, fuera de radio, sin reparto y sin dirección, `validation_failed` en `address_id`, `cart_empty`; checkout con 403, 409 con Quote e idempotencia; códigos de 8 y 6 caracteres del alfabeto; avance por consultas con pedidos `pending_payment` antes del pago, la línea faltante reembolsada, entrega en camino, pago fallido con los pedidos cancelados y pedido cancelado; listado paginado con códigos únicos y 404; eliminar la cuenta con y sin pedidos abiertos.

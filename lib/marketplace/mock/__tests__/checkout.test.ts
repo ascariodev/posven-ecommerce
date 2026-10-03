@@ -165,8 +165,9 @@ describe("checkout simulado", () => {
     const { token } = await registerCustomer(anonymous, {
       name: "Sin verificar",
       email: "sin-verificar@posven.test",
-      phone: "+584141112233",
+      phone: "04141112233",
       password: "clave-segura-9",
+      billing: { document_type: "V", document: "12345678", address: "Av. Principal, Valencia", taxpayer_type: "ordinary" },
     });
     const ctx = { session: token, clientIp: null };
     await add(ctx, CENTRAL, ACETAMINOFEN);

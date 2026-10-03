@@ -181,8 +181,9 @@ describe("el simulado de cuentas pasa los esquemas del contrato", () => {
     const response = await registerCustomer(anonymous, {
       name: "Nueva compradora",
       email: "nueva@posven.test",
-      phone: "+584121112233",
+      phone: "04121112233",
       password: "otra-clave-1",
+      billing: { document_type: "V", document: "12345678", address: "Av. Principal, Valencia", taxpayer_type: "ordinary" },
     });
     expect(authResponseSchema.safeParse(response).success).toBe(true);
   });

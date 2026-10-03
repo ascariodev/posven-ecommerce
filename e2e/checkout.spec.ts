@@ -129,6 +129,10 @@ test.describe("checkout y compras", () => {
     await verifyEmail(page);
     const box = page.getByRole("checkbox", { name: "Factura a mi nombre" });
 
+    await page.goto("/cuenta/perfil");
+    await page.getByRole("button", { name: "Borrar mis datos de facturación" }).click();
+    await expect(page.getByRole("button", { name: "Borrar mis datos de facturación" })).toBeDisabled();
+
     await page.goto("/checkout");
     await expect(box).toBeDisabled();
     await expect(box).not.toBeChecked();

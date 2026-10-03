@@ -345,6 +345,7 @@ export const registerInputSchema = z.object({
   email: z.string(),
   phone: z.string(),
   password: z.string(),
+  billing: billingSchema.pick({ document_type: true, document: true, address: true, taxpayer_type: true }),
 });
 export type RegisterInput = z.infer<typeof registerInputSchema>;
 

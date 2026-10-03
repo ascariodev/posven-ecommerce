@@ -13,6 +13,7 @@ import {
 } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
+import type { RegisterInput } from "@/lib/marketplace/schemas";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { mergeGuestCart } from "@/features/cart/server/cart";
 import { forgotPasswordSchema, loginSchema, registerSchema, resetPasswordSchema } from "../lib/formSchemas";
@@ -77,7 +78,18 @@ export async function register(prev: FormState, formData: FormData): Promise<For
   const ctx = await accountContext();
   let token: string;
   try {
-    ({ token } = await registerCustomer(ctx, { name: values.name, email: values.email, phone: values.phone, password }));
+    ({ token } = await registerCustomer(ctx, {
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      password,
+      billing: {
+        document_type: values["billing.document_type"] as RegisterInput["billing"]["document_type"],
+        document: values["billing.document"],
+        address: values["billing.address"],
+        taxpayer_type: values["billing.taxpayer_type"] as RegisterInput["billing"]["taxpayer_type"],
+      },
+    }));
   } catch (error) {
     return formStateFromError(error, values);
   }

@@ -54,6 +54,21 @@ test.describe("cuenta del comprador", () => {
     await expect(page.getByText("no está verificado")).toHaveCount(0);
   });
 
+  test("tras registrarse, el perfil muestra los datos de facturación", async ({ page }) => {
+    const owner = `e2e-perfil-${Date.now()}@posven.test`;
+    await page.goto("/registro");
+    await fillRegistration(page, { name, email: owner, phone, password });
+    await page.getByRole("button", { name: "Crear cuenta", exact: true }).click();
+    await expect(page).toHaveURL("/cuenta");
+
+    await page.goto("/cuenta/perfil");
+    await expect(page.getByLabel("Documento", { exact: true })).toHaveValue("12345678");
+    await expect(page.getByLabel("Nombre o razón social")).toHaveValue(name);
+    await expect(page.getByLabel("Teléfono").last()).toHaveValue(phone);
+    await expect(page.getByLabel("Dirección fiscal")).toHaveValue("Avenida Bolívar, edificio Central, Valencia");
+    await expect(page.getByRole("button", { name: "Borrar mis datos de facturación" })).toBeEnabled();
+  });
+
   test("Salir deja Entrar en la cabecera y entrar de nuevo vuelve a volver", async ({ page }) => {
     await signIn(page, email, password);
     await expect(page).toHaveURL("/cuenta");

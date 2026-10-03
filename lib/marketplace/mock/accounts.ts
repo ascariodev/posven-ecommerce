@@ -16,6 +16,7 @@ import type {
   RegisterInput,
   StoreSummary,
 } from "../schemas";
+import { billingDocumentTypeSchema, billingTaxpayerTypeSchema } from "../schemas";
 import {
   MOCK_ACCOUNT_SEED,
   MOCK_EXPIRED_TOKEN,
@@ -139,6 +140,8 @@ const BILLING_PHONE_PATTERN = /^(0212|0412|0422|0414|0424|0416|0426)\d{7}$/;
 function checkBilling(errors: FieldErrors, billing: Billing): void {
   const name = billing.name.trim();
   const address = billing.address.trim();
+  if (!billingDocumentTypeSchema.safeParse(billing.document_type).success) flag(errors, "billing.document_type", "Elige el tipo de documento.");
+  if (!billingTaxpayerTypeSchema.safeParse(billing.taxpayer_type).success) flag(errors, "billing.taxpayer_type", "Elige el tipo de contribuyente.");
   if (!/^\d{5,9}$/.test(billing.document.trim())) flag(errors, "billing.document", "El documento debe tener de 5 a 9 dígitos.");
   if (name === "" || name.length > 100) flag(errors, "billing.name", "El nombre o razón social admite hasta 100 caracteres.");
   if (!BILLING_PHONE_PATTERN.test(billing.phone.trim())) flag(errors, "billing.phone", "El teléfono no es válido.");
@@ -226,6 +229,18 @@ export async function registerCustomer(_ctx: AccountContext, input: RegisterInpu
   if (checked !== null) checkRegistrableEmail(errors, checked, null);
   requireText(errors, "phone", input.phone);
   checkNewPassword(errors, "password", input.password);
+  const billing: Billing = {
+    ...input.billing,
+    document: input.billing.document.trim(),
+    name: input.name.trim(),
+    phone: input.phone.trim(),
+    address: input.billing.address.trim(),
+  };
+  const billingErrors: FieldErrors = {};
+  checkBilling(billingErrors, billing);
+  for (const [key, message] of Object.entries(billingErrors)) {
+    flag(errors, key === "billing.name" ? "name" : key === "billing.phone" ? "phone" : key, message);
+  }
   throwIfInvalid(errors);
 
   const current = state();
@@ -240,7 +255,7 @@ export async function registerCustomer(_ctx: AccountContext, input: RegisterInpu
       email_verified: false,
       pending_email: null,
       settings: { order_status_emails: true },
-      billing: null,
+      billing,
     },
     password: input.password,
     addresses: [],

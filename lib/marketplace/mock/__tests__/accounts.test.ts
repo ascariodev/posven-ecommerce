@@ -30,8 +30,14 @@ const seeded = { email: "comprador@posven.test", password: "clave-segura-1" };
 const newCustomer = {
   name: "Nueva compradora",
   email: "nueva@posven.test",
-  phone: "+584121112233",
+  phone: "04121112233",
   password: "otra-clave-1",
+  billing: {
+    document_type: "V" as const,
+    document: "12345678",
+    address: "Av. Principal, Valencia",
+    taxpayer_type: "ordinary" as const,
+  },
 };
 
 const office: AddressInput = {
@@ -218,6 +224,44 @@ describe("simulado de cuentas: favoritos", () => {
 
     expect(error.status).toBe(404);
     expect(error.code).toBe("not_found");
+  });
+});
+
+describe("simulado de cuentas: registro con facturación", () => {
+  it("guarda billing con el nombre y el teléfono de la cuenta", async () => {
+    const { token, customer } = await registerCustomer(anonymous, newCustomer);
+
+    expect(customer.billing).toEqual({
+      ...newCustomer.billing,
+      name: newCustomer.name,
+      phone: newCustomer.phone,
+    });
+    expect((await getMe({ session: token, clientIp: null })).billing).toEqual(customer.billing);
+  });
+
+  it("billing inválido da validation_failed: documento y dirección como billing.<campo>, nombre y teléfono como name y phone", async () => {
+    const error = await captureAccountError(
+      registerCustomer(anonymous, {
+        ...newCustomer,
+        name: "x".repeat(101),
+        phone: "+584121112233",
+        billing: { ...newCustomer.billing, document: "12", address: "corta" },
+      }),
+    );
+
+    expect(error.status).toBe(422);
+    expect(error.code).toBe("validation_failed");
+    expect(Object.keys(error.fields ?? {}).sort()).toEqual(["billing.address", "billing.document", "name", "phone"]);
+  });
+
+  it("acepta un teléfono de la regla del TPV y rechaza uno fuera de ella", async () => {
+    const accepted = await registerCustomer(anonymous, { ...newCustomer, phone: "02121234567" });
+    expect(accepted.customer.phone).toBe("02121234567");
+
+    const error = await captureAccountError(
+      registerCustomer(anonymous, { ...newCustomer, email: "otra@posven.test", phone: "04111234567" }),
+    );
+    expect(Object.keys(error.fields ?? {})).toEqual(["phone"]);
   });
 });
 

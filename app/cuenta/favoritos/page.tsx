@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FavoriteToggleForm } from "@/features/account/components/FavoriteToggleForm";
 import { requireCustomer } from "@/features/account/server/session";
@@ -35,8 +34,8 @@ async function FavoritesPanel() {
   const isEmpty = products.length === 0 && stores.length === 0;
 
   return (
-    <div className="flex max-w-2xl flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground">Favoritos</h1>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">Favoritos</h1>
       {isEmpty && (
         <div className="flex flex-col gap-2">
           <p className="text-muted-foreground">Todavía no tienes favoritos.</p>
@@ -50,20 +49,18 @@ async function FavoritesPanel() {
           <h2 id="favoritos-productos" className="text-xl font-bold tracking-tight text-foreground">
             Productos
           </h2>
-          <ul className="flex flex-col gap-3">
+          <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card shadow-card">
             {products.map((product) => (
               <li key={product.slug}>
-                <Card>
-                  <CardContent className="flex items-center gap-4">
-                    <ProductThumb imageUrl={product.image_url} category={product.category} size="md" />
-                    <div className="flex min-w-0 flex-1 flex-col gap-2">
-                      <Link href={`/p/${product.slug}`} className="font-medium text-foreground hover:underline">
-                        {product.name}
-                      </Link>
-                      <RemoveFavoriteForm target={{ kind: "product", slug: product.slug }} name={product.name} />
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="flex items-center gap-4 p-4">
+                  <ProductThumb imageUrl={product.image_url} category={product.category} size="md" />
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    <Link href={`/p/${product.slug}`} className="font-medium text-foreground hover:underline">
+                      {product.name}
+                    </Link>
+                    <RemoveFavoriteForm target={{ kind: "product", slug: product.slug }} name={product.name} />
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
@@ -74,20 +71,18 @@ async function FavoritesPanel() {
           <h2 id="favoritos-tiendas" className="text-xl font-bold tracking-tight text-foreground">
             Tiendas
           </h2>
-          <ul className="flex flex-col gap-3">
+          <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card shadow-card">
             {stores.map((store) => (
               <li key={store.slug}>
-                <Card>
-                  <CardContent className="flex items-center gap-4">
-                    <div className="flex min-w-0 flex-1 flex-col gap-2">
-                      <Link href={`/tienda/${store.slug}`} className="font-medium text-foreground hover:underline">
-                        {store.name}
-                      </Link>
-                      <p className="text-sm text-muted-foreground">{store.city.name}</p>
-                      <RemoveFavoriteForm target={{ kind: "store", slug: store.slug }} name={store.name} />
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="flex items-center gap-4 p-4">
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    <Link href={`/tienda/${store.slug}`} className="font-medium text-foreground hover:underline">
+                      {store.name}
+                    </Link>
+                    <p className="text-sm text-muted-foreground">{store.city.name}</p>
+                    <RemoveFavoriteForm target={{ kind: "store", slug: store.slug }} name={store.name} />
+                  </div>
+                </div>
               </li>
             ))}
           </ul>

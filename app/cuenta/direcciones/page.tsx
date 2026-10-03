@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AddressActionButton } from "@/features/account/components/AddressActionButton";
@@ -15,6 +17,7 @@ export const metadata: Metadata = {
 };
 
 const NEW_ADDRESS_HEADING_ID = "agregar-direccion-titulo";
+const NEW_ADDRESS_SECTION_ID = "agregar-direccion";
 
 const linkClasses = "text-sm font-medium text-foreground underline underline-offset-4";
 
@@ -32,8 +35,14 @@ async function AddressesPanel({ searchParams }: { searchParams: PageProps<"/cuen
   );
 
   return (
-    <div className="flex max-w-2xl flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground">Direcciones</h1>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Direcciones</h1>
+        <Link href={`#${NEW_ADDRESS_SECTION_ID}`} className={buttonVariants({ size: "sm" })}>
+          <Plus aria-hidden />
+          Agregar dirección
+        </Link>
+      </div>
       {backToCheckout && (
         <Link href={CHECKOUT_RETURN} className={linkClasses}>
           Volver al checkout
@@ -47,10 +56,10 @@ async function AddressesPanel({ searchParams }: { searchParams: PageProps<"/cuen
           </Link>
         </div>
       ) : (
-        <ul className="flex flex-col gap-4">
+        <ul className="grid gap-4 sm:grid-cols-2">
           {addresses.map((address) => (
             <li key={address.id}>
-              <Card>
+              <Card className="h-full">
                 <CardContent className="flex flex-col gap-3">
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="text-lg font-bold tracking-tight text-foreground">{address.label}</h2>
@@ -82,7 +91,7 @@ async function AddressesPanel({ searchParams }: { searchParams: PageProps<"/cuen
           ))}
         </ul>
       )}
-      <section aria-labelledby={NEW_ADDRESS_HEADING_ID}>
+      <section id={NEW_ADDRESS_SECTION_ID} aria-labelledby={NEW_ADDRESS_HEADING_ID} className="scroll-mt-24">
         <Card>
           <CardContent className="flex flex-col gap-4">
             <h2 id={NEW_ADDRESS_HEADING_ID} className="text-xl font-bold tracking-tight text-foreground">

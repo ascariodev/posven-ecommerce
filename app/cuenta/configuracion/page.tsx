@@ -14,8 +14,8 @@ async function SettingsPanel() {
   const { customer } = await requireCustomer("/cuenta/configuracion");
 
   return (
-    <div className="flex max-w-md flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground">Configuración</h1>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">Configuración</h1>
       <Card>
         <CardContent className="flex flex-col gap-4">
           <h2 className="text-xl font-bold tracking-tight text-foreground">Contraseña</h2>

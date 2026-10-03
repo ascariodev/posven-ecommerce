@@ -12,14 +12,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-
 async function AccountSummary() {
   const { customer, ctx } = await requireCustomer("/cuenta");
   const withPurchases = cartEnabled();
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground">Hola, {customer.name}</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">Hola, {customer.name}</h1>
       {!customer.email_verified && (
         <Card>
           <CardContent className="flex flex-col gap-3">

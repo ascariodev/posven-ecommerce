@@ -3,7 +3,7 @@
 **Objetivo:** `/cuenta` con la dirección B "Ficha de cliente": barra lateral con la ficha del
 cliente en escritorio, pestañas subrayadas en el teléfono, páginas en panel y resumen que destaca
 el código de retiro. Sin cambios de contrato.
-**Estado:** en curso · Fase actual: 5
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: sin spec (camino acotado de `design-phase`, sólo visual). Referencia aprobada: dirección B
@@ -81,7 +81,7 @@ el código de retiro. Sin cambios de contrato.
   panel). README de `features/purchases`.
 - **Terminado cuando:** `npx vitest run features/purchases` en verde; tsc y eslint.
 
-### [ ] Fase 5 — Páginas internas en el panel
+### [x] Fase 5 — Páginas internas en el panel
 - **Repo:** posven-ecommerce
 - **Alcance:** perfil (campos en dos columnas desde `sm`), direcciones (tarjetas en dos columnas y
   "Agregar dirección" junto al título), favoritos (productos y tiendas como filas de una tarjeta) y
@@ -100,14 +100,13 @@ el código de retiro. Sin cambios de contrato.
 - 2026-10-03 — Fase 2: `AccountNav` recibe además `identity` y `compactIdentity` (ReactNode); el layout pasa `<AccountIdentity />` y `<AccountIdentity compact />`, cada una en su `<Suspense>`. `getCurrentCustomer` ya va en `cache()`, así que hay una sola lectura de `getMe` por petición. Iniciales calculadas en el componente, sin `storeInitials`.
 - 2026-10-03 — Fase 3: `RecentPurchases` devuelve un fragmento con dos secciones, la tarjeta (`region` "Para retirar") fuera de la lista "Últimas compras" (no cambia el conteo de `checkout.spec.ts:107`). Regla nueva `RN-PURCHASES-04` en el README de `features/purchases`.
 - 2026-10-03 — Fase 4: `PurchaseRows({ purchases, label })` exportado de `PurchaseList.tsx` pinta el `<ul aria-label>` como una sola tarjeta y lo usan `PurchaseList` y `RecentPurchases`; `PurchaseRow` y `purchaseHref` conservan firma. Títulos de compras y detalle a `text-2xl`, sin `max-w-3xl`.
+- 2026-10-03 — Fase 5: "Agregar dirección" junto al título es un enlace a `#agregar-direccion` (la sección conserva su `region`). Corrección: el layout lleva `grid-cols-[minmax(0,1fr)]` en móvil; sin ella las pestañas ensanchaban la página y rompían `e2e/account.spec.ts:94` (L-08).
 
 ## Notas para la próxima sesión
-- Fases 1 a 4 cerradas. Los 6 e2e rotos por el rediseño de Jose (tienda oculta como "Comercio
-  Aliado", sin contacto) siguen fallando y no son de este plan. `docs-check` marca rancio el README
-  de `features/account` por archivos ajenos al plan; ya venía así.
-- El refresco de la ficha, la tarjeta "Para retirar" y las filas de compras no se vieron en el
-  navegador; verificarlos en el e2e de cierre o a mano.
-- Fase 5: el `h1` "Hola, ..." de `app/cuenta/page.tsx` sigue en `text-3xl`; alinearlo al `text-2xl` común.
+- Plan cerrado. e2e de cierre: `account.spec.ts` 11/11; fallan los 6 preexistentes del rediseño de
+  Jose (search:4, product:19/34/73, cart:30, checkout:72) y por la cadena serial 13 e2e de cart,
+  checkout y account no corrieron: repetir la suite cuando se arreglen cart y checkout.
+- Sin revisión visual en el navegador (ficha, tarjeta "Para retirar", filas, dos columnas).
 
 ## Mejoras propuestas
 - [ ] M-1 — `AccountNav`: el `useEffect` que desplaza la pestaña activa depende de `[]`; el layout
@@ -121,12 +120,14 @@ el código de retiro. Sin cambios de contrato.
   `compactIdentity` del layout a `AccountNav` sólo lo cubre el build.
   posven-ecommerce · baja · sonnet
 - [ ] M-4 — `PickupCard` en `RecentPurchases.tsx` pone el `<h2>` dentro del `<Link>` y el enlace se
-  lee como encabezado más código: sacar el `h2` del enlace. De paso, una sola línea en blanco en
-  `app/cuenta/page.tsx:15-16`.
+  lee como encabezado más código: sacar el `h2` del enlace.
   posven-ecommerce · baja · sonnet
 - [ ] M-5 — e2e de la tarjeta "Para retirar" en `/cuenta` (`e2e/checkout.spec.ts`, flujo de compra
   completa) si el simulado deja un pedido `ready_for_pickup`.
   posven-ecommerce · media · sonnet
 - [ ] M-6 — Separador `sr-only` (" · ") entre USD y Bs en la fila de compra (`PurchaseList.tsx`) y
   devolver `PurchaseList.test.tsx` a `"$ 6,70 · Bs 244,55"`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-7 — Promover L-08 a `.claude/rules/ui.md` (grilla con `grid-cols-[minmax(0,1fr)]` cuando un
+  hijo tiene desplazamiento horizontal).
   posven-ecommerce · baja · sonnet

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AccountLayout({ children }: LayoutProps<"/cuenta">) {
   return (
-    <div className="grid gap-6 lg:grid-cols-[248px_minmax(0,1fr)] lg:items-start">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[248px_minmax(0,1fr)] lg:items-start">
       <Suspense fallback={<AccountNavSkeleton />}>
         <AccountNav
           showPurchases={cartEnabled()}

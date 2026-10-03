@@ -15,8 +15,8 @@ async function ProfilePanel() {
   const { customer } = await requireCustomer("/cuenta/perfil");
 
   return (
-    <div className="flex max-w-md flex-col gap-4">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground">Perfil</h1>
+    <div className="flex flex-col gap-4">
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">Perfil</h1>
       <Card>
         <CardContent>
           <ProfileForm customer={customer} />

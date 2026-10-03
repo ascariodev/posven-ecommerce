@@ -38,3 +38,9 @@ Una validación nueva del simulado (`lib/marketplace/mock/`) lleva su prueba en 
 ella, una regex que perdió el escape (`d{7}` por `\d{7}`) rechaza todo lo válido y la suite sigue
 en verde. Tras escribir una regex, se relee el archivo para confirmar las barras invertidas.
 aplicada en: pendiente: el usuario decide promoverla a `posven-ecommerce/.claude/rules/contract.md` (punto 5), propuesto al cerrar el plan del registro del comprador
+
+## L-08
+Una grilla sin `grid-cols-*` crea una columna implícita `auto` que crece hasta el ancho mínimo de
+su contenido: unas pestañas con `overflow-x-auto` adentro la ensanchan y la página desborda en
+móvil (en Playwright, los desplegables de Radix quedan tapados). Se fija `grid-cols-[minmax(0,1fr)]`.
+aplicada en: `app/cuenta/layout.tsx`

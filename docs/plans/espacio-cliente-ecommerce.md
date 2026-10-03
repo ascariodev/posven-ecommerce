@@ -3,7 +3,7 @@
 **Objetivo:** `/cuenta` con la dirección B "Ficha de cliente": barra lateral con la ficha del
 cliente en escritorio, pestañas subrayadas en el teléfono, páginas en panel y resumen que destaca
 el código de retiro. Sin cambios de contrato.
-**Estado:** en curso · Fase actual: 4
+**Estado:** en curso · Fase actual: 5
 
 ## Contexto mínimo
 - Spec: sin spec (camino acotado de `design-phase`, sólo visual). Referencia aprobada: dirección B
@@ -73,7 +73,7 @@ el código de retiro. Sin cambios de contrato.
   Pruebas de `RecentPurchases.test.tsx` y fila nueva en las reglas del README de `features/purchases`.
 - **Terminado cuando:** `npx vitest run features/purchases` en verde con el caso del retiro; tsc y eslint.
 
-### [ ] Fase 4 — Listas de compras en una tarjeta
+### [x] Fase 4 — Listas de compras en una tarjeta
 - **Repo:** posven-ecommerce
 - **Alcance:** `PurchaseRow` pasa a fila con separador dentro de una sola tarjeta (código, fecha y
   tiendas, chip de estado, monto en USD con Bs debajo), en `PurchaseList` y en `RecentPurchases`;
@@ -99,14 +99,15 @@ el código de retiro. Sin cambios de contrato.
 - 2026-10-03 — Fase 1: `accountLinks(showPurchases)` e `isActiveLink(href, pathname)` en `features/account/lib/accountLinks.ts` (módulo puro). `AccountNav` va en `<Suspense fallback={<AccountNavSkeleton />}>` en el layout (lo exige `usePathname` en `/cuenta/compras/[codigo]`). Barra lateral y pestañas son dos `<nav aria-label="Mi cuenta">` alternados con `hidden lg:block` / `lg:hidden`.
 - 2026-10-03 — Fase 2: `AccountNav` recibe además `identity` y `compactIdentity` (ReactNode); el layout pasa `<AccountIdentity />` y `<AccountIdentity compact />`, cada una en su `<Suspense>`. `getCurrentCustomer` ya va en `cache()`, así que hay una sola lectura de `getMe` por petición. Iniciales calculadas en el componente, sin `storeInitials`.
 - 2026-10-03 — Fase 3: `RecentPurchases` devuelve un fragmento con dos secciones, la tarjeta (`region` "Para retirar") fuera de la lista "Últimas compras" (no cambia el conteo de `checkout.spec.ts:107`). Regla nueva `RN-PURCHASES-04` en el README de `features/purchases`.
+- 2026-10-03 — Fase 4: `PurchaseRows({ purchases, label })` exportado de `PurchaseList.tsx` pinta el `<ul aria-label>` como una sola tarjeta y lo usan `PurchaseList` y `RecentPurchases`; `PurchaseRow` y `purchaseHref` conservan firma. Títulos de compras y detalle a `text-2xl`, sin `max-w-3xl`.
 
 ## Notas para la próxima sesión
-- Fases 1 a 3 cerradas. Los 6 e2e rotos por el rediseño de Jose (tienda oculta como "Comercio
+- Fases 1 a 4 cerradas. Los 6 e2e rotos por el rediseño de Jose (tienda oculta como "Comercio
   Aliado", sin contacto) siguen fallando y no son de este plan. `docs-check` marca rancio el README
   de `features/account` por archivos ajenos al plan; ya venía así.
-- El refresco de la ficha tras guardar el perfil y el diseño de la tarjeta "Para retirar" no se
-  vieron en el navegador; verificarlos en el e2e de cierre o a mano.
-- Fase 4: `PurchaseRow` aparece ahora bajo la tarjeta "Para retirar" en el resumen.
+- El refresco de la ficha, la tarjeta "Para retirar" y las filas de compras no se vieron en el
+  navegador; verificarlos en el e2e de cierre o a mano.
+- Fase 5: el `h1` "Hola, ..." de `app/cuenta/page.tsx` sigue en `text-3xl`; alinearlo al `text-2xl` común.
 
 ## Mejoras propuestas
 - [ ] M-1 — `AccountNav`: el `useEffect` que desplaza la pestaña activa depende de `[]`; el layout
@@ -126,3 +127,6 @@ el código de retiro. Sin cambios de contrato.
 - [ ] M-5 — e2e de la tarjeta "Para retirar" en `/cuenta` (`e2e/checkout.spec.ts`, flujo de compra
   completa) si el simulado deja un pedido `ready_for_pickup`.
   posven-ecommerce · media · sonnet
+- [ ] M-6 — Separador `sr-only` (" · ") entre USD y Bs en la fila de compra (`PurchaseList.tsx`) y
+  devolver `PurchaseList.test.tsx` a `"$ 6,70 · Bs 244,55"`.
+  posven-ecommerce · baja · sonnet

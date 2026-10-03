@@ -34,7 +34,7 @@ async function PurchasePanel({ params }: { params: PageProps<"/cuenta/compras/[c
   const purchase = await readPurchase(codigo);
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground">Compra {purchase.code}</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">Compra {purchase.code}</h1>
       <PurchaseDetail purchase={purchase} />
     </div>
   );
@@ -43,7 +43,7 @@ async function PurchasePanel({ params }: { params: PageProps<"/cuenta/compras/[c
 export default function PurchasePage({ params }: PageProps<"/cuenta/compras/[codigo]">) {
   if (!cartEnabled()) notFound();
   return (
-    <div className="flex max-w-3xl flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <Link href="/cuenta/compras" className="text-sm font-medium text-foreground underline underline-offset-4">
         Volver a mis compras
       </Link>

@@ -2,7 +2,7 @@
 module: "purchases"
 path: "features/purchases"
 type: "feature"
-exports: ["PURCHASE_STATUS_TEXT", "ORDER_STATUS_TEXT", "FULFILLMENT_TEXT", "formatDateTime", "storeCountText", "readPurchasesPage", "isPageOutOfRange", "PurchaseList", "PurchaseRow", "purchaseHref", "PurchaseDetail", "RecentPurchases"]
+exports: ["PURCHASE_STATUS_TEXT", "ORDER_STATUS_TEXT", "FULFILLMENT_TEXT", "formatDateTime", "storeCountText", "readPurchasesPage", "isPageOutOfRange", "PurchaseList", "PurchaseRow", "PurchaseRows", "purchaseHref", "PurchaseDetail", "RecentPurchases"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx"]
 tests: "features/purchases/__tests__/*.test.{ts,tsx}"
 verified_against: ["features/purchases/lib/labels.ts", "features/purchases/lib/pagination.ts", "features/purchases/__tests__/pagination.test.ts", "features/purchases/components/PurchaseList.tsx", "features/purchases/components/PurchaseDetail.tsx", "features/purchases/components/RecentPurchases.tsx", "features/purchases/__tests__/PurchaseList.test.tsx", "features/purchases/__tests__/PurchaseDetail.test.tsx", "features/purchases/__tests__/RecentPurchases.test.tsx", "app/cuenta/compras/page.tsx", "app/cuenta/compras/[codigo]/page.tsx", "app/cuenta/page.tsx", "app/cuenta/layout.tsx", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
@@ -63,7 +63,7 @@ API. El pago y su resultado viven en `features/checkout`.
 ## 4. API pública
 
 - `PURCHASE_STATUS_TEXT`, `ORDER_STATUS_TEXT`, `FULFILLMENT_TEXT`, `formatDateTime(iso: string): string` ("30/09/2026 14:00" en hora de Caracas) y `storeCountText(count: number): string`, `features/purchases/lib/labels.ts`.
-- `PurchaseList({ page }: { page: PurchasePage })`, `PurchaseRow({ purchase })` y `purchaseHref(code: string): string`, `features/purchases/components/PurchaseList.tsx`.
+- `PurchaseList({ page }: { page: PurchasePage })`, `PurchaseRow({ purchase })`, `PurchaseRows({ purchases, label })` (lista en una sola tarjeta con separadores) y `purchaseHref(code: string): string`, `features/purchases/components/PurchaseList.tsx`.
 - `PurchaseDetail({ purchase }: { purchase: Purchase })`, `features/purchases/components/PurchaseDetail.tsx`.
 - `readPurchasesPage(raw: string | string[] | undefined): number` (inválida es 1) e `isPageOutOfRange(page: PurchasePage): boolean`, `features/purchases/lib/pagination.ts`.
 - `RecentPurchases({ ctx }: { ctx: AccountContext })`, `features/purchases/components/RecentPurchases.tsx` (Server Component async): con la API caída o un error de cuenta que no sea 401 devuelve `null`.
@@ -73,7 +73,7 @@ API. El pago y su resultado viven en `features/checkout`.
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
 | Textos y fechas | `lib/labels.ts` | estados en español y fecha armada por partes de `Intl.DateTimeFormat` |
-| Lista | `components/PurchaseList.tsx` | filas enlazadas y paginación desde `meta` (cuenta páginas, no montos) |
+| Lista | `components/PurchaseList.tsx` | filas enlazadas en una tarjeta (USD y Bs debajo) y paginación desde `meta` (cuenta páginas, no montos) |
 | Detalle | `components/PurchaseDetail.tsx` | una tarjeta por pedido; fechas no nulas de `timeline` |
 | Paginación | `lib/pagination.ts` | lectura de `?pagina` y la decisión del 404, fuera de la ruta para probarlas |
 | Resumen | `components/RecentPurchases.tsx` | reutiliza `PurchaseRow`; degrada a nada si la API falla, para no tumbar `/cuenta` (excepción de `app-router.md` 7) |

@@ -3,7 +3,7 @@ import { listPurchases } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { Purchase, StoreOrder } from "@/lib/marketplace/schemas";
-import { PurchaseRow, purchaseHref } from "./PurchaseList";
+import { PurchaseRows, purchaseHref } from "./PurchaseList";
 
 const RECENT_COUNT = 3;
 const HEADING_ID = "ultimas-compras-titulo";
@@ -73,11 +73,7 @@ export async function RecentPurchases({ ctx }: { ctx: AccountContext }) {
             Ver todas
           </Link>
         </div>
-        <ul aria-label="Últimas compras" className="flex flex-col gap-3">
-          {data.slice(0, RECENT_COUNT).map((purchase) => (
-            <PurchaseRow key={purchase.code} purchase={purchase} />
-          ))}
-        </ul>
+        <PurchaseRows purchases={data.slice(0, RECENT_COUNT)} label="Últimas compras" />
       </section>
     </>
   );

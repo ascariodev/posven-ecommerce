@@ -28,7 +28,7 @@ describe("PurchaseList", () => {
     expect(link.textContent).toContain("PV-00000A");
     expect(link.textContent).toContain("Pagada");
     expect(link.textContent).toContain("30/09/2026 14:00 · 2 tiendas");
-    expect(link.textContent).toContain("$ 6,70 · Bs 244,55");
+    expect(link.textContent).toContain("$ 6,70Bs 244,55");
     expect(screen.queryByRole("navigation")).toBeNull();
   });
 

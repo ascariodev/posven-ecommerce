@@ -15,12 +15,22 @@ function pageHref(page: number): string {
   return page === 1 ? "/cuenta/compras" : `/cuenta/compras?pagina=${page}`;
 }
 
+export function PurchaseRows({ purchases, label }: { purchases: Purchase[]; label: string }) {
+  return (
+    <ul aria-label={label} className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card shadow-card">
+      {purchases.map((purchase) => (
+        <PurchaseRow key={purchase.code} purchase={purchase} />
+      ))}
+    </ul>
+  );
+}
+
 export function PurchaseRow({ purchase }: { purchase: Purchase }) {
   return (
     <li>
       <Link
         href={purchaseHref(purchase.code)}
-        className="flex flex-col gap-1 rounded-lg border border-border bg-surface p-4 shadow-card transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:flex-row sm:items-center sm:justify-between"
+        className="flex flex-col gap-1 p-4 transition-colors duration-200 hover:bg-muted focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-foreground motion-reduce:transition-none sm:flex-row sm:items-center sm:justify-between"
       >
         <span className="flex flex-col gap-1">
           <span className="flex flex-wrap items-center gap-2">
@@ -31,8 +41,9 @@ export function PurchaseRow({ purchase }: { purchase: Purchase }) {
             {formatDateTime(purchase.created_at)} · {storeCountText(purchase.orders.length)}
           </span>
         </span>
-        <span className="text-foreground sm:text-right">
-          {formatUsd(purchase.total_usd)} · {formatVes(purchase.total_ves)}
+        <span className="flex flex-col sm:items-end">
+          <span className="font-bold text-foreground">{formatUsd(purchase.total_usd)}</span>
+          <span className="text-sm text-muted-foreground">{formatVes(purchase.total_ves)}</span>
         </span>
       </Link>
     </li>
@@ -55,11 +66,7 @@ export function PurchaseList({ page }: { page: PurchasePage }) {
   const hasNext = meta.page * meta.per_page < meta.total;
   return (
     <div className="flex flex-col gap-4">
-      <ul aria-label="Compras" className="flex flex-col gap-3">
-        {data.map((purchase) => (
-          <PurchaseRow key={purchase.code} purchase={purchase} />
-        ))}
-      </ul>
+      <PurchaseRows purchases={data} label="Compras" />
       {(hasPrevious || hasNext) && (
         <nav aria-label="Páginas de compras" className="flex justify-between gap-2">
           {hasPrevious ? (

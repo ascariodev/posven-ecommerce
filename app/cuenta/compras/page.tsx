@@ -23,8 +23,8 @@ async function PurchasesPanel({ searchParams }: { searchParams: PageProps<"/cuen
 export default function PurchasesPage({ searchParams }: PageProps<"/cuenta/compras">) {
   if (!cartEnabled()) notFound();
   return (
-    <div className="flex max-w-3xl flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight text-foreground">Mis compras</h1>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">Mis compras</h1>
       <Suspense fallback={<Skeleton className="h-64 w-full" />}>
         <PurchasesPanel searchParams={searchParams} />
       </Suspense>

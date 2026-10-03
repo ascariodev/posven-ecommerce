@@ -3,7 +3,7 @@
 import { ChevronRight, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { accountLinks, isActiveLink } from "../lib/accountLinks";
@@ -19,7 +19,15 @@ export function AccountNavSkeleton() {
 }
 
 // `showPurchases` lo decide el servidor con el interruptor del carrito: aquí no se lee el entorno.
-export function AccountNav({ showPurchases }: { showPurchases: boolean }) {
+export function AccountNav({
+  showPurchases,
+  identity,
+  compactIdentity,
+}: {
+  showPurchases: boolean;
+  identity: ReactNode;
+  compactIdentity: ReactNode;
+}) {
   const pathname = usePathname();
   const links = accountLinks(showPurchases);
   const activeTab = useRef<HTMLAnchorElement>(null);
@@ -30,9 +38,11 @@ export function AccountNav({ showPurchases }: { showPurchases: boolean }) {
 
   return (
     <>
+      <div className="lg:hidden">{compactIdentity}</div>
       <nav aria-label="Mi cuenta" className="hidden lg:block">
         <div className="flex flex-col gap-1 rounded-lg border border-border bg-card p-3 shadow-card">
-          <ul className="flex flex-col gap-1">
+          <div className="border-b border-border">{identity}</div>
+          <ul className="mt-2 flex flex-col gap-1">
             {links.map(({ href, label, icon: Icon }) => {
               const active = isActiveLink(href, pathname);
               return (

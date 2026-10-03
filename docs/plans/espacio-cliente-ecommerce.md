@@ -3,7 +3,7 @@
 **Objetivo:** `/cuenta` con la dirección B "Ficha de cliente": barra lateral con la ficha del
 cliente en escritorio, pestañas subrayadas en el teléfono, páginas en panel y resumen que destaca
 el código de retiro. Sin cambios de contrato.
-**Estado:** en curso · Fase actual: 2
+**Estado:** en curso · Fase actual: 3
 
 ## Contexto mínimo
 - Spec: sin spec (camino acotado de `design-phase`, sólo visual). Referencia aprobada: dirección B
@@ -54,7 +54,7 @@ el código de retiro. Sin cambios de contrato.
   `/cuenta*`.
 - **Commit:** `feat(account): navegación lateral y pestañas de la cuenta`
 
-### [ ] Fase 2 — Ficha del cliente en la navegación
+### [x] Fase 2 — Ficha del cliente en la navegación
 - **Repo:** posven-ecommerce
 - **Alcance:** `AccountIdentity` (Server Component) con iniciales sobre `bg-primary-soft`, nombre,
   correo y chip de estado ("Correo verificado" `tint-3` / "Correo sin verificar" `tint-1`), leído
@@ -97,15 +97,14 @@ el código de retiro. Sin cambios de contrato.
 - 2026-10-03 — El menú desplegable de la cabecera se conserva y comparte la lista con la barra lateral.
 - 2026-10-03 — La tarjeta de retiro muestra sólo el primer pedido listo; los demás siguen en "Últimas compras".
 - 2026-10-03 — Fase 1: `accountLinks(showPurchases)` e `isActiveLink(href, pathname)` en `features/account/lib/accountLinks.ts` (módulo puro). `AccountNav` va en `<Suspense fallback={<AccountNavSkeleton />}>` en el layout (lo exige `usePathname` en `/cuenta/compras/[codigo]`). Barra lateral y pestañas son dos `<nav aria-label="Mi cuenta">` alternados con `hidden lg:block` / `lg:hidden`.
+- 2026-10-03 — Fase 2: `AccountNav` recibe además `identity` y `compactIdentity` (ReactNode); el layout pasa `<AccountIdentity />` y `<AccountIdentity compact />`, cada una en su `<Suspense>`. `getCurrentCustomer` ya va en `cache()`, así que hay una sola lectura de `getMe` por petición. Iniciales calculadas en el componente, sin `storeInitials`.
 
 ## Notas para la próxima sesión
-- Fase 1 cerrada. Los 6 e2e rotos por el rediseño de Jose (tienda oculta como "Comercio Aliado",
-  sin contacto) siguen fallando y no son de este plan. `docs-check` marca rancio el README de
-  `features/account` por archivos ajenos al plan (`server/actions.ts`, `e2e/account.spec.ts`,
-  `lib/marketplace/schemas.ts`); ya venía así.
-- Fase 2: la ficha va en la cabecera de la barra lateral de `AccountNav` (lg) y como franja sobre
-  las pestañas (móvil); `AccountNav` es cliente, así que `AccountIdentity` (servidor) se le pasa
-  como hijo o se coloca en el layout.
+- Fases 1 y 2 cerradas. Los 6 e2e rotos por el rediseño de Jose (tienda oculta como "Comercio
+  Aliado", sin contacto) siguen fallando y no son de este plan. `docs-check` marca rancio el README
+  de `features/account` por archivos ajenos al plan; ya venía así.
+- El refresco de la ficha tras guardar el perfil se comprobó por lectura de código (`refresh()` en
+  `accountActions.ts`), no en el navegador; verificarlo en el e2e de cierre o a mano.
 
 ## Mejoras propuestas
 - [ ] M-1 — `AccountNav`: el `useEffect` que desplaza la pestaña activa depende de `[]`; el layout
@@ -113,4 +112,8 @@ el código de retiro. Sin cambios de contrato.
   posven-ecommerce · baja · sonnet
 - [ ] M-2 — Prueba de `isActiveLink` (Resumen sólo en `/cuenta` exacto, "Mis compras" también en
   `/cuenta/compras/<código>`) en `features/account/__tests__/accountLinks.test.ts`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-3 — Prueba de `AccountIdentity` (iniciales, chip verificado y sin verificar, `null` sin
+  comprador) en `features/account/__tests__/AccountIdentity.test.tsx`; hoy el paso de `identity` y
+  `compactIdentity` del layout a `AccountNav` sólo lo cubre el build.
   posven-ecommerce · baja · sonnet

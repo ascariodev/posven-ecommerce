@@ -45,7 +45,7 @@ export async function CartLink() {
       <ShoppingCart aria-hidden="true" className="size-4" />
       <span className="hidden sm:inline">Carrito</span>
       {count !== null && count > 0 && (
-        <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
+        <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-card">
           {count}
         </span>
       )}

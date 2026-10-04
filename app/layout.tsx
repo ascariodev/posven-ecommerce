@@ -39,7 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${fontSans.variable} ${fontHeading.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <header className="header-elevate sticky top-0 z-40 border-b border-glass-border bg-glass text-foreground backdrop-blur-md shadow-sm">
+        <header className="header-elevate sticky top-0 z-40 border-b border-glass-border bg-glass text-foreground backdrop-blur-md shadow-card">
           <div className="mx-auto flex min-h-14 w-full max-w-5xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2">
             <Link href="/" className="text-xl font-bold tracking-tight text-primary-text">
               {SITE_NAME}

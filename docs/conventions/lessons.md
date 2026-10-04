@@ -57,3 +57,9 @@ Un componente del layout raíz que marca la ruta activa con `usePathname()` desa
 hidratación: con `cacheComponents` el HTML prerenderizado puede ser de otra ruta. La marca activa
 se calcula sólo tras hidratar (`useSyncExternalStore` con instantánea de servidor `false`).
 aplicada en: `features/site/components/MobileNavLinks.tsx`
+
+## L-11
+Un test de regresión que pasa con y sin el arreglo no prueba nada: suele llegar al estado por un
+camino que ya lo limpia (teclear en un input que resetea la marca). Se corre contra el código sin
+el arreglo y se exige que falle.
+aplicada en: `.claude/rules/tests.md`

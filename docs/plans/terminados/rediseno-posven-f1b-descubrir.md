@@ -152,7 +152,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 
 ## Notas para la próxima sesión
 - Mejoras aplicadas el 2026-10-04 en `main` sin push: todas las bajas (M-1..M-5, M-7..M-20;
-  M-21 cubierta por la M-4 de F0). M-6 aplicada después, a pedido. Pendientes: M-22 (baja) y M-23 (alta, plan
+  M-21 cubierta por la M-4 de F0). M-6 y M-22 aplicadas después, a pedido. Pendientes: M-23 (alta, plan
   nuevo que cruza posveapi).
 - Fase 9: comparar copia y orden de bloques de `EmptyState` contra W05/P05.
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
@@ -219,7 +219,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-21 — `Toaster` con `theme="light"` fijo: revisar el tema de sonner en oscuro.
   posven-ecommerce · baja · sonnet · sin cambios: es la M-4 del plan F0, que va con el selector de
   tema de F4
-- [ ] M-22 — `SearchBox`: con la lista vacía, `ArrowUp` no limpia la marca de "activar la primera"
+- [x] M-22 — `SearchBox`: con la lista vacía, `ArrowUp` no limpia la marca de "activar la primera"
   que dejó un `ArrowDown` previo (inocuo; se limpia al teclear o cerrar).
   posven-ecommerce · baja · sonnet
 - [ ] M-23 — `open_now` en `/products/nearby` (posveapi) y `listNearbyProducts`, para que "Quizás te

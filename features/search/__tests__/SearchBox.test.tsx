@@ -137,6 +137,18 @@ describe("SearchBox", () => {
     expect(screen.getAllByRole("option")[1].getAttribute("aria-selected")).toBe("true");
   });
 
+  it("ArrowUp con la lista vacía limpia la marca que dejó ArrowDown", async () => {
+    render(<SearchBox defaultQuery="acet" />);
+    const input = screen.getByRole("combobox", { name: "Buscar productos" });
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(250);
+    });
+    expect(screen.getByRole("listbox")).toBeTruthy();
+    expect(input.getAttribute("aria-activedescendant")).toBeNull();
+  });
+
   it("Borrar recientes vacía el panel sin ser opción, conserva el foco del input y limpia el almacenamiento", () => {
     window.localStorage.setItem("recent-searches", JSON.stringify(["leche en polvo", "harina"]));
     render(<SearchBox />);

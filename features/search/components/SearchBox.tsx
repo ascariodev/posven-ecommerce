@@ -76,7 +76,7 @@ export function SearchBox({
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       if (!open) openPanel();
       if (items.length === 0) {
-        if (event.key === "ArrowDown") setActivateFirst(true);
+        setActivateFirst(event.key === "ArrowDown");
         return;
       }
       event.preventDefault();

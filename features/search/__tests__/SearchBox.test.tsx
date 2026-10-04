@@ -123,4 +123,17 @@ describe("SearchBox", () => {
     expect(() => fireEvent.keyDown(input, { key: "Enter" })).not.toThrow();
     expect(push).not.toHaveBeenCalled();
   });
+
+  it("ArrowDown con el panel cerrado lo abre y deja activa la primera opción", async () => {
+    render(<SearchBox />);
+    const input = await typeQuery("acet");
+    fireEvent.keyDown(input, { key: "Escape" });
+    expect(screen.queryByRole("listbox")).toBeNull();
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    const first = screen.getAllByRole("option")[0];
+    expect(first.getAttribute("aria-selected")).toBe("true");
+    expect(input.getAttribute("aria-activedescendant")).toBe(first.id);
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(screen.getAllByRole("option")[1].getAttribute("aria-selected")).toBe("true");
+  });
 });

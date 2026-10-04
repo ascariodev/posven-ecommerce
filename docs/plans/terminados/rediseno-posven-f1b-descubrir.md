@@ -173,7 +173,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-4 — `MobileNavLinks.tsx` usa `text-[10px]` en el contador: confirmar contra `ui.md` o
   subir a `text-xs`.
   posven-ecommerce · baja · sonnet
-- [ ] M-5 — `SearchBox`: `ArrowDown` con el panel cerrado lo abre pero no mueve la opción activa.
+- [x] M-5 — `SearchBox`: `ArrowDown` con el panel cerrado lo abre pero no mueve la opción activa.
   posven-ecommerce · baja · sonnet
 - [ ] M-6 — Mover el `Form` con `onSubmit` de `SearchPill` dentro de `SearchBox` para que
   `SearchPill` vuelva a ser de servidor (regla `app-router` 4).
@@ -214,4 +214,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [ ] M-20 — Prueba del consejo "Prueba con menos palabras..." de `EmptyState` con y sin `q`.
   posven-ecommerce · baja · sonnet
 - [ ] M-21 — `Toaster` con `theme="light"` fijo: revisar el tema de sonner en oscuro.
+  posven-ecommerce · baja · sonnet
+- [ ] M-22 — `SearchBox`: con la lista vacía, `ArrowUp` no limpia la marca de "activar la primera"
+  que dejó un `ArrowDown` previo (inocuo; se limpia al teclear o cerrar).
   posven-ecommerce · baja · sonnet

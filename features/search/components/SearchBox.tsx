@@ -21,16 +21,19 @@ export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: str
   const [value, setValue] = useState(defaultQuery);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [activateFirst, setActivateFirst] = useState(false);
   const [recents, setRecents] = useState<string[]>([]);
   const radio = currentRadio();
   const data = useSuggestions(value, radio);
   const items = open ? buildPanelItems({ query: value, data, recents, radio }) : [];
   const expanded = items.length > 0;
-  const active = activeIndex < items.length ? activeIndex : -1;
+  const boundedIndex = activeIndex < items.length ? activeIndex : -1;
+  const active = activateFirst && items.length > 0 ? 0 : boundedIndex;
 
   function close() {
     setOpen(false);
     setActiveIndex(-1);
+    setActivateFirst(false);
   }
 
   function pick(item: PanelItem) {
@@ -50,8 +53,12 @@ export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: str
     }
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       if (!open) openPanel();
-      if (items.length === 0) return;
+      if (items.length === 0) {
+        if (event.key === "ArrowDown") setActivateFirst(true);
+        return;
+      }
       event.preventDefault();
+      setActivateFirst(false);
       const slots = items.length + 1;
       const step = event.key === "ArrowDown" ? 1 : -1;
       setActiveIndex(((active + 1 + step + slots) % slots) - 1);
@@ -86,6 +93,7 @@ export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: str
         onChange={(event) => {
           setValue(event.target.value);
           setActiveIndex(-1);
+          setActivateFirst(false);
           if (!open) openPanel();
         }}
         onFocus={openPanel}

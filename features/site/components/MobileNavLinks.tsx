@@ -3,6 +3,7 @@
 import { Heart, House, Search, ShoppingBag, User, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSyncExternalStore } from "react";
 import { loginHref } from "@/features/account/lib/returnPath";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +49,8 @@ function tabs({
   return list;
 }
 
+const subscribeNothing = () => () => {};
+
 function cartName(count: number): string {
   if (count === 0) return "Carrito";
   return `Carrito, ${count} ${count === 1 ? "producto" : "productos"}`;
@@ -62,6 +65,7 @@ export function MobileNavLinks({
   cartEnabled: boolean;
   cartCount: number | null;
 }) {
+  const hydrated = useSyncExternalStore(subscribeNothing, () => true, () => false);
   const pathname = usePathname();
   return (
     <nav
@@ -69,7 +73,7 @@ export function MobileNavLinks({
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       <ul className="mx-auto flex max-w-md">
-        {tabs({ pathname, signedIn, cartEnabled, cartCount }).map(({ href, label, icon: Icon, active, badge }) => (
+        {tabs({ pathname: hydrated ? pathname : "", signedIn, cartEnabled, cartCount }).map(({ href, label, icon: Icon, active, badge }) => (
           <li key={label} className="flex-1">
             <Link
               href={href}

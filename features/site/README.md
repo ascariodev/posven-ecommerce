@@ -97,7 +97,7 @@ que enlaza.
 
 - `SiteHeader(): React.JSX.Element`, `features/site/components/SiteHeader.tsx`: Server Component síncrono; cada segmento con datos va en su `<Suspense>`.
 - `MobileNav(): Promise<React.JSX.Element>`, `features/site/components/MobileNav.tsx`: Server Component async; lee la sesión y el contador del carrito y pinta `MobileNavLinks`. `MobileNavSkeleton(): React.JSX.Element`: barra vacía de la misma altura.
-- `MobileNavLinks({ signedIn, cartEnabled, cartCount }: { signedIn: boolean; cartEnabled: boolean; cartCount: number | null }): React.JSX.Element`, `features/site/components/MobileNavLinks.tsx` (`"use client"`): la `<nav>`; marca la ruta activa con `usePathname()`.
+- `MobileNavLinks({ signedIn, cartEnabled, cartCount }: { signedIn: boolean; cartEnabled: boolean; cartCount: number | null }): React.JSX.Element`, `features/site/components/MobileNavLinks.tsx` (`"use client"`): la `<nav>`; marca la ruta activa con `usePathname()` sólo tras hidratar (`useSyncExternalStore`): el HTML del servidor puede venir prerenderizado para otra ruta y no lleva activa, para evitar el aviso de hidratación.
 - `SiteFooter(): Promise<React.JSX.Element>`, `features/site/components/SiteFooter.tsx`: Server Component async.
 - `FooterCategories({ categories }: { categories: CategoryNode[] }): React.JSX.Element | null`, `features/site/components/SiteFooter.tsx`: columna de categorías; `null` con la lista vacía.
 - `footerYear(): Promise<number>`, `features/site/lib/year.ts`: año actual, en caché de `cacheLife("days")`.

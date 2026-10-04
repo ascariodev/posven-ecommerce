@@ -14,11 +14,10 @@ export default async function Home() {
   const categories = await listCategories();
   return (
     <div className="flex flex-col gap-6 sm:gap-8">
-      <section className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-primary p-6 text-primary-foreground sm:gap-8 sm:p-10 md:rounded-4xl">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-16 -right-16 size-72 rounded-full border-[48px] border-primary-foreground/10"
-        />
+      <section className="relative flex flex-col gap-6 rounded-3xl bg-primary p-6 text-primary-foreground sm:gap-8 sm:p-10 md:rounded-4xl">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+          <div className="absolute -top-16 -right-16 size-72 rounded-full border-[48px] border-primary-foreground/10" />
+        </div>
         <div className="relative flex max-w-2xl flex-col gap-4">
           <span className="w-fit rounded-full bg-primary-foreground/10 px-3 py-1 text-xs font-semibold">
             Compara precios antes de salir

@@ -52,6 +52,9 @@ export function EmptyState({
           ? `No encontramos resultados para «${query.q}».`
           : "No encontramos resultados en esta categoría."}
       </h2>
+      {query.q !== "" && (
+        <p className="text-sm text-muted-foreground">Prueba con menos palabras o revisa cómo está escrito.</p>
+      )}
       {(widerRadius !== undefined || offerNationwide || offerOpenNowOff) && (
         <div className="flex flex-wrap gap-2">
           {widerRadius !== undefined && (

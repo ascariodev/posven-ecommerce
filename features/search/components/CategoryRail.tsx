@@ -20,7 +20,7 @@ export function CategoryRail({ categories }: { categories: CategoryNode[] }) {
         <li className="shrink-0">
           <Link
             href={searchHref({ q: "", categoria: null, radio: DEFAULT_RADIUS_KM, pagina: 1 })}
-            className={cn(chipClass, "border-primary bg-primary text-primary-foreground hover:bg-primary/80")}
+            className={cn(chipClass, "border-primary bg-primary text-primary-foreground hover:bg-primary/80 dark:border-primary dark:bg-primary dark:hover:bg-primary/80")}
           >
             Todo
           </Link>

@@ -51,7 +51,7 @@ export function ProductCard({ item }: { item: SearchItem }) {
           
           <p className="mt-3 text-[11px] font-medium text-foreground/70 bg-muted px-2 py-1 rounded-md inline-block w-fit">
             Disponible en {storesLabel(item.offers_count)}
-            {item.nearest_km !== null && ` a ${formatDistance(item.nearest_km)}`}
+            {item.nearest_km !== null && ` ${formatDistance(item.nearest_km)}`}
           </p>
         </div>
 

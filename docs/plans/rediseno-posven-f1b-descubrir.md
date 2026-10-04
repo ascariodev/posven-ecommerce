@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F1 del lienzo "E · PosVen" (Inicio, búsqueda con sugerencias,
 resultados con filtros y orden, sin resultados) más la cabecera con ubicación y la barra inferior
 en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
-**Estado:** en curso · Fase actual: 9
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (decisiones), §4 (`ui.md`), §5 (mapa
@@ -84,7 +84,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - **Alcance:** `EmptyState` de `W05`/`P05`: ampliar radio, todo el país, "Quizás te sirve" con
   productos cercanos y categorías.
 
-### [ ] Fase 9 — Revisión contra el lienzo
+### [x] Fase 9 — Revisión contra el lienzo
 - **Repo:** posven-ecommerce
 - **Alcance:** puerta de la spec §6: e2e de búsqueda, inicio y sitio en verde (incluido el rojo
   conocido del `h1` de la portada), AA en claro y oscuro y capturas comparadas con el lienzo.
@@ -141,6 +141,14 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   "Abierto ahora"; `NearbyProducts` gana `title?` y `showAll` y `SearchResults` lo monta como
   "Quizás te sirve" (radio por defecto, no el de la consulta: son productos generales cercanos);
   no se copia el texto largo de W05 (el título actual lo usa el e2e).
+- 2026-10-04 — Fase 9: e2e search y site 17/17 sin aviso de hidratación (el rojo del `h1` ya no
+  existía); axe `color-contrast` sin violaciones en escritorio y Pixel 7, claro y oscuro. Ajustes:
+  `MobileNavLinks` marca la ruta activa sólo tras hidratar (`useSyncExternalStore`), porque el HTML
+  prerenderizado del layout puede ser de otra ruta; `Toaster` sube sobre la barra inferior;
+  chip "Todo" en oscuro; `FeaturedCard` a `text-foreground` (4,49:1); el recorte del héroe pasa al
+  círculo para no cortar el panel de sugerencias; `ProductCard` sin la "a" duplicada; consejo en
+  `EmptyState` con `q`. Quedan como diferencias con el lienzo: la frase explicativa de W05/P05,
+  "Explora por categoría" con íconos y "Quizás te sirve" en riel y no en rejilla.
 
 ## Notas para la próxima sesión
 - Fase 9: comparar copia y orden de bloques de `EmptyState` contra W05/P05.
@@ -197,4 +205,13 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · baja · sonnet
 - [ ] M-17 — `.claude/rules/app-router.md` regla 7 nombra `NearbyProducts` sólo "de la portada";
   ahora también degrada en el estado vacío de `/buscar`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-18 — Chip "Todo" de `CategoryRail` usa `dark:`, que `ui.md` regla 4 prohíbe fuera de
+  shadcn: documentar la excepción o resolverlo en la variante de `Button`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-19 — `Toaster` en `app/layout.tsx`: offset 0 desde `md`, donde no hay barra inferior.
+  posven-ecommerce · baja · sonnet
+- [ ] M-20 — Prueba del consejo "Prueba con menos palabras..." de `EmptyState` con y sin `q`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-21 — `Toaster` con `theme="light"` fijo: revisar el tema de sonner en oscuro.
   posven-ecommerce · baja · sonnet

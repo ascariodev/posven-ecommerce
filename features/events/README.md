@@ -68,7 +68,7 @@ estadísticas ni guarda nada propio.
 - `handleEvent(p: { body: string; userAgent: string | null; sessionId: string; now: number; shouldForward: (key: string, now: number) => boolean }): { status: 202 | 400; forward: MarketplaceEvent | null }`, `features/events/lib/handle.ts`
 - `sendBeaconEvent(input: EventInput): void`, del navegador, `features/events/lib/beacon.ts`
 - `ContactButtons({ store, product }: { store: StoreSummary; product: { slug: string; name: string; restriction: Restriction } | null })`, Client Component, `features/events/components/ContactButtons.tsx`
-- `ViewBeacon({ event }: { event: EventInput })`, Client Component que no pinta nada, `features/events/components/ViewBeacon.tsx`
+- `ViewBeacon({ event }: { event: EventInput })`, Client Component que no pinta nada, `features/events/components/ViewBeacon.tsx`; reenvía `query`, `category_slug` y `results_count` (lo usa `SearchResults` para `search` en la página 1)
 - `POST /api/events`, route handler, `app/api/events/route.ts`
 
 ## 5. Estructura interna

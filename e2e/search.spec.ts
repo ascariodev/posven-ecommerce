@@ -62,3 +62,29 @@ test.describe("con geolocalización concedida", () => {
     await expect(page.getByRole("button", { name: "Ubicación: Tu ubicación actual" })).toBeVisible();
   });
 });
+
+test("buscar en la página 1 registra search con el texto y el total de resultados", async ({ page }) => {
+  // Playwright no expone el cuerpo de un sendBeacon; sin él, el beacon cae a fetch.
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "sendBeacon", { value: undefined });
+  });
+  const eventResponse = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/events") &&
+      response.request().method() === "POST" &&
+      (response.request().postData() ?? "").includes('"search"'),
+  );
+  await page.goto("/buscar?q=Acetaminofen");
+
+  const response = await eventResponse;
+  expect(response.status()).toBe(202);
+  const body = JSON.parse(response.request().postData() ?? "{}");
+  expect(body).toMatchObject({
+    type: "search",
+    store_slug: null,
+    product_slug: null,
+    query: "Acetaminofen",
+    category_slug: null,
+  });
+  expect(body.results_count).toBeGreaterThan(0);
+});

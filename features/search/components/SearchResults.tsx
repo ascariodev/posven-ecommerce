@@ -6,6 +6,7 @@ import { getEffectiveLocation } from "@/features/location/server/location";
 import { formatRate } from "@/lib/format";
 import { listCategories, searchProducts } from "@/lib/marketplace/client";
 import { cn } from "@/lib/utils";
+import { ViewBeacon } from "@/features/events/components/ViewBeacon";
 import { EmptyState } from "./EmptyState";
 import { FeaturedCard } from "./FeaturedCard";
 import { FiltersSheet } from "./FiltersSheet";
@@ -49,6 +50,18 @@ export async function SearchResults({
 
   return (
     <div className="flex flex-col md:flex-row md:items-start gap-8">
+      {query.pagina === 1 && (
+        <ViewBeacon
+          event={{
+            type: "search",
+            store_slug: null,
+            product_slug: null,
+            query: query.q === "" ? null : query.q,
+            category_slug: query.categoria,
+            results_count: meta.total,
+          }}
+        />
+      )}
       {/* SIDEBAR PARA DESKTOP */}
       <aside className="hidden md:flex w-64 flex-col gap-8 shrink-0 sticky top-24">
         <div className="flex flex-col gap-4">

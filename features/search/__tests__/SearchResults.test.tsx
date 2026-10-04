@@ -1,12 +1,15 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { searchProducts } from "@/lib/marketplace/client";
+import { sendBeaconEvent } from "@/features/events/lib/beacon";
 import { SearchResults } from "@/features/search/components/SearchResults";
 
 vi.mock("@/lib/marketplace/client", () => ({
   searchProducts: vi.fn(),
   listCategories: vi.fn(async () => []),
 }));
+
+vi.mock("@/features/events/lib/beacon", () => ({ sendBeaconEvent: vi.fn() }));
 
 vi.mock("@/features/location/server/location", () => ({
   getEffectiveLocation: vi.fn(async () => ({ location: null, name: null })),
@@ -22,5 +25,47 @@ describe("SearchResults", () => {
     render(await SearchResults({ searchParams: Promise.resolve({}) }));
     expect(screen.getByText("Escribe qué buscas o elige una categoría.")).toBeTruthy();
     expect(searchProducts).not.toHaveBeenCalled();
+  });
+
+  describe("evento search", () => {
+    function resultsFor(total: number) {
+      return {
+        data: [],
+        featured: [],
+        meta: { current_page: 1, last_page: 1, per_page: 20, total },
+        rate: { rate: "100.00", date: "2026-10-03" },
+      } as unknown as Awaited<ReturnType<typeof searchProducts>>;
+    }
+
+    it("en la página 1 con texto envía search con el total de resultados", async () => {
+      vi.mocked(searchProducts).mockResolvedValue(resultsFor(7));
+      render(await SearchResults({ searchParams: Promise.resolve({ q: "Aspirina" }) }));
+      await waitFor(() =>
+        expect(sendBeaconEvent).toHaveBeenCalledWith({
+          type: "search",
+          store_slug: null,
+          product_slug: null,
+          query: "Aspirina",
+          category_slug: null,
+          results_count: 7,
+        }),
+      );
+    });
+
+    it("sólo con categoría envía category_slug y query nulo", async () => {
+      vi.mocked(searchProducts).mockResolvedValue(resultsFor(0));
+      render(await SearchResults({ searchParams: Promise.resolve({ categoria: "salud" }) }));
+      await waitFor(() =>
+        expect(sendBeaconEvent).toHaveBeenCalledWith(
+          expect.objectContaining({ type: "search", query: null, category_slug: "salud", results_count: 0 }),
+        ),
+      );
+    });
+
+    it("pasada la página 1 no envía nada", async () => {
+      vi.mocked(searchProducts).mockResolvedValue(resultsFor(50));
+      render(await SearchResults({ searchParams: Promise.resolve({ q: "aspirina", pagina: "2" }) }));
+      expect(sendBeaconEvent).not.toHaveBeenCalled();
+    });
   });
 });

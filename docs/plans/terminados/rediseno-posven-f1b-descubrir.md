@@ -186,7 +186,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-8 — Chips de `CategoryRail` con `border-input-border` (ui.md §5, 3:1) en vez de
   `border-border`; confirmar antes contra el lienzo.
   posven-ecommerce · baja · sonnet
-- [ ] M-9 — Prueba unitaria del chip "Todo" de `CategoryRail` (primero, hacia `/buscar`).
+- [x] M-9 — Prueba unitaria del chip "Todo" de `CategoryRail` (primero, hacia `/buscar`).
   posven-ecommerce · baja · sonnet
 - [ ] M-10 — `NearbyProducts`: el nombre accesible del enlace empieza por "N tiendas · km"; poner
   el nombre del producto primero en el DOM o usar `aria-label`.

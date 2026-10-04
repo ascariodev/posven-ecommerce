@@ -211,6 +211,7 @@ export default function SearchPage({
 - `features/search/__tests__/SortLinks.test.tsx`: opción actual con y sin ubicación, y `orden=cercania` sin ubicación deja Relevancia como actual.
 - `features/search/__tests__/Pagination.test.tsx`: ventana de páginas con elipsis, página actual y orden conservado en los enlaces.
 - `e2e/search.spec.ts`: cambiar a "Menor precio" escribe `orden=precio` y ordena las tarjetas por precio.
+- `features/search/__tests__/CategoryRail.test.tsx`: Todo primero y hacia `/buscar`, categorías con nombre accesible y enlace, y sin categorías no pinta.
 - `features/search/__tests__/categoryTint.test.ts`: mismo slug, misma pareja; sin categoría, la primera pareja; las cuatro parejas son alcanzables.
 - `features/search/__tests__/categoryIcon.test.ts`: hija por su raíz, raíz propia, `null` y raíz sin mapeo.
 - `features/search/__tests__/SearchBox.test.tsx`: pide con 2 o más letras y muestra el precio, no llama con una, flechas, Enter y Escape, recientes sin texto, borrar recientes (fuera del listbox, foco en el input) y API caída.

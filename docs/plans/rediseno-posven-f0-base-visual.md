@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 4
+**Estado:** en curso · Fase actual: 5
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -73,7 +73,7 @@ tokens aprobados en `/preview`.
   lib/utils.ts app/globals.css` vacío.
 - **Commit:** `feat(ui): primitivas estáticas en estilo radix-luma`
 
-### [ ] Fase 4 — [riesgo] luma: `toggle`, `toggle-group` y `radio-group`
+### [x] Fase 4 — [riesgo] luma: `toggle`, `toggle-group` y `radio-group`
 - **Repo:** posven-ecommerce
 - **Alcance:** reinstalación con las mismas reglas; `Toggle` sin `'use client'` para que
   `toggleVariants` sirva en el servidor (`RadiusFilter`).
@@ -183,9 +183,14 @@ tokens aprobados en `/preview`.
   en cada primitiva (vigilar en fases 4 y 5). Sin tamaños de botón bajo 44 px (`xs`, `icon-xs`,
   `icon-sm`, `icon-lg`); botón `rounded-lg` 600 a 14 px (spec §3); `Badge` gana `ghost` y `link`
   de luma; `Card` con `rounded-2xl` y relleno 24/16 px — implementador, revisión LISTO.
+- 2026-10-03 — Fase 4: `shadcn add --overwrite` pisa ediciones previas; se reinstala una a una y
+  se ajusta después. Activo en `data-[state=on]:bg-primary` (los `<Link>` lo marcan con
+  `data-state`), sin el `aria-pressed:bg-muted` de luma; hover activo `bg-primary/80` mientras
+  `--primary-hover` sea el azul heredado (fase 12); radio `size-4` con borde `input-border` y
+  área de toque por `after:` — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fases 1 a 3 hechas; sigue la fase 4. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
+- Fases 1 a 4 hechas; sigue la fase 5. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas

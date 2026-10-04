@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 3
+**Estado:** en curso · Fase actual: 4
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -62,7 +62,7 @@ tokens aprobados en `/preview`.
   test e2e/product.spec.ts -g robots` en verde.
 - **Commit:** `feat(preview): ruta desechable con tokens y primitivas del rediseño`
 
-### [ ] Fase 3 — [riesgo] luma: primitivas estáticas
+### [x] Fase 3 — [riesgo] luma: primitivas estáticas
 - **Repo:** posven-ecommerce
 - **Alcance:** `components.json` a `radix-luma`; `shadcn add --overwrite` de `button`, `badge`,
   `card`, `input` y `skeleton`, una a una, reaplicando `ui.md` (44 px, `h-11 md:h-9` en `sm`,
@@ -179,10 +179,16 @@ tokens aprobados en `/preview`.
 - 2026-10-03 — Fase 2: quinto archivo `app/preview/ToastButton.tsx` (cliente, por `toast()`). Los
   portales de Radix (Select, DropdownMenu, Sheet) abren fuera del contenedor `.dark` de
   `/preview` y se ven en claro: no es defecto de las primitivas — implementador, revisión LISTO.
+- 2026-10-03 — Fase 3: `shadcn add` escribe `import { cn } from "cn"`; se corrige a `@/lib/utils`
+  en cada primitiva (vigilar en fases 4 y 5). Sin tamaños de botón bajo 44 px (`xs`, `icon-xs`,
+  `icon-sm`, `icon-lg`); botón `rounded-lg` 600 a 14 px (spec §3); `Badge` gana `ghost` y `link`
+  de luma; `Card` con `rounded-2xl` y relleno 24/16 px — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fases 1 y 2 hechas; sigue la fase 3. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
+- Fases 1 a 3 hechas; sigue la fase 4. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas
 - [ ] M-1 — Errata del `aria-label` "Opciónes de ejemplo" en `app/preview/page.tsx:180` (posven-ecommerce · baja · haiku)
+- [ ] M-2 — Quitar el `pb-4` sobrante del `CardFooter` en `app/preview/page.tsx:139` (posven-ecommerce · baja · haiku)
+- [ ] M-3 — Revisar en móvil la ficha (`app/p/[slug]/page.tsx:297,336`) y `OfferCard` con el relleno de 24 px de `Card` (posven-ecommerce · baja · sonnet)

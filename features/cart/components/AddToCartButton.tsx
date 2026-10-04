@@ -6,8 +6,9 @@ import { useActionState, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useActionToast } from "@/hooks/useActionToast";
+import { sendBeaconEvent } from "@/features/events/lib/beacon";
 import { addToCart } from "../server/actions";
-import { INITIAL_ADD_TO_CART_STATE } from "../lib/addToCartState";
+import { INITIAL_ADD_TO_CART_STATE, type AddToCartState } from "../lib/addToCartState";
 
 // Suma 1 y se queda en la página (plan 4a, decisión 5). Es un formulario con una Server Action; en
 // la ficha y la tienda llega por streaming dentro de un <Suspense>, que sin JavaScript no se muestra.
@@ -30,7 +31,15 @@ export function AddToCartButton({
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
 }) {
-  const [state, formAction, pending] = useActionState(addToCart, INITIAL_ADD_TO_CART_STATE);
+  // El evento se envía dentro de la acción, tras el await, y no en un efecto: la respuesta puede
+  // refrescar la página y el efecto no llegaría a correr (L-06).
+  const [state, formAction, pending] = useActionState(async (previous: AddToCartState, formData: FormData) => {
+    const next = await addToCart(previous, formData);
+    if (next.status === "added") {
+      sendBeaconEvent({ type: "add_to_cart", store_slug: storeSlug, product_slug: productSlug });
+    }
+    return next;
+  }, INITIAL_ADD_TO_CART_STATE);
   // Cada respuesta vuelve a montar el aviso, para que el lector de pantalla lo anuncie aunque el
   // texto se repita ("Agregado" tras "Agregar otro").
   const [seenState, setSeenState] = useState(state);

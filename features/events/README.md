@@ -58,7 +58,7 @@ estadísticas ni guarda nada propio.
 | Ventana de deduplicación, tope de claves o clave | `EVENT_DEDUP_WINDOW_MS`, `MAX_DEDUP_KEYS` y la `key` de `handleEvent` en `lib/handle.ts` | el caso de RN-EVENTS-02 en `__tests__/handle.test.ts` |
 | Cookie de sesión | `readSessionId` en `app/api/events/route.ts` | que siga siendo UUID: `readSessionId` lo valida con `z.uuid()` y el contrato lo pide (`session_id` en `marketplaceEventSchema`), pero nada lo comprueba al reenviar |
 | Un botón de contacto, su texto o su enlace | `components/ContactButtons.tsx` | `__tests__/ContactButtons.test.tsx`; el tipo de evento sale de `EventType` en `lib/marketplace/schemas.ts` |
-| Un tipo de evento nuevo o una regla de sus campos | spec §3.4, `eventTypeSchema` y `hasFieldsForType` en `lib/marketplace/schemas.ts` | quien lo manda (`ContactButtons` o un `ViewBeacon` montado en su página) |
+| Un tipo de evento nuevo o una regla de sus campos | spec §3.4, `eventTypeSchema` y `hasFieldsForType` en `lib/marketplace/schemas.ts` | quien lo manda (`ContactButtons`, `AddToCartButton` de `features/cart`, `SearchResults` de `features/search` o un `ViewBeacon` montado en su página) |
 
 ## 4. API pública
 

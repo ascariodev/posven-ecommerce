@@ -2,9 +2,11 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { toast } from "sonner";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { addToCart } from "@/features/cart/server/actions";
+import { sendBeaconEvent } from "@/features/events/lib/beacon";
 import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
 
 vi.mock("@/features/cart/server/actions", () => ({ addToCart: vi.fn() }));
+vi.mock("@/features/events/lib/beacon", () => ({ sendBeaconEvent: vi.fn() }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
 
 afterEach(() => {
@@ -47,6 +49,12 @@ describe("AddToCartButton", () => {
     const data = vi.mocked(addToCart).mock.calls[0][1];
     expect(data.get("store_slug")).toBe("farmacia-central-valencia");
     expect(data.get("product_slug")).toBe("acetaminofen-500-mg-20-tabletas");
+    expect(sendBeaconEvent).toHaveBeenCalledTimes(1);
+    expect(sendBeaconEvent).toHaveBeenCalledWith({
+      type: "add_to_cart",
+      store_slug: "farmacia-central-valencia",
+      product_slug: "acetaminofen-500-mg-20-tabletas",
+    });
   });
 
   it("con error avisa por toast", async () => {
@@ -56,5 +64,6 @@ describe("AddToCartButton", () => {
     submit(container);
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith("Tu carrito admite hasta 20 productos."));
+    expect(sendBeaconEvent).not.toHaveBeenCalled();
   });
 });

@@ -49,6 +49,29 @@ test.describe("carrito", () => {
     await expect(page.locator("[data-sonner-toast]")).toHaveCount(0);
   });
 
+  test("agregar al carrito registra add_to_cart con la tienda y el producto", async ({ page }) => {
+    // Playwright no expone el cuerpo de un sendBeacon; sin él, el beacon cae a fetch.
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "sendBeacon", { value: undefined });
+    });
+    await page.goto(ACETAMINOFEN_PATH);
+    const eventResponse = page.waitForResponse(
+      (response) =>
+        response.url().endsWith("/api/events") &&
+        response.request().method() === "POST" &&
+        (response.request().postData() ?? "").includes('"add_to_cart"'),
+    );
+    await page.getByRole("button", { name: /^Agregar al carrito: Acetaminofén 500 mg x 20 tabletas de / }).first().click();
+
+    const response = await eventResponse;
+    expect(response.status()).toBe(202);
+    expect(JSON.parse(response.request().postData() ?? "{}")).toEqual({
+      type: "add_to_cart",
+      store_slug: expect.stringMatching(/^[a-z0-9-]+$/),
+      product_slug: "acetaminofen-500-mg-20-tabletas",
+    });
+  });
+
   test("sin botón en una tienda que no vende ni en productos restringidos", async ({ page }) => {
     await page.goto("/tienda/farmacia-naguanagua");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();

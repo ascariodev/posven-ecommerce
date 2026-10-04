@@ -44,3 +44,9 @@ Una grilla sin `grid-cols-*` crea una columna implícita `auto` que crece hasta 
 su contenido: unas pestañas con `overflow-x-auto` adentro la ensanchan y la página desborda en
 móvil (en Playwright, los desplegables de Radix quedan tapados). Se fija `grid-cols-[minmax(0,1fr)]`.
 aplicada en: `app/cuenta/layout.tsx`
+
+## L-09
+Una fase que cambia el comportamiento de un componente o una ruta de un módulo actualiza su README
+en el mismo cambio: la ficha del símbolo, la fila de tests, las dependencias y `verified_against`.
+Quien revisa lo rechaza si falta, y cuesta una ronda entera.
+aplicada en: pendiente: el usuario decide promoverla a una casilla de `posven/.claude/agents/implementador-fase.md`, propuesto al cerrar el plan de eventos de búsqueda y carrito

@@ -5,7 +5,7 @@ type: "feature"
 exports: ["cartEnabled", "CART_COOKIE", "cartCookieOptions", "parseCartCookie", "serializeCart", "readGuestCart", "writeGuestCart", "getSessionCart", "getCurrentCart", "mergeGuestCart", "addToCart", "setQuantity", "removeLine", "AddToCartState", "INITIAL_ADD_TO_CART_STATE", "AddToCartButton", "CartLink", "CartLinkSkeleton", "CartView", "CartContent", "CartViewSkeleton", "LineForm"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/server/session.ts", "features/account/lib/returnPath.ts", "features/search/components/ProductThumb.tsx", "components/ui/button.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
 tests: "features/cart/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/cart/lib/flag.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/cart/server/actions.ts", "features/cart/lib/addToCartState.ts", "features/cart/components/AddToCartButton.tsx", "features/cart/components/CartLink.tsx", "features/cart/components/CartView.tsx", "features/cart/components/LineForm.tsx", "features/cart/__tests__/flag.test.ts", "features/cart/__tests__/cookie.test.ts", "features/cart/__tests__/actions.test.ts", "features/cart/__tests__/AddToCartButton.test.tsx", "features/cart/__tests__/CartLink.test.tsx", "features/cart/__tests__/CartView.test.tsx", "features/cart/__tests__/LineForm.test.tsx", "features/account/server/actions.ts", "features/product/components/OfferCard.tsx", "features/store/components/StoreProducts.tsx", "app/carrito/page.tsx", "app/layout.tsx", "app/robots.ts", "e2e/cart.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
+verified_against: ["features/cart/lib/flag.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/cart/server/actions.ts", "features/cart/lib/addToCartState.ts", "features/cart/components/AddToCartButton.tsx", "features/events/lib/beacon.ts", "features/cart/components/CartLink.tsx", "features/cart/components/CartView.tsx", "features/cart/components/LineForm.tsx", "features/cart/__tests__/flag.test.ts", "features/cart/__tests__/cookie.test.ts", "features/cart/__tests__/actions.test.ts", "features/cart/__tests__/AddToCartButton.test.tsx", "features/cart/__tests__/CartLink.test.tsx", "features/cart/__tests__/CartView.test.tsx", "features/cart/__tests__/LineForm.test.tsx", "features/account/server/actions.ts", "features/product/components/OfferCard.tsx", "features/store/components/StoreProducts.tsx", "app/carrito/page.tsx", "app/layout.tsx", "app/robots.ts", "e2e/cart.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
 capabilities:
   - intent: "agregar un producto de una tienda al carrito"
     intent_aliases: ["agregar al carrito", "comprar", "anadir al carrito", "boton agregar"]
@@ -92,7 +92,7 @@ las líneas en 99).
 | Lectura y fusión | `server/cart.ts` | carrito de la petición (401 sigue como invitado) y fusión al entrar |
 | Acciones | `server/actions.ts` | agregar (+1), fijar cantidad y quitar, repartidas entre comprador (API) e invitado (cookie); devuelven `AddToCartState`; 401 borra `mp_session` y sigue como invitado; `refresh()` tras escribir |
 | Línea | `components/LineForm.tsx` | `useActionState` por formulario de línea; el toast de error va dentro de la acción |
-| Botón | `components/AddToCartButton.tsx` | `useActionState`; vuelve a montar el aviso en cada respuesta para que se anuncie |
+| Botón | `components/AddToCartButton.tsx` | `useActionState`; vuelve a montar el aviso en cada respuesta para que se anuncie; tras un "agregado" manda `add_to_cart` con `sendBeaconEvent`, y con error no manda nada |
 | Contador | `components/CartLink.tsx` | L-02: degrada a "Carrito" ante cualquier error de la API |
 | Página | `components/CartView.tsx` | agrupación por tienda tal como llega; `LineForm` por línea; la línea no disponible atenúa sólo la imagen (el texto conserva el contraste AA) |
 
@@ -100,6 +100,7 @@ las líneas en 99).
 
 - `lib/marketplace/client.ts` (`quoteGuestCart`, `getCart`, `setCartItem`, `mergeCart`), `errors.ts`, `schemas.ts`, `params.ts`.
 - `features/account/server/session.ts` (`accountContext`, `SESSION_COOKIE`, `sessionCookieOptions`); `features/account/server/actions.ts` llama a `mergeGuestCart`.
+- `features/events/lib/beacon.ts` (`sendBeaconEvent`), desde `components/AddToCartButton.tsx`.
 - `features/search/components/ProductThumb.tsx`; `lib/format.ts`; `components/ui/` (`Button`, `buttonVariants`, `Badge`, `Card`, `Skeleton`); `lucide-react`.
 
 ## 7. Ejemplo de uso
@@ -135,7 +136,7 @@ export default function Page() {
 - `features/cart/__tests__/cookie.test.ts`: opciones de la cookie, ida y vuelta, valores inválidos y el tope de bytes.
 - `features/cart/__tests__/actions.test.ts`: agregar como invitado y con sesión, topes, errores de la API, 401 en `addToCart` y `setQuantity`, y los avisos de `setQuantity` y `removeLine` (mensaje de la API, genérico, API caída, `retryAfter`, cantidad y referencia inválidas).
 - `features/cart/__tests__/LineForm.test.tsx`: campos enviados, toast de error y ninguno en un cambio exitoso.
-- `features/cart/__tests__/AddToCartButton.test.tsx`: nombre accesible, estado agregado y error por toast.
+- `features/cart/__tests__/AddToCartButton.test.tsx`: nombre accesible, estado agregado con el beacon `add_to_cart` (tienda y producto) y error por toast sin beacon.
 - `features/cart/__tests__/CartView.test.tsx`: vacío, montos formateados que no salen de la aritmética (subtotal y total incluidos), una línea `ok` y una no disponible en la misma tienda (grupo "Cantidad de X" sólo en la `ok`), topes de cantidad, tienda cerrada, "Ir a pagar" y "Entra para pagar", y nada sin líneas disponibles.
 - `features/cart/__tests__/CartLink.test.tsx`: `line_count`, invitado sin API, degradación y el interruptor.
 - `e2e/cart.spec.ts` (en serie): invitado en ficha, tienda y `/carrito` (sin toast al cambiar y quitar líneas); sin botón en tienda que no vende ni en restringidos; fusión al registrarse y al entrar; `noindex`, `robots.txt` y sitemap; y un `test.fixme` sin JavaScript.

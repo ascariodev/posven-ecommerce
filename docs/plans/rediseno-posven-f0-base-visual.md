@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 9
+**Estado:** en curso · Fase actual: 10
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -118,7 +118,7 @@ tokens aprobados en `/preview`.
 - **Terminado cuando:** `tsc`, `vitest` de `features/account`, `features/cart` y `features/search`.
 - **Commit:** `refactor(ui): naranja como texto con primary-text`
 
-### [ ] Fase 9 — Portada sin la capa Farmatodo
+### [x] Fase 9 — Portada sin la capa Farmatodo
 - **Repo:** posven-ecommerce
 - **Alcance:** `app/page.tsx` vuelve a la estructura previa al cambio de Jose (h1 "Encuentra lo que
   buscas en tiendas cerca de ti", subtítulo, `SearchPill`, `CategoryRail`, `NearbyStores`) con los
@@ -202,9 +202,12 @@ tokens aprobados en `/preview`.
 - 2026-10-03 — Fase 8: los `Badge` `tint-1` y `tint-3` de `AccountIdentity.tsx:39-40` se quedan
   (la fase sólo nombra el avatar); la fase 12 tiene que reemplazarlos para dejar vacío el grep de
   `tint-N`. `ProductCard.tsx` conserva `text-primary` hasta la fase 11 — implementador, revisión LISTO.
+- 2026-10-03 — Fase 9: la portada vuelve a la de `28757e9` con el h1 en `font-heading font-bold`;
+  salen `FeaturedProducts` y su `searchProducts({ q: "" })`, y `public/hero_shopping.jpg` y
+  `public/promo_banner.jpg`. `e2e/search.spec.ts` 4/4 — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fases 1 a 8 hechas; sigue la fase 9. Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
+- Fases 1 a 9 hechas; sigue la fase 10. Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas

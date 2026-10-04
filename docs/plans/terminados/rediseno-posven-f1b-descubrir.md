@@ -191,7 +191,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-10 — `NearbyProducts`: el nombre accesible del enlace empieza por "N tiendas · km"; poner
   el nombre del producto primero en el DOM o usar `aria-label`.
   posven-ecommerce · baja · sonnet
-- [ ] M-11 — Prueba directa de `SponsoredStore` (sin `is_open`, `outside_radius`).
+- [x] M-11 — Prueba directa de `SponsoredStore` (sin `is_open`, `outside_radius`).
   posven-ecommerce · baja · sonnet
 - [ ] M-12 — Mover `StoreLogo` de `StoreCard.tsx` a su propio archivo si crece.
   posven-ecommerce · baja · sonnet

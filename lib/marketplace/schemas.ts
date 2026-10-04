@@ -226,8 +226,8 @@ export type EventType = z.infer<typeof eventTypeSchema>;
 
 const eventFieldsSchema = z.object({
   type: eventTypeSchema,
-  store_slug: z.string().nullable(),
-  product_slug: z.string().nullable(),
+  store_slug: z.string().max(160).nullable(),
+  product_slug: z.string().max(160).nullable(),
   query: z.string().trim().toLowerCase().max(100).nullish(),
   category_slug: z.string().max(120).nullish(),
   results_count: z.number().int().min(0).nullish(),

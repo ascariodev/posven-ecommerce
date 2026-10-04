@@ -167,6 +167,13 @@ describe("eventInputSchema", () => {
     expect(eventInputSchema.safeParse({ ...base, product_slug: null }).success).toBe(false);
     expect(eventInputSchema.safeParse({ ...base, store_slug: null }).success).toBe(false);
   });
+
+  it("topa store_slug y product_slug en 160 caracteres", () => {
+    const base = { type: "add_to_cart", store_slug: "a".repeat(160), product_slug: "b".repeat(160) };
+    expect(eventInputSchema.safeParse(base).success).toBe(true);
+    expect(eventInputSchema.safeParse({ ...base, store_slug: "a".repeat(161) }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, product_slug: "b".repeat(161) }).success).toBe(false);
+  });
 });
 
 describe("moneySchema", () => {

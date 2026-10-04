@@ -28,7 +28,7 @@ export async function AccountSlot() {
         rel="nofollow"
         className={cn(
           buttonVariants({ variant: "ghost", size: "sm" }),
-          "rounded-full border border-primary/20 text-primary hover:bg-primary/10 hover:text-primary"
+          "rounded-full border border-primary/20 text-primary-text hover:bg-primary/10 hover:text-primary-text"
         )}
       >
         <User aria-hidden="true" className="size-4" />

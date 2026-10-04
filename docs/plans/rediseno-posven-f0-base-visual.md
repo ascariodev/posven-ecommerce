@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 8
+**Estado:** en curso · Fase actual: 9
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -108,7 +108,7 @@ tokens aprobados en `/preview`.
 - **Terminado cuando:** `tsc`, `vitest` de `features/site` y `features/search`; sin `bg-surface`.
 - **Commit:** `refactor(ui): superficies con el token card`
 
-### [ ] Fase 8 — Naranja como texto y avatar
+### [x] Fase 8 — Naranja como texto y avatar
 - **Repo:** posven-ecommerce
 - **Alcance:** `text-primary` a `text-primary-text`, insignia del carrito a `bg-primary
   text-primary-foreground`, avatar de `tint-N` a `primary-soft`/`primary-text`.
@@ -199,9 +199,12 @@ tokens aprobados en `/preview`.
   "Destacado" es `Badge` por defecto con `bg-primary-soft text-primary-text`; pagar va en
   `bg-success text-background` porque no hay `--success-foreground`; la banda de `StoreCard` ya no
   distingue destacada — implementador, revisión LISTO.
+- 2026-10-03 — Fase 8: los `Badge` `tint-1` y `tint-3` de `AccountIdentity.tsx:39-40` se quedan
+  (la fase sólo nombra el avatar); la fase 12 tiene que reemplazarlos para dejar vacío el grep de
+  `tint-N`. `ProductCard.tsx` conserva `text-primary` hasta la fase 11 — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fases 1 a 7 hechas; sigue la fase 8. Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
+- Fases 1 a 8 hechas; sigue la fase 9. Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas

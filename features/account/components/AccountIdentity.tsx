@@ -26,7 +26,7 @@ export async function AccountIdentity({ compact = false }: { compact?: boolean }
     <div className={cn("flex items-center gap-3", compact ? "py-2" : "pb-3")}>
       <span
         aria-hidden="true"
-        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-foreground"
+        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary-text"
       >
         {initialsOf(customer.name)}
       </span>

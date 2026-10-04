@@ -63,7 +63,7 @@ export async function SearchResults({
                     className={cn(
                       "block px-3 py-2 text-sm rounded-lg transition-colors",
                       active 
-                        ? "bg-primary/10 text-primary font-bold" 
+                        ? "bg-primary-soft text-primary-text font-bold"
                         : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                     )}
                   >

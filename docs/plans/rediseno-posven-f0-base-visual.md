@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 2
+**Estado:** en curso · Fase actual: 3
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -51,7 +51,7 @@ tokens aprobados en `/preview`.
   no devuelve nada.
 - **Commit:** `feat(ui): tokens claro y oscuro, radios y tipografía del rediseño posven`
 
-### [ ] Fase 2 — Ruta `/preview`
+### [x] Fase 2 — Ruta `/preview`
 - **Repo:** posven-ecommerce
 - **Alcance:** página sin datos de la API con los tokens en claro y oscuro lado a lado (contenedor
   `.dark`), la escala tipográfica y las 12 primitivas en sus variantes y tamaños (§9); `noindex,
@@ -176,9 +176,13 @@ tokens aprobados en `/preview`.
 - 2026-10-03 — Fase 1: radios `sm` 8 px y `md` 10 px (la spec no los define); `.dark` incluye
   `--surface`, `--glass*` y sombras; `--warning` ya es `#7a4a00`, así que `bg-warning` cambia
   hasta las fases 6 y 8 — implementador, revisión LISTO.
+- 2026-10-03 — Fase 2: quinto archivo `app/preview/ToastButton.tsx` (cliente, por `toast()`). Los
+  portales de Radix (Select, DropdownMenu, Sheet) abren fuera del contenedor `.dark` de
+  `/preview` y se ven en claro: no es defecto de las primitivas — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fase 1 hecha; sigue la fase 2 (`/preview`). Transitorio vigente: fondo gris de la portada y
+- Fases 1 y 2 hechas; sigue la fase 3. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas
+- [ ] M-1 — Errata del `aria-label` "Opciónes de ejemplo" en `app/preview/page.tsx:180` (posven-ecommerce · baja · haiku)

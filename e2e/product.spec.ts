@@ -91,6 +91,7 @@ test("la tienda tiene canónica sin parámetros, JSON-LD Store y horario", async
 test("robots excluye /buscar y apunta a los sitemaps partidos", async ({ request }) => {
   const robots = await (await request.get("/robots.txt")).text();
   expect(robots).toContain("Disallow: /buscar");
+  expect(robots).toContain("Disallow: /preview");
   expect(robots).toContain("Sitemap: http://localhost:3000/sitemap/products-1.xml");
 
   const sitemap = await (await request.get("/sitemap/products-1.xml")).text();

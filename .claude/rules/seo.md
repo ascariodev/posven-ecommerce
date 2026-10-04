@@ -33,7 +33,7 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
    `<meta name="robots" content="noindex" />` porque es Client Component y `metadata` sólo se exporta desde Server Components (guía
    `generate-metadata`). Las rutas de acceso (`/entrar`, `/registro`, `/recuperar`,
    `/restablecer/[token]`, `/verificar/[token]`), `/cuenta/*` (compras incluidas), `/carrito`,
-   `/checkout` y `/checkout/resultado` exportan
+   `/checkout`, `/checkout/resultado` y `/preview` (ruta de prueba sin datos) exportan
    `robots: { index: false, follow: false }` y no entran al sitemap.
    `/terminos` y `/privacidad` exportan `robots: { index: false, follow: true }` por
    `legalMetadata` mientras `LEGAL_DRAFT` (`features/site/lib/legal.ts`) sea `true`, y tampoco entran.
@@ -58,6 +58,6 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
    `SitemapType` en `{tipo}-{n}` según `meta.total` y `meta.per_page` de `listSitemap`, y
    `sitemapEntries` arma las URLs absolutas con `SITE_URL`; `app/sitemap.ts` sirve
    `/sitemap/{id}.xml`. `app/robots.ts` excluye `/buscar`, `/api/`, `/cuenta`, `/carrito`,
-   `/checkout`, `/restablecer/` y `/verificar/` y lista cada sitemap.
+   `/checkout`, `/restablecer/`, `/verificar/` y `/preview`, y lista cada sitemap.
    El grupo `static` (`/sitemap/static.xml`) trae `/` y `/comercios`, y las legales sólo con
    `LEGAL_DRAFT` en `false` (`legalSitemapPaths`).

@@ -51,6 +51,22 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    files: ["components/ui/**/*.{ts,tsx}", "lib/utils.ts"],
+    rules: {
+      semi: ["error", "always"],
+      "comma-dangle": [
+        "error",
+        {
+          arrays: "always-multiline",
+          objects: "always-multiline",
+          imports: "always-multiline",
+          exports: "always-multiline",
+          functions: "always-multiline",
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

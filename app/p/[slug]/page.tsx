@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Star, ChevronDown, CheckCircle2, PiggyBank } from "lucide-react";
+import { ChevronDown, PiggyBank } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -187,61 +187,6 @@ async function RelatedProducts({ categorySlug, title }: { categorySlug: string |
   );
 }
 
-function CustomerReviews() {
-  return (
-    <section className="flex flex-col gap-6 pt-4 border-t border-border">
-      <h2 className="font-heading text-xl font-bold tracking-tight text-foreground">Calificaciones y comentarios</h2>
-      <div className="flex items-center gap-4 mb-4">
-        <div className="flex flex-col items-center justify-center bg-muted/30 p-4 rounded-xl w-32">
-          <span className="font-heading text-4xl font-extrabold text-foreground">4.8</span>
-          <div className="flex text-yellow-400 mt-1">
-            <Star className="fill-current w-4 h-4" />
-            <Star className="fill-current w-4 h-4" />
-            <Star className="fill-current w-4 h-4" />
-            <Star className="fill-current w-4 h-4" />
-            <Star className="fill-current w-4 h-4" />
-          </div>
-          <span className="text-xs text-muted-foreground mt-1">124 opiniones</span>
-        </div>
-      </div>
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2 p-4 rounded-xl bg-card border border-border shadow-sm">
-          <div className="flex justify-between items-start">
-            <div>
-              <span className="font-semibold text-foreground">María G.</span>
-              <div className="flex text-yellow-400 mt-0.5">
-                <Star className="fill-current w-3 h-3" />
-                <Star className="fill-current w-3 h-3" />
-                <Star className="fill-current w-3 h-3" />
-                <Star className="fill-current w-3 h-3" />
-                <Star className="fill-current w-3 h-3" />
-              </div>
-            </div>
-            <Badge variant="secondary" className="text-[10px]"><CheckCircle2 className="w-3 h-3 mr-1" /> Comprador verificado</Badge>
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">Excelente producto, llegó súper rápido y muy bien empacado. Lo recomiendo al 100%.</p>
-        </div>
-        <div className="flex flex-col gap-2 p-4 rounded-xl bg-card border border-border shadow-sm">
-          <div className="flex justify-between items-start">
-            <div>
-              <span className="font-semibold text-foreground">Carlos P.</span>
-              <div className="flex text-yellow-400 mt-0.5">
-                <Star className="fill-current w-3 h-3" />
-                <Star className="fill-current w-3 h-3" />
-                <Star className="fill-current w-3 h-3" />
-                <Star className="fill-current w-3 h-3" />
-                <Star className="text-muted w-3 h-3" />
-              </div>
-            </div>
-            <Badge variant="secondary" className="text-[10px]"><CheckCircle2 className="w-3 h-3 mr-1" /> Comprador verificado</Badge>
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">Buen precio comparado con otras farmacias. Fecha de vencimiento larga.</p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default async function ProductPage({
   params,
   searchParams,
@@ -363,8 +308,6 @@ export default async function ProductPage({
         <Suspense fallback={<div className="h-64 bg-muted/20 animate-pulse rounded-xl"></div>}>
           <RelatedProducts categorySlug={null} title="También vistos por otros clientes" />
         </Suspense>
-
-        <CustomerReviews />
       </div>
     </article>
   );

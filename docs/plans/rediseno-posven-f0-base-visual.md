@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 10
+**Estado:** en curso · Fase actual: 11
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -128,7 +128,7 @@ tokens aprobados en `/preview`.
 - **Terminado cuando:** `next build` y `npx playwright test e2e/search.spec.ts` en verde.
 - **Commit:** `refactor(home): portada sin la capa estilo Farmatodo`
 
-### [ ] Fase 10 — Ficha sin reseñas inventadas (decisión del usuario)
+### [x] Fase 10 — Ficha sin reseñas inventadas (decisión del usuario)
 - **Repo:** posven-ecommerce
 - **Alcance:** quitar `CustomerReviews` de `app/p/[slug]/page.tsx` (calificación 4.8, "124
   opiniones" y dos "Comprador verificado" fijos en toda ficha; el contrato no trae reseñas). Si el
@@ -207,7 +207,7 @@ tokens aprobados en `/preview`.
   `public/promo_banner.jpg`. `e2e/search.spec.ts` 4/4 — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fases 1 a 9 hechas; sigue la fase 10. Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
+- Fases 1 a 10 hechas; sigue la fase 11. eslint con rutas que llevan `[slug]` no acepta la ruta absoluta: se corre desde el repo en un subshell sobre la carpeta (`app/p/`). Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas
@@ -218,3 +218,4 @@ tokens aprobados en `/preview`.
 - [ ] M-5 — Fijar un estilo de `;` y comas finales en `components/ui/` (Prettier o regla de ESLint): el CLI de shadcn los quita (posven-ecommerce · baja · haiku)
 - [ ] M-6 — Revisar la dependencia `cn` ^0.4.0 de `package.json`, que hace que `shadcn add` escriba `import { cn } from "cn"` (posven-ecommerce · baja · sonnet)
 - [ ] M-7 — Quitar el `className="bg-warning/10 text-warning"` redundante del badge "Pocas unidades" en `OfferCard.tsx:37`, junto al contenido de F2 (posven-ecommerce · baja · haiku)
+- [ ] M-8 — Quitar los imports y parámetros sin usar de `app/p/[slug]/page.tsx` (`Skeleton`, `PriceSummary`, `searchParams`), avisos de eslint previos al plan (posven-ecommerce · baja · haiku)

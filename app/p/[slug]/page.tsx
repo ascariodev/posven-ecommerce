@@ -126,7 +126,7 @@ async function ProductBuyBox({ product }: { product: ProductDetail }) {
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-3 p-4 bg-card rounded-xl border border-border shadow-sm text-center">
+            <div className="flex flex-col items-center gap-3 p-4 bg-card rounded-xl border border-border shadow-card text-center">
               <h4 className="font-bold text-foreground text-sm">Precios de mercado para este medicamento</h4>
               <div className="flex w-full justify-between px-4 mt-2">
                 <div className="flex flex-col">
@@ -234,7 +234,7 @@ export default async function ProductPage({
           />
         </div>
         <div className="flex flex-col gap-6">
-          <Card className="overflow-hidden border-border shadow-md">
+          <Card className="overflow-hidden border-border shadow-card">
             <CardContent className="flex flex-col gap-4 p-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex flex-col gap-1.5">
@@ -273,7 +273,7 @@ export default async function ProductPage({
 
           {/* Información Adicional con Acordeón (details/summary) */}
           {product.attributes.length > 0 && (
-            <Card className="overflow-hidden border-border shadow-sm">
+            <Card className="overflow-hidden border-border shadow-card">
               <CardContent className="p-0">
                 <h3 className="font-heading font-bold text-lg p-5 border-b border-border bg-muted/10">Información Adicional</h3>
                 <div className="flex flex-col divide-y divide-border">

@@ -233,4 +233,5 @@ tokens aprobados en `/preview`.
 - [x] M-7 — Quitar el `className="bg-warning/10 text-warning"` redundante del badge "Pocas unidades" en `OfferCard.tsx:37`, junto al contenido de F2 (posven-ecommerce · baja · haiku)
 - [x] M-8 — Quitar los imports y parámetros sin usar de `app/p/[slug]/page.tsx` (`Skeleton`, `PriceSummary`, `searchParams`), avisos de eslint previos al plan (posven-ecommerce · baja · haiku)
 - [x] M-9 — `text-muted-foreground` (#707075) sobre `bg-muted` en claro da ~4,46:1 a 11 px en `ProductCard.tsx`: oscurecer `--muted-foreground` o cambiar ese `<p>` (posven-ecommerce · media · sonnet)
-- [ ] M-10 — Tokenizar las sombras sueltas (`shadow-sm/md/lg`) de `ProductCard.tsx:16`, `app/p/[slug]/page.tsx:132,242,281`, `MarketPricesModal.tsx:25` y `ProductGallery.tsx:46` (posven-ecommerce · baja · haiku)
+- [x] M-10 — Tokenizar las sombras sueltas (`shadow-sm/md/lg`) de `ProductCard.tsx:16`, `app/p/[slug]/page.tsx:132,242,281`, `MarketPricesModal.tsx:25` y `ProductGallery.tsx:46` (posven-ecommerce · baja · haiku)
+- [ ] M-11 — Tokenizar los `shadow-sm/lg` restantes: `app/layout.tsx:42`, `CheckoutForm.tsx:332` y `CartLink.tsx:48` (posven-ecommerce · baja · sonnet)

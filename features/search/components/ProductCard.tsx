@@ -13,7 +13,7 @@ export function ProductCard({ item }: { item: SearchItem }) {
   return (
     <Link
       href={`/p/${item.slug}`}
-      className="group flex h-full flex-col rounded-2xl bg-card border border-border shadow-card transition-all duration-300 hover:shadow-lg hover:border-primary/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary overflow-hidden"
+      className="group flex h-full flex-col rounded-2xl bg-card border border-border shadow-card transition-all duration-300 hover:shadow-raised hover:border-primary/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary overflow-hidden"
     >
       <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-tile border-b border-border">
         <ProductThumb
@@ -24,7 +24,7 @@ export function ProductCard({ item }: { item: SearchItem }) {
         />
         {(item.restriction === "recipe" || item.outside_radius) && (
           <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {item.restriction === "recipe" && <Badge variant="warning" className="text-[10px] px-2 py-0.5 shadow-sm">Récipe</Badge>}
+            {item.restriction === "recipe" && <Badge variant="warning" className="text-[10px] px-2 py-0.5 shadow-card">Récipe</Badge>}
             {item.outside_radius && <Badge variant="secondary" className="text-[10px] px-2 py-0.5 bg-card shadow-card text-foreground">Fuera zona</Badge>}
           </div>
         )}

@@ -43,7 +43,7 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
               className={cn(
                 "relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                 selectedIndex === index 
-                  ? "border-2 border-primary ring-4 ring-primary/10 shadow-sm" 
+                  ? "border-2 border-primary ring-4 ring-primary/10 shadow-card" 
                   : "border border-border bg-card opacity-70 hover:opacity-100 hover:border-primary/50"
               )}
             >

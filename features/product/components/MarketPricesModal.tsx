@@ -22,7 +22,7 @@ export function MarketPricesModal({ offers }: { offers: ProductOffer[] }) {
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl bg-card shadow-lg animate-in zoom-in-95 duration-200">
+          <div className="relative flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl bg-card shadow-raised animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-border p-4">
               <h2 className="font-heading text-lg font-bold text-foreground">Precios de mercado para este medicamento</h2>
               <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="rounded-full">

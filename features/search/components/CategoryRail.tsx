@@ -9,7 +9,7 @@ import { searchHref } from "../lib/query";
 
 const chipClass = cn(
   buttonVariants({ variant: "outline" }),
-  "h-11 rounded-full px-4 text-sm font-semibold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+  "h-11 rounded-full border-input-border px-4 text-sm font-semibold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
 );
 
 export function CategoryRail({ categories }: { categories: CategoryNode[] }) {

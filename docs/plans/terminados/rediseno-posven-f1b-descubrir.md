@@ -183,7 +183,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · media · sonnet
 - [x] M-7 — Botón para borrar las búsquedas recientes del panel (no estaba en el alcance).
   posven-ecommerce · baja · sonnet
-- [ ] M-8 — Chips de `CategoryRail` con `border-input-border` (ui.md §5, 3:1) en vez de
+- [x] M-8 — Chips de `CategoryRail` con `border-input-border` (ui.md §5, 3:1) en vez de
   `border-border`; confirmar antes contra el lienzo.
   posven-ecommerce · baja · sonnet
 - [ ] M-9 — Prueba unitaria del chip "Todo" de `CategoryRail` (primero, hacia `/buscar`).

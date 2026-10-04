@@ -2,7 +2,8 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { formatDistance } from "@/lib/format";
 import type { NearbyStore } from "@/lib/marketplace/schemas";
-import { StoreLogo, StoreOpenBadge } from "./StoreCard";
+import { StoreOpenBadge } from "./StoreCard";
+import { StoreLogo } from "./StoreLogo";
 
 export function SponsoredStore({ store }: { store: NearbyStore }) {
   return (

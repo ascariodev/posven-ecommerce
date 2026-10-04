@@ -193,7 +193,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · baja · sonnet
 - [x] M-11 — Prueba directa de `SponsoredStore` (sin `is_open`, `outside_radius`).
   posven-ecommerce · baja · sonnet
-- [ ] M-12 — Mover `StoreLogo` de `StoreCard.tsx` a su propio archivo si crece.
+- [x] M-12 — Mover `StoreLogo` de `StoreCard.tsx` a su propio archivo si crece.
   posven-ecommerce · baja · sonnet
 - [ ] M-13 — Prueba de que el evento `search` no se re-dispara al cambiar `orden` en la página 1
   (`SearchResults.test.tsx` o `ViewBeacon`).

@@ -5,7 +5,7 @@ type: "feature"
 exports: ["StoreCard", "NearbyStores", "NearbyStoresSkeleton", "SponsoredStore", "StoreLogo", "StoreOpenBadge", "storeInitials", "formatSchedule", "openingHoursJsonLd", "storeJsonLd", "StoreHeader", "StoreProducts", "StoreProductsSkeleton"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts"]
 tests: "features/store/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/store/components/StoreCard.tsx", "features/store/components/NearbyStores.tsx", "features/store/components/SponsoredStore.tsx", "features/store/lib/initials.ts", "features/store/lib/schedule.ts", "features/store/lib/jsonld.ts", "features/store/components/StoreHeader.tsx", "features/store/components/StoreProducts.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx"]
+verified_against: ["features/store/components/StoreCard.tsx", "features/store/components/StoreLogo.tsx", "features/store/components/NearbyStores.tsx", "features/store/components/SponsoredStore.tsx", "features/store/lib/initials.ts", "features/store/lib/schedule.ts", "features/store/lib/jsonld.ts", "features/store/components/StoreHeader.tsx", "features/store/components/StoreProducts.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx"]
 capabilities:
   - intent: "mostrar la tienda patrocinada y los comercios cercanos en la portada"
     intent_aliases: ["tiendas cercanas", "tiendas cerca de mi", "comercios cercanos", "tiendas destacadas"]
@@ -72,8 +72,8 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 
 | Tipo de cambio | Dónde va | Además hay que |
 |---|---|---|
-| Datos o aspecto de la tarjeta, logo o etiqueta de abierto | `components/StoreCard.tsx` (`StoreLogo`, `StoreOpenBadge`) | `__tests__/StoreCard.test.tsx`; la distancia sólo por `formatDistance`; los colores de la banda son tokens |
-| Cuándo se muestra el logo o cómo salen las iniciales | `logoUrl` en `components/StoreCard.tsx` y `components/StoreHeader.tsx`; `storeInitials` en `lib/initials.ts` | los casos de RN-STORE-01 en `__tests__/StoreCard.test.tsx` |
+| Datos o aspecto de la tarjeta, logo o etiqueta de abierto | `components/StoreCard.tsx` (`StoreOpenBadge`), `components/StoreLogo.tsx` | `__tests__/StoreCard.test.tsx`; la distancia sólo por `formatDistance`; los colores de la banda son tokens |
+| Cuándo se muestra el logo o cómo salen las iniciales | `StoreLogo` en `components/StoreLogo.tsx`, `logoUrl` en `components/StoreHeader.tsx`; `storeInitials` en `lib/initials.ts` | los casos de RN-STORE-01 en `__tests__/StoreCard.test.tsx` |
 | Qué se pide a la API, cuántos comercios salen o el bloque patrocinado | la llamada a `listNearbyStores`, `MAX_STORES` en `components/NearbyStores.tsx` y `components/SponsoredStore.tsx` | `__tests__/NearbyStores.test.tsx`; las claves de la consulta las fija `storesQuery` de `lib/marketplace/params.ts` |
 | Títulos, "Ver todos" o aviso sin comercios | `components/NearbyStores.tsx` | el `getByRole("heading")` de `e2e/search.spec.ts` |
 | Texto del horario o días en el JSON-LD | `formatSchedule` y `openingHoursJsonLd` en `lib/schedule.ts` | `__tests__/schedule.test.ts` |
@@ -86,7 +86,8 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 - `StoreCard({ store, featured }: { store: NearbyStore; featured?: boolean })`, `features/store/components/StoreCard.tsx`
 - `NearbyStores(): Promise<React.JSX.Element | null>`, Server Component sin props, `features/store/components/NearbyStores.tsx`; `null` ante `MarketplaceUnavailableError`
 - `SponsoredStore({ store }: { store: NearbyStore })`, `features/store/components/SponsoredStore.tsx`: enlace a `/tienda/{slug}` con "PATROCINADO", logo, nombre, ciudad y distancia, etiqueta de abierto y "Ver tienda"
-- `StoreLogo({ store, className }: { store: NearbyStore; className: string })` y `StoreOpenBadge({ store }: { store: NearbyStore })`, `features/store/components/StoreCard.tsx`
+- `StoreLogo({ store, className }: { store: NearbyStore; className: string })`, `features/store/components/StoreLogo.tsx`
+- `StoreOpenBadge({ store }: { store: NearbyStore })`, `features/store/components/StoreCard.tsx`
 - `NearbyStoresSkeleton()`, fallback de `NearbyStores`, `features/store/components/NearbyStores.tsx`
 - `storeInitials(name: string): string`, `features/store/lib/initials.ts`
 - `formatSchedule(entries: ScheduleEntry[]): string[]`, `features/store/lib/schedule.ts`
@@ -101,6 +102,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
 | Tarjeta | `components/StoreCard.tsx` | `Card` en fila dentro de un `<Link>` (foco en `--foreground`, `hover:shadow-raised`): `StoreLogo` (`size-12`), textos truncados y `StoreOpenBadge` a la derecha |
+| Logo | `components/StoreLogo.tsx` | `next/image` si la tienda es premium y trae `logo_url`; si no, un bloque con las iniciales de `storeInitials` |
 | Iniciales | `lib/initials.ts` | primeras letras de las dos primeras palabras del nombre, en mayúscula |
 | Consulta de cercanas | `components/NearbyStores.tsx` | `listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1 })` |
 | Orden de pintado | `components/NearbyStores.tsx` | `featured[0]` en `SponsoredStore`; el resto de `featured` y después `data` sin los slugs destacados, hasta `MAX_STORES` (6) |
@@ -118,8 +120,8 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 - `features/location/server/location.ts` (`getEffectiveLocation`) y `features/location/lib/cookie.ts` (`toGeoFilter`).
 - `features/events/components/ContactButtons.tsx` en `StoreHeader.tsx` y `features/events/components/ViewBeacon.tsx` en la página.
 - `lib/format.ts` (`formatDistance`, `formatRate`, `formatUsd`, `formatVes`, `formatUpdatedAgo`), `lib/jsonld.ts` (`serializeJsonLd`, en la página) y `lib/site.ts` (`SITE_NAME`, `SITE_URL`).
-- `components/ui/badge.tsx`, `components/ui/button.tsx`, `components/ui/card.tsx` y `components/ui/skeleton.tsx`; `lib/utils.ts` (`cn`) en `StoreCard`.
-- `next/link`, `next/image` y `next/navigation`.
+- `components/ui/badge.tsx`, `components/ui/button.tsx`, `components/ui/card.tsx` y `components/ui/skeleton.tsx`; `lib/utils.ts` (`cn`) en `StoreLogo`.
+- `next/link`, `next/image` (en `StoreLogo`) y `next/navigation`.
 
 ## 7. Ejemplo de uso
 

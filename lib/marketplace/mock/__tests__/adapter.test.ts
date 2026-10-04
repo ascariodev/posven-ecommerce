@@ -215,4 +215,23 @@ describe("productos cercanos simulados", () => {
     expect(page.data.length).toBeLessThanOrEqual(20);
     expect(page).not.toHaveProperty("featured");
   });
+
+  it("la página 2 sigue a la 1 sin repetir productos", async () => {
+    const first = await listNearbyProducts({ geo: null, radiusKm: null, page: 1 });
+    const second = await listNearbyProducts({ geo: null, radiusKm: null, page: 2 });
+    const firstSlugs = first.data.map((item) => item.slug);
+    expect(second.meta).toEqual({ page: 2, per_page: 20, total: first.meta.total });
+    expect(second.data).toHaveLength(Math.max(0, first.meta.total - 20));
+    expect(second.data.some((item) => firstSlugs.includes(item.slug))).toBe(false);
+  });
+
+  it("con la ciudad caracas ordena por cercanía y acota a sus productos", async () => {
+    const all = await listNearbyProducts({ geo: null, radiusKm: null, page: 1 });
+    const response = await listNearbyProducts({ geo: { city: "caracas" }, radiusKm: 10, page: 1 });
+    const distances = response.data.map((item) => item.nearest_km);
+    expect(response.data.length).toBeGreaterThan(0);
+    expect(response.meta.total).toBeLessThanOrEqual(all.meta.total);
+    expect(distances.every((km) => km !== null)).toBe(true);
+    expect(distances).toEqual([...distances].sort((a, b) => (a ?? 0) - (b ?? 0)));
+  });
 });

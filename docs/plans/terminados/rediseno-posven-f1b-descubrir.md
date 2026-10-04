@@ -212,7 +212,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-18 — Chip "Todo" de `CategoryRail` usa `dark:`, que `ui.md` regla 4 prohíbe fuera de
   shadcn: documentar la excepción o resolverlo en la variante de `Button`.
   posven-ecommerce · baja · sonnet
-- [ ] M-19 — `Toaster` en `app/layout.tsx`: offset 0 desde `md`, donde no hay barra inferior.
+- [x] M-19 — `Toaster` en `app/layout.tsx`: offset 0 desde `md`, donde no hay barra inferior.
   posven-ecommerce · baja · sonnet
 - [ ] M-20 — Prueba del consejo "Prueba con menos palabras..." de `EmptyState` con y sin `q`.
   posven-ecommerce · baja · sonnet

@@ -166,3 +166,13 @@ body::before {
     animation-range: 0 64px;
   }
 }
+
+:root {
+  --toast-bottom: calc(4rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+  :root {
+    --toast-bottom: 24px;
+  }
+}

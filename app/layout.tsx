@@ -32,7 +32,7 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-const aboveMobileNav = "calc(4rem + env(safe-area-inset-bottom))";
+const toastBottom = "var(--toast-bottom)";
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -44,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={<MobileNavSkeleton />}>
           <MobileNav />
         </Suspense>
-        <Toaster offset={{ bottom: aboveMobileNav }} mobileOffset={{ bottom: aboveMobileNav }} />
+        <Toaster offset={{ bottom: toastBottom }} mobileOffset={{ bottom: toastBottom }} />
       </body>
     </html>
   );

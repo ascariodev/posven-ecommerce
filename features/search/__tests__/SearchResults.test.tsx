@@ -7,6 +7,7 @@ import { SearchResults } from "@/features/search/components/SearchResults";
 vi.mock("@/lib/marketplace/client", () => ({
   searchProducts: vi.fn(),
   listCategories: vi.fn(async () => []),
+  listNearbyProducts: vi.fn(async () => ({ data: [], meta: { page: 1, per_page: 12, total: 0 }, rate: { usd_ves: "36.5000", valid_on: "2026-10-04" } })),
 }));
 
 vi.mock("@/features/events/lib/beacon", () => ({ sendBeaconEvent: vi.fn() }));

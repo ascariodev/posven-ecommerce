@@ -41,7 +41,7 @@ function NearbyProductCard({ item }: { item: SearchItem }) {
   );
 }
 
-export async function NearbyProducts() {
+export async function NearbyProducts({ title, showAll = true }: { title?: string; showAll?: boolean } = {}) {
   const { location } = await getEffectiveLocation();
   const geo = toGeoFilter(location);
   let response: NearbyProductsResponse;
@@ -58,14 +58,16 @@ export async function NearbyProducts() {
     <section aria-labelledby="nearby-products-title" className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
         <h2 id="nearby-products-title" className="font-heading text-xl font-semibold tracking-tight text-foreground">
-          {location !== null ? "Cerca de ti" : `Productos en ${SITE_NAME}`}
+          {title ?? (location !== null ? "Cerca de ti" : `Productos en ${SITE_NAME}`)}
         </h2>
-        <Link
-          href={searchHref({ q: "", categoria: null, radio: DEFAULT_RADIUS_KM, pagina: 1 })}
-          className="inline-flex h-11 items-center rounded-lg px-2 text-sm font-semibold text-primary-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-        >
-          Ver todo
-        </Link>
+        {showAll && (
+          <Link
+            href={searchHref({ q: "", categoria: null, radio: DEFAULT_RADIUS_KM, pagina: 1 })}
+            className="inline-flex h-11 items-center rounded-lg px-2 text-sm font-semibold text-primary-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          >
+            Ver todo
+          </Link>
+        )}
       </div>
       <ul className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((item) => (

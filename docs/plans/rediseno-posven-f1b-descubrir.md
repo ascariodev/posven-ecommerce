@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F1 del lienzo "E · PosVen" (Inicio, búsqueda con sugerencias,
 resultados con filtros y orden, sin resultados) más la cabecera con ubicación y la barra inferior
 en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
-**Estado:** en curso · Fase actual: 8
+**Estado:** en curso · Fase actual: 9
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (decisiones), §4 (`ui.md`), §5 (mapa
@@ -79,7 +79,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - **Alcance:** columna de filtros en escritorio y hoja en móvil con distancia, "abierto ahora"
   (`open_now`), categoría y chips de filtros activos con "Limpiar filtros".
 
-### [ ] Fase 8 — Sin resultados
+### [x] Fase 8 — Sin resultados
 - **Repo:** posven-ecommerce
 - **Alcance:** `EmptyState` de `W05`/`P05`: ampliar radio, todo el país, "Quizás te sirve" con
   productos cercanos y categorías.
@@ -137,9 +137,13 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   `ActiveFilters` (chips: categoría sólo con texto, radio distinto de 10 con ubicación, "Abierto
   ahora"); "Limpiar filtros" conserva `q` y `orden`; `findCategory` exportado desde
   `ResultsHeader`; RN-SEARCH-07.
+- 2026-10-04 — Fase 8: `EmptyState` sigue síncrono y recibe `nearby?: ReactNode`; ofrece quitar
+  "Abierto ahora"; `NearbyProducts` gana `title?` y `showAll` y `SearchResults` lo monta como
+  "Quizás te sirve" (radio por defecto, no el de la consulta: son productos generales cercanos);
+  no se copia el texto largo de W05 (el título actual lo usa el e2e).
 
 ## Notas para la próxima sesión
-- Fase 8: `EmptyState` aún no ofrece quitar "Abierto ahora" cuando no hay resultados.
+- Fase 9: comparar copia y orden de bloques de `EmptyState` contra W05/P05.
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
   antes en el rojo de "Comercio Aliado" (F2). Volver a correrlos cuando se levante. Fase 9: revisar
   que el toaster no quede tapado por la barra inferior, y el aviso de hidratación en `MobileNav`
@@ -185,4 +189,12 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · baja · sonnet
 - [ ] M-14 — `OpenNowFilter` es un enlace con `aria-current`; un lector no lo anuncia como
   interruptor. Valorar `aria-pressed` o `role="switch"`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-15 — Con `openNow` activo, "Quizás te sirve" puede mostrar productos de tiendas cerradas:
+  pasar el filtro a `NearbyProducts` o rotularlo.
+  posven-ecommerce · baja · sonnet
+- [ ] M-16 — `NearbyProducts` usa el id fijo `nearby-products-title`; usar `useId`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-17 — `.claude/rules/app-router.md` regla 7 nombra `NearbyProducts` sólo "de la portada";
+  ahora también degrada en el estado vacío de `/buscar`.
   posven-ecommerce · baja · sonnet

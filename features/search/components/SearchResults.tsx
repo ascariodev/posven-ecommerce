@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { toggleVariants } from "@/components/ui/toggle";
 import { toGeoFilter } from "@/features/location/lib/cookie";
@@ -13,6 +14,7 @@ import { FeaturedCard } from "./FeaturedCard";
 import { FiltersSheet } from "./FiltersSheet";
 import { OpenNowFilter } from "./OpenNowFilter";
 import { Pagination } from "./Pagination";
+import { NearbyProducts, NearbyProductsSkeleton } from "./NearbyProducts";
 import { ProductCard } from "./ProductCard";
 import { parseSearchQuery, searchHref } from "../lib/query";
 import { RadiusFilter } from "./RadiusFilter";
@@ -157,7 +159,16 @@ export async function SearchResults({
         <p className="ml-auto text-sm text-muted-foreground">{formatRate(rate)}</p>
       </div>
       {isEmpty ? (
-        <EmptyState query={query} geoKind={geoKind} categories={categories} />
+        <EmptyState
+          query={query}
+          geoKind={geoKind}
+          categories={categories}
+          nearby={
+            <Suspense fallback={<NearbyProductsSkeleton />}>
+              <NearbyProducts title="Quizás te sirve" showAll={false} />
+            </Suspense>
+          }
+        />
       ) : (
         <>
           {featured.length > 0 && (

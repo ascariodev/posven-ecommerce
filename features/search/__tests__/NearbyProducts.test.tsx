@@ -75,4 +75,13 @@ describe("NearbyProducts", () => {
 
     expect(container.innerHTML).toBe("");
   });
+
+  it("con título y sin Ver todo usa el título dado y no enlaza a /buscar", async () => {
+    vi.mocked(listNearbyProducts).mockResolvedValue(response([item("a")]));
+
+    render(await NearbyProducts({ title: "Quizás te sirve", showAll: false }));
+
+    expect(screen.getByRole("heading", { name: "Quizás te sirve" })).toBeTruthy();
+    expect(screen.queryByRole("link", { name: "Ver todo" })).toBeNull();
+  });
 });

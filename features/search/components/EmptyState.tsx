@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { RADIUS_OPTIONS } from "@/lib/marketplace/params";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
@@ -28,10 +29,12 @@ export function EmptyState({
   query,
   geoKind,
   categories,
+  nearby,
 }: {
   query: SearchQuery;
   geoKind: "coords" | "city" | null;
   categories: CategoryNode[];
+  nearby?: ReactNode;
 }) {
   const currentRadius = query.radio;
   const widerRadius =
@@ -39,6 +42,7 @@ export function EmptyState({
       ? RADIUS_OPTIONS.find((option) => option > currentRadius)
       : undefined;
   const offerNationwide = geoKind !== null && query.radio !== null;
+  const offerOpenNowOff = query.openNow === true;
   const related = relatedCategories(categories, query.categoria);
 
   return (
@@ -48,7 +52,7 @@ export function EmptyState({
           ? `No encontramos resultados para «${query.q}».`
           : "No encontramos resultados en esta categoría."}
       </h2>
-      {(widerRadius !== undefined || offerNationwide) && (
+      {(widerRadius !== undefined || offerNationwide || offerOpenNowOff) && (
         <div className="flex flex-wrap gap-2">
           {widerRadius !== undefined && (
             <Link
@@ -58,6 +62,14 @@ export function EmptyState({
               Ampliar a {widerRadius} km
             </Link>
           )}
+          {offerOpenNowOff && (
+            <Link
+              href={searchHref({ ...query, openNow: undefined, pagina: 1 })}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              Quitar «Abierto ahora»
+            </Link>
+          )}
           {offerNationwide && (
             <Link href={searchHref({ ...query, radio: null, pagina: 1 })} className={buttonVariants({ variant: "outline", size: "sm" })}>
               Buscar en todo el país
@@ -65,9 +77,10 @@ export function EmptyState({
           )}
         </div>
       )}
+      {nearby}
       {related.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-muted-foreground">Prueba en otras categorías:</p>
+          <p className="text-sm text-muted-foreground">Explora por categoría:</p>
           <CategoryLinks categories={related} />
         </div>
       )}

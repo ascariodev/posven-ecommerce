@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { MAX_RECENTS, addRecent, readRecents } from "@/features/search/lib/recents";
+import { MAX_RECENTS, addRecent, clearRecents, readRecents } from "@/features/search/lib/recents";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -41,5 +41,17 @@ describe("recientes del navegador", () => {
       throw new DOMException("lleno", "QuotaExceededError");
     });
     expect(addRecent("harina")).toEqual(["leche"]);
+  });
+});
+
+describe("borrar recientes", () => {
+  it("vacía la lista y no lanza con localStorage bloqueado", () => {
+    addRecent("leche");
+    clearRecents();
+    expect(readRecents()).toEqual([]);
+    vi.spyOn(window, "localStorage", "get").mockImplementation(() => {
+      throw new DOMException("denegado", "SecurityError");
+    });
+    expect(() => clearRecents()).not.toThrow();
   });
 });

@@ -36,3 +36,11 @@ export function addRecent(term: string): string[] {
   }
   return next;
 }
+
+export function clearRecents(): void {
+  try {
+    storage()?.removeItem(STORAGE_KEY);
+  } catch {
+    return;
+  }
+}

@@ -136,4 +136,21 @@ describe("SearchBox", () => {
     fireEvent.keyDown(input, { key: "ArrowDown" });
     expect(screen.getAllByRole("option")[1].getAttribute("aria-selected")).toBe("true");
   });
+
+  it("Borrar recientes vacía el panel sin ser opción, conserva el foco del input y limpia el almacenamiento", () => {
+    window.localStorage.setItem("recent-searches", JSON.stringify(["leche en polvo", "harina"]));
+    render(<SearchBox />);
+    const input = screen.getByRole("combobox", { name: "Buscar productos" });
+    input.focus();
+    fireEvent.focus(input);
+    expect(screen.getAllByRole("option")).toHaveLength(2);
+    const clear = screen.getByRole("button", { name: "Borrar historial" });
+    expect(screen.getByRole("listbox").contains(clear)).toBe(false);
+    expect(fireEvent.mouseDown(clear)).toBe(false);
+    fireEvent.click(clear);
+    expect(screen.queryByRole("listbox")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Borrar historial" })).toBeNull();
+    expect(window.localStorage.getItem("recent-searches")).toBeNull();
+    expect(document.activeElement).toBe(input);
+  });
 });

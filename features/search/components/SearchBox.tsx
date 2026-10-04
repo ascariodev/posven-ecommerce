@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useState, type FocusEvent, type KeyboardEvent } from "react";
+import { useId, useRef, useState, type FocusEvent, type KeyboardEvent } from "react";
 import { Input } from "@/components/ui/input";
 import type { RadiusKm } from "@/lib/marketplace/params";
 import { buildPanelItems, type PanelItem } from "../lib/panelItems";
 import { parseSearchQuery } from "../lib/query";
-import { addRecent, readRecents } from "../lib/recents";
+import { addRecent, clearRecents, readRecents } from "../lib/recents";
 import { useSuggestions } from "../lib/useSuggestions";
 import { SuggestionsPanel } from "./SuggestionsPanel";
 
@@ -18,6 +18,7 @@ function currentRadio(): RadiusKm | null {
 export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: string; className?: string }) {
   const router = useRouter();
   const listId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(defaultQuery);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -39,6 +40,13 @@ export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: str
   function pick(item: PanelItem) {
     if (item.kind === "term" || item.kind === "recent") addRecent(item.label);
     close();
+  }
+
+  function clear() {
+    clearRecents();
+    setRecents([]);
+    setActiveIndex(-1);
+    inputRef.current?.focus();
   }
 
   function openPanel() {
@@ -79,6 +87,7 @@ export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: str
   return (
     <div onBlur={handleBlur}>
       <Input
+        ref={inputRef}
         name="q"
         type="search"
         role="combobox"
@@ -100,7 +109,7 @@ export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: str
         onKeyDown={handleKeyDown}
         className={className}
       />
-      {expanded && <SuggestionsPanel id={listId} items={items} activeIndex={active} onPick={pick} />}
+      {expanded && <SuggestionsPanel id={listId} items={items} activeIndex={active} onPick={pick} onClearRecents={clear} />}
     </div>
   );
 }

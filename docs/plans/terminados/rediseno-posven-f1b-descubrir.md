@@ -181,7 +181,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [ ] M-6 — Mover el `Form` con `onSubmit` de `SearchPill` dentro de `SearchBox` para que
   `SearchPill` vuelva a ser de servidor (regla `app-router` 4).
   posven-ecommerce · media · sonnet
-- [ ] M-7 — Botón para borrar las búsquedas recientes del panel (no estaba en el alcance).
+- [x] M-7 — Botón para borrar las búsquedas recientes del panel (no estaba en el alcance).
   posven-ecommerce · baja · sonnet
 - [ ] M-8 — Chips de `CategoryRail` con `border-input-border` (ui.md §5, 3:1) en vez de
   `border-border`; confirmar antes contra el lienzo.

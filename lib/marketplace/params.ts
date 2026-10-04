@@ -58,6 +58,17 @@ export function storesQuery(p: {
   return query;
 }
 
+export function nearbyProductsQuery(p: {
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+  page: number;
+}): URLSearchParams {
+  const query = new URLSearchParams();
+  appendLocation(query, p.geo, p.radiusKm);
+  query.set("page", String(p.page));
+  return query;
+}
+
 export function productQuery(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;

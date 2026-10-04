@@ -10,6 +10,7 @@ import {
   listLocations,
   listAddresses,
   listFavorites,
+  listNearbyProducts,
   listNearbyStores,
   listSitemap,
   loginCustomer,
@@ -45,12 +46,21 @@ import {
   storeResponseSchema,
   storesResponseSchema,
   storeSummarySchema,
+  nearbyProductsResponseSchema,
   suggestionsResponseSchema,
 } from "@/lib/marketplace/schemas";
 
 const noFilters = { category: null, geo: null, radiusKm: null, page: 1 } as const;
 
 describe("el simulado pasa los esquemas del contrato", () => {
+  it("productos cercanos con y sin ubicación", async () => {
+    for (const geo of [null, { city: "valencia" }] as const) {
+      const response = await listNearbyProducts({ geo, radiusKm: 10, page: 1 });
+      expect(nearbyProductsResponseSchema.safeParse(response).success).toBe(true);
+      expect(response).not.toHaveProperty("featured");
+    }
+  });
+
   it("búsqueda con término", async () => {
     const response = await searchProducts({ ...noFilters, q: "acetaminofen" });
     expect(searchResponseSchema.safeParse(response).success).toBe(true);

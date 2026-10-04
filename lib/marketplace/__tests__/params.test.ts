@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { productQuery, searchQuery, storesQuery, suggestionsQuery } from "@/lib/marketplace/params";
+import { nearbyProductsQuery, productQuery, searchQuery, storesQuery, suggestionsQuery } from "@/lib/marketplace/params";
 
 const LOCATION_KEYS = ["lat", "lng", "city", "radius_km"];
 
@@ -124,5 +124,22 @@ describe("suggestionsQuery", () => {
   it("sin ubicación sólo envía q (RN-MARKETPLACE-03)", () => {
     const query = suggestionsQuery({ q: "arroz", geo: null, radiusKm: 25 });
     expect(keysOf(query)).toEqual(["q"]);
+  });
+});
+
+describe("nearbyProductsQuery", () => {
+  it("con coordenadas y radio envía lat, lng, radius_km y page", () => {
+    const query = nearbyProductsQuery({ geo: { lat: 10.18, lng: -68.01 }, radiusKm: 10, page: 2 });
+    expect(keysOf(query)).toEqual(["lat", "lng", "radius_km", "page"]);
+  });
+
+  it("sin ubicación sólo envía page (RN-MARKETPLACE-03)", () => {
+    const query = nearbyProductsQuery({ geo: null, radiusKm: 25, page: 1 });
+    expect(keysOf(query)).toEqual(["page"]);
+  });
+
+  it("con ciudad sin radio no envía ubicación", () => {
+    const query = nearbyProductsQuery({ geo: { city: "valencia" }, radiusKm: null, page: 1 });
+    expect(keysOf(query)).toEqual(["page"]);
   });
 });

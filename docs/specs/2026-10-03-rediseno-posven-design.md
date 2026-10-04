@@ -172,9 +172,7 @@ carrito), después en posveapi y al final en `lib/marketplace/schemas.ts` y en e
 contra el contrato actual:
 
 1. **`sort` en `/search`** (precio o cercanía). Hecho: `searchQuery` envía `sort` (`OfferSort`) y el simulado ordena por precio mínimo, o por cercanía con ubicación. Sin `sort` el orden es el de siempre. Las pantallas lo usan en F1b.
-2. **Productos para el inicio** (destacados o cercanos). Falta: hoy `FeaturedProducts` de
-   `app/page.tsx` llama a `searchProducts` con `q: ""`, la búsqueda simulada que la spec anterior
-   ya rechazó. F1.
+2. **Productos para el inicio.** Hecho: `GET /products/nearby` de posveapi responde `{ data, meta, rate }` (sin `featured`, ítems con la forma de uno de `/search`, con la ubicación de `/search` y `page`; sin ubicación ordena por precio). `listNearbyProducts` del cliente la pide y el simulado la imita. Ya no hay `FeaturedProducts`: el inicio de F1b usa `listNearbyProducts`.
 3. **Sugerencias de búsqueda.** Hecho: `GET /suggestions` de posveapi responde `{ terms, products,
    categories, rate }` (hasta 5 términos, 4 productos con la forma de un ítem de `/search` y 2
    categorías `{ slug, name }`; 422 con `q` de menos de 2 caracteres, misma ubicación que

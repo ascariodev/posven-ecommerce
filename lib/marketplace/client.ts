@@ -3,6 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { accountCommand, accountRequest, postJson, requestJson, requestJsonOrNull } from "./http";
 import * as mock from "./mock/adapter";
 import {
+  nearbyProductsQuery,
   pageQuery,
   productQuery,
   searchQuery,
@@ -24,6 +25,7 @@ import {
   customerEnvelopeSchema,
   favoritesResponseSchema,
   locationsResponseSchema,
+  nearbyProductsResponseSchema,
   productResponseSchema,
   purchasePageSchema,
   purchaseSchema,
@@ -48,6 +50,7 @@ import {
   type FavoritesResponse,
   type LocationState,
   type MarketplaceEvent,
+  type NearbyProductsResponse,
   type ProductResponse,
   type ProfilePatch,
   type Purchase,
@@ -95,6 +98,18 @@ export async function getSuggestions(p: {
   cacheTag("marketplace:suggestions");
   if (usesMock()) return mock.getSuggestions(p);
   return requestJson("/suggestions", suggestionsQuery(p), suggestionsResponseSchema);
+}
+
+export async function listNearbyProducts(p: {
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+  page: number;
+}): Promise<NearbyProductsResponse> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("marketplace:nearby-products");
+  if (usesMock()) return mock.listNearbyProducts(p);
+  return requestJson("/products/nearby", nearbyProductsQuery(p), nearbyProductsResponseSchema);
 }
 
 export async function listNearbyStores(p: {

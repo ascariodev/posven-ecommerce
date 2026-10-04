@@ -1,4 +1,5 @@
 import {
+  nearbyProductsQuery,
   productQuery,
   searchQuery,
   storesQuery,
@@ -13,6 +14,7 @@ import type {
   FeaturedProduct,
   LocationState,
   MarketplaceEvent,
+  NearbyProductsResponse,
   NearbyStore,
   Offer,
   OffersSummary,
@@ -249,6 +251,26 @@ export async function getSuggestions(p: {
     terms,
     products: matches.slice(0, MAX_SUGGESTED_PRODUCTS).map((item) => toSearchItem(item, scope)),
     categories,
+    rate: MOCK_RATE,
+  };
+}
+
+export async function listNearbyProducts(p: {
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+  page: number;
+}): Promise<NearbyProductsResponse> {
+  const query = nearbyProductsQuery(p);
+  const scope = readScope(query);
+  const inScope = MOCK_PRODUCTS.filter((item) => productInScope(item, scope));
+  const ordered = [...inScope].sort((a, b) =>
+    scope.kind === "none"
+      ? compareNumbers(Number(a.min_price_usd), Number(b.min_price_usd))
+      : compareNumbers(a.nearest_km, b.nearest_km) || a.product.name.localeCompare(b.product.name),
+  );
+  return {
+    data: pageOf(ordered, p.page, SEARCH_PER_PAGE).map((item) => toSearchItem(item, scope)),
+    meta: { page: p.page, per_page: SEARCH_PER_PAGE, total: ordered.length },
     rate: MOCK_RATE,
   };
 }

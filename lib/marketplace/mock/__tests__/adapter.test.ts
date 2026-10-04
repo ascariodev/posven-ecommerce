@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ProductPage, ProductResponse } from "@/lib/marketplace/schemas";
-import { getProduct, getProductOffers, getStore, getSuggestions, listNearbyStores, searchProducts } from "@/lib/marketplace/mock/adapter";
+import { getProduct, getProductOffers, getStore, getSuggestions, listNearbyProducts, listNearbyStores, searchProducts } from "@/lib/marketplace/mock/adapter";
 
 describe("adaptador simulado", () => {
   it("la búsqueda no distingue mayúsculas ni acentos", async () => {
@@ -191,5 +191,28 @@ describe("sugerencias simuladas", () => {
     const all = await getSuggestions({ ...base, q: "ta" });
     const caracas = await getSuggestions({ geo: { city: "caracas" }, radiusKm: 10, q: "ta" });
     expect(caracas.products.length).toBeLessThanOrEqual(all.products.length);
+  });
+});
+
+describe("productos cercanos simulados", () => {
+  it("con coordenadas ordena por cercanía y acota por radio", async () => {
+    const response = await listNearbyProducts({ geo: { lat: 10.18, lng: -68.01 }, radiusKm: 3, page: 1 });
+    const distances = response.data.map((item) => item.nearest_km);
+    expect(distances.every((km) => km !== null && km <= 3)).toBe(true);
+    expect(distances).toEqual([...distances].sort((a, b) => (a ?? 0) - (b ?? 0)));
+  });
+
+  it("sin ubicación ordena por precio y no trae distancia", async () => {
+    const response = await listNearbyProducts({ geo: null, radiusKm: null, page: 1 });
+    const prices = response.data.map((item) => Number(item.min_price_usd));
+    expect(prices).toEqual([...prices].sort((a, b) => a - b));
+    expect(response.data.every((item) => item.nearest_km === null)).toBe(true);
+  });
+
+  it("pagina de a 20 y no trae destacados", async () => {
+    const page = await listNearbyProducts({ geo: null, radiusKm: null, page: 1 });
+    expect(page.meta.per_page).toBe(20);
+    expect(page.data.length).toBeLessThanOrEqual(20);
+    expect(page).not.toHaveProperty("featured");
   });
 });

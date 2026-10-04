@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F1 del lienzo "E · PosVen" (Inicio, búsqueda con sugerencias,
 resultados con filtros y orden, sin resultados) más la cabecera con ubicación y la barra inferior
 en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
-**Estado:** en curso · Fase actual: 4
+**Estado:** en curso · Fase actual: 5
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (decisiones), §4 (`ui.md`), §5 (mapa
@@ -59,7 +59,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - **Alcance:** panel de `W02`/`P02` sobre `SearchPill` (términos, productos con precio,
   categoría, recientes en el navegador), accesible por teclado; usa `/api/suggestions` de F1a.
 
-### [ ] Fase 4 — Inicio: héroe y categorías
+### [x] Fase 4 — Inicio: héroe y categorías
 - **Repo:** posven-ecommerce
 - **Alcance:** héroe "compara antes de salir" con buscador y chips de categoría del lienzo;
   `app/page.tsx` y `CategoryRail`.
@@ -113,6 +113,11 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   con `onSubmit` que guarda recientes; el radio de las sugerencias se lee de
   `window.location.search` al interactuar; RN-SEARCH-05 (menos de 2 caracteres no llama a la API).
   El input es `role="combobox"`: los e2e usan `getByRole("combobox", { name: "Buscar productos" })`.
+- 2026-10-04 — Fase 4: héroe en `app/page.tsx` sobre `bg-primary` con el `h1` "Encuentra lo que
+  necesitas al mejor precio cerca de ti" (también en móvil; no se copia "¿Qué necesitas hoy?" de
+  P01); `CategoryRail` pasa a chips de 44 px con `buttonVariants` y chip "Todo" hacia `/buscar`.
+  Fuera del héroe: las tarjetas "Paga aquí y retira hoy", "Entrega de comercios de tu zona" y el
+  botón "Cómo funciona", porque prometen funciones o rutas que no existen.
 
 ## Notas para la próxima sesión
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
@@ -140,4 +145,9 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   `SearchPill` vuelva a ser de servidor (regla `app-router` 4).
   posven-ecommerce · media · sonnet
 - [ ] M-7 — Botón para borrar las búsquedas recientes del panel (no estaba en el alcance).
+  posven-ecommerce · baja · sonnet
+- [ ] M-8 — Chips de `CategoryRail` con `border-input-border` (ui.md §5, 3:1) en vez de
+  `border-border`; confirmar antes contra el lienzo.
+  posven-ecommerce · baja · sonnet
+- [ ] M-9 — Prueba unitaria del chip "Todo" de `CategoryRail` (primero, hacia `/buscar`).
   posven-ecommerce · baja · sonnet

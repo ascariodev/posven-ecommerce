@@ -72,7 +72,7 @@ montos, y esto sólo los formatea.
 | Sugerencias del estado vacío | `EmptyState.tsx` (`relatedCategories`, ampliar radio, todo el país) | sus casos en `EmptyState.test.tsx` |
 | Tinte de una categoría sin imagen | `TINTS` en `categoryTint.ts` | `categoryTint.test.ts`; los colores son los tokens `primary-soft`, `success-soft`, `warning-soft` y `muted` de `app/globals.css` |
 | Píldora de búsqueda | `SearchPill.tsx` | el rol `combobox` con nombre "Buscar productos" y el botón "Buscar" que usa `e2e/search.spec.ts` (el botón de ubicación también empieza por "Buscar": se pulsa con `exact: true`) |
-| Carril de categorías del inicio | `CategoryRail.tsx` | los enlaces se arman con `searchHref` |
+| Carril de categorías del inicio | `CategoryRail.tsx` | chips `rounded-full` de 44 px (`buttonVariants` outline) con "Todo" primero; los enlaces se arman con `searchHref` y el nombre accesible de cada chip es el de la categoría |
 | Filtros en móvil | `FiltersSheet.tsx` (recibe el `RadiusFilter` como `children`) | el caso "elegir ciudad" de `e2e/search.spec.ts` abre "Filtros" en móvil |
 | Panel de sugerencias (orden de secciones, enlaces) | `buildPanelItems` en `panelItems.ts` y `SuggestionsPanel.tsx` | `panelItems.test.ts`; los precios sólo por `formatUsd` y `formatVes` |
 | Teclado, ARIA y recientes del buscador | `SearchBox.tsx` y `recents.ts` | `SearchBox.test.tsx`, `recents.test.ts` y el caso de sugerencias de `e2e/search.spec.ts` |
@@ -93,7 +93,7 @@ Componentes:
 - `SearchPill({ defaultQuery, compact = false }: { defaultQuery?: string; compact?: boolean })`, Client Component (`"use client"`), `features/search/components/SearchPill.tsx`: píldora `rounded-full` con el `Form` de `next/form` (`role="search"`, `onSubmit` que guarda la consulta en recientes) que contiene el `SearchBox`, y el botón "Buscar" fuera del `<form>` con `form={id}` para no anidar formularios; `compact` usa controles de 44 px en móvil y 36 px desde `md` (`h-11 md:h-9`, `/buscar`), si no 44 px (inicio); la ubicación no vive en la píldora: es el botón de la cabecera (`features/location/components/LocationBar.tsx`)
 - `SearchBox({ defaultQuery, className }: { defaultQuery?: string; className?: string })`, `"use client"`, `features/search/components/SearchBox.tsx`: input `role="combobox"` ("Buscar productos", `aria-expanded`, `aria-controls`, `aria-activedescendant`) con el panel; las flechas mueven la opción activa, Enter la abre, Escape y perder el foco cierran; el radio sale de la URL actual
 - `SuggestionsPanel({ id, items, activeIndex, onPick }: { id: string; items: PanelItem[]; activeIndex: number; onPick: (item: PanelItem) => void })`, `features/search/components/SuggestionsPanel.tsx`: `listbox` con grupos Sugerencias, Productos (miniatura, nombre, `formatUsd` y `formatVes` de `min_price_*`), Categorías y Recientes; cada opción es un `Link` con `role="option"`
-- `CategoryRail({ categories }: { categories: CategoryNode[] })`, Server Component, `features/search/components/CategoryRail.tsx`: `<nav aria-label="Categorías">` con enlaces de ícono y nombre a `searchHref({ q: "", categoria, radio: DEFAULT_RADIUS_KM, pagina: 1 })`; `null` sin categorías
+- `CategoryRail({ categories }: { categories: CategoryNode[] })`, Server Component, `features/search/components/CategoryRail.tsx`: `<nav aria-label="Categorías">` con chips de ícono y nombre (más "Todo", sin categoría) a `searchHref({ q: "", categoria, radio: DEFAULT_RADIUS_KM, pagina: 1 })`, en scroll horizontal nativo; `null` sin categorías
 - `FiltersSheet({ children }: { children: ReactNode })`, `features/search/components/FiltersSheet.tsx` (`"use client"`): botón "Filtros" (sólo bajo `md`) que abre un `Sheet` inferior con los hijos; el `RadiusFilter` sigue siendo de servidor
 - `SearchResults({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/search/components/SearchResults.tsx`
 - `ProductCard({ item }: { item: SearchItem })`, `features/search/components/ProductCard.tsx`
@@ -129,7 +129,7 @@ Tintes, `features/search/lib/categoryTint.ts`:
 | Cabecera | `features/site/components/SiteHeader.tsx` (montada por `app/layout.tsx`) | `SearchPill compact` dentro de `HeaderSearchSlot` (en móvil, segunda fila a todo el ancho; desde `md`, centrada con `md:max-w-xl`), en un `<Suspense fallback={null}>` porque `usePathname` suspende en las rutas con parámetros de respaldo |
 | Barra de filtros | `components/SearchResults.tsx` | chips de categoría raíz (`toggleVariants` sobre `<Link>`, el activo con `aria-current="true"` y `href` que la quita) y `RadiusFilter` en línea desde `md` o dentro de `FiltersSheet` en móvil |
 | Página | `app/buscar/page.tsx` | `metadata` estática con `robots` `noindex, follow`; `SearchPill compact` y resultados, cada uno en su `<Suspense>` |
-| Inicio | `app/page.tsx` | título, `SearchPill`, `CategoryRail` y `NearbyStores`; sin rejilla de productos (spec §7) |
+| Inicio | `app/page.tsx` | héroe sobre `bg-primary` (insignia, `h1`, texto y `SearchPill`), `CategoryRail` y `NearbyStores`; sin rejilla de productos (spec §7); el `h1` lo comprueba `e2e/search.spec.ts` |
 
 ## 6. Dependencias
 

@@ -229,7 +229,7 @@ tokens aprobados en `/preview`.
 - [x] M-3 — (revisado, sin cambios: nada queda apretado; el relleno vertical suma 44-48 px y compactarlo es decisión visual de F2) Revisar en móvil la ficha (`app/p/[slug]/page.tsx:297,336`) y `OfferCard` con el relleno de 24 px de `Card` (posven-ecommerce · baja · sonnet)
 - [ ] M-4 — `Toaster` luma con `next-themes` y la clase `cn-toast` definida, junto al selector de tema de F4 (posven-ecommerce · media · sonnet)
 - [x] M-5 — Fijar un estilo de `;` y comas finales en `components/ui/` (Prettier o regla de ESLint): el CLI de shadcn los quita (posven-ecommerce · baja · haiku)
-- [ ] M-6 — Revisar la dependencia `cn` ^0.4.0 de `package.json`, que hace que `shadcn add` escriba `import { cn } from "cn"` (posven-ecommerce · baja · sonnet)
+- [x] M-6 — (descartada: `cn` se usa, `lib/utils.ts` construye nuestro helper con `createCn` de `cn/config`; quitarla rompe tsc. El import erróneo se corrige a mano tras cada `shadcn add`, ya anotado en `ui.md`) Revisar la dependencia `cn` ^0.4.0 de `package.json`, que hace que `shadcn add` escriba `import { cn } from "cn"` (posven-ecommerce · baja · sonnet)
 - [ ] M-7 — Quitar el `className="bg-warning/10 text-warning"` redundante del badge "Pocas unidades" en `OfferCard.tsx:37`, junto al contenido de F2 (posven-ecommerce · baja · haiku)
 - [ ] M-8 — Quitar los imports y parámetros sin usar de `app/p/[slug]/page.tsx` (`Skeleton`, `PriceSummary`, `searchParams`), avisos de eslint previos al plan (posven-ecommerce · baja · haiku)
 - [ ] M-9 — `text-muted-foreground` (#707075) sobre `bg-muted` en claro da ~4,46:1 a 11 px en `ProductCard.tsx`: oscurecer `--muted-foreground` o cambiar ese `<p>` (posven-ecommerce · media · sonnet)

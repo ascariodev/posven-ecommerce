@@ -11,7 +11,7 @@ test("la portada lleva a la búsqueda con resultados, tasa y noindex", async ({ 
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000");
 
   await page.getByRole("searchbox", { name: "Buscar productos" }).fill("acetaminofen");
-  await page.getByRole("button", { name: "Buscar" }).click();
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
 
   await expect(page).toHaveURL("/buscar?q=acetaminofen");
   await expect(page.getByRole("list", { name: "Resultados" }).getByRole("link").first()).toBeVisible();
@@ -22,7 +22,7 @@ test("la portada lleva a la búsqueda con resultados, tasa y noindex", async ({ 
 test("una búsqueda sin resultados ofrece el enlace a comercios", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("searchbox", { name: "Buscar productos" }).fill("zzzz");
-  await page.getByRole("button", { name: "Buscar" }).click();
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
 
   await expect(page.getByRole("heading", { name: "No encontramos resultados para «zzzz»." })).toBeVisible();
   await expect(page.locator('a[href="/comercios"]').first()).toBeVisible();
@@ -30,7 +30,7 @@ test("una búsqueda sin resultados ofrece el enlace a comercios", async ({ page 
 
 test("elegir ciudad la guarda y la búsqueda ofrece sólo la ciudad o todo el país", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Ubicación: sin elegir" }).click();
+  await page.getByRole("button", { name: "Buscar cerca de Elegir ubicación" }).click();
   await page.getByRole("button", { name: "Elegir ciudad" }).click();
   await page.getByRole("combobox", { name: "Estado" }).click();
   await page.getByRole("option", { name: "Carabobo", exact: true }).click();
@@ -40,7 +40,7 @@ test("elegir ciudad la guarda y la búsqueda ofrece sólo la ciudad o todo el pa
   await page.getByRole("option", { name: "Valencia", exact: true }).click();
   await page.getByRole("button", { name: "Guardar" }).click();
 
-  await expect(page.getByRole("button", { name: "Ubicación: Valencia" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Buscar cerca de Valencia" })).toBeVisible();
 
   await page.goto("/buscar?q=acetaminofen");
   await page.getByRole("button", { name: "Filtros" }).click();
@@ -56,10 +56,10 @@ test.describe("con geolocalización concedida", () => {
 
   test("usar mi ubicación muestra la ubicación actual", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Ubicación: sin elegir" }).click();
+    await page.getByRole("button", { name: "Buscar cerca de Elegir ubicación" }).click();
     await page.getByRole("button", { name: "Usar mi ubicación" }).click();
 
-    await expect(page.getByRole("button", { name: "Ubicación: Tu ubicación actual" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Buscar cerca de Tu ubicación actual" })).toBeVisible();
   });
 });
 

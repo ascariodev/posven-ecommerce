@@ -42,9 +42,9 @@ describe("LocationBar", () => {
     vi.mocked(listLocations).mockResolvedValue([]);
     vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener: () => {}, removeEventListener: () => {} }));
 
-    render(await LocationBar({ compact: true, degrade: true }));
+    render(await LocationBar({ degrade: true }));
 
-    expect(screen.getByRole("button", { name: "Ubicación: Valencia" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Buscar cerca de Valencia" })).toBeTruthy();
     expect(listLocations).not.toHaveBeenCalled();
     expect(loadLocationStates).not.toHaveBeenCalled();
   });
@@ -56,14 +56,14 @@ describe("LocationBar", () => {
     render(await LocationBar({ degrade: true }));
     expect(loadLocationStates).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("button", { name: "¿Dónde? Ubicación: sin elegir" }));
+    fireEvent.click(screen.getByRole("button", { name: "Buscar cerca de Elegir ubicación" }));
     await waitFor(() => expect(loadLocationStates).toHaveBeenCalledTimes(1));
   });
 
   it("con degrade y la API caída no pinta nada en vez de romper la cabecera", async () => {
     unavailable();
 
-    const { container } = render(await LocationBar({ compact: true, degrade: true }));
+    const { container } = render(await LocationBar({ degrade: true }));
 
     expect(container.innerHTML).toBe("");
   });
@@ -71,6 +71,6 @@ describe("LocationBar", () => {
   it("sin degrade y la API caída propaga el error hacia app/error.tsx", async () => {
     unavailable();
 
-    await expect(LocationBar({ compact: true })).rejects.toBeInstanceOf(MarketplaceUnavailableError);
+    await expect(LocationBar({})).rejects.toBeInstanceOf(MarketplaceUnavailableError);
   });
 });

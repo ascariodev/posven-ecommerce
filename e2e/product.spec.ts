@@ -19,7 +19,7 @@ async function jsonLdOfType(page: Page, type: string): Promise<Record<string, un
 test("la búsqueda lleva al producto con destacadas y ofertas por precio", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("searchbox", { name: "Buscar productos" }).fill("acetaminofen");
-  await page.getByRole("button", { name: "Buscar" }).click();
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
   await expect(page).toHaveURL("/buscar?q=acetaminofen");
   await page.getByRole("link", { name: /Acetaminofén 500 mg x 20 tabletas/ }).first().click();
 

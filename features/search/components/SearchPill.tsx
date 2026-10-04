@@ -1,20 +1,11 @@
 import { Search } from "lucide-react";
 import Form from "next/form";
-import { Suspense, useId } from "react";
+import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LocationBar, LocationBarSkeleton } from "@/features/location/components/LocationBar";
 import { cn } from "@/lib/utils";
 
-export function SearchPill({
-  defaultQuery,
-  compact = false,
-  degradeLocation = false,
-}: {
-  defaultQuery?: string;
-  compact?: boolean;
-  degradeLocation?: boolean;
-}) {
+export function SearchPill({ defaultQuery, compact = false }: { defaultQuery?: string; compact?: boolean }) {
   const formId = useId();
   const controlHeight = compact ? "h-11 md:h-9" : "h-11";
   return (
@@ -29,9 +20,6 @@ export function SearchPill({
           className={cn(controlHeight, "rounded-full border-0 bg-transparent px-4 shadow-none", compact && "text-sm")}
         />
       </Form>
-      <Suspense fallback={<LocationBarSkeleton compact={compact} />}>
-        <LocationBar compact={compact} degrade={degradeLocation} />
-      </Suspense>
       <Button
         type="submit"
         form={formId}

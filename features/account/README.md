@@ -185,7 +185,7 @@ Formularios `"use client"` con `useActionState`:
 | Guardia de `/cuenta` | `proxy.ts` | sin la cookie `mp_session` redirige a `loginHref(pathname)`; con cookie sigue y la validez la resuelve `requireCustomer` |
 | Sesión vencida | `app/api/sesion/vencida/route.ts` | `GET` borra `mp_session` y responde 303 a `/entrar?volver=<safeReturnPath(volver)>&aviso=sesion` |
 | Pantallas de cuenta | `app/cuenta/layout.tsx`, `app/cuenta/page.tsx`, `app/cuenta/{perfil,direcciones,favoritos,configuracion}/page.tsx` | `metadata` `noindex, nofollow`; el layout pinta `AccountNav` (en su `<Suspense>`, con `AccountIdentity` en el suyo) y los hijos en un panel, sin leer la sesión él mismo; cada página empieza con `requireCustomer("<su ruta>")` en un hijo dentro de `<Suspense>` |
-| Montaje en la cabecera y las fichas | `app/layout.tsx`, `app/p/[slug]/page.tsx`, `app/tienda/[slug]/page.tsx` | `<AccountSlot />` después del `<Suspense>` de `HeaderSearchSlot`; `<FavoriteButton />` en su propio `<Suspense>`; `<main>` y la resolución del 404 quedan fuera de toda frontera |
+| Montaje en la cabecera y las fichas | `features/site/components/SiteHeader.tsx`, `app/p/[slug]/page.tsx`, `app/tienda/[slug]/page.tsx` | `<AccountSlot />` dentro de `SiteHeader` (`features/site/components/SiteHeader.tsx`), después del `<Suspense>` de `HeaderSearchSlot`; `<FavoriteButton />` en su propio `<Suspense>`; `<main>` y la resolución del 404 quedan fuera de toda frontera |
 | Páginas de acceso | `app/entrar/page.tsx`, `app/registro/page.tsx`, `app/recuperar/page.tsx`, `app/restablecer/[token]/page.tsx`, `app/verificar/[token]/page.tsx` | `metadata` con `noindex, nofollow`; leen `searchParams` o `params` en un hijo dentro de `<Suspense>` |
 
 ## 6. Dependencias

@@ -84,7 +84,7 @@ README: `features/search/README.md`
 |---|---|---|---|
 | buscar productos por texto o categoría cerca del usuario | `<SearchResults />` | `features/search/components/SearchResults.tsx` | RN-SEARCH-01, RN-SEARCH-03, RN-SEARCH-04 |
 | leer y escribir los parámetros de la URL de /buscar | `parseSearchQuery() / searchHref()` | `features/search/lib/query.ts` | RN-SEARCH-02 |
-| mostrar la píldora de búsqueda con el segmento de ubicación | `<SearchPill />` | `features/search/components/SearchPill.tsx` |  |
+| mostrar la píldora de búsqueda | `<SearchPill />` | `features/search/components/SearchPill.tsx` |  |
 | mostrar el carril de categorías del inicio | `<CategoryRail />` | `features/search/components/CategoryRail.tsx` |  |
 
 ## site
@@ -93,6 +93,7 @@ README: `features/site/README.md`
 
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
+| mostrar la cabecera del sitio con la ubicación visible | `<SiteHeader />` | `features/site/components/SiteHeader.tsx` |  |
 | mostrar el pie del sitio con sus columnas de enlaces | `<SiteFooter />` | `features/site/components/SiteFooter.tsx` | RN-SITE-01, RN-SITE-02 |
 | ofrecer contacto a un comercio que quiere aparecer en el buscador | `<MerchantContact whatsapp={string \| null} email={string \| null} />` | `features/site/components/MerchantContact.tsx` | RN-SITE-03 |
 | publicar los términos de uso como borrador legal | `<LegalDocument document={termsDocument} />` | `features/site/components/LegalDocument.tsx` | RN-SITE-04, RN-SITE-05 |

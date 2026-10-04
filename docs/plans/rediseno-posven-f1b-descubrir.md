@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F1 del lienzo "E · PosVen" (Inicio, búsqueda con sugerencias,
 resultados con filtros y orden, sin resultados) más la cabecera con ubicación y la barra inferior
 en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
-**Estado:** pendiente: espera el plan F1a (`posven/.claude/docs/plans/rediseno-posven-f1a-contrato.md`)
+**Estado:** en curso · Fase actual: 2
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (decisiones), §4 (`ui.md`), §5 (mapa
@@ -35,7 +35,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 
 ## Fases
 
-### [ ] Fase 1 — Cabecera con ubicación visible
+### [x] Fase 1 — Cabecera con ubicación visible
 - **Repo:** posven-ecommerce
 - **Alcance:** cabecera del lienzo (`W01`, `P01`): logo, selector de ubicación como botón visible
   ("Buscar cerca de <lugar> · <radio>") que abre `LocationSheet`, buscador y accesos a favoritos,
@@ -96,8 +96,22 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - 2026-10-04 — El contrato va antes en el plan F1a — usuario.
 - 2026-10-04 — Los filtros "Acepta pedidos en línea", "Retiro en tienda" y "Entrega a domicilio"
   del lienzo no entran (no están en la §7 de la spec) — usuario, al aprobar el plan.
+- 2026-10-04 — Fase 1: la ubicación sale de `SearchPill` a un botón de dos líneas en `SiteHeader`
+  con nombre accesible "Buscar cerca de <lugar>" (los e2e que pulsan "Buscar" usan `exact: true`);
+  `SearchPill` pierde `degradeLocation` y `LocationBar`/`LocationSheet` pierden `compact`; el radio
+  se lee de `radio` en la URL ("· N km", 10 por defecto, "· Todo el país", ciudad sin detalle);
+  cabecera pasa de `sm` a `md`; carrito y cuenta siguen visibles en móvil hasta la fase 2.
 
 ## Notas para la próxima sesión
-- Arranca cuando F1a esté cerrado; cambiar entonces el Estado a "en curso · Fase actual: 1".
+- Fase 2: ocultar carrito y cuenta de `SiteHeader` bajo `md` y revisar que la cabecera móvil no
+  envuelva en 360 px o menos (sugerencia del revisor de la fase 1).
+- `e2e/product.spec.ts` líneas 19, 34 y 73 fallan desde antes de este plan (simulado de producto:
+  "Destacado", WhatsApp, "Sin disponibilidad ahora."); no son de F1b.
 
 ## Mejoras propuestas
+- [ ] M-1 — `LocationSheet` repite el literal `"pais"`, que ya existe como `NATIONWIDE` en
+  `features/search/lib/query.ts`; exportarlo desde `lib/marketplace/params.ts` y usarlo en ambos.
+  posven-ecommerce · baja · sonnet
+- [ ] M-2 — Prueba de `radiusDetail` (coordenadas con y sin `radio`, `radio=pais`, ciudad sin
+  detalle) mockeando `useSearchParams`, en `features/location/__tests__/`.
+  posven-ecommerce · baja · sonnet

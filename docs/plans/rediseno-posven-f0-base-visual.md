@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 5
+**Estado:** en curso · Fase actual: 6
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -80,7 +80,7 @@ tokens aprobados en `/preview`.
 - **Terminado cuando:** `tsc`, `vitest` de `features/search` y `features/account`, revisión en `/preview`.
 - **Commit:** `feat(ui): toggle y radio en estilo radix-luma`
 
-### [ ] Fase 5 — [riesgo] luma: `select`, `sheet`, `dropdown-menu` y `sonner`
+### [x] Fase 5 — [riesgo] luma: `select`, `sheet`, `dropdown-menu` y `sonner`
 - **Repo:** posven-ecommerce
 - **Alcance:** reinstalación conservando L-03, L-04 (el `key` vive en `AddressForm`, no se toca) y
   L-05; fondo de `Sheet` en `bg-overlay`.
@@ -188,12 +188,21 @@ tokens aprobados en `/preview`.
   `data-state`), sin el `aria-pressed:bg-muted` de luma; hover activo `bg-primary/80` mientras
   `--primary-hover` sea el azul heredado (fase 12); radio `size-4` con borde `input-border` y
   área de toque por `after:` — implementador, revisión LISTO.
+- 2026-10-03 — Fase 5: `sonner.tsx` queda sin cambios: la versión luma trae `next-themes`
+  (dependencia nueva) y una clase `cn-toast` sin definir, y el `Toaster` actual ya usa tokens; se
+  retoma en F4 con el selector de tema (M-4). `shadcn add sheet --overwrite` pisó `button.tsx` y se
+  restauró. Select con el disparador de `Input`; paneles `rounded-2xl shadow-raised`; Sheet sobre
+  `bg-popover` con `bg-overlay`. e2e de cuenta, búsqueda y checkout: 14 en verde y sólo los 2 rojos
+  conocidos (h1 de la portada, compra por "Comercio Aliado") — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fases 1 a 4 hechas; sigue la fase 5. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
+- Fases 1 a 5 hechas; sigue la fase 6. Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas
 - [ ] M-1 — Errata del `aria-label` "Opciónes de ejemplo" en `app/preview/page.tsx:180` (posven-ecommerce · baja · haiku)
 - [ ] M-2 — Quitar el `pb-4` sobrante del `CardFooter` en `app/preview/page.tsx:139` (posven-ecommerce · baja · haiku)
 - [ ] M-3 — Revisar en móvil la ficha (`app/p/[slug]/page.tsx:297,336`) y `OfferCard` con el relleno de 24 px de `Card` (posven-ecommerce · baja · sonnet)
+- [ ] M-4 — `Toaster` luma con `next-themes` y la clase `cn-toast` definida, junto al selector de tema de F4 (posven-ecommerce · media · sonnet)
+- [ ] M-5 — Fijar un estilo de `;` y comas finales en `components/ui/` (Prettier o regla de ESLint): el CLI de shadcn los quita (posven-ecommerce · baja · haiku)
+- [ ] M-6 — Revisar la dependencia `cn` ^0.4.0 de `package.json`, que hace que `shadcn add` escriba `import { cn } from "cn"` (posven-ecommerce · baja · sonnet)

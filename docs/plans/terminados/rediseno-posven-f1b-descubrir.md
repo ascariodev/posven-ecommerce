@@ -152,8 +152,8 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 
 ## Notas para la próxima sesión
 - Mejoras en curso (`/aplicar-mejoras`, 2026-10-04, decisión del usuario: todas las bajas en `main`,
-  sin push, M-6 fuera por ser media): M-1..M-5 hechas (82fbcde, 80579fb, 522a071, 08d79fb,
-  06f7ce1); siguen M-7..M-21 en orden, una por commit con revisión; M-22 nueva del revisor.
+  sin push, M-6 fuera por ser media): M-1..M-5 y M-7..M-14 hechas (hasta el commit de
+  M-14); siguen M-15..M-21 en orden, una por commit con revisión; M-22 nueva del revisor.
 - Fase 9: comparar copia y orden de bloques de `EmptyState` contra W05/P05.
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
   antes en el rojo de "Comercio Aliado" (F2). Volver a correrlos cuando se levante. Fase 9: revisar
@@ -198,7 +198,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-13 — Prueba de que el evento `search` no se re-dispara al cambiar `orden` en la página 1
   (`SearchResults.test.tsx` o `ViewBeacon`).
   posven-ecommerce · baja · sonnet
-- [ ] M-14 — `OpenNowFilter` es un enlace con `aria-current`; un lector no lo anuncia como
+- [x] M-14 — `OpenNowFilter` es un enlace con `aria-current`; un lector no lo anuncia como
   interruptor. Valorar `aria-pressed` o `role="switch"`.
   posven-ecommerce · baja · sonnet
 - [ ] M-15 — Con `openNow` activo, "Quizás te sirve" puede mostrar productos de tiendas cerradas:

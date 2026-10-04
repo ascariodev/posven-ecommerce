@@ -130,7 +130,7 @@ test("abierto ahora se activa desde la hoja de filtros y Limpiar filtros lo quit
   await expect(page.getByRole("navigation", { name: "Filtros activos" })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Filtros" }).click();
-  await page.getByRole("link", { name: "Abierto ahora" }).click();
+  await page.getByRole("link", { name: "Abierto ahora desactivado" }).click();
 
   await expect(page).toHaveURL(/abierto=1/);
   const active = page.getByRole("navigation", { name: "Filtros activos" });

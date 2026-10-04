@@ -9,11 +9,11 @@ export function OpenNowFilter({ query }: { query: SearchQuery }) {
     <nav aria-label="Disponibilidad">
       <Link
         href={searchHref({ ...query, openNow: active ? undefined : true, pagina: 1 })}
-        aria-current={active ? "true" : undefined}
         data-state={active ? "on" : "off"}
         className={cn(toggleVariants({ variant: "outline", size: "sm" }), "rounded-full")}
       >
         Abierto ahora
+        <span className="sr-only">{active ? "activado" : "desactivado"}</span>
       </Link>
     </nav>
   );

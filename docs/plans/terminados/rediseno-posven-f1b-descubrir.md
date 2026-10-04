@@ -206,7 +206,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · baja · sonnet
 - [x] M-16 — `NearbyProducts` usa el id fijo `nearby-products-title`; usar `useId`.
   posven-ecommerce · baja · sonnet
-- [ ] M-17 — `.claude/rules/app-router.md` regla 7 nombra `NearbyProducts` sólo "de la portada";
+- [x] M-17 — `.claude/rules/app-router.md` regla 7 nombra `NearbyProducts` sólo "de la portada";
   ahora también degrada en el estado vacío de `/buscar`.
   posven-ecommerce · baja · sonnet
 - [ ] M-18 — Chip "Todo" de `CategoryRail` usa `dark:`, que `ui.md` regla 4 prohíbe fuera de

@@ -33,7 +33,8 @@ Rige al editar `app/` y `features/`.
    `features/site/components/SiteHeader.tsx` activa, `AccountSlot` y `CartLink`). Otra, un bloque
    secundario de una página que no debe tumbarla: "Últimas compras" de `/cuenta`
    (`features/purchases/components/RecentPurchases.tsx`) no se pinta si la API falla, igual que
-   `NearbyProducts` y `NearbyStores` de la portada.
+   `NearbyProducts` y `NearbyStores` de la portada, y `NearbyProducts` en el estado vacío de
+   `/buscar` ("Quizás te sirve", montado desde `features/search/components/SearchResults.tsx`).
 8. **Marca por `SITE_NAME`** (`lib/site.ts`): ningún texto visible ni metadato escribe la marca
    literal. El título de una página es su parte propia; la plantilla `%s | SITE_NAME` la pone
    `app/layout.tsx`.

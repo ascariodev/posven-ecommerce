@@ -34,6 +34,7 @@ import {
   favoritesResponseSchema,
   locationsResponseSchema,
   moneySchema,
+  offerSchema,
   productResponseSchema,
   purchasePageSchema,
   purchaseSchema,
@@ -544,5 +545,36 @@ describe("el simulado de checkout y compras pasa los esquemas del contrato", () 
       expect(purchaseSchema.safeParse(purchase).success).toBe(true);
     }
     expect(purchasePageSchema.safeParse(await listPurchases(ctx, 1)).success).toBe(true);
+  });
+});
+
+describe("is_open y closes_at", () => {
+  const offer = {
+    store: MOCK_STORES[0].summary,
+    price_usd: "1.00",
+    price_ves: "36.50",
+    availability: "available",
+    updated_at: "2026-09-26T14:30:00Z",
+    distance_km: null,
+  };
+
+  it("son opcionales en la oferta", () => {
+    expect(offerSchema.safeParse(offer).success).toBe(true);
+    expect(offerSchema.safeParse({ ...offer, is_open: true, closes_at: "20:00" }).success).toBe(true);
+    expect(offerSchema.safeParse({ ...offer, is_open: false, closes_at: null }).success).toBe(true);
+  });
+
+  it("rechazan una hora mal formada y un is_open que no es booleano", () => {
+    expect(offerSchema.safeParse({ ...offer, closes_at: "8pm" }).success).toBe(false);
+    expect(offerSchema.safeParse({ ...offer, is_open: "1" }).success).toBe(false);
+  });
+
+  it("el simulado los trae en búsqueda, ficha y tiendas", async () => {
+    const search = await searchProducts({ ...noFilters, q: "acetaminofen" });
+    expect(typeof search.featured[0].offer.is_open).toBe("boolean");
+    const stores = await listNearbyStores({ geo: null, radiusKm: null, page: 1 });
+    expect(stores.data.every((store) => typeof store.is_open === "boolean")).toBe(true);
+    const page = productResponseSchema.parse(await getProduct("acetaminofen-500-mg-20-tabletas"));
+    expect("offers" in page && page.offers.every((entry) => typeof entry.is_open === "boolean")).toBe(true);
   });
 });

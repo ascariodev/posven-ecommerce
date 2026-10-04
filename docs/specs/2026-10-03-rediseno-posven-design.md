@@ -171,16 +171,13 @@ Cada campo entra primero en la spec del rasgo §3 (o en la §4 de cuentas y comp
 carrito), después en posveapi y al final en `lib/marketplace/schemas.ts` y en el simulado. Estado
 contra el contrato actual:
 
-1. **`sort` en `/search`** (precio o cercanía). Falta: `searchQuery` no lo envía; sólo
-   `productQuery` tiene `OfferSort`. F1.
+1. **`sort` en `/search`** (precio o cercanía). Hecho: `searchQuery` envía `sort` (`OfferSort`) y el simulado ordena por precio mínimo, o por cercanía con ubicación. Sin `sort` el orden es el de siempre. Las pantallas lo usan en F1b.
 2. **Productos para el inicio** (destacados o cercanos). Falta: hoy `FeaturedProducts` de
    `app/page.tsx` llama a `searchProducts` con `q: ""`, la búsqueda simulada que la spec anterior
    ya rechazó. F1.
 3. **Sugerencias de búsqueda.** Falta un endpoint en posveapi; como el navegador no llama a
    posveapi, llega por un route handler de Next. F1.
-4. **Abierto ahora y "Cierra pronto".** `cartStoreSchema` ya trae `is_open` y `storeSchema` trae
-   `schedule`; faltan `is_open` y la hora de cierre del día en las ofertas de búsqueda y de ficha
-   y en `nearbyStoreSchema`, y un filtro "abierto ahora" en `/search`. F1.
+4. **Abierto ahora y "Cierra pronto".** Hecho: `offerSchema` (búsqueda y ficha) y `nearbyStoreSchema` traen `is_open` y `closes_at` (HH:MM, nulo sin tramo vigente ni próximo hoy), opcionales para el consumidor y calculados por la API (el simulado los saca de `MOCK_STORE_DETAILS`); `searchQuery` envía `open_now=true` para el filtro "abierto ahora" de `/search`. El aviso "Cierra pronto" se define en F1b a partir de `closes_at`, sin calcular horarios en el frontend.
 5. **`cover_url` en las tiendas cercanas.** `storeSchema` ya lo trae; falta en `nearbyStoreSchema`. F2.
 6. **`is_best_price` en `productOfferSchema`.** Falta; hoy "Mejor precio" sale del orden por precio
    y no se marca con destacadas. F2.

@@ -72,6 +72,8 @@ export async function searchProducts(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  sort?: OfferSort;
+  openNow?: boolean;
 }): Promise<SearchResponse> {
   "use cache";
   cacheLife("minutes");

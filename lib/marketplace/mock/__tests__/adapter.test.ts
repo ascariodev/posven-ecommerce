@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ProductPage, ProductResponse } from "@/lib/marketplace/schemas";
 import { getProduct, getProductOffers, getStore, listNearbyStores, searchProducts } from "@/lib/marketplace/mock/adapter";
 
@@ -88,5 +88,73 @@ describe("producto simulado", () => {
 
   it("una tienda desconocida da null", async () => {
     expect(await getStore({ slug: "no-existe", page: 1 })).toBeNull();
+  });
+});
+
+describe("horario y orden simulados", () => {
+  const base = { q: "", category: null, geo: null, radiusKm: null, page: 1 };
+  const SUNDAY_10_CARACAS = new Date("2026-10-04T14:00:00Z");
+  const MONDAY_6_CARACAS = new Date("2026-10-05T10:00:00Z");
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("las tiendas llevan is_open y closes_at calculados del horario", async () => {
+    vi.useFakeTimers({ now: SUNDAY_10_CARACAS });
+    const response = await listNearbyStores({ geo: null, radiusKm: null, page: 1 });
+    const central = response.data.find((store) => store.slug === "farmacia-central-valencia");
+    const shop = response.data.find((store) => store.slug === "ferreteria-el-tornillo");
+    expect(central).toMatchObject({ is_open: true, closes_at: "13:00" });
+    expect(shop).toMatchObject({ is_open: false, closes_at: null });
+  });
+
+  it("las ofertas de la ficha llevan is_open y closes_at", async () => {
+    vi.useFakeTimers({ now: MONDAY_6_CARACAS });
+    const response = await getProduct("acetaminofen-500-mg-20-tabletas");
+    const page = response as ProductPage;
+    const central = page.featured.find((offer) => offer.store.slug === "farmacia-central-valencia");
+    expect(central).toMatchObject({ is_open: false, closes_at: "20:00" });
+  });
+
+  it("open_now deja sólo ofertas de tiendas abiertas y reduce el total", async () => {
+    vi.useFakeTimers({ now: SUNDAY_10_CARACAS });
+    const all = await searchProducts(base);
+    const open = await searchProducts({ ...base, openNow: true });
+    expect(open.meta.total).toBeLessThan(all.meta.total);
+    expect(open.meta.total).toBeGreaterThan(0);
+    for (const entry of open.featured) expect(entry.offer.is_open).toBe(true);
+  });
+
+  it("open_now con todas las tiendas cerradas no devuelve nada", async () => {
+    vi.useFakeTimers({ now: MONDAY_6_CARACAS });
+    const open = await searchProducts({ ...base, openNow: true });
+    expect(open.meta.total).toBe(0);
+    expect(open.data).toEqual([]);
+    expect(open.featured).toEqual([]);
+  });
+
+  it("sort=price ordena por precio mínimo ascendente", async () => {
+    const response = await searchProducts({ ...base, sort: "price" });
+    const prices = [...response.featured.map((entry) => entry.product.slug), ...response.data.map((item) => item.slug)];
+    expect(prices.length).toBeGreaterThan(1);
+    const minimums = response.data.map((item) => Number(item.min_price_usd));
+    expect(minimums).toEqual([...minimums].sort((a, b) => a - b));
+  });
+
+  it("sort=distance sin ubicación cae a precio", async () => {
+    const byDistance = await searchProducts({ ...base, sort: "distance" });
+    const byPrice = await searchProducts({ ...base, sort: "price" });
+    expect(byDistance).toEqual(byPrice);
+  });
+
+  it("sort=distance con ubicación ordena por cercanía", async () => {
+    const response = await searchProducts({
+      ...base,
+      geo: { lat: 10.18, lng: -68.0 },
+      sort: "distance",
+    });
+    const nearest = response.data.map((item) => item.nearest_km ?? 0);
+    expect(nearest).toEqual([...nearest].sort((a, b) => a - b));
   });
 });

@@ -15,17 +15,23 @@ function appendLocation(query: URLSearchParams, geo: GeoFilter, radiusKm: Radius
   if (radiusKm !== null) query.set("radius_km", String(radiusKm));
 }
 
+export type OfferSort = "price" | "distance";
+
 export function searchQuery(p: {
   q: string;
   category: string | null;
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  sort?: OfferSort;
+  openNow?: boolean;
 }): URLSearchParams {
   const query = new URLSearchParams();
   if (p.q !== "") query.set("q", p.q);
   if (p.category !== null) query.set("category", p.category);
   appendLocation(query, p.geo, p.radiusKm);
+  if (p.sort !== undefined) query.set("sort", p.sort);
+  if (p.openNow === true) query.set("open_now", "true");
   query.set("page", String(p.page));
   return query;
 }
@@ -40,8 +46,6 @@ export function storesQuery(p: {
   query.set("page", String(p.page));
   return query;
 }
-
-export type OfferSort = "price" | "distance";
 
 export function productQuery(p: {
   geo: GeoFilter;

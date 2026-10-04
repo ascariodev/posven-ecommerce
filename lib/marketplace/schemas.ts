@@ -76,6 +76,17 @@ export const productSchema = z.object({
 });
 export type Product = z.infer<typeof productSchema>;
 
+// Opcionales para el consumidor; los calcula la API. `closes_at` es la hora HH:MM del fin del tramo
+// vigente, o del próximo de hoy si la tienda está cerrada.
+const openStatusShape = {
+  is_open: z.boolean().optional(),
+  closes_at: z
+    .string()
+    .regex(/^\d{2}:\d{2}$/)
+    .nullable()
+    .optional(),
+};
+
 export const offerSchema = z.object({
   store: storeSummarySchema,
   price_usd: moneySchema,
@@ -83,6 +94,7 @@ export const offerSchema = z.object({
   availability: availabilitySchema,
   updated_at: z.iso.datetime({ offset: true }),
   distance_km: z.number().nonnegative().nullable(),
+  ...openStatusShape,
 });
 export type Offer = z.infer<typeof offerSchema>;
 
@@ -119,6 +131,7 @@ export type SearchResponse = z.infer<typeof searchResponseSchema>;
 export const nearbyStoreSchema = storeSummarySchema.extend({
   distance_km: z.number().nonnegative().nullable(),
   outside_radius: z.boolean(),
+  ...openStatusShape,
 });
 export type NearbyStore = z.infer<typeof nearbyStoreSchema>;
 

@@ -67,6 +67,25 @@ describe("searchQuery", () => {
     expect(keysOf(query)).toEqual(["page"]);
     expect(query.get("page")).toBe("2");
   });
+
+  it("envía sort y open_now sólo cuando se piden", () => {
+    const plain = searchQuery({ q: "", category: null, geo: null, radiusKm: null, page: 1 });
+    expect(plain.has("sort")).toBe(false);
+    expect(plain.has("open_now")).toBe(false);
+    const off = searchQuery({ q: "", category: null, geo: null, radiusKm: null, page: 1, openNow: false });
+    expect(off.has("open_now")).toBe(false);
+    const asked = searchQuery({
+      q: "",
+      category: null,
+      geo: null,
+      radiusKm: null,
+      page: 1,
+      sort: "price",
+      openNow: true,
+    });
+    expect(asked.get("sort")).toBe("price");
+    expect(asked.get("open_now")).toBe("true");
+  });
 });
 
 describe("storesQuery", () => {

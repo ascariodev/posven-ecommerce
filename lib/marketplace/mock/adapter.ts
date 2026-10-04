@@ -41,6 +41,7 @@ import {
 import { accountError, customerIdFor, deleteAccount as deleteMockAccount } from "./accounts";
 import { clearMockCart } from "./cart";
 import { hasOpenOrders } from "./checkout";
+import { openStatus, type OpenStatus } from "./schedule";
 
 const SEARCH_PER_PAGE = 20;
 const STORES_PER_PAGE = 12;
@@ -117,8 +118,40 @@ function toSearchItem(item: MockProduct, scope: Scope): SearchItem {
   };
 }
 
+function storeStatus(store: MockStore): OpenStatus {
+  return openStatus(MOCK_STORE_DETAILS[store.summary.slug]?.schedule ?? [], new Date());
+}
+
+function withOpenOffers(item: MockProduct): MockProduct | null {
+  const offers = item.offers.filter((offer) => storeStatus(findStore(offer.store_slug)).is_open);
+  if (offers.length === 0) return null;
+  const cheapest = offers.reduce((low, offer) =>
+    Number(offer.price_usd) < Number(low.price_usd) ? offer : low,
+  );
+  return {
+    ...item,
+    offers,
+    min_price_usd: cheapest.price_usd,
+    min_price_ves: cheapest.price_ves,
+    nearest_km: Math.min(...offers.map((offer) => findStore(offer.store_slug).distance_km)),
+  };
+}
+
+function orderMatches(matches: MockProduct[], sort: OfferSort | undefined, scope: Scope): MockProduct[] {
+  if (sort === undefined) return matches;
+  const byDistance = sort === "distance" && scope.kind !== "none";
+  return [...matches].sort((a, b) =>
+    byDistance
+      ? compareNumbers(a.nearest_km, b.nearest_km) ||
+        compareNumbers(Number(a.min_price_usd), Number(b.min_price_usd))
+      : compareNumbers(Number(a.min_price_usd), Number(b.min_price_usd)) ||
+        compareNumbers(a.nearest_km, b.nearest_km),
+  );
+}
+
 function toOffer(offer: MockOffer, store: MockStore, scope: Scope): Offer {
   return {
+    ...storeStatus(store),
     store: store.summary,
     price_usd: offer.price_usd,
     price_ves: offer.price_ves,
@@ -143,16 +176,23 @@ export async function searchProducts(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  sort?: OfferSort;
+  openNow?: boolean;
 }): Promise<SearchResponse> {
   const query = searchQuery(p);
   const scope = readScope(query);
   const term = normalize(query.get("q") ?? "");
-  const matches = MOCK_PRODUCTS.filter(
+  const textMatches = MOCK_PRODUCTS.filter(
     (item) =>
       matchesText(item, term) &&
       matchesCategory(item, query.get("category")) &&
       productInScope(item, scope),
   );
+  const visible =
+    query.get("open_now") === "true"
+      ? textMatches.flatMap((item) => withOpenOffers(item) ?? [])
+      : textMatches;
+  const matches = orderMatches(visible, p.sort, scope);
 
   const featured: FeaturedProduct[] = [];
   if (p.page === 1) {
@@ -189,6 +229,7 @@ export async function listNearbyStores(p: {
     ...store.summary,
     distance_km: scope.kind === "none" ? null : store.distance_km,
     outside_radius: false,
+    ...storeStatus(store),
   }));
 
   return {

@@ -125,3 +125,4 @@ export function StoreContact({ store }: { store: StoreSummary }) {
 - Comando: `npx vitest run features/events`
 - `features/events/__tests__/handle.test.ts`: cuerpo inválido 400, `search` sin `query` ni `category_slug` 400, cuerpo de más de 1024 caracteres 400, `product_view` válido con `session_id`, `search` reenviado y deduplicado por `query` y `category_slug`, bot y user-agent nulo sin reenvío, duplicado dentro y fuera de la ventana, descarte de la clave más vieja con el tope superado.
 - `features/events/__tests__/ContactButtons.test.tsx`: los tres `href`, sin WhatsApp por falta de número o por `recipe`, sin "Llamar" sin teléfono, clic en "Ver ruta" manda `click_route`.
+- `features/events/__tests__/route.test.ts`: `POST /api/events` pasa a `sendEvent` el último valor de `x-forwarded-for` como `clientIp`, y `null` sin cabecera o con un valor que no es IP.

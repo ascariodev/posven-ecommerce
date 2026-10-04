@@ -216,8 +216,9 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · baja · sonnet
 - [ ] M-20 — Prueba del consejo "Prueba con menos palabras..." de `EmptyState` con y sin `q`.
   posven-ecommerce · baja · sonnet
-- [ ] M-21 — `Toaster` con `theme="light"` fijo: revisar el tema de sonner en oscuro.
-  posven-ecommerce · baja · sonnet
+- [x] M-21 — `Toaster` con `theme="light"` fijo: revisar el tema de sonner en oscuro.
+  posven-ecommerce · baja · sonnet · sin cambios: es la M-4 del plan F0, que va con el selector de
+  tema de F4
 - [ ] M-22 — `SearchBox`: con la lista vacía, `ArrowUp` no limpia la marca de "activar la primera"
   que dejó un `ArrowDown` previo (inocuo; se limpia al teclear o cerrar).
   posven-ecommerce · baja · sonnet

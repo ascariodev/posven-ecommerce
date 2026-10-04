@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { ChevronDown, PiggyBank } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/components/FavoriteButton";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
@@ -13,7 +12,6 @@ import { ViewBeacon } from "@/features/events/components/ViewBeacon";
 import { productJsonLd } from "@/features/product/lib/jsonld";
 import { loadProduct } from "@/features/product/server/load";
 import { productMetadata } from "@/features/product/lib/metadata";
-import { PriceSummary } from "@/features/product/components/PriceSummary";
 import { ProductGallery } from "@/features/product/components/ProductGallery";
 import { ShareButton } from "@/features/product/components/ShareButton";
 import { ProductCard } from "@/features/search/components/ProductCard";
@@ -31,7 +29,6 @@ const RESTRICTED_NOTE = {
 } as const;
 
 type Params = Promise<{ slug: string }>;
-type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 const STATIC_PRODUCT_COUNT = 20;
 
@@ -189,10 +186,8 @@ async function RelatedProducts({ categorySlug, title }: { categorySlug: string |
 
 export default async function ProductPage({
   params,
-  searchParams,
 }: {
   params: Params;
-  searchParams: SearchParams;
 }) {
   const { slug } = await params;
   const { data: product } = await loadProduct(slug);

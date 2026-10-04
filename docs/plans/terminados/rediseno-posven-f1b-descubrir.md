@@ -201,7 +201,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-14 — `OpenNowFilter` es un enlace con `aria-current`; un lector no lo anuncia como
   interruptor. Valorar `aria-pressed` o `role="switch"`.
   posven-ecommerce · baja · sonnet
-- [ ] M-15 — Con `openNow` activo, "Quizás te sirve" puede mostrar productos de tiendas cerradas:
+- [x] M-15 — Con `openNow` activo, "Quizás te sirve" puede mostrar productos de tiendas cerradas:
   pasar el filtro a `NearbyProducts` o rotularlo.
   posven-ecommerce · baja · sonnet
 - [ ] M-16 — `NearbyProducts` usa el id fijo `nearby-products-title`; usar `useId`.
@@ -221,3 +221,6 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [ ] M-22 — `SearchBox`: con la lista vacía, `ArrowUp` no limpia la marca de "activar la primera"
   que dejó un `ArrowDown` previo (inocuo; se limpia al teclear o cerrar).
   posven-ecommerce · baja · sonnet
+- [ ] M-23 — `open_now` en `/products/nearby` (posveapi) y `listNearbyProducts`, para que "Quizás te
+  sirve" filtre de verdad con "Abierto ahora" (hoy sólo lo rotula). Cruza el contrato.
+  posveapi + posven-ecommerce · alta · plan nuevo

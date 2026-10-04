@@ -1,6 +1,6 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { searchProducts } from "@/lib/marketplace/client";
+import { listNearbyProducts, searchProducts } from "@/lib/marketplace/client";
 import { sendBeaconEvent } from "@/features/events/lib/beacon";
 import { SearchResults } from "@/features/search/components/SearchResults";
 
@@ -57,6 +57,42 @@ describe("SearchResults", () => {
     cleanup();
     render(await SearchResults({ searchParams: Promise.resolve({ q: "arroz" }) }));
     expect(vi.mocked(searchProducts).mock.calls[1]?.[0].openNow).toBeUndefined();
+  });
+
+  it("con abierto=1 sin resultados rotula Quizás te sirve como no filtrado por horario", async () => {
+    vi.mocked(searchProducts).mockResolvedValue({
+      data: [],
+      featured: [],
+      meta: { page: 1, per_page: 20, total: 0 },
+      rate: { rate: "100.00", date: "2026-10-03" },
+    } as unknown as Awaited<ReturnType<typeof searchProducts>>);
+    vi.mocked(listNearbyProducts).mockResolvedValue({
+      data: [
+        {
+          slug: "arroz",
+          name: "Arroz",
+          ean: null,
+          brand: null,
+          category: null,
+          image_url: null,
+          attributes: [],
+          restriction: "none",
+          is_unified: true,
+          offers_count: 1,
+          min_price_usd: "1.00",
+          min_price_ves: "36.50",
+          nearest_km: null,
+          outside_radius: false,
+        },
+      ],
+      meta: { page: 1, per_page: 12, total: 1 },
+      rate: { usd_ves: "36.5000", valid_on: "2026-10-04" },
+    });
+    render(await SearchResults({ searchParams: Promise.resolve({ q: "zzz", abierto: "1" }) }));
+    expect(await screen.findByRole("heading", { name: "Quizás te sirve (sin filtrar por horario)" })).toBeTruthy();
+    cleanup();
+    render(await SearchResults({ searchParams: Promise.resolve({ q: "zzz" }) }));
+    expect(await screen.findByRole("heading", { name: "Quizás te sirve" })).toBeTruthy();
   });
 
   describe("evento search", () => {

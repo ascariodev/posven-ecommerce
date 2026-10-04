@@ -192,7 +192,7 @@ export default function SearchPage({
 - Montos y tasa sólo por `lib/format.ts`; ni el precio ni la distancia se calculan aquí.
 - Todo enlace de la búsqueda se arma con `searchHref`, y los que cambian el radio vuelven a la página 1.
 - Con ciudad, "todo el país" envía `radio` null y `searchProducts` no manda `city` (lo decide `searchQuery` de `lib/marketplace/params.ts`).
-- `NearbyProducts` lee la cookie `loc`: va siempre dentro de un `<Suspense>` y nunca dentro de `'use cache'`; es un bloque secundario (el inicio y el "Quizás te sirve" del estado vacío de `SearchResults`, dentro de su `<Suspense>`), así que atrapa `MarketplaceUnavailableError` y no se pinta (regla `app-router` 7).
+- `NearbyProducts` lee la cookie `loc`: va siempre dentro de un `<Suspense>` y nunca dentro de `'use cache'`; es un bloque secundario (el inicio y el "Quizás te sirve" del estado vacío de `SearchResults`, dentro de su `<Suspense>`; `/products/nearby` no admite `open_now`, así que con `abierto=1` el título lo aclara y el frontend no calcula horarios), así que atrapa `MarketplaceUnavailableError` y no se pinta (regla `app-router` 7).
 - `SearchPill` no depende de la petición: la portada usa la píldora sin `defaultQuery`. No lee la cookie `loc`; el radio de las sugerencias sale de `window.location.search` al interactuar, así no exige `<Suspense>`.
 - `localStorage` se toca sólo desde `recents.ts`, dentro de `try`, y sólo en el navegador tras interactuar: nunca durante el render del servidor.
 - El panel no calcula montos: `min_price_usd` y `min_price_ves` van por `formatUsd` y `formatVes`.
@@ -206,7 +206,7 @@ export default function SearchPage({
 - `features/search/__tests__/ProductCard.test.tsx`: aviso de récipe, "Desde" según `offers_count` y "Fuera de tu zona".
 - `features/search/__tests__/EmptyState.test.tsx`: ampliar radio, todo el país según ubicación y radio, categorías hermanas y enlace a `/comercios`.
 - `features/search/__tests__/RadiusFilter.test.tsx`: cinco enlaces con coordenadas y dos con ciudad.
-- `features/search/__tests__/SearchResults.test.tsx`: sin `q` ni `categoria` no llama a `searchProducts`; pasa `sort` de `orden` a `searchProducts` (sin ubicación descarta `cercania`); evento `search` según página.
+- `features/search/__tests__/SearchResults.test.tsx`: sin `q` ni `categoria` no llama a `searchProducts`; pasa `sort` de `orden` a `searchProducts` (sin ubicación descarta `cercania`); evento `search` según página; con `abierto=1` sin resultados el bloque "Quizás te sirve" se rotula "(sin filtrar por horario)".
 - `features/search/__tests__/ResultsHeader.test.tsx`: migas, título y total de `ResultsHeader`.
 - `features/search/__tests__/SortLinks.test.tsx`: opción actual con y sin ubicación, y `orden=cercania` sin ubicación deja Relevancia como actual.
 - `features/search/__tests__/Pagination.test.tsx`: ventana de páginas con elipsis, página actual y orden conservado en los enlaces.

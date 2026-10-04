@@ -53,7 +53,7 @@ async function rootCategories(): Promise<CategoryNode[]> {
 export async function SiteFooter() {
   const [categories, year] = await Promise.all([rootCategories(), footerYear()]);
   return (
-    <footer className="border-t border-border bg-surface">
+    <footer className="border-t border-border bg-card">
       <div className="mx-auto w-full max-w-5xl px-4 py-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
           <div className="sm:col-span-2 lg:col-span-1">

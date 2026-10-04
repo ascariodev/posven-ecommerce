@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 7
+**Estado:** en curso · Fase actual: 8
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -101,7 +101,7 @@ tokens aprobados en `/preview`.
   vacío.
 - **Commit:** `refactor(ui): estados con tokens success y primary-soft`
 
-### [ ] Fase 7 — Superficies: `surface` a `card`
+### [x] Fase 7 — Superficies: `surface` a `card`
 - **Repo:** posven-ecommerce
 - **Archivos:** `app/error.tsx`, `app/not-found.tsx`, `features/search/components/EmptyState.tsx`,
   `features/site/components/LegalDocument.tsx`, `features/site/components/SiteFooter.tsx`
@@ -201,7 +201,7 @@ tokens aprobados en `/preview`.
   distingue destacada — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fases 1 a 6 hechas; sigue la fase 7. Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
+- Fases 1 a 7 hechas; sigue la fase 8. Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas

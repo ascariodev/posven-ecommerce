@@ -42,7 +42,7 @@ export function EmptyState({
   const related = relatedCategories(categories, query.categoria);
 
   return (
-    <section className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4 shadow-card">
+    <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-card">
       <h2 className="text-xl font-bold tracking-tight text-foreground">
         {query.q !== ""
           ? `No encontramos resultados para «${query.q}».`

@@ -8,7 +8,7 @@ export function LegalDocument({ document }: { document: LegalDocumentContent }) 
         {LEGAL_DRAFT ? (
           <p
             role="note"
-            className="rounded-lg border border-border bg-surface p-4 text-sm font-medium text-foreground"
+            className="rounded-lg border border-border bg-card p-4 text-sm font-medium text-foreground"
           >
             Borrador pendiente de revisión legal. Este texto aún no tiene validez.
           </p>

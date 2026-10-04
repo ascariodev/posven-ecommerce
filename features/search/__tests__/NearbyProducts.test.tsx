@@ -86,4 +86,13 @@ describe("NearbyProducts", () => {
     expect(screen.getByRole("heading", { name: "Quizás te sirve" })).toBeTruthy();
     expect(screen.queryByRole("link", { name: "Ver todo" })).toBeNull();
   });
+
+  it("enlaza la sección a su encabezado con el headingId dado", async () => {
+    vi.mocked(listNearbyProducts).mockResolvedValue(response([item("a")]));
+
+    render(await NearbyProducts({ title: "Quizás te sirve", headingId: "otro-id" }));
+
+    expect(screen.getByRole("region", { name: "Quizás te sirve" }).getAttribute("aria-labelledby")).toBe("otro-id");
+    expect(screen.getByRole("heading", { name: "Quizás te sirve" }).id).toBe("otro-id");
+  });
 });

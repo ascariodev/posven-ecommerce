@@ -41,7 +41,11 @@ function NearbyProductCard({ item }: { item: SearchItem }) {
   );
 }
 
-export async function NearbyProducts({ title, showAll = true }: { title?: string; showAll?: boolean } = {}) {
+export async function NearbyProducts({
+  title,
+  showAll = true,
+  headingId = "nearby-products-title",
+}: { title?: string; showAll?: boolean; headingId?: string } = {}) {
   const { location } = await getEffectiveLocation();
   const geo = toGeoFilter(location);
   let response: NearbyProductsResponse;
@@ -55,9 +59,9 @@ export async function NearbyProducts({ title, showAll = true }: { title?: string
   if (items.length === 0) return null;
 
   return (
-    <section aria-labelledby="nearby-products-title" className="flex flex-col gap-3">
+    <section aria-labelledby={headingId} className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
-        <h2 id="nearby-products-title" className="font-heading text-xl font-semibold tracking-tight text-foreground">
+        <h2 id={headingId} className="font-heading text-xl font-semibold tracking-tight text-foreground">
           {title ?? (location !== null ? "Cerca de ti" : `Productos en ${SITE_NAME}`)}
         </h2>
         {showAll && (

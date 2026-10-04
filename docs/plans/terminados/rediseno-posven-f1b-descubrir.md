@@ -204,7 +204,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-15 — Con `openNow` activo, "Quizás te sirve" puede mostrar productos de tiendas cerradas:
   pasar el filtro a `NearbyProducts` o rotularlo.
   posven-ecommerce · baja · sonnet
-- [ ] M-16 — `NearbyProducts` usa el id fijo `nearby-products-title`; usar `useId`.
+- [x] M-16 — `NearbyProducts` usa el id fijo `nearby-products-title`; usar `useId`.
   posven-ecommerce · baja · sonnet
 - [ ] M-17 — `.claude/rules/app-router.md` regla 7 nombra `NearbyProducts` sólo "de la portada";
   ahora también degrada en el estado vacío de `/buscar`.

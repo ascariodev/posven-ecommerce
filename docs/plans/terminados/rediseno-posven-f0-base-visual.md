@@ -224,7 +224,7 @@ tokens aprobados en `/preview`.
   poda: L-03 a L-06 sólo viven en el código que las aplica, y L-03 sostuvo esta reinstalación.
 
 ## Mejoras propuestas
-- [ ] M-1 — Errata del `aria-label` "Opciónes de ejemplo" en `app/preview/page.tsx:180` (posven-ecommerce · baja · haiku)
+- [x] M-1 — Errata del `aria-label` "Opciónes de ejemplo" en `app/preview/page.tsx:180` (posven-ecommerce · baja · haiku)
 - [ ] M-2 — Quitar el `pb-4` sobrante del `CardFooter` en `app/preview/page.tsx:139` (posven-ecommerce · baja · haiku)
 - [ ] M-3 — Revisar en móvil la ficha (`app/p/[slug]/page.tsx:297,336`) y `OfferCard` con el relleno de 24 px de `Card` (posven-ecommerce · baja · sonnet)
 - [ ] M-4 — `Toaster` luma con `next-themes` y la clase `cn-toast` definida, junto al selector de tema de F4 (posven-ecommerce · media · sonnet)

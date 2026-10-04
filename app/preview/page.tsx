@@ -177,7 +177,7 @@ function Panel({ id, label, dark }: { id: string; label: string; dark?: boolean 
       </Section>
 
       <Section title="RadioGroup">
-        <RadioGroup defaultValue="uno" aria-label="Opciónes de ejemplo">
+        <RadioGroup defaultValue="uno" aria-label="Opciones de ejemplo">
           {["uno", "dos"].map((value) => (
             <label key={value} className="flex items-center gap-2 text-base">
               <RadioGroupItem value={value} id={`${id}-${value}`} />

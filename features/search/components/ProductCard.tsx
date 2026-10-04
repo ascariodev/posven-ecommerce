@@ -49,7 +49,7 @@ export function ProductCard({ item }: { item: SearchItem }) {
             {formatVes(item.min_price_ves)}
           </p>
           
-          <p className="mt-3 text-[11px] font-medium text-muted-foreground bg-muted px-2 py-1 rounded-md inline-block w-fit">
+          <p className="mt-3 text-[11px] font-medium text-foreground/70 bg-muted px-2 py-1 rounded-md inline-block w-fit">
             Disponible en {storesLabel(item.offers_count)}
             {item.nearest_km !== null && ` a ${formatDistance(item.nearest_km)}`}
           </p>

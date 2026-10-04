@@ -76,8 +76,7 @@ export const productSchema = z.object({
 });
 export type Product = z.infer<typeof productSchema>;
 
-// Opcionales para el consumidor; los calcula la API. `closes_at` es la hora HH:MM del fin del tramo
-// vigente, o del próximo de hoy si la tienda está cerrada.
+// Opcionales para el consumidor; los calcula la API.
 const openStatusShape = {
   is_open: z.boolean().optional(),
   closes_at: z

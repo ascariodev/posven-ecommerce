@@ -9,7 +9,7 @@ import { readGuestCart } from "../server/cookie";
 import { cartEnabled } from "../lib/flag";
 import { getSessionCart } from "../server/cart";
 
-// Contador del carrito en la cabecera. El layout raíz no lo cubre app/error.tsx (L-02): ante
+// Contador del carrito, en la cabecera y en la barra inferior. El layout raíz no lo cubre app/error.tsx (L-02): ante
 // cualquier error de la API degrada a "Carrito" sin número. El invitado cuenta las entradas de
 // `mp_cart` sin llamar a la API; el usuario, `line_count` de su carrito.
 export async function cartCount(): Promise<number | null> {

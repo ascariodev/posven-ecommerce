@@ -167,7 +167,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-2 — Prueba de `radiusDetail` (coordenadas con y sin `radio`, `radio=pais`, ciudad sin
   detalle) mockeando `useSearchParams`, en `features/location/__tests__/`.
   posven-ecommerce · baja · sonnet
-- [ ] M-3 — El comentario de `features/cart/components/CartLink.tsx` (l.12) dice "en la cabecera";
+- [x] M-3 — El comentario de `features/cart/components/CartLink.tsx` (l.12) dice "en la cabecera";
   `cartCount` ahora también lo usa la barra inferior.
   posven-ecommerce · baja · sonnet
 - [ ] M-4 — `MobileNavLinks.tsx` usa `text-[10px]` en el contador: confirmar contra `ui.md` o

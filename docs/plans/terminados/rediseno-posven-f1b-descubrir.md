@@ -164,7 +164,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-1 — `LocationSheet` repite el literal `"pais"`, que ya existe como `NATIONWIDE` en
   `features/search/lib/query.ts`; exportarlo desde `lib/marketplace/params.ts` y usarlo en ambos.
   posven-ecommerce · baja · sonnet
-- [ ] M-2 — Prueba de `radiusDetail` (coordenadas con y sin `radio`, `radio=pais`, ciudad sin
+- [x] M-2 — Prueba de `radiusDetail` (coordenadas con y sin `radio`, `radio=pais`, ciudad sin
   detalle) mockeando `useSearchParams`, en `features/location/__tests__/`.
   posven-ecommerce · baja · sonnet
 - [ ] M-3 — El comentario de `features/cart/components/CartLink.tsx` (l.12) dice "en la cabecera";

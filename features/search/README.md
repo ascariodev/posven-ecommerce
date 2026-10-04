@@ -2,10 +2,10 @@
 module: "search"
 path: "features/search"
 type: "feature"
-exports: ["SearchQuery", "parseSearchQuery", "searchHref", "SearchResults", "ProductCard", "FeaturedCard", "RadiusFilter", "Pagination", "EmptyState", "CategoryLinks", "categoryIcon", "categoryTint", "ProductThumb", "HeaderSearchSlot", "SearchPill", "CategoryRail", "FiltersSheet", "SearchBox", "SuggestionsPanel", "buildPanelItems", "useSuggestions", "readRecents", "addRecent"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx", "components/ui/skeleton.tsx", "lib/utils.ts", "app/api/suggestions/route.ts"]
+exports: ["SearchQuery", "parseSearchQuery", "searchHref", "SearchResults", "ProductCard", "FeaturedCard", "RadiusFilter", "Pagination", "EmptyState", "CategoryLinks", "categoryIcon", "categoryTint", "ProductThumb", "HeaderSearchSlot", "SearchPill", "CategoryRail", "NearbyProducts", "NearbyProductsSkeleton", "FiltersSheet", "SearchBox", "SuggestionsPanel", "buildPanelItems", "useSuggestions", "readRecents", "addRecent"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx", "components/ui/skeleton.tsx", "lib/utils.ts", "app/api/suggestions/route.ts"]
 tests: "features/search/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/search/lib/query.ts", "features/search/components/SearchResults.tsx", "features/search/components/ProductCard.tsx", "features/search/components/FeaturedCard.tsx", "features/search/components/RadiusFilter.tsx", "features/search/components/Pagination.tsx", "features/search/components/EmptyState.tsx", "features/search/components/CategoryLinks.tsx", "features/search/lib/categoryIcon.ts", "features/search/components/ProductThumb.tsx", "features/search/components/HeaderSearchSlot.tsx", "features/search/components/SearchPill.tsx", "features/search/components/CategoryRail.tsx", "features/search/lib/categoryTint.ts", "features/search/components/FiltersSheet.tsx", "features/search/components/SearchBox.tsx", "features/search/components/SuggestionsPanel.tsx", "features/search/lib/panelItems.ts", "features/search/lib/useSuggestions.ts", "features/search/lib/recents.ts", "app/api/suggestions/route.ts", "app/layout.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/site/components/SiteHeader.tsx", "components/ui/skeleton.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx"]
+verified_against: ["features/search/lib/query.ts", "features/search/components/SearchResults.tsx", "features/search/components/ProductCard.tsx", "features/search/components/FeaturedCard.tsx", "features/search/components/RadiusFilter.tsx", "features/search/components/Pagination.tsx", "features/search/components/EmptyState.tsx", "features/search/components/CategoryLinks.tsx", "features/search/lib/categoryIcon.ts", "features/search/components/ProductThumb.tsx", "features/search/components/HeaderSearchSlot.tsx", "features/search/components/SearchPill.tsx", "features/search/components/CategoryRail.tsx", "features/search/components/NearbyProducts.tsx", "features/search/lib/categoryTint.ts", "features/search/components/FiltersSheet.tsx", "features/search/components/SearchBox.tsx", "features/search/components/SuggestionsPanel.tsx", "features/search/lib/panelItems.ts", "features/search/lib/useSuggestions.ts", "features/search/lib/recents.ts", "app/api/suggestions/route.ts", "app/layout.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/site/components/SiteHeader.tsx", "components/ui/skeleton.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx"]
 capabilities:
   - intent: "buscar productos por texto o categoría cerca del usuario"
     intent_aliases: ["buscar producto", "resultados de busqueda", "pagina buscar", "buscar por categoria"]
@@ -38,6 +38,14 @@ capabilities:
     input: "categories: CategoryNode[] (las raíz de listCategories())"
     output: "nav 'Categorías' con desplazamiento horizontal y un enlace por categoría con su ícono a /buscar?categoria={slug}; sin categorías no pinta nada"
     source: "props"
+    rules: []
+  - intent: "mostrar el riel de productos cercanos del inicio"
+    intent_aliases: ["cerca de ti", "productos cercanos", "riel de productos", "productos cerca del inicio"]
+    entrypoint: "<NearbyProducts />"
+    file: "features/search/components/NearbyProducts.tsx"
+    input: "sin props; lee la cookie loc; se monta dentro de <Suspense fallback={<NearbyProductsSkeleton />}>"
+    output: "sección 'Cerca de ti' (con ubicación) o 'Productos en {SITE_NAME}' (sin ella) con hasta 8 tarjetas en scroll horizontal (tiendas, distancia, nombre, USD y Bs) y 'Ver todo' a /buscar; sin productos o con la API caída no pinta nada"
+    source: "listNearbyProducts() de lib/marketplace con geo de getEffectiveLocation() (cookie loc)"
     rules: []
 ---
 
@@ -94,6 +102,8 @@ Componentes:
 - `SearchBox({ defaultQuery, className }: { defaultQuery?: string; className?: string })`, `"use client"`, `features/search/components/SearchBox.tsx`: input `role="combobox"` ("Buscar productos", `aria-expanded`, `aria-controls`, `aria-activedescendant`) con el panel; las flechas mueven la opción activa, Enter la abre, Escape y perder el foco cierran; el radio sale de la URL actual
 - `SuggestionsPanel({ id, items, activeIndex, onPick }: { id: string; items: PanelItem[]; activeIndex: number; onPick: (item: PanelItem) => void })`, `features/search/components/SuggestionsPanel.tsx`: `listbox` con grupos Sugerencias, Productos (miniatura, nombre, `formatUsd` y `formatVes` de `min_price_*`), Categorías y Recientes; cada opción es un `Link` con `role="option"`
 - `CategoryRail({ categories }: { categories: CategoryNode[] })`, Server Component, `features/search/components/CategoryRail.tsx`: `<nav aria-label="Categorías">` con chips de ícono y nombre (más "Todo", sin categoría) a `searchHref({ q: "", categoria, radio: DEFAULT_RADIUS_KM, pagina: 1 })`, en scroll horizontal nativo; `null` sin categorías
+- `NearbyProducts(): Promise<React.JSX.Element | null>`, Server Component sin props, `features/search/components/NearbyProducts.tsx`: `listNearbyProducts({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1 })`, primeros 8 en `<ul>` de scroll horizontal nativo (`w-40` por tarjeta), con las tiendas, la distancia (`formatDistance`) y los montos que entrega la API; `null` sin productos o ante `MarketplaceUnavailableError`
+- `NearbyProductsSkeleton()`, fallback de `NearbyProducts`, `features/search/components/NearbyProducts.tsx`
 - `FiltersSheet({ children }: { children: ReactNode })`, `features/search/components/FiltersSheet.tsx` (`"use client"`): botón "Filtros" (sólo bajo `md`) que abre un `Sheet` inferior con los hijos; el `RadiusFilter` sigue siendo de servidor
 - `SearchResults({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/search/components/SearchResults.tsx`
 - `ProductCard({ item }: { item: SearchItem })`, `features/search/components/ProductCard.tsx`
@@ -129,11 +139,11 @@ Tintes, `features/search/lib/categoryTint.ts`:
 | Cabecera | `features/site/components/SiteHeader.tsx` (montada por `app/layout.tsx`) | `SearchPill compact` dentro de `HeaderSearchSlot` (en móvil, segunda fila a todo el ancho; desde `md`, centrada con `md:max-w-xl`), en un `<Suspense fallback={null}>` porque `usePathname` suspende en las rutas con parámetros de respaldo |
 | Barra de filtros | `components/SearchResults.tsx` | chips de categoría raíz (`toggleVariants` sobre `<Link>`, el activo con `aria-current="true"` y `href` que la quita) y `RadiusFilter` en línea desde `md` o dentro de `FiltersSheet` en móvil |
 | Página | `app/buscar/page.tsx` | `metadata` estática con `robots` `noindex, follow`; `SearchPill compact` y resultados, cada uno en su `<Suspense>` |
-| Inicio | `app/page.tsx` | héroe sobre `bg-primary` (insignia, `h1`, texto y `SearchPill`), `CategoryRail` y `NearbyStores`; sin rejilla de productos (spec §7); el `h1` lo comprueba `e2e/search.spec.ts` |
+| Inicio | `app/page.tsx` | héroe sobre `bg-primary` (insignia, `h1`, texto y `SearchPill`), `CategoryRail`, `NearbyProducts` y `NearbyStores`, cada bloque en su `<Suspense>`; los productos van en un riel, no en rejilla (spec §7); el `h1` lo comprueba `e2e/search.spec.ts` |
 
 ## 6. Dependencias
 
-- `lib/marketplace/client.ts`: `searchProducts()` y `listCategories()` en `SearchResults.tsx`.
+- `lib/marketplace/client.ts`: `searchProducts()` y `listCategories()` en `SearchResults.tsx`, `listNearbyProducts()` en `NearbyProducts.tsx`; `lib/marketplace/errors.ts` (`MarketplaceUnavailableError`) en `NearbyProducts.tsx`.
 - `lib/marketplace/params.ts` (`RADIUS_OPTIONS`, `DEFAULT_RADIUS_KM`, `RadiusKm`) y `lib/marketplace/schemas.ts` (`SearchItem`, `FeaturedProduct`, `PageMeta`, `CategoryNode`).
 - `features/location/server/location.ts` (`getEffectiveLocation`) y `features/location/lib/cookie.ts` (`toGeoFilter`); `features/site/components/SiteHeader.tsx` monta `SearchPill` dentro de `HeaderSearchSlot`.
 - `lib/format.ts` (`formatUsd`, `formatVes`, `formatRate`, `formatDistance`) y `lib/site.ts` (`SITE_NAME`).
@@ -173,6 +183,7 @@ export default function SearchPage({
 - Montos y tasa sólo por `lib/format.ts`; ni el precio ni la distancia se calculan aquí.
 - Todo enlace de la búsqueda se arma con `searchHref`, y los que cambian el radio vuelven a la página 1.
 - Con ciudad, "todo el país" envía `radio` null y `searchProducts` no manda `city` (lo decide `searchQuery` de `lib/marketplace/params.ts`).
+- `NearbyProducts` lee la cookie `loc`: va siempre dentro de un `<Suspense>` y nunca dentro de `'use cache'`; es un bloque secundario del inicio, así que atrapa `MarketplaceUnavailableError` y no se pinta (regla `app-router` 7).
 - `SearchPill` no depende de la petición: la portada usa la píldora sin `defaultQuery`. No lee la cookie `loc`; el radio de las sugerencias sale de `window.location.search` al interactuar, así no exige `<Suspense>`.
 - `localStorage` se toca sólo desde `recents.ts`, dentro de `try`, y sólo en el navegador tras interactuar: nunca durante el render del servidor.
 - El panel no calcula montos: `min_price_usd` y `min_price_ves` van por `formatUsd` y `formatVes`.
@@ -182,6 +193,7 @@ export default function SearchPage({
 
 - Comando: `npx vitest run features/search`
 - `features/search/__tests__/query.test.ts`: radio inválido, `pais` y válido; página negativa; `q` largo y recortado; categoría inválida; `searchHref` con valores por defecto y `radio=pais`.
+- `features/search/__tests__/NearbyProducts.test.tsx`: tarjeta con enlace, tiendas y distancia, "desde" sólo con varias ofertas, sin productos y API caída sin pintar nada.
 - `features/search/__tests__/ProductCard.test.tsx`: aviso de récipe, "Desde" según `offers_count` y "Fuera de tu zona".
 - `features/search/__tests__/EmptyState.test.tsx`: ampliar radio, todo el país según ubicación y radio, categorías hermanas y enlace a `/comercios`.
 - `features/search/__tests__/RadiusFilter.test.tsx`: cinco enlaces con coordenadas y dos con ciudad.

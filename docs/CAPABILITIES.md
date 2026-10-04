@@ -86,6 +86,7 @@ README: `features/search/README.md`
 | leer y escribir los parámetros de la URL de /buscar | `parseSearchQuery() / searchHref()` | `features/search/lib/query.ts` | RN-SEARCH-02 |
 | mostrar la píldora de búsqueda | `<SearchPill />` | `features/search/components/SearchPill.tsx` | RN-SEARCH-05 |
 | mostrar el carril de categorías del inicio | `<CategoryRail />` | `features/search/components/CategoryRail.tsx` |  |
+| mostrar el riel de productos cercanos del inicio | `<NearbyProducts />` | `features/search/components/NearbyProducts.tsx` |  |
 
 ## site
 
@@ -106,7 +107,7 @@ README: `features/store/README.md`
 
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
-| mostrar las tiendas cercanas en la portada | `<NearbyStores />` | `features/store/components/NearbyStores.tsx` | RN-STORE-02 |
+| mostrar la tienda patrocinada y los comercios cercanos en la portada | `<NearbyStores />` | `features/store/components/NearbyStores.tsx` | RN-STORE-02 |
 | mostrar la tarjeta de una tienda | `<StoreCard />` | `features/store/components/StoreCard.tsx` | RN-STORE-01, RN-STORE-03 |
 | mostrar la cabecera de la página de una tienda con su horario y contacto | `<StoreHeader />` | `features/store/components/StoreHeader.tsx` | RN-STORE-01, RN-STORE-04 |
 | listar los productos de una tienda con paginación | `<StoreProducts />` | `features/store/components/StoreProducts.tsx` |  |

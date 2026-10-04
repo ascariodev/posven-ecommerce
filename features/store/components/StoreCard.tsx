@@ -4,48 +4,63 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { formatDistance } from "@/lib/format";
 import type { NearbyStore } from "@/lib/marketplace/schemas";
+import { cn } from "@/lib/utils";
 import { storeInitials } from "../lib/initials";
 
+export function StoreLogo({ store, className }: { store: NearbyStore; className: string }) {
+  if (store.is_premium && store.logo_url !== null) {
+    return (
+      <Image
+        src={store.logo_url}
+        alt=""
+        width={56}
+        height={56}
+        className={cn(className, "object-cover")}
+      />
+    );
+  }
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(className, "flex items-center justify-center bg-primary-soft font-heading font-semibold text-primary-text")}
+    >
+      {storeInitials(store.name)}
+    </div>
+  );
+}
+
+export function StoreOpenBadge({ store }: { store: NearbyStore }) {
+  if (store.is_open === undefined) return null;
+  if (!store.is_open) return <Badge variant="secondary">Cerrado</Badge>;
+  return (
+    <Badge variant="success">
+      {store.closes_at ? `Abierto · hasta ${store.closes_at}` : "Abierto"}
+    </Badge>
+  );
+}
+
 export function StoreCard({ store, featured }: { store: NearbyStore; featured?: boolean }) {
-  const logoUrl = store.is_premium ? store.logo_url : null;
   return (
     <Link
       href={`/tienda/${store.slug}`}
-      className="block h-full rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+      className="block h-full rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
     >
-      <Card className="h-full gap-0 py-0 transition-shadow duration-200 ease-out hover:shadow-raised motion-reduce:transition-none">
-        <div aria-hidden="true" className="h-16 bg-primary-soft" />
-        <div className="-mt-7 flex flex-col gap-2 px-4 pb-4">
-          {logoUrl !== null ? (
-            <Image
-              src={logoUrl}
-              alt=""
-              width={56}
-              height={56}
-              className="size-14 shrink-0 rounded-full border-4 border-card bg-card object-cover"
-            />
-          ) : (
-            <div
-              aria-hidden="true"
-              className="flex size-14 shrink-0 items-center justify-center rounded-full border-4 border-card bg-primary-soft text-lg font-bold text-warning"
-            >
-              {storeInitials(store.name)}
+      <Card className="h-full min-h-11 flex-row items-center gap-3 p-3 transition-shadow duration-200 ease-out hover:shadow-raised motion-reduce:transition-none">
+        <StoreLogo store={store} className="size-12 shrink-0 rounded-xl" />
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          {(featured || store.outside_radius) && (
+            <div className="flex flex-wrap gap-1">
+              {featured && <Badge variant="default" className="bg-primary-soft text-primary-text">Destacado</Badge>}
+              {store.outside_radius && <Badge variant="secondary">Fuera de tu zona</Badge>}
             </div>
           )}
-          <div className="flex min-w-0 flex-col gap-1">
-            {(featured || store.outside_radius) && (
-              <div className="flex flex-wrap gap-1">
-                {featured && <Badge variant="default" className="bg-primary-soft text-primary-text">Destacado</Badge>}
-                {store.outside_radius && <Badge variant="secondary">Fuera de tu zona</Badge>}
-              </div>
-            )}
-            <h3 className="font-semibold text-foreground">{store.name}</h3>
-            <p className="text-sm text-muted-foreground">
-              {store.city.name}
-              {store.distance_km !== null && ` · ${formatDistance(store.distance_km)}`}
-            </p>
-          </div>
+          <h3 className="truncate font-semibold text-foreground">{store.name}</h3>
+          <p className="truncate text-sm text-muted-foreground">
+            {store.city.name}
+            {store.distance_km !== null && ` · ${formatDistance(store.distance_km)}`}
+          </p>
         </div>
+        <StoreOpenBadge store={store} />
       </Card>
     </Link>
   );

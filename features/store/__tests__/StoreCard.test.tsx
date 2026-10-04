@@ -55,4 +55,17 @@ describe("StoreCard", () => {
     render(<StoreCard store={store({ outside_radius: true })} />);
     expect(screen.getByText("Fuera de tu zona")).toBeTruthy();
   });
+
+  it("muestra Abierto con la hora de cierre que entrega la API", () => {
+    render(<StoreCard store={store({ is_open: true, closes_at: "20:00" })} />);
+    expect(screen.getByText("Abierto · hasta 20:00")).toBeTruthy();
+  });
+
+  it("muestra Cerrado si la API dice que no está abierta y nada si no informa", () => {
+    const { rerender } = render(<StoreCard store={store({ is_open: false })} />);
+    expect(screen.getByText("Cerrado")).toBeTruthy();
+    rerender(<StoreCard store={store()} />);
+    expect(screen.queryByText("Cerrado")).toBeNull();
+    expect(screen.queryByText(/Abierto/)).toBeNull();
+  });
 });

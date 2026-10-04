@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F1 del lienzo "E · PosVen" (Inicio, búsqueda con sugerencias,
 resultados con filtros y orden, sin resultados) más la cabecera con ubicación y la barra inferior
 en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
-**Estado:** en curso · Fase actual: 5
+**Estado:** en curso · Fase actual: 6
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (decisiones), §4 (`ui.md`), §5 (mapa
@@ -64,7 +64,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - **Alcance:** héroe "compara antes de salir" con buscador y chips de categoría del lienzo;
   `app/page.tsx` y `CategoryRail`.
 
-### [ ] Fase 5 — Inicio: Cerca de ti, patrocinado y comercios
+### [x] Fase 5 — Inicio: Cerca de ti, patrocinado y comercios
 - **Repo:** posven-ecommerce
 - **Alcance:** riel de productos cercanos (`listNearbyProducts` de F1a), tienda patrocinada
   (`featured` de `/stores`) y comercios cerca con `StoreCard` del lienzo.
@@ -118,11 +118,19 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   P01); `CategoryRail` pasa a chips de 44 px con `buttonVariants` y chip "Todo" hacia `/buscar`.
   Fuera del héroe: las tarjetas "Paga aquí y retira hoy", "Entrega de comercios de tu zona" y el
   botón "Cómo funciona", porque prometen funciones o rutas que no existen.
+- 2026-10-04 — Fase 5: `NearbyProducts` (riel `<ul>` hasta 8, "Ver todo" a `/buscar`, nada si
+  vacío) y `SponsoredStore` (`featured[0]` como PATROCINADO); `NearbyStores` lista el resto de
+  destacados y `data` sin repetir, tope 6, "Ver todos" a `/comercios`; `StoreCard` pasa a la fila
+  del lienzo con "Abierto · hasta HH:MM"/"Cerrado" tal como vienen `is_open` y `closes_at` (sin
+  "Cierra pronto", que exigiría calcular); ambos bloques atrapan sólo `MarketplaceUnavailableError`
+  y no se pintan (excepción anotada en `.claude/rules/app-router.md` regla 7); RN-STORE-05.
 
 ## Notas para la próxima sesión
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
   antes en el rojo de "Comercio Aliado" (F2). Volver a correrlos cuando se levante. Fase 9: revisar
-  que el toaster no quede tapado por la barra inferior.
+  que el toaster no quede tapado por la barra inferior, y el aviso de hidratación en `MobileNav`
+  visto en la salida del servidor durante la fase 5 (causa probable: `usePathname()` en
+  `MobileNavLinks` distinto entre servidor y cliente; sin reproducir).
 - `e2e/product.spec.ts` líneas 19, 34 y 73 fallan desde antes de este plan (simulado de producto:
   "Destacado", WhatsApp, "Sin disponibilidad ahora."); no son de F1b.
 
@@ -150,4 +158,11 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   `border-border`; confirmar antes contra el lienzo.
   posven-ecommerce · baja · sonnet
 - [ ] M-9 — Prueba unitaria del chip "Todo" de `CategoryRail` (primero, hacia `/buscar`).
+  posven-ecommerce · baja · sonnet
+- [ ] M-10 — `NearbyProducts`: el nombre accesible del enlace empieza por "N tiendas · km"; poner
+  el nombre del producto primero en el DOM o usar `aria-label`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-11 — Prueba directa de `SponsoredStore` (sin `is_open`, `outside_radius`).
+  posven-ecommerce · baja · sonnet
+- [ ] M-12 — Mover `StoreLogo` de `StoreCard.tsx` a su propio archivo si crece.
   posven-ecommerce · baja · sonnet

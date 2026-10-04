@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { CategoryRail } from "@/features/search/components/CategoryRail";
+import { NearbyProducts, NearbyProductsSkeleton } from "@/features/search/components/NearbyProducts";
 import { SearchPill } from "@/features/search/components/SearchPill";
 import { NearbyStores, NearbyStoresSkeleton } from "@/features/store/components/NearbyStores";
 import { listCategories } from "@/lib/marketplace/client";
@@ -32,6 +33,9 @@ export default async function Home() {
         </div>
       </section>
       <CategoryRail categories={categories} />
+      <Suspense fallback={<NearbyProductsSkeleton />}>
+        <NearbyProducts />
+      </Suspense>
       <Suspense fallback={<NearbyStoresSkeleton />}>
         <NearbyStores />
       </Suspense>

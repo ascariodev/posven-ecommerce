@@ -28,6 +28,7 @@ import {
   authResponseSchema,
   cartItemsSchema,
   cartSchema,
+  cartStoreSchema,
   categoriesResponseSchema,
   checkoutInputSchema,
   checkoutStartSchema,
@@ -557,6 +558,40 @@ describe("el simulado de checkout y compras pasa los esquemas del contrato", () 
       expect(purchaseSchema.safeParse(purchase).success).toBe(true);
     }
     expect(purchasePageSchema.safeParse(await listPurchases(ctx, 1)).success).toBe(true);
+  });
+});
+
+describe("closes_at en cartStoreSchema", () => {
+  const store = {
+    store: MOCK_STORES[0].summary,
+    is_open: true,
+    accepts_orders: true,
+    offers_delivery: false,
+    lines: [
+      {
+        product: { slug: "a", name: "A", image_url: null, category: null },
+        quantity: 1,
+        price_usd: "1.00",
+        price_ves: "36.50",
+        line_usd: "1.00",
+        line_ves: "36.50",
+        availability: "available",
+        status: "ok",
+        unavailable_reason: null,
+      },
+    ],
+    subtotal_usd: "1.00",
+    subtotal_ves: "36.50",
+  };
+
+  it("es opcional y admite HH:MM o nulo", () => {
+    expect(cartStoreSchema.safeParse(store).success).toBe(true);
+    expect(cartStoreSchema.safeParse({ ...store, closes_at: "20:00" }).success).toBe(true);
+    expect(cartStoreSchema.safeParse({ ...store, closes_at: null }).success).toBe(true);
+  });
+
+  it("rechaza una hora mal formada", () => {
+    expect(cartStoreSchema.safeParse({ ...store, closes_at: "8pm" }).success).toBe(false);
   });
 });
 

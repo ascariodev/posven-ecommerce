@@ -464,6 +464,7 @@ export type CartLine = z.infer<typeof cartLineSchema>;
 export const cartStoreSchema = z.object({
   store: storeSummarySchema,
   is_open: z.boolean(),
+  closes_at: openStatusShape.closes_at,
   accepts_orders: z.boolean(),
   offers_delivery: z.boolean(),
   lines: z.array(cartLineSchema).min(1),

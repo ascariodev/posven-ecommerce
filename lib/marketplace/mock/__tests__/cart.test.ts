@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { CartItem } from "@/lib/marketplace/schemas";
@@ -37,6 +37,19 @@ beforeEach(() => {
 });
 
 describe("cotización del carrito simulado", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("cada tienda lleva closes_at calculado del horario con el reloj simulado", async () => {
+    vi.useFakeTimers({ now: new Date("2026-10-04T14:00:00Z") });
+    const sunday = await quoteGuestCart(anonymous, [item(CENTRAL, ACETAMINOFEN)]);
+    expect(sunday.stores[0].closes_at).toBe("13:00");
+    vi.setSystemTime(new Date("2026-10-05T10:00:00Z"));
+    const monday = await quoteGuestCart(anonymous, [item(CENTRAL, ACETAMINOFEN)]);
+    expect(monday.stores[0].closes_at).toBe("20:00");
+  });
+
   it("vacío: sin tiendas, totales en cero y line_count 0", async () => {
     const cart = await quoteGuestCart(anonymous, []);
     expect(cart).toEqual({ stores: [], total_usd: "0.00", total_ves: "0.00", line_count: 0, rate: MOCK_RATE });

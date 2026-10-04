@@ -13,8 +13,9 @@ import {
   type UnavailableReason,
 } from "../schemas";
 import { accountError, customerIdFor } from "./accounts";
-import { MOCK_PRODUCTS, MOCK_RATE, MOCK_STORES, MOCK_UNAVAILABLE_PRODUCTS, type MockOffer, type MockStore } from "./fixtures";
+import { MOCK_PRODUCTS, MOCK_RATE, MOCK_STORE_DETAILS, MOCK_STORES, MOCK_UNAVAILABLE_PRODUCTS, type MockOffer, type MockStore } from "./fixtures";
 import { multiply, sum } from "./money";
+import { mockNow, openStatus } from "./schedule";
 
 // Reglas de la spec cuentas-y-compras §5.2 con la enmienda del 2026-09-30 (C, D, E, G, J y K).
 
@@ -104,6 +105,7 @@ export function quoteItems(items: CartItem[]): Cart {
       entry = {
         store: store.summary,
         is_open: store.is_open,
+        closes_at: openStatus(MOCK_STORE_DETAILS[item.store_slug]?.schedule ?? [], mockNow()).closes_at,
         accepts_orders: store.summary.accepts_orders,
         offers_delivery: store.offers_delivery,
         lines: [],

@@ -58,6 +58,15 @@ describe("privacidad", () => {
   });
 });
 
+describe("privacidad: búsquedas y carrito", () => {
+  it("declara el texto y los resultados de las búsquedas y los agregados al carrito", () => {
+    const text = legalText(privacyDocument);
+    expect(text).toContain("buscas");
+    expect(text).toContain("cantidad de resultados");
+    expect(text).toContain("agregas un producto al carrito");
+  });
+});
+
 describe("LegalDocument", () => {
   it("pinta el título, las secciones y el aviso sólo en borrador", () => {
     render(<LegalDocument document={termsDocument} />);

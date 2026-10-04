@@ -219,6 +219,8 @@ export const eventTypeSchema = z.enum([
   "click_whatsapp",
   "click_call",
   "click_route",
+  "search",
+  "add_to_cart",
 ]);
 export type EventType = z.infer<typeof eventTypeSchema>;
 
@@ -226,24 +228,38 @@ const eventFieldsSchema = z.object({
   type: eventTypeSchema,
   store_slug: z.string().nullable(),
   product_slug: z.string().nullable(),
+  query: z.string().trim().toLowerCase().max(100).nullish(),
+  category_slug: z.string().max(120).nullish(),
+  results_count: z.number().int().min(0).nullish(),
 });
 
-function hasSlugsForType(event: z.infer<typeof eventFieldsSchema>): boolean {
+function isBlank(value: string | null | undefined): boolean {
+  return value === null || value === undefined || value === "";
+}
+
+function hasFieldsForType(event: z.infer<typeof eventFieldsSchema>): boolean {
+  const hasResultsCount = event.results_count !== null && event.results_count !== undefined;
+  const hasQueryOrCategory = !isBlank(event.query) || !isBlank(event.category_slug);
+  if (event.type === "search") {
+    return event.store_slug === null && event.product_slug === null && hasQueryOrCategory && hasResultsCount;
+  }
+  if (hasQueryOrCategory || hasResultsCount) return false;
   if (event.type === "product_view") return event.product_slug !== null && event.store_slug === null;
+  if (event.type === "add_to_cart") return event.product_slug !== null && event.store_slug !== null;
   return event.store_slug !== null;
 }
 
-const EVENT_SLUGS_MESSAGE =
-  "product_view exige product_slug y store_slug nulo; los demás eventos exigen store_slug";
+const EVENT_FIELDS_MESSAGE =
+  "search exige query o category_slug y results_count, sin tienda ni producto; product_view exige product_slug y store_slug nulo; add_to_cart exige store_slug y product_slug; los demás exigen store_slug; query, category_slug y results_count sólo van en search";
 
-export const eventInputSchema = eventFieldsSchema.refine(hasSlugsForType, {
-  message: EVENT_SLUGS_MESSAGE,
+export const eventInputSchema = eventFieldsSchema.refine(hasFieldsForType, {
+  message: EVENT_FIELDS_MESSAGE,
 });
 export type EventInput = z.infer<typeof eventInputSchema>;
 
 export const marketplaceEventSchema = eventFieldsSchema
   .extend({ session_id: z.uuid() })
-  .refine(hasSlugsForType, { message: EVENT_SLUGS_MESSAGE });
+  .refine(hasFieldsForType, { message: EVENT_FIELDS_MESSAGE });
 export type MarketplaceEvent = z.infer<typeof marketplaceEventSchema>;
 
 export const accountErrorCodeSchema = z.enum([

@@ -75,7 +75,7 @@ capabilities:
     intent_aliases: ["eventos", "metricas", "click whatsapp", "vista de producto"]
     entrypoint: "sendEvent()"
     file: "lib/marketplace/client.ts"
-    input: "MarketplaceEvent { type: EventType, store_slug: string|null, product_slug: string|null, session_id: uuid }"
+    input: "MarketplaceEvent { type: EventType, store_slug: string|null, product_slug: string|null, query?: string|null, category_slug?: string|null, results_count?: number|null, session_id: uuid }"
     output: "void"
     source: "POST /events de posveapi vía BFF, sin caché; el simulado no hace nada"
     rules: ["RN-MARKETPLACE-02"]
@@ -167,7 +167,7 @@ la tercera, retiro `ready_for_pickup` con `pickup_code` y entrega `out_for_deliv
 | Endpoint de cuenta nuevo | la spec de cuentas §4 primero; función pública en `client.ts`, sin `'use cache'`, que recibe `ctx: AccountContext` y llama a `accountRequest` (con cuerpo) o a `accountCommand` (204 o 202) | su esquema en `schemas.ts`, la función con la misma firma en `mock/accounts.ts` reexportada en `mock/adapter.ts`, su caso en `__tests__/schemas.test.ts` y el de su comportamiento en `mock/__tests__/accounts.test.ts` |
 | Parámetro de consulta nuevo | `searchQuery`, `storesQuery`, `productQuery` o `pageQuery` en `params.ts` | su caso en `__tests__/params.test.ts` y su lectura en `mock/adapter.ts` (`readScope` si es de ubicación; si no, la función que la usa) |
 | Orden o destacados de las ofertas simuladas | `productPage` en `mock/adapter.ts` | su caso en `mock/__tests__/adapter.test.ts`; `Number()` sólo para comparar montos, nunca para sumar ni redondear |
-| Tipo de evento nuevo | la spec §3.4 primero, después `eventTypeSchema` y `hasSlugsForType` en `schemas.ts` | su caso en `__tests__/schemas.test.ts` si cambia qué slug exige |
+| Tipo de evento nuevo | la spec §3.4 primero, después `eventTypeSchema` y `hasFieldsForType` en `schemas.ts` | su caso en `__tests__/schemas.test.ts` si cambia qué campos exige |
 | Radios elegibles | `RADIUS_OPTIONS` y `DEFAULT_RADIUS_KM` en `params.ts` | cambiar antes la spec §5.1 |
 | Datos simulados | `mock/fixtures.ts` | montos, `nearest_km` y `distance_km` como literales, nunca calculados |
 | Carrito simulado | `mock/cart.ts` (reglas de la enmienda C, D, E, G, J y K de cuentas-y-compras) | los montos del carrito sólo por `mock/money.ts`; su caso en `mock/__tests__/cart.test.ts` y en `__tests__/schemas.test.ts` |
@@ -250,7 +250,7 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 - `productOfferSchema` / `ProductOffer`; `offersSummarySchema` / `OffersSummary`; `productDetailSchema` / `ProductDetail`
 - `productRedirectSchema`; `productPageSchema` / `ProductPage`; `productResponseSchema` / `ProductResponse` (unión de redirección y página)
 - `sitemapTypeSchema` / `SitemapType`; `sitemapResponseSchema` / `SitemapResponse`
-- `eventTypeSchema` / `EventType`; `eventInputSchema` / `EventInput` (`product_view` exige `product_slug` y `store_slug` nulo; los demás, `store_slug`); `marketplaceEventSchema` / `MarketplaceEvent` (más `session_id` uuid)
+- `eventTypeSchema` / `EventType`; `eventInputSchema` / `EventInput` (siete tipos; `product_view` exige `product_slug` y `store_slug` nulo; `add_to_cart`, ambos slugs; `search`, `query` normalizada (recortada, en minúsculas, hasta 100) o `category_slug`, `results_count` y sin slugs; los demás, `store_slug`; `query`, `category_slug` y `results_count` sólo en `search`); `marketplaceEventSchema` / `MarketplaceEvent` (más `session_id` uuid)
 - `accountErrorCodeSchema` / `AccountErrorCode` (`unauthenticated`, `not_found`, `validation_failed`, `invalid_credentials`, `token_invalid`, `token_expired`, `too_many_attempts`, `not_orderable`, `product_restricted`, `cart_full`, `email_unverified`, `quote_changed`, `cart_empty`, `open_orders`, `billing_incomplete`); `accountErrorBodySchema` (`{ error: { code, message, fields?, retry_after?, quote? } }`)
 - `billingDocumentTypeSchema` (`V`, `E`, `J`, `G`), `billingTaxpayerTypeSchema` (`special`, `ordinary`), `billingSchema` / `Billing` (`document_type`, `document`, `name`, `phone`, `address`, `taxpayer_type`; el módulo no valida largos ni patrones: los aplican la API y el simulado)
 - `customerSchema` / `Customer` (con `billing: Billing|null`); `customerEnvelopeSchema` (`{ data: Customer }`); `authResponseSchema` / `AuthResponse` (`token` con `^\d{1,18}\|.+$`)
@@ -341,7 +341,7 @@ const newSlug = "redirect_to" in product ? product.redirect_to : null;
 ## 9. Pruebas
 
 - Comando: `npx vitest run lib/marketplace`
-- `lib/marketplace/__tests__/schemas.test.ts`: cada respuesta del simulado pasa su esquema (producto con ofertas, sin ofertas y redirección, tienda, sitemap, login, registro, perfil, direcciones, favoritos, carrito, Quote, inicio del pago, compra en cada estado y página de compras); una Quote, compras (también una sin pagar con pedidos `pending_payment`) y el inicio del pago escritos a mano, con sus rechazos; `accepts_orders` ausente como `false`; `cartItemsSchema` y sus rechazos; el cuerpo de error de cuenta, `moneySchema`, el tope de dos destacados y los slugs que exige cada evento.
+- `lib/marketplace/__tests__/schemas.test.ts`: cada respuesta del simulado pasa su esquema (producto con ofertas, sin ofertas y redirección, tienda, sitemap, login, registro, perfil, direcciones, favoritos, carrito, Quote, inicio del pago, compra en cada estado y página de compras); una Quote, compras (también una sin pagar con pedidos `pending_payment`) y el inicio del pago escritos a mano, con sus rechazos; `accepts_orders` ausente como `false`; `cartItemsSchema` y sus rechazos; el cuerpo de error de cuenta, `moneySchema`, el tope de dos destacados y los campos que exige cada evento (`search`, `add_to_cart` y los campos de `search` fuera de `search`).
 - `lib/marketplace/__tests__/params.test.ts`: claves de consulta según ubicación y radio, también en `productQuery`.
 - `lib/marketplace/__tests__/http.test.ts`: Bearer, URL, tope de 5 s, errores de red, estado y esquema, falta de configuración, 404 como `null` y `POST` JSON; en cuenta, encabezados según `AccountContext`, 422, 401 con y sin cuerpo de error, 409 `quote_changed` con su Quote, 403 `email_unverified`, la consulta en la URL, `retryAfter` del cuerpo, del encabezado y 60, 500 y 503 como API caída y 204 en `accountCommand`.
 - `lib/marketplace/mock/__tests__/accounts.test.ts`: correo repetido, registro con `billing` (guardado con nombre y teléfono de la cuenta, errores `billing.<campo>`, `name` y `phone`, regla de teléfono del TPV), login errado, verificación, enlace vencido e inválido, restablecer revoca la sesión, límite con `retryAfter` 42, cambio de correo sin contraseña actual, predeterminada de las direcciones y su orden, orden y 404 de favoritos y sesión desconocida.

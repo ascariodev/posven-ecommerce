@@ -47,6 +47,30 @@ describe("handleEvent", () => {
     expect(handle(PRODUCT_VIEW, BROWSER_UA, shouldForward, T0 + EVENT_DEDUP_WINDOW_MS).forward).not.toBeNull();
   });
 
+  it("search se reenvía con sus campos y se deduplica por query y category_slug", () => {
+    const search = (query: string | null, category_slug: string | null) =>
+      JSON.stringify({ type: "search", store_slug: null, product_slug: null, query, category_slug, results_count: 4 });
+    const shouldForward = createDeduper();
+    expect(handle(search("tos", null), BROWSER_UA, shouldForward).forward).toEqual({
+      type: "search",
+      store_slug: null,
+      product_slug: null,
+      query: "tos",
+      category_slug: null,
+      results_count: 4,
+      session_id: SESSION_ID,
+    });
+    expect(handle(search("tos", null), BROWSER_UA, shouldForward, T0 + 1).forward).toBeNull();
+    expect(handle(search("gripe", null), BROWSER_UA, shouldForward, T0 + 1).forward).not.toBeNull();
+    expect(handle(search("tos", "analgesicos"), BROWSER_UA, shouldForward, T0 + 1).forward).not.toBeNull();
+    expect(handle(search(null, "analgesicos"), BROWSER_UA, shouldForward, T0 + 1).forward).not.toBeNull();
+  });
+
+  it("un search sin query ni category_slug responde 400", () => {
+    const body = JSON.stringify({ type: "search", store_slug: null, product_slug: null, results_count: 0 });
+    expect(handle(body, BROWSER_UA)).toEqual({ status: 400, forward: null });
+  });
+
   it("con más de 10 000 claves dentro de la ventana se descarta la más vieja", () => {
     const shouldForward = createDeduper();
     for (let i = 0; i <= 10_000; i++) expect(shouldForward(`clave-${i}`, T0)).toBe(true);

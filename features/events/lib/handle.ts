@@ -50,7 +50,7 @@ export function handleEvent(p: {
   if (isBot(p.userAgent)) return { status: 202, forward: null };
 
   const event = parsed.data;
-  const key = `${p.sessionId}|${event.type}|${event.store_slug ?? ""}|${event.product_slug ?? ""}`;
+  const key = `${p.sessionId}|${event.type}|${event.store_slug ?? ""}|${event.product_slug ?? ""}|${event.query ?? ""}|${event.category_slug ?? ""}`;
   if (!p.shouldForward(key, p.now)) return { status: 202, forward: null };
 
   return { status: 202, forward: { ...event, session_id: p.sessionId } };

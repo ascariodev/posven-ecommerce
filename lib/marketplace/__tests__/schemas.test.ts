@@ -120,6 +120,53 @@ describe("eventInputSchema", () => {
     const event = { type: "click_call", store_slug: null, product_slug: null };
     expect(eventInputSchema.safeParse(event).success).toBe(false);
   });
+
+  it("acepta search con query, con category_slug y con ambos, sin tienda ni producto", () => {
+    const base = { type: "search", store_slug: null, product_slug: null, results_count: 0 };
+    expect(eventInputSchema.safeParse({ ...base, query: "acetaminofen" }).success).toBe(true);
+    expect(eventInputSchema.safeParse({ ...base, category_slug: "analgesicos" }).success).toBe(true);
+    expect(eventInputSchema.safeParse({ ...base, query: "ibuprofeno", category_slug: "analgesicos", results_count: 12 }).success).toBe(true);
+  });
+
+  it("normaliza query: recorta y pasa a minúsculas", () => {
+    const event = { type: "search", store_slug: null, product_slug: null, query: "  Acetaminofen 500  ", results_count: 3 };
+    expect(eventInputSchema.parse(event).query).toBe("acetaminofen 500");
+  });
+
+  it("rechaza search sin query ni category_slug (también con query en blanco)", () => {
+    const base = { type: "search", store_slug: null, product_slug: null, results_count: 3 };
+    expect(eventInputSchema.safeParse(base).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, query: "   ", category_slug: null }).success).toBe(false);
+  });
+
+  it("rechaza search sin results_count o con uno negativo o decimal", () => {
+    const base = { type: "search", store_slug: null, product_slug: null, query: "tos" };
+    expect(eventInputSchema.safeParse(base).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, results_count: -1 }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, results_count: 1.5 }).success).toBe(false);
+  });
+
+  it("rechaza search con tienda o producto y un query de más de 100 caracteres", () => {
+    const base = { type: "search", query: "tos", results_count: 1 };
+    expect(eventInputSchema.safeParse({ ...base, store_slug: "farmacia", product_slug: null }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, store_slug: null, product_slug: "tos-jarabe" }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, store_slug: null, product_slug: null, query: "a".repeat(101) }).success).toBe(false);
+  });
+
+  it("rechaza query, category_slug o results_count fuera de search", () => {
+    const click = { type: "click_call", store_slug: "farmacia", product_slug: null };
+    expect(eventInputSchema.safeParse(click).success).toBe(true);
+    expect(eventInputSchema.safeParse({ ...click, query: "tos" }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...click, category_slug: "analgesicos" }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...click, results_count: 0 }).success).toBe(false);
+  });
+
+  it("add_to_cart exige store_slug y product_slug", () => {
+    const base = { type: "add_to_cart", store_slug: "farmacia", product_slug: "tos-jarabe" };
+    expect(eventInputSchema.safeParse(base).success).toBe(true);
+    expect(eventInputSchema.safeParse({ ...base, product_slug: null }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, store_slug: null }).success).toBe(false);
+  });
 });
 
 describe("moneySchema", () => {

@@ -104,7 +104,7 @@ Componentes:
 
 - `lib/marketplace/client.ts`: `listLocations()` en `server/actions.ts` y `server/location.ts`.
 - `lib/marketplace/errors.ts`: `MarketplaceUnavailableError`, que `LocationBar` atrapa con `degrade`.
-- `lib/marketplace/params.ts` (`GeoFilter`, `RADIUS_OPTIONS`, `DEFAULT_RADIUS_KM`) y `lib/marketplace/schemas.ts` (`LocationState`, sólo tipo).
+- `lib/marketplace/params.ts` (`GeoFilter`, `RADIUS_OPTIONS`, `DEFAULT_RADIUS_KM`, `NATIONWIDE`) y `lib/marketplace/schemas.ts` (`LocationState`, sólo tipo).
 - `next/headers` (`cookies`) y `next/navigation` (`useRouter`, `useSearchParams`).
 - `components/ui/button.tsx`, `components/ui/select.tsx`, `components/ui/sheet.tsx` y `components/ui/skeleton.tsx`.
 - `lib/utils.ts` (`cn`) en `LocationSheet` y `LocationBar`.

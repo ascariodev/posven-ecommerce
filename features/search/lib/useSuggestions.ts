@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { RadiusKm } from "@/lib/marketplace/params";
+import { NATIONWIDE, type RadiusKm } from "@/lib/marketplace/params";
 import { MIN_SUGGEST_LENGTH, type SuggestionsData } from "./panelItems";
 
 const DEBOUNCE_MS = 200;
@@ -20,7 +20,7 @@ export function useSuggestions(query: string, radio: RadiusKm | null): Suggestio
     if (term.length < MIN_SUGGEST_LENGTH) return;
     const controller = new AbortController();
     const timer = setTimeout(() => {
-      const params = new URLSearchParams({ q: term, radio: radio === null ? "pais" : String(radio) });
+      const params = new URLSearchParams({ q: term, radio: radio === null ? NATIONWIDE : String(radio) });
       fetch(`/api/suggestions?${params.toString()}`, { signal: controller.signal })
         .then((response) => (response.ok ? response.json() : null))
         .then((body: unknown) => setData(isSuggestions(body) ? body : null))

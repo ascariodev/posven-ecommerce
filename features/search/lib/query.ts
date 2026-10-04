@@ -1,4 +1,4 @@
-import { DEFAULT_RADIUS_KM, RADIUS_OPTIONS, type OfferSort, type RadiusKm } from "@/lib/marketplace/params";
+import { DEFAULT_RADIUS_KM, NATIONWIDE, RADIUS_OPTIONS, type OfferSort, type RadiusKm } from "@/lib/marketplace/params";
 
 export type SearchQuery = {
   q: string;
@@ -14,7 +14,6 @@ type RawSearchParams = Record<string, string | string[] | undefined>;
 const MAX_QUERY_LENGTH = 100;
 const CATEGORY_SLUG = /^[a-z0-9-]+$/;
 const POSITIVE_INTEGER = /^\d+$/;
-const NATIONWIDE = "pais";
 
 function firstValue(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;

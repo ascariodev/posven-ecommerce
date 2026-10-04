@@ -161,7 +161,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   "Destacado", WhatsApp, "Sin disponibilidad ahora."); no son de F1b.
 
 ## Mejoras propuestas
-- [ ] M-1 — `LocationSheet` repite el literal `"pais"`, que ya existe como `NATIONWIDE` en
+- [x] M-1 — `LocationSheet` repite el literal `"pais"`, que ya existe como `NATIONWIDE` en
   `features/search/lib/query.ts`; exportarlo desde `lib/marketplace/params.ts` y usarlo en ambos.
   posven-ecommerce · baja · sonnet
 - [ ] M-2 — Prueba de `radiusDetail` (coordenadas con y sin `radio`, `radio=pais`, ciudad sin

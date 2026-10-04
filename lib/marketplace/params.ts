@@ -1,6 +1,7 @@
 export const RADIUS_OPTIONS = [3, 10, 25, 50] as const;
 export type RadiusKm = (typeof RADIUS_OPTIONS)[number];
 export const DEFAULT_RADIUS_KM: RadiusKm = 10;
+export const NATIONWIDE = "pais";
 
 export type GeoFilter = { lat: number; lng: number } | { city: string } | null;
 

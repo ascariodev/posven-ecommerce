@@ -153,7 +153,7 @@ Tintes, `features/search/lib/categoryTint.ts`:
 ## 6. Dependencias
 
 - `lib/marketplace/client.ts`: `searchProducts()` y `listCategories()` en `SearchResults.tsx`, `listNearbyProducts()` en `NearbyProducts.tsx`; `lib/marketplace/errors.ts` (`MarketplaceUnavailableError`) en `NearbyProducts.tsx`.
-- `lib/marketplace/params.ts` (`RADIUS_OPTIONS`, `DEFAULT_RADIUS_KM`, `RadiusKm`) y `lib/marketplace/schemas.ts` (`SearchItem`, `FeaturedProduct`, `PageMeta`, `CategoryNode`).
+- `lib/marketplace/params.ts` (`RADIUS_OPTIONS`, `DEFAULT_RADIUS_KM`, `NATIONWIDE`, `RadiusKm`) y `lib/marketplace/schemas.ts` (`SearchItem`, `FeaturedProduct`, `PageMeta`, `CategoryNode`).
 - `features/location/server/location.ts` (`getEffectiveLocation`) y `features/location/lib/cookie.ts` (`toGeoFilter`); `features/site/components/SiteHeader.tsx` monta `SearchPill` dentro de `HeaderSearchSlot`.
 - `lib/format.ts` (`formatUsd`, `formatVes`, `formatRate`, `formatDistance`) y `lib/site.ts` (`SITE_NAME`).
 - `components/ui/button.tsx`, `components/ui/input.tsx`, `components/ui/badge.tsx`, `components/ui/card.tsx`, `components/ui/sheet.tsx`, `components/ui/toggle.tsx` (`toggleVariants` en `RadiusFilter` y los chips) y `components/ui/skeleton.tsx`.

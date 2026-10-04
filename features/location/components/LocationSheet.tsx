@@ -6,7 +6,7 @@ import { useRef, useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import type { LocationState } from "@/lib/marketplace/schemas";
-import { DEFAULT_RADIUS_KM, RADIUS_OPTIONS } from "@/lib/marketplace/params";
+import { DEFAULT_RADIUS_KM, NATIONWIDE, RADIUS_OPTIONS } from "@/lib/marketplace/params";
 import { cn } from "@/lib/utils";
 import { loadLocationStates } from "../server/actions";
 import { LocationPicker } from "./LocationPicker";
@@ -28,7 +28,7 @@ function useIsDesktop(): boolean {
 }
 
 function radiusDetail(kind: "city" | "coords", radio: string | null): string | null {
-  if (radio === "pais") return "Todo el país";
+  if (radio === NATIONWIDE) return "Todo el país";
   if (kind === "city") return null;
   const km = RADIUS_OPTIONS.find((option) => String(option) === radio) ?? DEFAULT_RADIUS_KM;
   return `${km} km`;

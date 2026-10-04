@@ -151,6 +151,9 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   "Explora por categoría" con íconos y "Quizás te sirve" en riel y no en rejilla.
 
 ## Notas para la próxima sesión
+- Mejoras en curso (`/aplicar-mejoras`, 2026-10-04, decisión del usuario: todas las bajas en `main`,
+  sin push, M-6 fuera por ser media): M-1..M-5 hechas (82fbcde, 80579fb, 522a071, 08d79fb,
+  06f7ce1); siguen M-7..M-21 en orden, una por commit con revisión; M-22 nueva del revisor.
 - Fase 9: comparar copia y orden de bloques de `EmptyState` contra W05/P05.
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
   antes en el rojo de "Comercio Aliado" (F2). Volver a correrlos cuando se levante. Fase 9: revisar

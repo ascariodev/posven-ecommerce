@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 13
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -219,8 +219,9 @@ tokens aprobados en `/preview`.
   LISTO, doc-verifier cumple.
 
 ## Notas para la próxima sesión
-- Fases 1 a 12 hechas; sigue la fase 13: el ítem 4 de `ui.md` aún cita tokens retirados. En la puerta de F0, mirar el cuarto tinte de categoría (gris). eslint con rutas que llevan `[slug]` no acepta la ruta absoluta: se corre desde el repo en un subshell sobre la carpeta (`app/p/`). Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
-  la insignia del carrito en gris.
+- Plan cerrado. Revisión visual de quien coordina en `/preview` y la portada: tokens claro y oscuro
+  y primitivas correctos; la aprobación final de la puerta de F0 queda al usuario. Lecciones sin
+  poda: L-03 a L-06 sólo viven en el código que las aplica, y L-03 sostuvo esta reinstalación.
 
 ## Mejoras propuestas
 - [ ] M-1 — Errata del `aria-label` "Opciónes de ejemplo" en `app/preview/page.tsx:180` (posven-ecommerce · baja · haiku)

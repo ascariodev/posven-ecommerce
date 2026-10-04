@@ -6,6 +6,7 @@
 - Spec del rasgo: `posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md` (esta spec
   no cambia su contrato §3 ni sus rutas; lo que necesite un campo nuevo se declara en §7)
 - Reemplaza en lo visual a `2026-09-28-visual-moderna-design.md` (tokens y primitivas)
+- Reemplazada en lo visual por `2026-10-03-rediseno-posven-design.md` (tokens, tipografía y primitivas)
 
 ## 1. Objetivo y alcance
 

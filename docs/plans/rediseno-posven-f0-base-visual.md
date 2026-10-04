@@ -156,7 +156,7 @@ tokens aprobados en `/preview`.
 - **Terminado cuando:** grep de esos nombres vacío en `app features components`, `next build` y `vitest` en verde.
 - **Commit:** `chore(ui): retira tokens anteriores al rediseño`
 
-### [ ] Fase 13 — `ui.md` y cierre documental
+### [x] Fase 13 — `ui.md` y cierre documental
 - **Repo:** posven-ecommerce
 - **Alcance:** reescribir `.claude/rules/ui.md` según la spec §4 sin renumerar; en
   `2026-09-29-ecommerce-shadcn-mercado-design.md`, una línea que la declara reemplazada en lo
@@ -212,6 +212,11 @@ tokens aprobados en `/preview`.
   `tint-1..4`; pasa a `primary-soft`, `success-soft`, `warning-soft` y `muted`: el cuarto tinte,
   antes rosa, queda gris (no hay `destructive-soft`). Badges de `AccountIdentity` a `success-soft` y
   `warning-soft` — implementador, revisión LISTO.
+- 2026-10-03 — Fase 13: `ui.md` reescrita (ítems 1-7 sin renumerar, ítem 8 de tipografía, 59
+  líneas); la cabecera recoge el `import { cn } from "cn"` de `shadcn add`. La spec
+  `2026-09-29-ecommerce-shadcn-mercado-design.md` queda reemplazada en lo visual. Suite e2e
+  completa: 26 en verde, 1 omitido y sólo los 5 rojos conocidos de F2 — implementador, revisión
+  LISTO, doc-verifier cumple.
 
 ## Notas para la próxima sesión
 - Fases 1 a 12 hechas; sigue la fase 13: el ítem 4 de `ui.md` aún cita tokens retirados. En la puerta de F0, mirar el cuarto tinte de categoría (gris). eslint con rutas que llevan `[slug]` no acepta la ruta absoluta: se corre desde el repo en un subshell sobre la carpeta (`app/p/`). Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y

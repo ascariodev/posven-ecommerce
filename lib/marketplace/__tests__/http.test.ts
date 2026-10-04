@@ -115,26 +115,37 @@ describe("requestJsonOrNull", () => {
 });
 
 describe("postJson", () => {
-  it("manda POST con el cuerpo JSON y Bearer", async () => {
+  it("con IP manda POST con el cuerpo JSON, Bearer y X-Client-IP (RN-MARKETPLACE-07)", async () => {
     fetchMock.mockResolvedValue(new Response(null, { status: 202 }));
     const event = { type: "store_view", store_slug: "abasto-la-esquina", product_slug: null };
 
-    await postJson("/events", event);
+    await postJson("/events", event, "190.2.3.4");
 
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("https://api.test/api/marketplace/v1/events");
     expect(init?.method).toBe("POST");
     expect(init?.body).toBe(JSON.stringify(event));
-    expect(init?.headers).toMatchObject({
+    expect(init?.headers).toEqual({
       Authorization: "Bearer clave-de-prueba",
+      Accept: "application/json",
       "Content-Type": "application/json",
+      "X-Client-IP": "190.2.3.4",
     });
+  });
+
+  it("sin IP no manda X-Client-IP (RN-MARKETPLACE-07)", async () => {
+    fetchMock.mockResolvedValue(new Response(null, { status: 202 }));
+
+    await postJson("/events", {}, null);
+
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init?.headers).not.toHaveProperty("X-Client-IP");
   });
 
   it("un estado 500 lanza MarketplaceUnavailableError", async () => {
     fetchMock.mockResolvedValue(jsonResponse({ message: "error" }, 500));
 
-    const error = await captureError(postJson("/events", {}));
+    const error = await captureError(postJson("/events", {}, null));
 
     expect(error).toBeInstanceOf(MarketplaceUnavailableError);
     expect((error as MarketplaceUnavailableError).endpoint).toBe("/events");

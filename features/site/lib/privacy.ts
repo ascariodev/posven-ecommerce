@@ -26,7 +26,7 @@ export const privacyDocument: LegalDocumentContent = {
         "Preferencias: si quieres recibir correos cuando cambie el estado de tus pedidos, y tus productos y tiendas favoritos.",
         "Vistas y contactos: cuando abres un producto o una tienda, o tocas WhatsApp, llamar o cómo llegar en un comercio, el sitio registra el tipo de evento, el producto o la tienda y un identificador de visita aleatorio. No se registran si el navegador parece un robot.",
         "Búsquedas y carrito: cuando buscas en el sitio, se registra el texto que escribes (recortado, en minúsculas y de hasta 100 caracteres) o la categoría que eliges, la cantidad de resultados y un identificador de visita aleatorio. Cuando agregas un producto al carrito, se registra el producto, la tienda y ese identificador. Tampoco se registran si el navegador parece un robot.",
-        "Dirección IP: en las solicitudes de tu cuenta, de tu carrito y de tus compras, el sitio reenvía tu dirección IP a su servicio.",
+        "Dirección IP: en las solicitudes de tu cuenta, de tu carrito y de tus compras, y al registrar las vistas, los contactos, las búsquedas y los agregados al carrito, el sitio reenvía tu dirección IP a su servicio, que la usa para limitar la cantidad de solicitudes. El sitio no la guarda.",
       ],
     },
     {

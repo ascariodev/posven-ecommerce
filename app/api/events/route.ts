@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { after } from "next/server";
 import { z } from "zod";
+import { clientIpFrom } from "@/features/account/server/session";
 import { createDeduper, handleEvent } from "@/features/events/lib/handle";
 import { sendEvent } from "@/lib/marketplace/client";
 
@@ -34,8 +35,9 @@ export async function POST(request: Request): Promise<Response> {
   });
 
   if (forward !== null) {
+    const clientIp = clientIpFrom(request.headers.get("x-forwarded-for"));
     after(() =>
-      sendEvent(forward).catch((error: unknown) => {
+      sendEvent(forward, clientIp).catch((error: unknown) => {
         console.error("[events]", error);
       }),
     );

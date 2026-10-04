@@ -151,9 +151,9 @@ export async function listSitemap(p: { type: SitemapType; page: number }): Promi
   return requestJson(`/sitemap/${p.type}`, pageQuery(p.page), sitemapResponseSchema);
 }
 
-export async function sendEvent(event: MarketplaceEvent): Promise<void> {
-  if (usesMock()) return mock.sendEvent(event);
-  await postJson("/events", event);
+export async function sendEvent(event: MarketplaceEvent, clientIp: string | null): Promise<void> {
+  if (usesMock()) return mock.sendEvent(event, clientIp);
+  await postJson("/events", event, clientIp);
 }
 
 export async function registerCustomer(

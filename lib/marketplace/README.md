@@ -75,9 +75,9 @@ capabilities:
     intent_aliases: ["eventos", "metricas", "click whatsapp", "vista de producto"]
     entrypoint: "sendEvent()"
     file: "lib/marketplace/client.ts"
-    input: "MarketplaceEvent { type: EventType, store_slug: string|null, product_slug: string|null, query?: string|null, category_slug?: string|null, results_count?: number|null, session_id: uuid }"
+    input: "MarketplaceEvent { type: EventType, store_slug: string|null, product_slug: string|null, query?: string|null, category_slug?: string|null, results_count?: number|null, session_id: uuid }; clientIp: string|null"
     output: "void"
-    source: "POST /events de posveapi vía BFF, sin caché; el simulado no hace nada"
+    source: "POST /events de posveapi vía BFF con X-Client-IP si hay IP, sin caché; el simulado no hace nada"
     rules: ["RN-MARKETPLACE-02"]
   - intent: "registrar a un comprador, iniciar y cerrar su sesión, verificar su correo y recuperar su contraseña"
     intent_aliases: ["login", "registro", "crear cuenta", "cerrar sesion", "olvide mi contrasena", "verificar correo", "restablecer contrasena"]
@@ -148,7 +148,7 @@ contra un adaptador simulado. No renderiza, no lee cookies ni `searchParams` (la
 | `RN-MARKETPLACE-04` | Un 404 de la API en un producto o una tienda llega como `null`; cualquier otro código no 2xx es API caída. | `lib/marketplace/__tests__/http.test.ts` ("un 404 devuelve null...", "un estado 500 lanza MarketplaceUnavailableError (RN-MARKETPLACE-04)") |
 | `RN-MARKETPLACE-05` | Un 401, 403, 404, 409, 422 o 429 con cuerpo `{ error: { code, message } }` llega como `MarketplaceAccountError` (con `quote` si el cuerpo la trae, sólo en `quote_changed`); un 401 sin esa forma o cualquier otro estado no 2xx es API caída. | `lib/marketplace/__tests__/http.test.ts` ("un 422 con fields...", "un 401 unauthenticated...", "un 401 sin el cuerpo de error...", "un 409 quote_changed...", "un 403 email_unverified...", "un estado %i lanza...") |
 | `RN-MARKETPLACE-06` | Un 429 da los segundos de `retry_after`; sin cuerpo de error, los del encabezado `Retry-After`; sin encabezado, 60. | `lib/marketplace/__tests__/http.test.ts` ("un 429 con retry_after...", "un 429 sin cuerpo de error toma Retry-After...", "un 429 sin cuerpo de error ni Retry-After da 60...") |
-| `RN-MARKETPLACE-07` | Las llamadas de cuenta mandan `X-Marketplace-Customer` sólo con sesión y `X-Client-IP` sólo con IP; las de catálogo no mandan ninguno de los dos. | `lib/marketplace/__tests__/http.test.ts` ("con sesión e IP manda...", "sin sesión ni IP no manda...", "envía Bearer...") |
+| `RN-MARKETPLACE-07` | Las llamadas de cuenta mandan `X-Marketplace-Customer` sólo con sesión y `X-Client-IP` sólo con IP; `sendEvent` manda `X-Client-IP` sólo con IP; las de catálogo no mandan ninguno de los dos. | `lib/marketplace/__tests__/http.test.ts` ("con sesión e IP manda...", "sin sesión ni IP no manda...", "con IP manda POST...", "sin IP no manda X-Client-IP", "envía Bearer...") |
 | `RN-MARKETPLACE-08` | `accepts_orders` de `StoreSummary` se lee opcional mientras posveapi no lo envíe: ausente es `false` (plan 4a de cuentas, decisión 3). | `lib/marketplace/__tests__/schemas.test.ts` ("sin accepts_orders (posveapi aún no lo envía) lo lee como false") |
 | `RN-MARKETPLACE-09` | El pago simulado avanza con cada consulta del detalle de la compra, en la secuencia de abajo, desde `pending_payment` hasta retiro y entrega en curso. El listado no avanza. | `lib/marketplace/mock/__tests__/checkout.test.ts` (describe "avance de la compra simulada por consultas"); `e2e/checkout.spec.ts` |
 
@@ -185,7 +185,7 @@ Cliente de servidor, `lib/marketplace/client.ts` (`import "server-only"`):
 - `getProductOffers(p: { slug: string; geo: GeoFilter; radiusKm: RadiusKm | null; sort: OfferSort }): Promise<ProductResponse | null>`: `'use cache'`, `cacheLife("minutes")`, `cacheTag("marketplace:product:{slug}")`.
 - `getStore(p: { slug: string; page: number }): Promise<StoreResponse | null>`: `'use cache'`, `cacheLife("minutes")`, `cacheTag("marketplace:store:{slug}")`.
 - `listSitemap(p: { type: SitemapType; page: number }): Promise<SitemapResponse>`: `'use cache'`, `cacheLife("hours")`, `cacheTag("marketplace:sitemap:{type}")`.
-- `sendEvent(event: MarketplaceEvent): Promise<void>`: sin caché.
+- `sendEvent(event: MarketplaceEvent, clientIp: string | null): Promise<void>`: sin caché; la IP va sólo en `X-Client-IP`.
 
 Cuentas del comprador, `lib/marketplace/client.ts`, sin caché; cada una lanza `MarketplaceAccountError` o `MarketplaceUnavailableError`:
 
@@ -276,7 +276,7 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 |---|---|---|
 | `requestJson` | `lib/marketplace/http.ts` | `GET` con Bearer y tope de 5 s, validación con el esquema y `MarketplaceUnavailableError` ante cualquier fallo |
 | `requestJsonOrNull` | `lib/marketplace/http.ts` | como `requestJson`, pero un 404 cancela el cuerpo y devuelve `null` |
-| `postJson` | `lib/marketplace/http.ts` | `POST` JSON con Bearer y tope de 5 s; cancela el cuerpo y lanza `MarketplaceUnavailableError` si no es 2xx |
+| `postJson` | `lib/marketplace/http.ts` | `POST` JSON con Bearer, `X-Client-IP` si recibe IP y tope de 5 s; cancela el cuerpo y lanza `MarketplaceUnavailableError` si no es 2xx |
 | `accountRequest` | `lib/marketplace/http.ts` | llamada de cuenta con Bearer, tope de 5 s y los encabezados de `AccountContext`; valida el cuerpo 2xx con su esquema y pasa todo no 2xx por `readAccountError` |
 | `accountCommand` | `lib/marketplace/http.ts` | como `accountRequest`, pero descarta el cuerpo del 2xx |
 | `readAccountError` | `lib/marketplace/http.ts` | elige entre `MarketplaceAccountError` y `MarketplaceUnavailableError` según el estado y el cuerpo, y resuelve `retryAfter` |
@@ -329,7 +329,7 @@ const newSlug = "redirect_to" in product ? product.redirect_to : null;
 - Con ciudad, `radius_km` no se envía; con ciudad y todo el país (`radiusKm` null), tampoco `city`.
 - `sendEvent` no se cachea; `searchProducts`, `listNearbyStores`, `listCategories`, `listLocations`, `getProductOffers`, `getStore` y `listSitemap` sí (`getProduct` usa la de `getProductOffers`), y `cacheLife` exige `cacheComponents: true`.
 - Las funciones de cuenta no se cachean: dependen de la sesión del comprador.
-- `X-Marketplace-Customer` y `X-Client-IP` sólo salen de `AccountContext`; `Content-Type: application/json` sólo va con cuerpo.
+- `X-Marketplace-Customer` sólo sale de `AccountContext`, y `X-Client-IP` de `AccountContext` o del `clientIp` de `sendEvent`; `Content-Type: application/json` sólo va con cuerpo.
 - `searchProducts`, `listNearbyStores`, `getProductOffers` y `getStore` usan `cacheLife("minutes")` porque traen precios por tienda; `listCategories`, `listLocations` y `listSitemap`, `"hours"`.
 - Los slugs van en la ruta con `encodeURIComponent`.
 - `offers_summary` cubre todo el país, sin depender de la ubicación.

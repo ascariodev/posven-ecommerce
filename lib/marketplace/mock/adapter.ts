@@ -348,7 +348,7 @@ export async function listSitemap(p: { type: SitemapType; page: number }): Promi
   };
 }
 
-export const sendEvent: (event: MarketplaceEvent) => Promise<void> = async () => {};
+export const sendEvent: (event: MarketplaceEvent, clientIp: string | null) => Promise<void> = async () => {};
 
 export {
   addFavorite,

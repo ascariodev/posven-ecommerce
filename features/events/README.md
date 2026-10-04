@@ -3,9 +3,9 @@ module: "events"
 path: "features/events"
 type: "feature"
 exports: ["EVENT_DEDUP_WINDOW_MS", "isBot", "createDeduper", "handleEvent", "sendBeaconEvent", "ContactButtons", "ViewBeacon", "POST /api/events"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "components/ui/button.tsx"]
+depends_on: ["lib/marketplace/client.ts", "features/account/server/session.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "components/ui/button.tsx"]
 tests: "features/events/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/events/lib/handle.ts", "features/events/lib/beacon.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "app/api/events/route.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "components/ui/button.tsx"]
+verified_against: ["features/events/lib/handle.ts", "features/events/lib/beacon.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "app/api/events/route.ts", "features/account/server/session.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "components/ui/button.tsx"]
 capabilities:
   - intent: "registrar una vista, un clic de contacto, una búsqueda o un agregado al carrito de quien busca"
     intent_aliases: ["registrar evento", "contar visitas", "analitica de tienda", "clics de whatsapp", "vistas de producto", "busquedas", "agregar al carrito"]
@@ -13,7 +13,7 @@ capabilities:
     file: "app/api/events/route.ts"
     input: "cuerpo JSON de hasta 1024 caracteres { type: 'product_view' | 'store_view' | 'click_whatsapp' | 'click_call' | 'click_route' | 'search' | 'add_to_cart', store_slug: string | null, product_slug: string | null, query?: string | null, category_slug?: string | null, results_count?: number | null }; product_view exige product_slug y store_slug null; add_to_cart exige ambos; search exige query o category_slug, results_count y sin tienda ni producto; los demás exigen store_slug; los tres campos extra sólo van en search; cookie sid opcional"
     output: "202 o 400 sin cuerpo; fija la cookie sid (UUID, httpOnly, sameSite lax, de sesión) si falta o no es UUID"
-    source: "navegador vía sendBeaconEvent(); reenvía { ...evento, session_id } a sendEvent() de lib/marketplace"
+    source: "navegador vía sendBeaconEvent(); reenvía { ...evento, session_id } y la IP de x-forwarded-for (RN-ACCOUNT-04) a sendEvent() de lib/marketplace"
     rules: ["RN-EVENTS-01", "RN-EVENTS-02"]
   - intent: "mostrar los botones de contacto de una tienda"
     intent_aliases: ["boton de whatsapp", "llamar a la tienda", "ver ruta", "como llegar", "contactar tienda"]
@@ -79,13 +79,14 @@ estadísticas ni guarda nada propio.
 | `createDeduper` | `features/events/lib/handle.ts` | `Map` de clave a hora del último reenvío, ordenado por esa hora; en cada reenvío borra las vencidas del frente y, con más de 10 000 claves (`MAX_DEDUP_KEYS`), descarta las más viejas aunque no hayan vencido |
 | Deduplicador de módulo | `app/api/events/route.ts` | una instancia por proceso de Node, compartida por todas las peticiones |
 | `readSessionId` | `app/api/events/route.ts` | lee la cookie `sid`; si falta o no es UUID fija `crypto.randomUUID()` |
-| Reenvío | `app/api/events/route.ts` | `after(() => sendEvent(forward))`; un error se registra con `console.error("[events]", error)` |
+| Reenvío | `app/api/events/route.ts` | lee la IP con `clientIpFrom` sobre `x-forwarded-for` antes de responder y llama `after(() => sendEvent(forward, clientIp))`; la IP no se guarda; un error se registra con `console.error("[events]", error)` |
 | `sendBeaconEvent` | `features/events/lib/beacon.ts` | `navigator.sendBeacon` con un `Blob` `text/plain;charset=UTF-8`; si no existe o devuelve `false`, `fetch` con `keepalive` |
 | `whatsappHref` | `features/events/components/ContactButtons.tsx` | `https://wa.me/{dígitos}?text=` con el mensaje que nombra el producto o, sin producto, el sitio (`SITE_NAME`) |
 
 ## 6. Dependencias
 
 - `lib/marketplace/client.ts`: `sendEvent()` en `app/api/events/route.ts`.
+- `features/account/server/session.ts`: `clientIpFrom()` en `app/api/events/route.ts`.
 - `lib/marketplace/schemas.ts`: `eventInputSchema` y los tipos `EventInput`, `MarketplaceEvent`, `EventType`, `StoreSummary`, `Restriction`.
 - `lib/site.ts` (`SITE_NAME`) y `components/ui/button.tsx` (`buttonVariants`).
 - `lucide-react` (`MessageCircle`, `Phone`, `Navigation`) en `components/ContactButtons.tsx`.
@@ -117,7 +118,7 @@ export function StoreContact({ store }: { store: StoreSummary }) {
 - Un producto `recipe` se muestra sin WhatsApp y con "Llamar" y "Ver ruta" (spec §3.1, ítem 5); "Ver ruta" abre sólo Google Maps.
 - La deduplicación vive en la memoria del proceso: con varias instancias del servidor, cada una deduplica por su cuenta.
 - La memoria del deduplicador tiene tope: con más de 10 000 claves sin vencer (un cliente sin cookies estrena `sid` en cada petición) se descartan las más viejas, así que un duplicado de una clave descartada se reenvía otra vez.
-- `handleEvent` rechaza con 400 un cuerpo de más de 1024 caracteres antes de parsearlo; `route.ts` lo lee entero con `request.text()` y no limita la frecuencia por IP.
+- `handleEvent` rechaza con 400 un cuerpo de más de 1024 caracteres antes de parsearlo; `route.ts` lo lee entero con `request.text()` y no limita la frecuencia por IP: la limita posveapi (`marketplace-events`) por la IP que llega en `X-Client-IP`.
 
 ## 9. Pruebas
 

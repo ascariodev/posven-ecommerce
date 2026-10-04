@@ -89,11 +89,13 @@ export async function requestJsonOrNull<T>(
   return found === null ? null : parseBody(path, found.body, schema);
 }
 
-export async function postJson(path: string, body: unknown): Promise<void> {
+export async function postJson(path: string, body: unknown, clientIp: string | null): Promise<void> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (clientIp !== null) headers["X-Client-IP"] = clientIp;
   await exchange(
     path,
     new URLSearchParams(),
-    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) },
+    { method: "POST", headers, body: JSON.stringify(body) },
     async (response) => {
       await discardBody(response);
       if (!response.ok) {

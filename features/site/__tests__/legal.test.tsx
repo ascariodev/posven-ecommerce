@@ -64,6 +64,7 @@ describe("privacidad: búsquedas y carrito", () => {
     expect(text).toContain("buscas");
     expect(text).toContain("cantidad de resultados");
     expect(text).toContain("agregas un producto al carrito");
+    expect(text).toContain("al registrar las vistas, los contactos, las búsquedas y los agregados al carrito, el sitio reenvía tu dirección IP");
   });
 });
 

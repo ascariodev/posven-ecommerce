@@ -54,6 +54,8 @@ describe("NearbyProducts", () => {
 
     const links = screen.getAllByRole("link").filter((link) => link.getAttribute("href")?.startsWith("/p/"));
     expect(links.map((link) => link.getAttribute("href"))).toEqual(["/p/a", "/p/b"]);
+    expect(links[0].getAttribute("aria-label")).toBeNull();
+    expect(screen.getByRole("link", { name: (name) => name.startsWith("Producto a") && name.includes("3 tiendas") })).toBe(links[0]);
     expect(screen.getByText("3 tiendas · a 800 m")).toBeTruthy();
     expect(screen.getByText("1 tienda · a 800 m")).toBeTruthy();
     expect(screen.getAllByText("desde")).toHaveLength(1);

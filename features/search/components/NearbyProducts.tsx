@@ -25,11 +25,11 @@ function NearbyProductCard({ item }: { item: SearchItem }) {
     >
       <ProductThumb imageUrl={item.image_url} category={item.category} size="card" className="aspect-square" />
       <span className="flex min-w-0 flex-col gap-0.5 px-1">
-        <span className="text-xs text-muted-foreground">
+        <span className="line-clamp-2 text-sm leading-snug font-semibold text-foreground">{item.name}</span>
+        <span className="order-first text-xs text-muted-foreground">
           {storesLabel(item.offers_count)}
           {item.nearest_km !== null && ` · ${formatDistance(item.nearest_km)}`}
         </span>
-        <span className="line-clamp-2 text-sm leading-snug font-semibold text-foreground">{item.name}</span>
         {item.outside_radius && <span className="text-xs text-muted-foreground">Fuera de tu zona</span>}
         <span className="mt-0.5 font-heading font-semibold text-primary-text tabular-nums">
           {item.offers_count > 1 && <span className="font-sans text-xs font-medium text-muted-foreground">desde </span>}

@@ -36,6 +36,18 @@ describe("parseSearchQuery", () => {
   });
 });
 
+describe("orden", () => {
+  it("lee orden=precio y orden=cercania como sort", () => {
+    expect(parseSearchQuery({ orden: "precio" }).sort).toBe("price");
+    expect(parseSearchQuery({ orden: "cercania" }).sort).toBe("distance");
+  });
+
+  it("sin orden o con un valor desconocido no trae sort", () => {
+    expect("sort" in parseSearchQuery({})).toBe(false);
+    expect("sort" in parseSearchQuery({ orden: "constructor" })).toBe(false);
+  });
+});
+
 describe("searchHref", () => {
   it("omite los valores por defecto", () => {
     expect(searchHref({ q: "", categoria: null, radio: 10, pagina: 1 })).toBe("/buscar");
@@ -47,6 +59,15 @@ describe("searchHref", () => {
   it("escribe radio=pais para todo el país", () => {
     expect(searchHref({ q: "arroz", categoria: "viveres", radio: null, pagina: 2 })).toBe(
       "/buscar?q=arroz&categoria=viveres&radio=pais&pagina=2",
+    );
+  });
+
+  it("escribe orden y lo omite sin sort", () => {
+    expect(searchHref({ q: "arroz", categoria: null, radio: 10, pagina: 1, sort: "price" })).toBe(
+      "/buscar?q=arroz&orden=precio",
+    );
+    expect(searchHref({ q: "arroz", categoria: null, radio: 10, pagina: 2, sort: "distance" })).toBe(
+      "/buscar?q=arroz&orden=cercania&pagina=2",
     );
   });
 });

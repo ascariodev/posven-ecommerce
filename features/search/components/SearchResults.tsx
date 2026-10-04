@@ -14,6 +14,8 @@ import { Pagination } from "./Pagination";
 import { ProductCard } from "./ProductCard";
 import { parseSearchQuery, searchHref } from "../lib/query";
 import { RadiusFilter } from "./RadiusFilter";
+import { ResultsHeader } from "./ResultsHeader";
+import { SortLinks } from "./SortLinks";
 
 export async function SearchResults({
   searchParams,
@@ -41,6 +43,7 @@ export async function SearchResults({
       geo: toGeoFilter(location),
       radiusKm: query.radio,
       page: query.pagina,
+      sort: geoKind === null && query.sort === "distance" ? undefined : query.sort,
     }),
     listCategories(),
   ]);
@@ -126,12 +129,16 @@ export async function SearchResults({
             </FiltersSheet>
           )}
         </div>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        {!isEmpty && (
-          <h2 className="text-lg font-semibold text-foreground">
-            {meta.total === 1 ? "1 producto" : `${meta.total} productos`}
-          </h2>
-        )}
+      <ResultsHeader
+        query={query}
+        categories={categories}
+        total={meta.total}
+        geoKind={geoKind}
+        locationName={locationName}
+        showTotal={!isEmpty}
+      />
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        {!isEmpty && <SortLinks query={query} hasLocation={geoKind !== null} />}
         <p className="ml-auto text-sm text-muted-foreground">{formatRate(rate)}</p>
       </div>
       {isEmpty ? (

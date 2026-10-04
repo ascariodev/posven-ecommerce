@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F1 del lienzo "E · PosVen" (Inicio, búsqueda con sugerencias,
 resultados con filtros y orden, sin resultados) más la cabecera con ubicación y la barra inferior
 en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
-**Estado:** en curso · Fase actual: 6
+**Estado:** en curso · Fase actual: 7
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (decisiones), §4 (`ui.md`), §5 (mapa
@@ -69,7 +69,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - **Alcance:** riel de productos cercanos (`listNearbyProducts` de F1a), tienda patrocinada
   (`featured` de `/stores`) y comercios cerca con `StoreCard` del lienzo.
 
-### [ ] Fase 6 — Resultados: diseño y orden
+### [x] Fase 6 — Resultados: diseño y orden
 - **Repo:** posven-ecommerce
 - **Alcance:** cabecera de resultados (migas, título, total), orden por cercanía o precio
   (`sort` en `parseSearchQuery`/`searchHref`), tarjetas y paginación del lienzo.
@@ -124,6 +124,13 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   del lienzo con "Abierto · hasta HH:MM"/"Cerrado" tal como vienen `is_open` y `closes_at` (sin
   "Cierra pronto", que exigiría calcular); ambos bloques atrapan sólo `MarketplaceUnavailableError`
   y no se pintan (excepción anotada en `.claude/rules/app-router.md` regla 7); RN-STORE-05.
+- 2026-10-04 — Fase 6: `SearchQuery.sort?: OfferSort` con `orden=precio|cercania` en la URL
+  (desconocido se ignora; `cercania` sin ubicación no se envía a la API); `SortLinks` ofrece "Más
+  cercano" (defecto) y "Menor precio" con ubicación, "Relevancia" y "Menor precio" sin ella;
+  `ResultsHeader` con migas, título `h2` (el `h1` sr-only de `app/buscar/page.tsx` se queda) y
+  total con ubicación; `Pagination` con números y elipsis, sin "Página X de Y"; `ProductCard` y
+  `FeaturedCard` sin cambios; RN-SEARCH-06. Los enlaces de filtros conservan `orden` porque
+  extienden `query`.
 
 ## Notas para la próxima sesión
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
@@ -165,4 +172,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [ ] M-11 — Prueba directa de `SponsoredStore` (sin `is_open`, `outside_radius`).
   posven-ecommerce · baja · sonnet
 - [ ] M-12 — Mover `StoreLogo` de `StoreCard.tsx` a su propio archivo si crece.
+  posven-ecommerce · baja · sonnet
+- [ ] M-13 — Prueba de que el evento `search` no se re-dispara al cambiar `orden` en la página 1
+  (`SearchResults.test.tsx` o `ViewBeacon`).
   posven-ecommerce · baja · sonnet

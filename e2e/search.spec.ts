@@ -108,3 +108,19 @@ test("el buscador sugiere con el teclado y recuerda las búsquedas recientes", a
   await expect(page.getByRole("option").first()).toBeVisible();
   await expect(page.getByText("Recientes")).toBeVisible();
 });
+
+test("cambiar el orden a menor precio lo escribe en la URL y ordena los resultados por precio", async ({ page }) => {
+  await page.goto("/buscar?categoria=salud-y-medicamentos");
+  await expect(page.getByRole("navigation", { name: "Migas de pan" })).toBeVisible();
+
+  await page.getByRole("navigation", { name: "Ordenar por" }).getByRole("link", { name: "Menor precio" }).click();
+
+  await expect(page).toHaveURL(/orden=precio/);
+  await expect(
+    page.getByRole("navigation", { name: "Ordenar por" }).getByRole("link", { name: "Menor precio" }),
+  ).toHaveAttribute("aria-current", "true");
+  const cards = await page.getByRole("list", { name: "Resultados" }).getByRole("link").allInnerTexts();
+  const prices = cards.map((text) => Number((/\$\s*(\d+[.,]\d{2})/.exec(text) ?? [])[1]?.replace(",", ".")));
+  expect(prices.length).toBeGreaterThan(1);
+  expect(prices).toEqual([...prices].sort((a, b) => a - b));
+});

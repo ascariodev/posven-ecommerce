@@ -52,4 +52,10 @@ describe("GET /api/suggestions", () => {
     expect(response.status).toBe(503);
     expect(await response.json()).toEqual({ terms: [], products: [], categories: [], rate: null });
   });
+
+  it("un error distinto de MarketplaceUnavailableError se relanza y no responde 503", async () => {
+    const failure = new Error("bug");
+    getSuggestions.mockRejectedValue(failure);
+    await expect(get("?q=arroz")).rejects.toBe(failure);
+  });
 });

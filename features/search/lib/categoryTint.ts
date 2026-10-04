@@ -1,10 +1,10 @@
 import type { Category } from "@/lib/marketplace/schemas";
 
 const TINTS = [
-  { bg: "bg-tint-1", fg: "text-tint-1-foreground" },
-  { bg: "bg-tint-2", fg: "text-tint-2-foreground" },
-  { bg: "bg-tint-3", fg: "text-tint-3-foreground" },
-  { bg: "bg-tint-4", fg: "text-tint-4-foreground" },
+  { bg: "bg-primary-soft", fg: "text-primary-text" },
+  { bg: "bg-success-soft", fg: "text-success" },
+  { bg: "bg-warning-soft", fg: "text-warning" },
+  { bg: "bg-muted", fg: "text-muted-foreground" },
 ] as const;
 
 export function categoryTint(category: Category | null): { bg: string; fg: string } {

@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 12
+**Estado:** en curso · Fase actual: 13
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -148,7 +148,7 @@ tokens aprobados en `/preview`.
   literales de la spec §2 no devuelve nada en `app features components`.
 - **Commit:** `refactor(ui): ficha y tarjeta de producto sin colores literales`
 
-### [ ] Fase 12 — Retiro de tokens heredados
+### [x] Fase 12 — Retiro de tokens heredados
 - **Repo:** posven-ecommerce
 - **Alcance:** borrar de `app/globals.css` `--brand-navy*`, `--primary-hover`, `--best*`,
   `--featured`, `--surface`, `--warning-foreground` y `--tint-N` con su `--color-*`, tras
@@ -208,9 +208,13 @@ tokens aprobados en `/preview`.
 - 2026-10-03 — Fase 11: imagen de tarjeta y galería sobre `bg-tile` (sustituye el degradado);
   sombras a `shadow-card`/`shadow-raised`; `outline-primary` y `bg-primary/10` se quedan; las URLs
   `placehold.co` con hex no se tocan — implementador, revisión LISTO.
+- 2026-10-03 — Fase 12: también `features/search/lib/categoryTint.ts` (con su test y README) usaba
+  `tint-1..4`; pasa a `primary-soft`, `success-soft`, `warning-soft` y `muted`: el cuarto tinte,
+  antes rosa, queda gris (no hay `destructive-soft`). Badges de `AccountIdentity` a `success-soft` y
+  `warning-soft` — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fases 1 a 11 hechas; sigue la fase 12. eslint con rutas que llevan `[slug]` no acepta la ruta absoluta: se corre desde el repo en un subshell sobre la carpeta (`app/p/`). Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
+- Fases 1 a 12 hechas; sigue la fase 13: el ítem 4 de `ui.md` aún cita tokens retirados. En la puerta de F0, mirar el cuarto tinte de categoría (gris). eslint con rutas que llevan `[slug]` no acepta la ruta absoluta: se corre desde el repo en un subshell sobre la carpeta (`app/p/`). Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas

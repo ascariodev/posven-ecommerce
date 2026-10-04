@@ -36,8 +36,8 @@ export async function AccountIdentity({ compact = false }: { compact?: boolean }
         <Badge
           className={
             customer.email_verified
-              ? "bg-tint-3 text-tint-3-foreground"
-              : "bg-tint-1 text-tint-1-foreground"
+              ? "bg-success-soft text-success"
+              : "bg-warning-soft text-warning"
           }
         >
           {customer.email_verified ? "Correo verificado" : "Correo sin verificar"}

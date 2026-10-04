@@ -69,7 +69,7 @@ montos, y esto sólo los formatea.
 | Qué se envía a la API | la llamada a `searchProducts` en `SearchResults.tsx` | las claves las fija `searchQuery` de `lib/marketplace/params.ts`, que no se cambia desde acá |
 | Opciones del filtro de radio | `optionsFor` en `RadiusFilter.tsx` | las opciones salen de `RADIUS_OPTIONS`; `RadiusFilter.test.tsx` cuenta los enlaces |
 | Sugerencias del estado vacío | `EmptyState.tsx` (`relatedCategories`, ampliar radio, todo el país) | sus casos en `EmptyState.test.tsx` |
-| Tinte de una categoría sin imagen | `TINTS` en `categoryTint.ts` | `categoryTint.test.ts`; los colores son los tokens `--tint-N` de `app/globals.css` |
+| Tinte de una categoría sin imagen | `TINTS` en `categoryTint.ts` | `categoryTint.test.ts`; los colores son los tokens `primary-soft`, `success-soft`, `warning-soft` y `muted` de `app/globals.css` |
 | Píldora de búsqueda o su segmento de ubicación | `SearchPill.tsx` y `features/location/components/LocationSheet.tsx` | los nombres accesibles "Buscar productos", "Buscar" y "Ubicación: ..." que usa `e2e/search.spec.ts` |
 | Carril de categorías del inicio | `CategoryRail.tsx` | los enlaces se arman con `searchHref` |
 | Filtros en móvil | `FiltersSheet.tsx` (recibe el `RadiusFilter` como `children`) | el caso "elegir ciudad" de `e2e/search.spec.ts` abre "Filtros" en móvil |
@@ -102,7 +102,7 @@ Componentes:
 
 Tintes, `features/search/lib/categoryTint.ts`:
 
-- `categoryTint(category: Category | null): { bg: string; fg: string }`: una de cuatro parejas `bg-tint-N` / `text-tint-N-foreground` según un hash estable del `slug`; sin categoría, `tint-1`.
+- `categoryTint(category: Category | null): { bg: string; fg: string }`: una de cuatro parejas de tokens (`bg-primary-soft`/`text-primary-text`, `bg-success-soft`/`text-success`, `bg-warning-soft`/`text-warning`, `bg-muted`/`text-muted-foreground`) según un hash estable del `slug`; sin categoría, la primera.
 
 Íconos, `features/search/lib/categoryIcon.ts`:
 
@@ -171,6 +171,6 @@ export default function SearchPage({
 - `features/search/__tests__/EmptyState.test.tsx`: ampliar radio, todo el país según ubicación y radio, categorías hermanas y enlace a `/comercios`.
 - `features/search/__tests__/RadiusFilter.test.tsx`: cinco enlaces con coordenadas y dos con ciudad.
 - `features/search/__tests__/SearchResults.test.tsx`: sin `q` ni `categoria` no llama a `searchProducts`.
-- `features/search/__tests__/categoryTint.test.ts`: mismo slug, misma pareja; sin categoría, `tint-1`; las cuatro parejas son alcanzables.
+- `features/search/__tests__/categoryTint.test.ts`: mismo slug, misma pareja; sin categoría, la primera pareja; las cuatro parejas son alcanzables.
 - `features/search/__tests__/categoryIcon.test.ts`: hija por su raíz, raíz propia, `null` y raíz sin mapeo.
 - `features/search/__tests__/HeaderSearchSlot.test.tsx`: oculto en `/` y `/buscar`, visible en la ficha de un producto.

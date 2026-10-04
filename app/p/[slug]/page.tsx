@@ -95,7 +95,7 @@ async function ProductBuyBox({ product }: { product: ProductDetail }) {
           <div className="flex flex-col gap-4 pt-4 border-t border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-primary mb-1">Desde</p>
+                <p className="text-sm font-medium text-primary-text mb-1">Desde</p>
                 <p className="font-heading text-4xl font-extrabold text-foreground leading-none">{formatUsd(bestOffer.price_usd)}</p>
                 <p className="text-sm font-medium text-muted-foreground mt-1">{formatVes(bestOffer.price_ves)}</p>
               </div>
@@ -117,11 +117,11 @@ async function ProductBuyBox({ product }: { product: ProductDetail }) {
           <div className="mt-2 flex flex-col gap-4">
             <div className="flex items-start gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
               <div className="bg-primary/10 p-2 rounded-full">
-                <PiggyBank className="w-6 h-6 text-primary" />
+                <PiggyBank className="w-6 h-6 text-primary-text" />
               </div>
               <div>
                 <p className="font-bold text-foreground text-sm">
-                  Este producto está disponible en <span className="text-primary underline decoration-primary/30 underline-offset-2">{offersCount} farmacias</span>
+                  Este producto está disponible en <span className="text-primary-text underline decoration-primary/30 underline-offset-2">{offersCount} farmacias</span>
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   Vamos a cotizar por ti en todas ellas y elegiremos la opción más barata para llevarla a tu casa.
@@ -212,7 +212,7 @@ export default async function ProductPage({
           <li className="flex items-center gap-1">
             <Link
               href="/"
-              className="hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="hover:text-primary-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
               Inicio
             </Link>

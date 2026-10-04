@@ -19,7 +19,7 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
   return (
     <div className="flex flex-col gap-5">
       {/* Main Image Container */}
-      <div className="group relative aspect-square w-full overflow-hidden rounded-3xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 shadow-sm transition-all duration-300 hover:shadow-md">
+      <div className="group relative aspect-square w-full overflow-hidden rounded-3xl bg-tile border border-border shadow-card transition-all duration-300 hover:shadow-raised">
         <div className="absolute inset-0 bg-primary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         <Image
           src={finalImages[selectedIndex]}

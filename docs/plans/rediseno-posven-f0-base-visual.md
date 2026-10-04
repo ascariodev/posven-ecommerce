@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 11
+**Estado:** en curso · Fase actual: 12
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -136,7 +136,7 @@ tokens aprobados en `/preview`.
 - **Terminado cuando:** `tsc` y `npx playwright test e2e/product.spec.ts` sin fallos nuevos.
 - **Commit:** `fix(product): quita reseñas fijas de la ficha`
 
-### [ ] Fase 11 — Literales de la ficha y la tarjeta
+### [x] Fase 11 — Literales de la ficha y la tarjeta
 - **Repo:** posven-ecommerce
 - **Alcance:** `bg-white`, `slate-*`, `black/50` y `text-primary` a tokens (`bg-card`,
   `border-border`, `text-muted-foreground`, `bg-overlay`, `text-primary-text`, imagen sobre
@@ -205,9 +205,12 @@ tokens aprobados en `/preview`.
 - 2026-10-03 — Fase 9: la portada vuelve a la de `28757e9` con el h1 en `font-heading font-bold`;
   salen `FeaturedProducts` y su `searchProducts({ q: "" })`, y `public/hero_shopping.jpg` y
   `public/promo_banner.jpg`. `e2e/search.spec.ts` 4/4 — implementador, revisión LISTO.
+- 2026-10-03 — Fase 11: imagen de tarjeta y galería sobre `bg-tile` (sustituye el degradado);
+  sombras a `shadow-card`/`shadow-raised`; `outline-primary` y `bg-primary/10` se quedan; las URLs
+  `placehold.co` con hex no se tocan — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fases 1 a 10 hechas; sigue la fase 11. eslint con rutas que llevan `[slug]` no acepta la ruta absoluta: se corre desde el repo en un subshell sobre la carpeta (`app/p/`). Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
+- Fases 1 a 11 hechas; sigue la fase 12. eslint con rutas que llevan `[slug]` no acepta la ruta absoluta: se corre desde el repo en un subshell sobre la carpeta (`app/p/`). Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas
@@ -219,3 +222,5 @@ tokens aprobados en `/preview`.
 - [ ] M-6 — Revisar la dependencia `cn` ^0.4.0 de `package.json`, que hace que `shadcn add` escriba `import { cn } from "cn"` (posven-ecommerce · baja · sonnet)
 - [ ] M-7 — Quitar el `className="bg-warning/10 text-warning"` redundante del badge "Pocas unidades" en `OfferCard.tsx:37`, junto al contenido de F2 (posven-ecommerce · baja · haiku)
 - [ ] M-8 — Quitar los imports y parámetros sin usar de `app/p/[slug]/page.tsx` (`Skeleton`, `PriceSummary`, `searchParams`), avisos de eslint previos al plan (posven-ecommerce · baja · haiku)
+- [ ] M-9 — `text-muted-foreground` (#707075) sobre `bg-muted` en claro da ~4,46:1 a 11 px en `ProductCard.tsx`: oscurecer `--muted-foreground` o cambiar ese `<p>` (posven-ecommerce · media · sonnet)
+- [ ] M-10 — Tokenizar las sombras sueltas (`shadow-sm/md/lg`) de `ProductCard.tsx:16`, `app/p/[slug]/page.tsx:132,242,281`, `MarketPricesModal.tsx:25` y `ProductGallery.tsx:46` (posven-ecommerce · baja · haiku)

@@ -15,13 +15,13 @@ export function MarketPricesModal({ offers }: { offers: ProductOffer[] }) {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="text-sm font-medium text-primary hover:underline underline-offset-2"
+        className="text-sm font-medium text-primary-text hover:underline underline-offset-2"
       >
         Ver precios por farmacia
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl bg-card shadow-lg animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-border p-4">
               <h2 className="font-heading text-lg font-bold text-foreground">Precios de mercado para este medicamento</h2>

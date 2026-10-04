@@ -35,7 +35,7 @@ export function OfferCard({
             <div className="mt-1 flex flex-wrap gap-1.5">
               {best && <Badge variant="success">Mejor precio</Badge>}
               {featured && <Badge variant="default" className="bg-primary-soft text-primary-text">Destacado</Badge>}
-              {offer.availability === "low" && <Badge variant="warning" className="bg-warning/10 text-warning">Pocas unidades</Badge>}
+              {offer.availability === "low" && <Badge variant="warning">Pocas unidades</Badge>}
             </div>
           </div>
           <div className="flex flex-col sm:items-end">

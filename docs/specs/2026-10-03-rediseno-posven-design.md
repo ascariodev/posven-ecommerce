@@ -180,9 +180,8 @@ contra el contrato actual:
    `GET /api/suggestions?q&radio`, que lee la ubicación de la cookie, responde listas vacías con `q`
    corto sin llamar a la API y 503 con listas vacías si la API cae. El debounce va en el panel (F1b).
 4. **Abierto ahora y "Cierra pronto".** Hecho: `offerSchema` (búsqueda y ficha) y `nearbyStoreSchema` traen `is_open` y `closes_at` (HH:MM, nulo sin tramo vigente ni próximo hoy), opcionales para el consumidor y calculados por la API (el simulado los saca de `MOCK_STORE_DETAILS`); `searchQuery` envía `open_now=true` para el filtro "abierto ahora" de `/search`. El aviso "Cierra pronto" se define en F1b a partir de `closes_at`, sin calcular horarios en el frontend.
-5. **`cover_url` en las tiendas cercanas.** `storeSchema` ya lo trae; falta en `nearbyStoreSchema`. F2.
-6. **`is_best_price` en `productOfferSchema`.** Falta; hoy "Mejor precio" sale del orden por precio
-   y no se marca con destacadas. F2.
+5. **`cover_url` en las tiendas cercanas.** Hecho: `GET /stores` de posveapi lo trae en cada tienda (URL o nulo; sólo premium con portada) y `nearbyStoreSchema` lo declara opcional; el simulado lo saca de `MOCK_STORE_DETAILS`.
+6. **`is_best_price` en `productOfferSchema`.** Hecho: la API lo marca en la oferta de menor `price_usd` entre las destacadas y las de dentro del radio (empates, todas; `outside_radius` nunca) y `productOfferSchema` lo declara opcional; el simulado lo calcula igual. Los componentes que hoy deducen "Mejor precio" por posición lo adoptan en F2b.
 7. **Costo de entrega en el carrito.** `quoteStoreSchema` ya trae `delivery_fee_*` por tienda, pero
    sólo en la cotización del checkout; `cartStoreSchema` no. F3 decide entre un campo en el carrito
    o pedir la cotización con la dirección guardada por defecto.

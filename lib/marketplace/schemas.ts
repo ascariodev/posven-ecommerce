@@ -145,6 +145,7 @@ export type SuggestionsResponse = z.infer<typeof suggestionsResponseSchema>;
 export const nearbyStoreSchema = storeSummarySchema.extend({
   distance_km: z.number().nonnegative().nullable(),
   outside_radius: z.boolean(),
+  cover_url: z.url().nullable().optional(),
   ...openStatusShape,
 });
 export type NearbyStore = z.infer<typeof nearbyStoreSchema>;
@@ -196,6 +197,7 @@ export type StoreResponse = z.infer<typeof storeResponseSchema>;
 
 export const productOfferSchema = offerSchema.extend({
   outside_radius: z.boolean(),
+  is_best_price: z.boolean().optional(),
 });
 export type ProductOffer = z.infer<typeof productOfferSchema>;
 

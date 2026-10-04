@@ -36,7 +36,7 @@ capabilities:
     entrypoint: "listNearbyStores()"
     file: "lib/marketplace/client.ts"
     input: "{ geo: GeoFilter, radiusKm: RadiusKm|null, page: number }"
-    output: "StoresResponse { data: NearbyStore[], featured: NearbyStore[] (máx. 2), meta: PageMeta }"
+    output: "StoresResponse { data: NearbyStore[] (con cover_url: string|null opcional, sólo de tiendas premium con portada), featured: NearbyStore[] (máx. 2), meta: PageMeta }"
     source: "GET /stores de posveapi vía BFF, o el simulado con MARKETPLACE_MODE=mock; cache 'minutes' con tag marketplace:stores"
     rules: ["RN-MARKETPLACE-01", "RN-MARKETPLACE-02", "RN-MARKETPLACE-03"]
   - intent: "obtener el árbol de categorías globales"
@@ -68,7 +68,7 @@ capabilities:
     entrypoint: "getProductOffers()"
     file: "lib/marketplace/client.ts"
     input: "{ slug: string, geo: GeoFilter, radiusKm: RadiusKm|null, sort: OfferSort }"
-    output: "ProductResponse | null; cada ProductOffer es Offer + outside_radius: boolean"
+    output: "ProductResponse | null; cada ProductOffer es Offer + outside_radius: boolean + is_best_price: boolean opcional (lo calcula la API; /search no lo trae)"
     source: "GET /products/{slug}?lat&lng&city&radius_km&sort de posveapi vía BFF, o el simulado; cache 'minutes' con tag marketplace:product:{slug}"
     rules: ["RN-MARKETPLACE-01", "RN-MARKETPLACE-02", "RN-MARKETPLACE-03", "RN-MARKETPLACE-04"]
   - intent: "obtener la ficha de una tienda con sus productos y precios en esa tienda"
@@ -262,7 +262,7 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 - `moneySchema` / `Money`; `rateSchema` / `Rate`; `availabilitySchema`; `restrictionSchema` / `Restriction`
 - `categorySchema` / `Category`; `categoryNodeSchema` / `CategoryNode`
 - `cityRefSchema` / `CityRef`; `locationStateSchema` / `LocationState`
-- `storeSummarySchema` / `StoreSummary`; `productSchema` / `Product`; `offerSchema` / `Offer`; `Offer` y `NearbyStore` traen `is_open` (booleano) y `closes_at` (HH:MM o nulo) opcionales, que calcula la API
+- `storeSummarySchema` / `StoreSummary`; `productSchema` / `Product`; `offerSchema` / `Offer`; `Offer` y `NearbyStore` traen `is_open` (booleano) y `closes_at` (HH:MM o nulo) opcionales, que calcula la API; `NearbyStore` trae además `cover_url` (URL o nulo, opcional) y `ProductOffer`, `is_best_price` (booleano opcional)
 - `searchItemSchema` / `SearchItem`; `pageMetaSchema` / `PageMeta`
 - `searchResponseSchema` / `SearchResponse`; `FeaturedProduct` (elemento de `featured`)
 - `suggestionsResponseSchema` / `SuggestionsResponse`
@@ -306,7 +306,7 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 | Adaptador simulado | `lib/marketplace/mock/adapter.ts` | las funciones de `client.ts` con la misma firma; interpreta la consulta de `params.ts` como la API y reexporta las de cuenta de `mock/accounts.ts` |
 | Simulado de cuentas | `lib/marketplace/mock/accounts.ts` | compradores, tokens, direcciones y favoritos en `globalThis[Symbol.for("posven.mockAccounts")]`, sembrados desde `MOCK_ACCOUNT_SEED`; imita la validación, los errores y el orden de posveapi; `resetMockAccounts` sólo para pruebas |
 | Horario simulado | `lib/marketplace/mock/schedule.ts` | `openStatus(schedule, at)`: `is_open` y `closes_at` (HH:MM) de un horario `ScheduleEntry[]` en la hora de Caracas, con tramos que pasan la medianoche; sin horario cuenta como abierta; el adaptador lo aplica a `MOCK_STORE_DETAILS` con `mockNow()`, que lee `MARKETPLACE_MOCK_NOW` (fecha ISO de servidor; vacía o inválida: reloj real) para fijar la hora en el e2e; para `open_now` filtra las ofertas de tiendas cerradas y recalcula `offers_count` y el mínimo |
-| Ofertas simuladas | `productPage` en `lib/marketplace/mock/adapter.ts` | redirección, producto sin ofertas, orden por precio o distancia, hasta dos premium destacadas y relleno hasta tres con `outside_radius` |
+| Ofertas simuladas | `productPage` en `lib/marketplace/mock/adapter.ts` | redirección, producto sin ofertas, orden por precio o distancia, hasta dos premium destacadas y relleno hasta tres con `outside_radius`; `is_best_price` es verdadero en las ofertas, destacadas o no, de precio mínimo entre las que no son `outside_radius` (empates: todas), y `cover_url` de `listNearbyStores` sale de `MOCK_STORE_DETAILS` sólo en tiendas premium |
 | Simulado del carrito | `lib/marketplace/mock/cart.ts` | carritos por comprador en `globalThis[Symbol.for("posven.mockCarts")]`; cotiza entradas agrupando por tienda en el orden de llegada, omite inexistentes, marca `unavailable` con prioridad restringido > tienda que no vende > oferta desaparecida (`out_of_stock` no se produce: el stock sale de `availability`, `low` 3 y `available` 50), topa la cantidad al stock también al cotizar y suma sólo las `ok`; `resetMockCarts` sólo para pruebas |
 | Simulado del checkout | `lib/marketplace/mock/checkout.ts` | compras en `globalThis[Symbol.for("posven.mockPurchases")]`; cotiza desde el carrito del comprador con reparto por radio (haversine), envío fijo por tienda y `quote_hash` sha256; checkout con `email_unverified`, `billing_incomplete` (con `bill_to_me` y el perfil sin datos), `quote_changed`, `cart_empty` e idempotencia; avance por consultas (`RN-MARKETPLACE-09`); `hasOpenOrders` para eliminar la cuenta; `resetMockPurchases` sólo para pruebas |
 | Montos del simulado | `lib/marketplace/mock/money.ts` | `toCents`, `fromCents`, `multiply` y `sum` en céntimos enteros; único lugar del repo que multiplica o suma montos |

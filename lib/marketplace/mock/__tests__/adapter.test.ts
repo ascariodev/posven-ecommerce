@@ -30,6 +30,15 @@ describe("adaptador simulado", () => {
     expect(response.data.length).toBeGreaterThan(0);
     for (const store of response.data) expect(store.city.slug).toBe("caracas");
   });
+
+  it("cover_url llega sólo en tiendas premium con portada y es nulo en el resto", async () => {
+    const response = await listNearbyStores({ geo: null, radiusKm: null, page: 1 });
+    const bySlug = new Map(response.data.map((store) => [store.slug, store]));
+
+    expect(bySlug.get("farmacia-central-valencia")?.cover_url).toMatch(/^data:image\/svg\+xml,/);
+    expect(bySlug.get("farmacia-altamira")?.cover_url).toBeNull();
+    expect(bySlug.get("ferreteria-el-tornillo")?.cover_url).toBeNull();
+  });
 });
 
 describe("producto simulado", () => {
@@ -76,6 +85,33 @@ describe("producto simulado", () => {
     );
 
     expect(storeSlugs(response.offers)).toEqual(["abasto-la-esquina", "farmacia-naguanagua"]);
+  });
+
+  it("sin ubicación marca como mejor precio la oferta más barata aunque no sea destacada", async () => {
+    const response = await page(getProduct(slug));
+    const all = [...response.featured, ...response.offers];
+
+    const best = all.filter((offer) => offer.is_best_price === true);
+    expect(storeSlugs(best)).toEqual(["farmacia-naguanagua"]);
+    expect(response.featured.every((offer) => offer.is_best_price === false)).toBe(true);
+  });
+
+  it("con radio el mejor precio sale de las ofertas de dentro y nunca de las de fuera", async () => {
+    const response = await page(
+      getProductOffers({ slug, geo: { lat: 10.18, lng: -68.0 }, radiusKm: 3, sort: "price" }),
+    );
+
+    expect(storeSlugs(response.featured)).toEqual(["farmacia-central-valencia"]);
+    expect(response.featured[0].is_best_price).toBe(true);
+    const outside = response.offers.filter((offer) => offer.outside_radius);
+    expect(outside.length).toBeGreaterThan(0);
+    for (const offer of outside) expect(offer.is_best_price).toBe(false);
+  });
+
+  it("las ofertas de /search no traen is_best_price", async () => {
+    const response = await searchProducts({ q: "", category: null, geo: null, radiusKm: null, page: 1 });
+
+    for (const entry of response.featured) expect(entry.offer).not.toHaveProperty("is_best_price");
   });
 
   it("el slug viejo redirige al nuevo", async () => {

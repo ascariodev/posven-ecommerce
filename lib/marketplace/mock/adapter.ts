@@ -290,6 +290,7 @@ export async function listNearbyStores(p: {
     ...store.summary,
     distance_km: scope.kind === "none" ? null : store.distance_km,
     outside_radius: false,
+    cover_url: store.summary.is_premium ? (MOCK_STORE_DETAILS[store.summary.slug]?.cover_url ?? null) : null,
     ...storeStatus(store),
   }));
 
@@ -380,9 +381,11 @@ function productPage(
           .slice(0, MIN_OFFERS_IN_SCOPE - inScope.length)
       : [];
 
+  const bestPrice = Math.min(...[...featured, ...rest].map((entry) => Number(entry.offer.price_usd)));
   const toProductOffer = (entry: StoreOffer, outsideRadius: boolean): ProductOffer => ({
     ...toOffer(entry.offer, entry.store, scope),
     outside_radius: outsideRadius,
+    is_best_price: !outsideRadius && Number(entry.offer.price_usd) === bestPrice,
   });
 
   return {

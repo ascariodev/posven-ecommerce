@@ -229,7 +229,7 @@ export const MOCK_STORES: MockStore[] = [
   },
 ];
 
-type MockStoreDetails = { company_name: string; cover_url: null; schedule: ScheduleEntry[] };
+type MockStoreDetails = { company_name: string; cover_url: string | null; schedule: ScheduleEntry[] };
 
 const pharmacySchedule: ScheduleEntry[] = [
   { days: ["mo", "tu", "we", "th", "fr", "sa"], opens: "08:00", closes: "20:00" },
@@ -243,7 +243,7 @@ const shopSchedule: ScheduleEntry[] = [
 export const MOCK_STORE_DETAILS: Record<string, MockStoreDetails> = {
   "farmacia-central-valencia": {
     company_name: "Farmacia Central C.A.",
-    cover_url: null,
+    cover_url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='300'%3E%3Crect width='1200' height='300' fill='%23cbd5e1'/%3E%3C/svg%3E",
     schedule: pharmacySchedule,
   },
   "ferreteria-el-tornillo": {

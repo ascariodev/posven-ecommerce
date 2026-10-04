@@ -108,6 +108,16 @@ describe("EmptyState", () => {
     );
   });
 
+  it("con texto de búsqueda muestra el consejo de menos palabras", () => {
+    renderEmpty("coords", 10);
+    expect(screen.getByText("Prueba con menos palabras o revisa cómo está escrito.")).toBeTruthy();
+  });
+
+  it("sin texto de búsqueda no muestra el consejo", () => {
+    renderEmpty("coords", 10, "analgesicos", { q: "" });
+    expect(screen.queryByText("Prueba con menos palabras o revisa cómo está escrito.")).toBeNull();
+  });
+
   it("pinta el bloque de productos cercanos que recibe", () => {
     renderEmpty(null, 10, null, {}, <p>Quizás te sirve</p>);
     expect(screen.getByText("Quizás te sirve")).toBeTruthy();

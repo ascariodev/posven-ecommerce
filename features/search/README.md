@@ -204,7 +204,7 @@ export default function SearchPage({
 - `features/search/__tests__/query.test.ts`: radio inválido, `pais` y válido; página negativa; `q` largo y recortado; categoría inválida; `searchHref` con valores por defecto, `radio=pais` y `orden`.
 - `features/search/__tests__/NearbyProducts.test.tsx`: tarjeta con enlace, tiendas y distancia, nombre accesible del enlace que empieza por el nombre del producto, "desde" sólo con varias ofertas, sin productos y API caída sin pintar nada.
 - `features/search/__tests__/ProductCard.test.tsx`: aviso de récipe, "Desde" según `offers_count` y "Fuera de tu zona".
-- `features/search/__tests__/EmptyState.test.tsx`: ampliar radio, todo el país según ubicación y radio, categorías hermanas y enlace a `/comercios`.
+- `features/search/__tests__/EmptyState.test.tsx`: ampliar radio, todo el país según ubicación y radio, categorías hermanas, enlace a `/comercios` y consejo de menos palabras con y sin `q`.
 - `features/search/__tests__/RadiusFilter.test.tsx`: cinco enlaces con coordenadas y dos con ciudad.
 - `features/search/__tests__/SearchResults.test.tsx`: sin `q` ni `categoria` no llama a `searchProducts`; pasa `sort` de `orden` a `searchProducts` (sin ubicación descarta `cercania`); evento `search` según página; con `abierto=1` sin resultados el bloque "Quizás te sirve" se rotula "(sin filtrar por horario)".
 - `features/search/__tests__/ResultsHeader.test.tsx`: migas, título y total de `ResultsHeader`.

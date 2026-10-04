@@ -151,9 +151,9 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   "Explora por categoría" con íconos y "Quizás te sirve" en riel y no en rejilla.
 
 ## Notas para la próxima sesión
-- Mejoras en curso (`/aplicar-mejoras`, 2026-10-04, decisión del usuario: todas las bajas en `main`,
-  sin push, M-6 fuera por ser media): M-1..M-5 y M-7..M-14 hechas (hasta el commit de
-  M-14); siguen M-15..M-21 en orden, una por commit con revisión; M-22 nueva del revisor.
+- Mejoras aplicadas el 2026-10-04 en `main` sin push: todas las bajas (M-1..M-5, M-7..M-20;
+  M-21 cubierta por la M-4 de F0). Pendientes: M-6 (media), M-22 (baja) y M-23 (alta, plan nuevo
+  que cruza posveapi).
 - Fase 9: comparar copia y orden de bloques de `EmptyState` contra W05/P05.
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
   antes en el rojo de "Comercio Aliado" (F2). Volver a correrlos cuando se levante. Fase 9: revisar
@@ -214,7 +214,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · baja · sonnet
 - [x] M-19 — `Toaster` en `app/layout.tsx`: offset 0 desde `md`, donde no hay barra inferior.
   posven-ecommerce · baja · sonnet
-- [ ] M-20 — Prueba del consejo "Prueba con menos palabras..." de `EmptyState` con y sin `q`.
+- [x] M-20 — Prueba del consejo "Prueba con menos palabras..." de `EmptyState` con y sin `q`.
   posven-ecommerce · baja · sonnet
 - [x] M-21 — `Toaster` con `theme="light"` fijo: revisar el tema de sonner en oscuro.
   posven-ecommerce · baja · sonnet · sin cambios: es la M-4 del plan F0, que va con el selector de

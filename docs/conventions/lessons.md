@@ -47,6 +47,13 @@ aplicada en: `app/cuenta/layout.tsx`
 
 ## L-09
 Una fase que cambia el comportamiento de un componente o una ruta de un módulo actualiza su README
-en el mismo cambio: la ficha del símbolo, la fila de tests, las dependencias y `verified_against`.
+en el mismo cambio: la ficha del símbolo, la fila de tests, las dependencias y `verified_against`,
+y también el README de otro módulo que liste el archivo cambiado (`docs-check` lo marca RANCIO).
 Quien revisa lo rechaza si falta, y cuesta una ronda entera.
 aplicada en: pendiente: el usuario decide promoverla a una casilla de `posven/.claude/agents/implementador-fase.md`, propuesto al cerrar el plan de eventos de búsqueda y carrito
+
+## L-10
+Un componente del layout raíz que marca la ruta activa con `usePathname()` desajusta la
+hidratación: con `cacheComponents` el HTML prerenderizado puede ser de otra ruta. La marca activa
+se calcula sólo tras hidratar (`useSyncExternalStore` con instantánea de servidor `false`).
+aplicada en: `features/site/components/MobileNavLinks.tsx`

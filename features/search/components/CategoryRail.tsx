@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import { categoryIcon } from "../lib/categoryIcon";
 import { searchHref } from "../lib/query";
 
-const chipClass = cn(
-  buttonVariants({ variant: "outline" }),
-  "h-11 rounded-full border-input-border px-4 text-sm font-semibold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
-);
+const chipShape =
+  "h-11 rounded-full px-4 text-sm font-semibold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
+const chipClass = cn(buttonVariants({ variant: "outline" }), "border-input-border", chipShape);
+const allChipClass = cn(buttonVariants({ variant: "default" }), chipShape);
 
 export function CategoryRail({ categories }: { categories: CategoryNode[] }) {
   if (categories.length === 0) return null;
@@ -20,7 +20,7 @@ export function CategoryRail({ categories }: { categories: CategoryNode[] }) {
         <li className="shrink-0">
           <Link
             href={searchHref({ q: "", categoria: null, radio: DEFAULT_RADIUS_KM, pagina: 1 })}
-            className={cn(chipClass, "border-primary bg-primary text-primary-foreground hover:bg-primary/80 dark:border-primary dark:bg-primary dark:hover:bg-primary/80")}
+            className={allChipClass}
           >
             Todo
           </Link>

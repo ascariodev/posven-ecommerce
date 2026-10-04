@@ -20,7 +20,7 @@ capabilities:
     entrypoint: "<StoreCard />"
     file: "features/store/components/StoreCard.tsx"
     input: "store: NearbyStore; featured?: boolean"
-    output: "Card entera como enlace a /tienda/{slug}: banda de color por token (bg-featured si featured), logo o iniciales encima, nombre, city.name, distancia si no es null, 'Destacado' si featured y 'Fuera de tu zona' si outside_radius"
+    output: "Card entera como enlace a /tienda/{slug}: banda `bg-primary-soft`, logo o iniciales encima, nombre, city.name, distancia si no es null, 'Destacado' si featured y 'Fuera de tu zona' si outside_radius"
     source: "props"
     rules: ["RN-STORE-01", "RN-STORE-03"]
   - intent: "mostrar la cabecera de la página de una tienda con su horario y contacto"
@@ -97,7 +97,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| Tarjeta | `components/StoreCard.tsx` | `Card` dentro de un `<Link>` (foco en `--foreground`, `hover:shadow-raised`); banda `h-16` `bg-primary-soft` (`bg-featured` si `featured`) y el logo o las iniciales (`size-14`, `border-4 border-card`) montados sobre su borde; la portada real espera `cover_url` en `NearbyStore` (spec §7) |
+| Tarjeta | `components/StoreCard.tsx` | `Card` dentro de un `<Link>` (foco en `--foreground`, `hover:shadow-raised`); banda `h-16` `bg-primary-soft` y el logo o las iniciales (`size-14`, `border-4 border-card`) montados sobre su borde; la portada real espera `cover_url` en `NearbyStore` (spec §7) |
 | Iniciales | `lib/initials.ts` | primeras letras de las dos primeras palabras del nombre, en mayúscula |
 | Consulta de cercanas | `components/NearbyStores.tsx` | `listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1 })` |
 | Orden de pintado | `components/NearbyStores.tsx` | `featured` (hasta `MAX_FEATURED_STORES`, 2) y después `data` sin los slugs destacados |

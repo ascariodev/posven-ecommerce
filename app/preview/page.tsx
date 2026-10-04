@@ -56,7 +56,7 @@ const TYPE_SCALE: ReadonlyArray<readonly [string, string]> = [
   ["text-xs", "Etiquetas y notas"],
 ];
 
-const BADGES = ["default", "secondary", "destructive", "outline", "warning", "best"] as const;
+const BADGES = ["default", "secondary", "destructive", "outline", "warning", "success"] as const;
 const BUTTONS = ["default", "outline", "secondary", "ghost", "destructive", "link"] as const;
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {

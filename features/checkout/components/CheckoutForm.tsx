@@ -329,7 +329,7 @@ export function CheckoutForm({
                   </p>
                 )}
               </div>
-              <Button type="submit" size="lg" className="w-full bg-best text-best-foreground hover:bg-best/90 shadow-lg" disabled={busy}>
+              <Button type="submit" size="lg" className="w-full bg-success text-background hover:bg-success/90 shadow-lg" disabled={busy}>
                 <LockIcon aria-hidden className="mr-2 h-4 w-4" />
                 {paying ? "Procesando pago seguro…" : `Pagar ${chargeText(quote.charge)} de forma segura`}
               </Button>

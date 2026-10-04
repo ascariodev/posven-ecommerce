@@ -99,7 +99,7 @@ async function ProductBuyBox({ product }: { product: ProductDetail }) {
                 <p className="font-heading text-4xl font-extrabold text-foreground leading-none">{formatUsd(bestOffer.price_usd)}</p>
                 <p className="text-sm font-medium text-muted-foreground mt-1">{formatVes(bestOffer.price_ves)}</p>
               </div>
-              <Badge variant="best" className="bg-best/10 text-best">En inventario</Badge>
+              <Badge variant="success">En inventario</Badge>
             </div>
             {cartEnabled() && product.restriction === "none" && (
               <AddToCartButton

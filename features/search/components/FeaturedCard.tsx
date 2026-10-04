@@ -18,11 +18,11 @@ export function FeaturedCard({ item }: { item: FeaturedProduct }) {
           size="card"
           className="transition duration-200 group-hover:shadow-raised motion-reduce:transition-none"
         />
-        <Badge variant="default" className="absolute top-2 left-2">
+        <Badge variant="default" className="absolute top-2 left-2 bg-primary-soft text-primary-text">
           Destacado
         </Badge>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5 rounded-lg bg-featured px-3 py-2">
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5 rounded-lg bg-primary-soft px-3 py-2">
         <h3 className="line-clamp-2 font-medium text-foreground">{product.name}</h3>
         <p className="text-sm text-muted-foreground">{offer.store.name}</p>
         <p className="flex flex-wrap items-baseline gap-x-2">

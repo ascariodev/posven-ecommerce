@@ -21,7 +21,7 @@ export function OfferCard({
 }) {
   const { store } = offer;
   return (
-    <Card className={cn("overflow-hidden", best && "border-best-foreground ring-1 ring-best-foreground")}>
+    <Card className={cn("overflow-hidden", best && "border-success ring-1 ring-success")}>
       <CardContent className="flex flex-col gap-4 p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 flex-col gap-1.5">
@@ -33,8 +33,8 @@ export function OfferCard({
               {offer.distance_km !== null && ` · ${formatDistance(offer.distance_km)}`}
             </p>
             <div className="mt-1 flex flex-wrap gap-1.5">
-              {best && <Badge variant="best" className="bg-best/10 text-best">Mejor precio</Badge>}
-              {featured && <Badge variant="default" className="bg-primary/10 text-primary hover:bg-primary/20">Destacado</Badge>}
+              {best && <Badge variant="success">Mejor precio</Badge>}
+              {featured && <Badge variant="default" className="bg-primary-soft text-primary-text">Destacado</Badge>}
               {offer.availability === "low" && <Badge variant="warning" className="bg-warning/10 text-warning">Pocas unidades</Badge>}
             </div>
           </div>

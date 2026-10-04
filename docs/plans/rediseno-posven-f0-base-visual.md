@@ -3,7 +3,7 @@
 **Objetivo:** el ecommerce queda sobre shadcn `radix-luma`, los tokens claro y oscuro de la spec
 §3, Poppins y Public Sans, sin la capa Farmatodo ni colores literales, con `ui.md` reescrita y los
 tokens aprobados en `/preview`.
-**Estado:** en curso · Fase actual: 6
+**Estado:** en curso · Fase actual: 7
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` (§3 tokens, §4 `ui.md`,
@@ -88,7 +88,7 @@ tokens aprobados en `/preview`.
   cuenta y direcciones) sin fallos nuevos.
 - **Commit:** `feat(ui): primitivas interactivas en estilo radix-luma`
 
-### [ ] Fase 6 — Estados: `best` a `success` y `featured` a `primary-soft`
+### [x] Fase 6 — Estados: `best` a `success` y `featured` a `primary-soft`
 - **Repo:** posven-ecommerce
 - **Alcance:** variante `best` de `Badge` renombrada a `success` y sus usos; "Destacado" a
   `bg-primary-soft text-primary-text`; en `OfferCard` y en la ficha sólo la línea del badge y el
@@ -194,9 +194,14 @@ tokens aprobados en `/preview`.
   restauró. Select con el disparador de `Input`; paneles `rounded-2xl shadow-raised`; Sheet sobre
   `bg-popover` con `bg-overlay`. e2e de cuenta, búsqueda y checkout: 14 en verde y sólo los 2 rojos
   conocidos (h1 de la portada, compra por "Comercio Aliado") — implementador, revisión LISTO.
+- 2026-10-03 — Fase 6: 9 archivos (se suman `app/page.tsx:106`, `BADGES` de `app/preview/page.tsx`
+  y `features/store/README.md`, necesarios para `tsc` y el grep). `Badge` `best` pasa a `success`;
+  "Destacado" es `Badge` por defecto con `bg-primary-soft text-primary-text`; pagar va en
+  `bg-success text-background` porque no hay `--success-foreground`; la banda de `StoreCard` ya no
+  distingue destacada — implementador, revisión LISTO.
 
 ## Notas para la próxima sesión
-- Fases 1 a 5 hechas; sigue la fase 6. Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
+- Fases 1 a 6 hechas; sigue la fase 7. Los e2e necesitan el servidor con `MARKETPLACE_MODE=mock`: un `next dev` ya levantado en el 3000 sin él los rompe. Revisar el `import { cn }` que deja `shadcn add`. En `/preview`, los portales de Radix se ven en claro también en el panel oscuro. Transitorio vigente: fondo gris de la portada y
   la insignia del carrito en gris.
 
 ## Mejoras propuestas
@@ -206,3 +211,4 @@ tokens aprobados en `/preview`.
 - [ ] M-4 — `Toaster` luma con `next-themes` y la clase `cn-toast` definida, junto al selector de tema de F4 (posven-ecommerce · media · sonnet)
 - [ ] M-5 — Fijar un estilo de `;` y comas finales en `components/ui/` (Prettier o regla de ESLint): el CLI de shadcn los quita (posven-ecommerce · baja · haiku)
 - [ ] M-6 — Revisar la dependencia `cn` ^0.4.0 de `package.json`, que hace que `shadcn add` escriba `import { cn } from "cn"` (posven-ecommerce · baja · sonnet)
+- [ ] M-7 — Quitar el `className="bg-warning/10 text-warning"` redundante del badge "Pocas unidades" en `OfferCard.tsx:37`, junto al contenido de F2 (posven-ecommerce · baja · haiku)

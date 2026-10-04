@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit, Inter } from "next/font/google";
+import { Poppins, Public_Sans } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
@@ -11,12 +11,13 @@ import { SiteFooter } from "@/features/site/components/SiteFooter";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const fontHeading = Outfit({
+const fontHeading = Poppins({
   variable: "--font-heading",
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
-const fontSans = Inter({
+const fontSans = Public_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
 });
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#4f46e5",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -40,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <header className="header-elevate sticky top-0 z-40 border-b border-glass-border bg-glass text-foreground backdrop-blur-md shadow-sm">
           <div className="mx-auto flex min-h-14 w-full max-w-5xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2">
-            <Link href="/" className="text-xl font-bold tracking-tight text-primary">
+            <Link href="/" className="text-xl font-bold tracking-tight text-primary-text">
               {SITE_NAME}
             </Link>
             <Suspense fallback={null}>

@@ -136,7 +136,7 @@ function Panel({ id, label, dark }: { id: string; label: string; dark?: boolean 
               <CardDescription>Tamaño default</CardDescription>
             </CardHeader>
             <CardContent>Contenido de ejemplo.</CardContent>
-            <CardFooter className="pb-4">
+            <CardFooter>
               <Button size="sm">Acción</Button>
             </CardFooter>
           </Card>

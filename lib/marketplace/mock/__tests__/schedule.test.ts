@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { openStatus } from "@/lib/marketplace/mock/schedule";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { mockNow, openStatus } from "@/lib/marketplace/mock/schedule";
 import type { ScheduleEntry } from "@/lib/marketplace/schemas";
 
 const weekdays: ScheduleEntry[] = [
@@ -33,5 +33,29 @@ describe("openStatus del simulado", () => {
   it("un tramo que pasa la medianoche sigue abierto de madrugada", () => {
     expect(openStatus(overnight, new Date("2026-10-10T04:00:00Z"))).toEqual({ is_open: true, closes_at: "02:00" });
     expect(openStatus(overnight, new Date("2026-10-10T07:00:00Z"))).toEqual({ is_open: false, closes_at: null });
+  });
+});
+
+describe("mockNow del simulado", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("con MARKETPLACE_MOCK_NOW válida devuelve esa fecha", () => {
+    vi.stubEnv("MARKETPLACE_MOCK_NOW", "2026-10-05T16:00:00Z");
+    expect(mockNow().toISOString()).toBe("2026-10-05T16:00:00.000Z");
+  });
+
+  it.each(["", "no-es-fecha", "2026-13-45"])("con %j usa el reloj real", (value) => {
+    vi.stubEnv("MARKETPLACE_MOCK_NOW", value);
+    const before = Date.now();
+    const now = mockNow().getTime();
+    expect(now).toBeGreaterThanOrEqual(before);
+    expect(now).toBeLessThanOrEqual(Date.now());
+  });
+
+  it("sin la variable usa el reloj real", () => {
+    vi.stubEnv("MARKETPLACE_MOCK_NOW", undefined);
+    expect(Math.abs(mockNow().getTime() - Date.now())).toBeLessThan(1000);
   });
 });

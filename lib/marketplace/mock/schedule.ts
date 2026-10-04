@@ -33,6 +33,13 @@ function withinOvernight(range: Range | null, time: string): boolean {
   return range !== null && range.closes <= range.opens && time < range.closes;
 }
 
+export function mockNow(): Date {
+  const fixed = process.env.MARKETPLACE_MOCK_NOW;
+  if (fixed === undefined || fixed === "") return new Date();
+  const parsed = new Date(fixed);
+  return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+}
+
 export function openStatus(schedule: ScheduleEntry[], at: Date): OpenStatus {
   if (schedule.length === 0) return { is_open: true, closes_at: null };
 

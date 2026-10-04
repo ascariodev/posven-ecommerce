@@ -45,7 +45,7 @@ import {
 import { accountError, customerIdFor, deleteAccount as deleteMockAccount } from "./accounts";
 import { clearMockCart } from "./cart";
 import { hasOpenOrders } from "./checkout";
-import { openStatus, type OpenStatus } from "./schedule";
+import { mockNow, openStatus, type OpenStatus } from "./schedule";
 
 const SEARCH_PER_PAGE = 20;
 const STORES_PER_PAGE = 12;
@@ -127,7 +127,7 @@ function toSearchItem(item: MockProduct, scope: Scope): SearchItem {
 }
 
 function storeStatus(store: MockStore): OpenStatus {
-  return openStatus(MOCK_STORE_DETAILS[store.summary.slug]?.schedule ?? [], new Date());
+  return openStatus(MOCK_STORE_DETAILS[store.summary.slug]?.schedule ?? [], mockNow());
 }
 
 function withOpenOffers(item: MockProduct): MockProduct | null {

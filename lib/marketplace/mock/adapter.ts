@@ -2,6 +2,7 @@ import {
   productQuery,
   searchQuery,
   storesQuery,
+  suggestionsQuery,
   type AccountContext,
   type GeoFilter,
   type OfferSort,
@@ -24,6 +25,7 @@ import type {
   StoreProduct,
   StoreResponse,
   StoresResponse,
+  SuggestionsResponse,
 } from "../schemas";
 import {
   MOCK_CATEGORIES,
@@ -45,6 +47,10 @@ import { openStatus, type OpenStatus } from "./schedule";
 
 const SEARCH_PER_PAGE = 20;
 const STORES_PER_PAGE = 12;
+const SUGGESTION_MIN_LENGTH = 2;
+const MAX_SUGGESTED_TERMS = 5;
+const MAX_SUGGESTED_PRODUCTS = 4;
+const MAX_SUGGESTED_CATEGORIES = 2;
 const STORE_PRODUCTS_PER_PAGE = 20;
 const SITEMAP_PER_PAGE = 50000;
 const SITEMAP_UPDATED_AT = "2026-09-26T14:30:00Z";
@@ -210,6 +216,39 @@ export async function searchProducts(p: {
       .map((item) => toSearchItem(item, scope)),
     featured,
     meta: { page: p.page, per_page: SEARCH_PER_PAGE, total: matches.length },
+    rate: MOCK_RATE,
+  };
+}
+
+export async function getSuggestions(p: {
+  q: string;
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+}): Promise<SuggestionsResponse> {
+  const query = suggestionsQuery(p);
+  const scope = readScope(query);
+  const term = normalize(query.get("q") ?? "").trim();
+  const matches =
+    term.length < SUGGESTION_MIN_LENGTH
+      ? []
+      : MOCK_PRODUCTS.filter((item) => matchesText(item, term) && productInScope(item, scope));
+
+  const terms = [...new Set(matches.map((item) => item.product.name))].slice(0, MAX_SUGGESTED_TERMS);
+  const counts = new Map<string, { name: string; count: number }>();
+  for (const { product } of matches) {
+    if (product.category === null) continue;
+    const entry = counts.get(product.category.slug) ?? { name: product.category.name, count: 0 };
+    counts.set(product.category.slug, { name: entry.name, count: entry.count + 1 });
+  }
+  const categories = [...counts.entries()]
+    .sort(([, a], [, b]) => b.count - a.count || a.name.localeCompare(b.name))
+    .slice(0, MAX_SUGGESTED_CATEGORIES)
+    .map(([slug, { name }]) => ({ slug, name }));
+
+  return {
+    terms,
+    products: matches.slice(0, MAX_SUGGESTED_PRODUCTS).map((item) => toSearchItem(item, scope)),
+    categories,
     rate: MOCK_RATE,
   };
 }

@@ -36,6 +36,17 @@ export function searchQuery(p: {
   return query;
 }
 
+export function suggestionsQuery(p: {
+  q: string;
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+}): URLSearchParams {
+  const query = new URLSearchParams();
+  query.set("q", p.q);
+  appendLocation(query, p.geo, p.radiusKm);
+  return query;
+}
+
 export function storesQuery(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;

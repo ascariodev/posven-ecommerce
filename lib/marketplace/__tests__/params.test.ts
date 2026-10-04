@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { productQuery, searchQuery, storesQuery } from "@/lib/marketplace/params";
+import { productQuery, searchQuery, storesQuery, suggestionsQuery } from "@/lib/marketplace/params";
 
 const LOCATION_KEYS = ["lat", "lng", "city", "radius_km"];
 
@@ -112,5 +112,17 @@ describe("productQuery", () => {
     const query = productQuery({ geo: null, radiusKm: null, sort: "price" });
     expect(keysOf(query)).toEqual(["sort"]);
     expect(query.get("sort")).toBe("price");
+  });
+});
+
+describe("suggestionsQuery", () => {
+  it("con coordenadas y radio envía q, lat, lng y radius_km", () => {
+    const query = suggestionsQuery({ q: "arroz", geo: { lat: 10.18, lng: -68.01 }, radiusKm: 10 });
+    expect(keysOf(query)).toEqual(["q", "lat", "lng", "radius_km"]);
+  });
+
+  it("sin ubicación sólo envía q (RN-MARKETPLACE-03)", () => {
+    const query = suggestionsQuery({ q: "arroz", geo: null, radiusKm: 25 });
+    expect(keysOf(query)).toEqual(["q"]);
   });
 });

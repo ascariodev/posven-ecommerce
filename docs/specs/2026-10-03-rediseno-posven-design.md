@@ -175,8 +175,12 @@ contra el contrato actual:
 2. **Productos para el inicio** (destacados o cercanos). Falta: hoy `FeaturedProducts` de
    `app/page.tsx` llama a `searchProducts` con `q: ""`, la búsqueda simulada que la spec anterior
    ya rechazó. F1.
-3. **Sugerencias de búsqueda.** Falta un endpoint en posveapi; como el navegador no llama a
-   posveapi, llega por un route handler de Next. F1.
+3. **Sugerencias de búsqueda.** Hecho: `GET /suggestions` de posveapi responde `{ terms, products,
+   categories, rate }` (hasta 5 términos, 4 productos con la forma de un ítem de `/search` y 2
+   categorías `{ slug, name }`; 422 con `q` de menos de 2 caracteres, misma ubicación que
+   `/search`). `getSuggestions` del cliente la pide, y el navegador la alcanza por el route handler
+   `GET /api/suggestions?q&radio`, que lee la ubicación de la cookie, responde listas vacías con `q`
+   corto sin llamar a la API y 503 con listas vacías si la API cae. El debounce va en el panel (F1b).
 4. **Abierto ahora y "Cierra pronto".** Hecho: `offerSchema` (búsqueda y ficha) y `nearbyStoreSchema` traen `is_open` y `closes_at` (HH:MM, nulo sin tramo vigente ni próximo hoy), opcionales para el consumidor y calculados por la API (el simulado los saca de `MOCK_STORE_DETAILS`); `searchQuery` envía `open_now=true` para el filtro "abierto ahora" de `/search`. El aviso "Cierra pronto" se define en F1b a partir de `closes_at`, sin calcular horarios en el frontend.
 5. **`cover_url` en las tiendas cercanas.** `storeSchema` ya lo trae; falta en `nearbyStoreSchema`. F2.
 6. **`is_best_price` en `productOfferSchema`.** Falta; hoy "Mejor precio" sale del orden por precio

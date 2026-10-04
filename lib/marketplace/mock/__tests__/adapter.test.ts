@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ProductPage, ProductResponse } from "@/lib/marketplace/schemas";
-import { getProduct, getProductOffers, getStore, listNearbyStores, searchProducts } from "@/lib/marketplace/mock/adapter";
+import { getProduct, getProductOffers, getStore, getSuggestions, listNearbyStores, searchProducts } from "@/lib/marketplace/mock/adapter";
 
 describe("adaptador simulado", () => {
   it("la búsqueda no distingue mayúsculas ni acentos", async () => {
@@ -156,5 +156,40 @@ describe("horario y orden simulados", () => {
     });
     const nearest = response.data.map((item) => item.nearest_km ?? 0);
     expect(nearest).toEqual([...nearest].sort((a, b) => a - b));
+  });
+});
+
+describe("sugerencias simuladas", () => {
+  const base = { geo: null, radiusKm: null } as const;
+
+  it("respeta los topes de términos, productos y categorías", async () => {
+    const response = await getSuggestions({ ...base, q: "a" });
+    expect(response).toEqual({ terms: [], products: [], categories: [], rate: response.rate });
+
+    const found = await getSuggestions({ ...base, q: "ta" });
+    expect(found.terms.length).toBeLessThanOrEqual(5);
+    expect(found.products.length).toBeLessThanOrEqual(4);
+    expect(found.categories.length).toBeLessThanOrEqual(2);
+  });
+
+  it("no distingue mayúsculas ni acentos y no repite términos", async () => {
+    const upper = await getSuggestions({ ...base, q: "ACETAMINOFÉN" });
+    const lower = await getSuggestions({ ...base, q: "acetaminofen" });
+    expect(upper).toEqual(lower);
+    expect(new Set(lower.terms).size).toBe(lower.terms.length);
+    expect(lower.terms.length).toBeGreaterThan(0);
+  });
+
+  it("sin coincidencias devuelve listas vacías", async () => {
+    const response = await getSuggestions({ ...base, q: "zzzzzz" });
+    expect(response.terms).toEqual([]);
+    expect(response.products).toEqual([]);
+    expect(response.categories).toEqual([]);
+  });
+
+  it("con una ciudad sólo sugiere productos con oferta allí", async () => {
+    const all = await getSuggestions({ ...base, q: "ta" });
+    const caracas = await getSuggestions({ geo: { city: "caracas" }, radiusKm: 10, q: "ta" });
+    expect(caracas.products.length).toBeLessThanOrEqual(all.products.length);
   });
 });

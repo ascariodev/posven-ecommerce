@@ -7,6 +7,7 @@ import {
   productQuery,
   searchQuery,
   storesQuery,
+  suggestionsQuery,
   type AccountContext,
   type FavoriteTarget,
   type GeoFilter,
@@ -31,6 +32,7 @@ import {
   sitemapResponseSchema,
   storeResponseSchema,
   storesResponseSchema,
+  suggestionsResponseSchema,
   type Address,
   type AddressInput,
   type AddressPatch,
@@ -57,6 +59,7 @@ import {
   type SitemapType,
   type StoreResponse,
   type StoresResponse,
+  type SuggestionsResponse,
 } from "./schemas";
 
 function usesMock(): boolean {
@@ -80,6 +83,18 @@ export async function searchProducts(p: {
   cacheTag("marketplace:search");
   if (usesMock()) return mock.searchProducts(p);
   return requestJson("/search", searchQuery(p), searchResponseSchema);
+}
+
+export async function getSuggestions(p: {
+  q: string;
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+}): Promise<SuggestionsResponse> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("marketplace:suggestions");
+  if (usesMock()) return mock.getSuggestions(p);
+  return requestJson("/suggestions", suggestionsQuery(p), suggestionsResponseSchema);
 }
 
 export async function listNearbyStores(p: {

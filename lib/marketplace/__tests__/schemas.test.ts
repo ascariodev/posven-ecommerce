@@ -14,6 +14,7 @@ import {
   listSitemap,
   loginCustomer,
   registerCustomer,
+  getSuggestions,
   searchProducts,
   updateMe,
 } from "@/lib/marketplace/mock/adapter";
@@ -44,6 +45,7 @@ import {
   storeResponseSchema,
   storesResponseSchema,
   storeSummarySchema,
+  suggestionsResponseSchema,
 } from "@/lib/marketplace/schemas";
 
 const noFilters = { category: null, geo: null, radiusKm: null, page: 1 } as const;
@@ -576,5 +578,19 @@ describe("is_open y closes_at", () => {
     expect(stores.data.every((store) => typeof store.is_open === "boolean")).toBe(true);
     const page = productResponseSchema.parse(await getProduct("acetaminofen-500-mg-20-tabletas"));
     expect("offers" in page && page.offers.every((entry) => typeof entry.is_open === "boolean")).toBe(true);
+  });
+});
+
+describe("suggestionsResponseSchema", () => {
+  it("la respuesta simulada con término pasa el esquema", async () => {
+    const response = await getSuggestions({ q: "acetaminofen", geo: null, radiusKm: null });
+    expect(suggestionsResponseSchema.safeParse(response).success).toBe(true);
+    expect(response.products.length).toBeGreaterThan(0);
+  });
+
+  it("rechaza cinco productos", async () => {
+    const response = await getSuggestions({ q: "acetaminofen", geo: null, radiusKm: null });
+    const product = response.products[0];
+    expect(suggestionsResponseSchema.safeParse({ ...response, products: Array(5).fill(product) }).success).toBe(false);
   });
 });

@@ -128,6 +128,14 @@ export const searchResponseSchema = z.object({
 });
 export type SearchResponse = z.infer<typeof searchResponseSchema>;
 
+export const suggestionsResponseSchema = z.object({
+  terms: z.array(z.string()).max(5),
+  products: z.array(searchItemSchema).max(4),
+  categories: z.array(z.object({ slug: z.string(), name: z.string() })).max(2),
+  rate: rateSchema,
+});
+export type SuggestionsResponse = z.infer<typeof suggestionsResponseSchema>;
+
 export const nearbyStoreSchema = storeSummarySchema.extend({
   distance_km: z.number().nonnegative().nullable(),
   outside_radius: z.boolean(),

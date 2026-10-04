@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F1 del lienzo "E · PosVen" (Inicio, búsqueda con sugerencias,
 resultados con filtros y orden, sin resultados) más la cabecera con ubicación y la barra inferior
 en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
-**Estado:** en curso · Fase actual: 3
+**Estado:** en curso · Fase actual: 4
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (decisiones), §4 (`ui.md`), §5 (mapa
@@ -54,7 +54,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - **Alcance:** Inicio, Buscar, Favoritos, Carrito y Cuenta, con ruta activa y contador del
   carrito; sólo bajo `md`; espacio inferior en el layout para que no tape el pie; e2e móvil.
 
-### [ ] Fase 3 — Panel de sugerencias en la búsqueda
+### [x] Fase 3 — Panel de sugerencias en la búsqueda
 - **Repo:** posven-ecommerce
 - **Alcance:** panel de `W02`/`P02` sobre `SearchPill` (términos, productos con precio,
   categoría, recientes en el navegador), accesible por teclado; usa `/api/suggestions` de F1a.
@@ -107,6 +107,12 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   cuenta y favoritos bajo `md`; "Salir" pasa al final de las pestañas móviles de `AccountNav`;
   el botón de ubicación es `flex-1 basis-0` bajo `md`; RN-SITE-07. 7 archivos de código, aceptado
   por el revisor por ser un solo cambio.
+- 2026-10-04 — Fase 3: `SearchBox` (combobox ARIA) y `SuggestionsPanel` (listbox) en
+  `features/search/components/`, con `useSuggestions` (200 ms, `AbortController`), `panelItems` y
+  `recents` (`localStorage` clave `recent-searches`, máx. 5, en `try`); `SearchPill` pasa a cliente
+  con `onSubmit` que guarda recientes; el radio de las sugerencias se lee de
+  `window.location.search` al interactuar; RN-SEARCH-05 (menos de 2 caracteres no llama a la API).
+  El input es `role="combobox"`: los e2e usan `getByRole("combobox", { name: "Buscar productos" })`.
 
 ## Notas para la próxima sesión
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
@@ -127,4 +133,11 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · baja · sonnet
 - [ ] M-4 — `MobileNavLinks.tsx` usa `text-[10px]` en el contador: confirmar contra `ui.md` o
   subir a `text-xs`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-5 — `SearchBox`: `ArrowDown` con el panel cerrado lo abre pero no mueve la opción activa.
+  posven-ecommerce · baja · sonnet
+- [ ] M-6 — Mover el `Form` con `onSubmit` de `SearchPill` dentro de `SearchBox` para que
+  `SearchPill` vuelva a ser de servidor (regla `app-router` 4).
+  posven-ecommerce · media · sonnet
+- [ ] M-7 — Botón para borrar las búsquedas recientes del panel (no estaba en el alcance).
   posven-ecommerce · baja · sonnet

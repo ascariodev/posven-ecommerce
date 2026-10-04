@@ -10,7 +10,7 @@ test("la portada lleva a la búsqueda con resultados, tasa y noindex", async ({ 
   await expect(page.getByRole("heading", { name: `Tiendas en ${SITE_NAME}` })).toBeVisible();
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000");
 
-  await page.getByRole("searchbox", { name: "Buscar productos" }).fill("acetaminofen");
+  await page.getByRole("combobox", { name: "Buscar productos" }).fill("acetaminofen");
   await page.getByRole("button", { name: "Buscar", exact: true }).click();
 
   await expect(page).toHaveURL("/buscar?q=acetaminofen");
@@ -21,7 +21,7 @@ test("la portada lleva a la búsqueda con resultados, tasa y noindex", async ({ 
 
 test("una búsqueda sin resultados ofrece el enlace a comercios", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("searchbox", { name: "Buscar productos" }).fill("zzzz");
+  await page.getByRole("combobox", { name: "Buscar productos" }).fill("zzzz");
   await page.getByRole("button", { name: "Buscar", exact: true }).click();
 
   await expect(page.getByRole("heading", { name: "No encontramos resultados para «zzzz»." })).toBeVisible();
@@ -87,4 +87,22 @@ test("buscar en la página 1 registra search con el texto y el total de resultad
     category_slug: null,
   });
   expect(body.results_count).toBeGreaterThan(0);
+});
+
+test("el buscador sugiere con el teclado y recuerda las búsquedas recientes", async ({ page }) => {
+  await page.goto("/");
+  const box = page.getByRole("combobox", { name: "Buscar productos" });
+  await box.fill("acet");
+  const listbox = page.getByRole("listbox", { name: "Sugerencias de búsqueda" });
+  await expect(listbox.getByRole("option").first()).toBeVisible();
+  await expect(box).toHaveAttribute("aria-expanded", "true");
+
+  await box.press("ArrowDown");
+  await box.press("Enter");
+  await expect(page).toHaveURL(/\/buscar\?q=/);
+
+  await page.goto("/");
+  await page.getByRole("combobox", { name: "Buscar productos" }).focus();
+  await expect(page.getByRole("option").first()).toBeVisible();
+  await expect(page.getByText("Recientes")).toBeVisible();
 });

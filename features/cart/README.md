@@ -2,7 +2,7 @@
 module: "cart"
 path: "features/cart"
 type: "feature"
-exports: ["cartEnabled", "CART_COOKIE", "cartCookieOptions", "parseCartCookie", "serializeCart", "readGuestCart", "writeGuestCart", "getSessionCart", "getCurrentCart", "mergeGuestCart", "addToCart", "setQuantity", "removeLine", "AddToCartState", "INITIAL_ADD_TO_CART_STATE", "AddToCartButton", "CartLink", "CartLinkSkeleton", "CartView", "CartContent", "CartViewSkeleton", "LineForm"]
+exports: ["cartEnabled", "cartCount", "CART_COOKIE", "cartCookieOptions", "parseCartCookie", "serializeCart", "readGuestCart", "writeGuestCart", "getSessionCart", "getCurrentCart", "mergeGuestCart", "addToCart", "setQuantity", "removeLine", "AddToCartState", "INITIAL_ADD_TO_CART_STATE", "AddToCartButton", "CartLink", "CartLinkSkeleton", "CartView", "CartContent", "CartViewSkeleton", "LineForm"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/server/session.ts", "features/account/lib/returnPath.ts", "features/search/components/ProductThumb.tsx", "components/ui/button.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
 tests: "features/cart/__tests__/*.test.{ts,tsx}"
 verified_against: ["features/cart/lib/flag.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/cart/server/actions.ts", "features/cart/lib/addToCartState.ts", "features/cart/components/AddToCartButton.tsx", "features/events/lib/beacon.ts", "features/cart/components/CartLink.tsx", "features/cart/components/CartView.tsx", "features/cart/components/LineForm.tsx", "features/cart/__tests__/flag.test.ts", "features/cart/__tests__/cookie.test.ts", "features/cart/__tests__/actions.test.ts", "features/cart/__tests__/AddToCartButton.test.tsx", "features/cart/__tests__/CartLink.test.tsx", "features/cart/__tests__/CartView.test.tsx", "features/cart/__tests__/LineForm.test.tsx", "features/account/server/actions.ts", "features/product/components/OfferCard.tsx", "features/store/components/StoreProducts.tsx", "app/carrito/page.tsx", "app/layout.tsx", "app/robots.ts", "e2e/cart.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
@@ -81,6 +81,7 @@ las líneas en 99).
 - `LineForm({ action, storeSlug, productSlug, quantity?, children })`, `features/cart/components/LineForm.tsx`, Client Component: formulario por línea que manda `store_slug`, `product_slug` y `quantity` y abre el toast de error dentro de la acción, porque el `refresh()` puede quitar la línea (L-06).
 - `AddToCartState` e `INITIAL_ADD_TO_CART_STATE`, `features/cart/lib/addToCartState.ts`.
 - `AddToCartButton({ storeSlug, storeName, productSlug, productName })`, Client Component; nombre accesible "Agregar al carrito: {producto} de {tienda}".
+- `cartCount(): Promise<number | null>`, `features/cart/components/CartLink.tsx`: `line_count` del comprador o las entradas de `mp_cart` del invitado; `null` si la API no responde (L-02). Lo usan `CartLink` y la barra inferior de `features/site`.
 - `CartLink()` y `CartLinkSkeleton()`, `CartView()`, `CartContent({ cart, signedIn }: { cart: Cart | null; signedIn: boolean })` y `CartViewSkeleton()`. Con `line_count > 0`, `CartContent` enlaza "Ir a pagar" a `/checkout` con sesión, o "Entra para pagar" a `/entrar?volver=%2Fcheckout` sin ella.
 
 ## 5. Estructura interna
@@ -93,7 +94,7 @@ las líneas en 99).
 | Acciones | `server/actions.ts` | agregar (+1), fijar cantidad y quitar, repartidas entre comprador (API) e invitado (cookie); devuelven `AddToCartState`; 401 borra `mp_session` y sigue como invitado; `refresh()` tras escribir |
 | Línea | `components/LineForm.tsx` | `useActionState` por formulario de línea; el toast de error va dentro de la acción |
 | Botón | `components/AddToCartButton.tsx` | `useActionState`; vuelve a montar el aviso en cada respuesta para que se anuncie; tras un "agregado" manda `add_to_cart` con `sendBeaconEvent`, y con error no manda nada |
-| Contador | `components/CartLink.tsx` | L-02: degrada a "Carrito" ante cualquier error de la API |
+| Contador | `cartCount` en `components/CartLink.tsx` | L-02: degrada a "Carrito" ante cualquier error de la API |
 | Página | `components/CartView.tsx` | agrupación por tienda tal como llega; `LineForm` por línea; la línea no disponible atenúa sólo la imagen (el texto conserva el contraste AA) |
 
 ## 6. Dependencias

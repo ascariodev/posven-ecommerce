@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins, Public_Sans } from "next/font/google";
+import { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { MobileNav, MobileNavSkeleton } from "@/features/site/components/MobileNav";
 import { SiteFooter } from "@/features/site/components/SiteFooter";
 import { SiteHeader } from "@/features/site/components/SiteHeader";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -33,10 +35,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${fontSans.variable} ${fontHeading.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0">
         <SiteHeader />
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
         <SiteFooter />
+        <Suspense fallback={<MobileNavSkeleton />}>
+          <MobileNav />
+        </Suspense>
         <Toaster />
       </body>
     </html>

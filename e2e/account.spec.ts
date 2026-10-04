@@ -14,6 +14,10 @@ async function signIn(page: Page, email: string, password: string, volver?: stri
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
 }
 
+function mainNav(page: Page) {
+  return page.getByRole("navigation", { name: "Navegación principal" });
+}
+
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   const overflows = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(overflows).toBe(false);
@@ -69,13 +73,12 @@ test.describe("cuenta del comprador", () => {
     await expect(page.getByRole("button", { name: "Borrar mis datos de facturación" })).toBeEnabled();
   });
 
-  test("Salir deja Entrar en la cabecera y entrar de nuevo vuelve a volver", async ({ page }) => {
+  test("Salir deja Entrar en la barra inferior y entrar de nuevo vuelve a volver", async ({ page }) => {
     await signIn(page, email, password);
     await expect(page).toHaveURL("/cuenta");
 
-    await page.getByRole("button", { name: "Mi cuenta" }).click();
-    await page.getByRole("menuitem", { name: "Salir" }).click();
-    await expect(page.locator("header").getByRole("link", { name: "Entrar" })).toBeVisible();
+    await page.getByRole("button", { name: "Salir" }).click();
+    await expect(mainNav(page).getByRole("link", { name: "Cuenta", exact: true })).toHaveAttribute("href", /^\/entrar/);
 
     await signIn(page, email, password, "/cuenta/favoritos");
     await expect(page).toHaveURL("/cuenta/favoritos");
@@ -173,10 +176,10 @@ test.describe("cuenta del comprador", () => {
     await expect(page.getByText("Demasiados intentos, prueba en 42 segundos")).toBeVisible();
   });
 
-  test("la cabecera no desborda en móvil, con y sin sesión", async ({ page }) => {
+  test("la cabecera y la barra inferior no desbordan en móvil, con y sin sesión", async ({ page }) => {
     for (const path of ["/", PRODUCT_PATH]) {
       await page.goto(path);
-      await expect(page.locator("header").getByRole("link", { name: "Entrar" })).toBeVisible();
+      await expect(mainNav(page).getByRole("link", { name: "Cuenta", exact: true })).toHaveAttribute("href", /^\/entrar/);
       await expectNoHorizontalOverflow(page);
     }
 
@@ -184,7 +187,7 @@ test.describe("cuenta del comprador", () => {
     await expect(page).toHaveURL("/cuenta");
     for (const path of ["/", PRODUCT_PATH]) {
       await page.goto(path);
-      await expect(page.locator("header").getByText("Mi cuenta", { exact: true })).toBeVisible();
+      await expect(mainNav(page).getByRole("link", { name: "Cuenta", exact: true })).toHaveAttribute("href", "/cuenta");
       await expectNoHorizontalOverflow(page);
     }
   });

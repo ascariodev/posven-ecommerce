@@ -14,7 +14,7 @@ async function addAcetaminofen(page: Page): Promise<void> {
 }
 
 function cartLink(page: Page, name: string) {
-  return page.locator("header").getByRole("link", { name, exact: true });
+  return page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name, exact: true });
 }
 
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
@@ -97,8 +97,7 @@ test.describe("carrito", () => {
     await expect(page).toHaveURL("/cuenta");
     await expect(cartLink(page, "Carrito, 1 producto")).toBeVisible();
 
-    await page.getByRole("button", { name: "Mi cuenta" }).click();
-    await page.getByRole("menuitem", { name: "Salir" }).click();
+    await page.getByRole("button", { name: "Salir" }).click();
     await expect(cartLink(page, "Carrito")).toBeVisible();
 
     await addAcetaminofen(page);

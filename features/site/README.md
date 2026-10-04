@@ -2,19 +2,27 @@
 module: "site"
 path: "features/site"
 type: "feature"
-exports: ["SiteHeader", "SiteFooter", "FooterCategories", "footerYear", "MerchantContact", "LegalDocument", "LEGAL_DRAFT", "LEGAL_MARKERS", "LEGAL_PATHS", "legalMetadata", "legalSitemapPaths", "legalText", "termsDocument", "privacyDocument"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "features/search/lib/query.ts", "features/account/components/AccountMenu.tsx", "features/cart/components/CartLink.tsx", "features/location/components/LocationBar.tsx", "features/search/components/HeaderSearchSlot.tsx", "features/search/components/SearchPill.tsx", "components/ui/button.tsx", "lib/utils.ts"]
+exports: ["SiteHeader", "MobileNav", "MobileNavSkeleton", "MobileNavLinks", "SiteFooter", "FooterCategories", "footerYear", "MerchantContact", "LegalDocument", "LEGAL_DRAFT", "LEGAL_MARKERS", "LEGAL_PATHS", "legalMetadata", "legalSitemapPaths", "legalText", "termsDocument", "privacyDocument"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "features/search/lib/query.ts", "features/account/components/AccountMenu.tsx", "features/account/lib/returnPath.ts", "features/account/server/session.ts", "features/cart/components/CartLink.tsx", "features/cart/lib/flag.ts", "features/location/components/LocationBar.tsx", "features/search/components/HeaderSearchSlot.tsx", "features/search/components/SearchPill.tsx", "components/ui/button.tsx", "lib/utils.ts"]
 tests: "features/site/__tests__/*.test.tsx"
-verified_against: ["features/site/components/SiteHeader.tsx", "features/site/components/SiteFooter.tsx", "features/site/lib/year.ts", "features/site/__tests__/SiteFooter.test.tsx", "features/site/components/MerchantContact.tsx", "features/site/__tests__/MerchantContact.test.tsx", "app/comercios/page.tsx", "lib/sitemap.ts", "app/layout.tsx", "lib/site.ts", "features/search/lib/query.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "features/site/lib/legal.ts", "features/site/__tests__/legal.test.tsx", "features/site/components/LegalDocument.tsx", "features/site/lib/terms.ts", "app/terminos/page.tsx", "features/site/lib/privacy.ts", "app/privacidad/page.tsx", "features/account/server/session.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/location/lib/cookie.ts", "features/location/server/actions.ts", "app/api/events/route.ts", "features/events/lib/handle.ts"]
+verified_against: ["features/site/components/SiteHeader.tsx", "features/site/components/MobileNav.tsx", "features/site/components/MobileNavLinks.tsx", "e2e/site.spec.ts", "features/site/components/SiteFooter.tsx", "features/site/lib/year.ts", "features/site/__tests__/SiteFooter.test.tsx", "features/site/components/MerchantContact.tsx", "features/site/__tests__/MerchantContact.test.tsx", "app/comercios/page.tsx", "lib/sitemap.ts", "app/layout.tsx", "lib/site.ts", "features/search/lib/query.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "features/site/lib/legal.ts", "features/site/__tests__/legal.test.tsx", "features/site/components/LegalDocument.tsx", "features/site/lib/terms.ts", "app/terminos/page.tsx", "features/site/lib/privacy.ts", "app/privacidad/page.tsx", "features/account/server/session.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/location/lib/cookie.ts", "features/location/server/actions.ts", "app/api/events/route.ts", "features/events/lib/handle.ts"]
 capabilities:
   - intent: "mostrar la cabecera del sitio con la ubicación visible"
     intent_aliases: ["cabecera", "header", "barra superior", "ubicacion visible", "buscar cerca de"]
     entrypoint: "<SiteHeader />"
     file: "features/site/components/SiteHeader.tsx"
     input: "sin props; se monta en app/layout.tsx antes de <main>"
-    output: "cabecera pegajosa con logo, botón de ubicación (LocationBar con degrade), buscador compacto (HeaderSearchSlot lo oculta en / y /buscar), enlace a favoritos (desde md), carrito y cuenta"
+    output: "cabecera pegajosa con logo, botón de ubicación (LocationBar con degrade), buscador compacto (HeaderSearchSlot lo oculta en / y /buscar), desde md, enlace a favoritos, carrito y cuenta (bajo md los reemplaza la barra inferior)"
     source: "LocationBar, SearchPill, CartLink y AccountSlot"
     rules: []
+  - intent: "navegar por la barra inferior en móvil"
+    intent_aliases: ["barra inferior", "tab bar", "navegacion movil", "menu inferior", "bottom nav"]
+    entrypoint: "<MobileNav />"
+    file: "features/site/components/MobileNav.tsx"
+    input: "sin props; app/layout.tsx la monta tras el pie, dentro de <Suspense fallback={<MobileNavSkeleton />}>"
+    output: "nav 'Navegación principal' fija al pie, sólo bajo md, con Inicio, Buscar, Favoritos, Carrito (sólo con el carrito encendido, con contador) y Cuenta; la ruta activa lleva aria-current; sin sesión Favoritos y Cuenta apuntan a /entrar con volver"
+    source: "accountContext() (cookie de sesión, sin llamar a la API) y cartCount() de CartLink"
+    rules: ["RN-SITE-07"]
   - intent: "mostrar el pie del sitio con sus columnas de enlaces"
     intent_aliases: ["pie de pagina", "footer", "enlaces legales", "categorias del pie", "para comercios"]
     entrypoint: "<SiteFooter />"
@@ -67,12 +75,14 @@ que enlaza.
 | `RN-SITE-04` | Los textos legales sólo usan los marcadores de `LEGAL_MARKERS`, y con `LEGAL_DRAFT` en `false` no queda ninguno en el texto. | `features/site/__tests__/legal.test.tsx` ("marcadores legales") |
 | `RN-SITE-05` | Con `LEGAL_DRAFT` en `true` las páginas legales llevan `noindex, follow` y quedan fuera del sitemap; en `false` llevan canónica y entran al grupo `static`. | `features/site/__tests__/legal.test.tsx` ("interruptor de borrador") |
 | `RN-SITE-06` | El texto de privacidad nombra las cuatro cookies que escribe el sitio (`mp_session`, `mp_cart`, `loc`, `sid`). | `features/site/__tests__/legal.test.tsx` ("privacidad") |
+| `RN-SITE-07` | Bajo `md` el carrito y la cuenta salen de la cabecera y viven en la barra inferior; sin sesión, Favoritos y Cuenta llevan a `/entrar` con `volver`. | `e2e/site.spec.ts` ("barra inferior en móvil") |
 
 ## 3. Dónde hacer cambios
 
 | Tipo de cambio | Dónde va | Además hay que |
 |---|---|---|
 | Qué muestra la cabecera y cómo se acomoda en móvil | `SiteHeader` en `SiteHeader.tsx` | `e2e/search.spec.ts` y `e2e/cart.spec.ts` buscan el botón de ubicación, "Buscar", el carrito y la cuenta por nombre accesible |
+| Destinos, orden o contador de la barra inferior | `tabs` en `MobileNavLinks.tsx` y `MobileNav` en `MobileNav.tsx` | `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` buscan el carrito por nombre accesible dentro de la barra; `e2e/account.spec.ts` la cuenta |
 | Columnas o enlaces del pie | `SiteFooter` en `SiteFooter.tsx` | los enlaces que busca `SiteFooter.test.tsx` |
 | Cuántas categorías se muestran | `MAX_FOOTER_CATEGORIES` en `SiteFooter.tsx` | RN-SITE-01 y su prueba |
 | Botones de contacto de `/comercios` | `MerchantContact` en `MerchantContact.tsx` | RN-SITE-03 y su prueba |
@@ -86,6 +96,8 @@ que enlaza.
 ## 4. API pública
 
 - `SiteHeader(): React.JSX.Element`, `features/site/components/SiteHeader.tsx`: Server Component síncrono; cada segmento con datos va en su `<Suspense>`.
+- `MobileNav(): Promise<React.JSX.Element>`, `features/site/components/MobileNav.tsx`: Server Component async; lee la sesión y el contador del carrito y pinta `MobileNavLinks`. `MobileNavSkeleton(): React.JSX.Element`: barra vacía de la misma altura.
+- `MobileNavLinks({ signedIn, cartEnabled, cartCount }: { signedIn: boolean; cartEnabled: boolean; cartCount: number | null }): React.JSX.Element`, `features/site/components/MobileNavLinks.tsx` (`"use client"`): la `<nav>`; marca la ruta activa con `usePathname()`.
 - `SiteFooter(): Promise<React.JSX.Element>`, `features/site/components/SiteFooter.tsx`: Server Component async.
 - `FooterCategories({ categories }: { categories: CategoryNode[] }): React.JSX.Element | null`, `features/site/components/SiteFooter.tsx`: columna de categorías; `null` con la lista vacía.
 - `footerYear(): Promise<number>`, `features/site/lib/year.ts`: año actual, en caché de `cacheLife("days")`.
@@ -100,7 +112,9 @@ que enlaza.
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| `SiteHeader` | `features/site/components/SiteHeader.tsx` | logo con ficha de la inicial de `SITE_NAME`, `LocationBar degrade`, `SearchPill compact` en `HeaderSearchSlot` (segunda fila en móvil), enlace a `/cuenta/favoritos` oculto bajo `md`, `CartLink` y `AccountSlot` |
+| `SiteHeader` | `features/site/components/SiteHeader.tsx` | logo con ficha de la inicial de `SITE_NAME`, `LocationBar degrade`, `SearchPill compact` en `HeaderSearchSlot` (segunda fila en móvil), enlace a `/cuenta/favoritos` oculto bajo `md`, `CartLink` y `AccountSlot`, los dos últimos y favoritos en un grupo `hidden md:flex` |
+| `MobileNav` | `features/site/components/MobileNav.tsx` | `cartEnabled()`, `accountContext()` y `cartCount()` en paralelo; el contador sólo se pide con el carrito encendido |
+| `tabs` | `features/site/components/MobileNavLinks.tsx` | arma los cinco destinos (Carrito sólo con `cartEnabled`); Favoritos y Cuenta usan `loginHref` sin sesión; Cuenta no se marca activa en `/cuenta/favoritos`; el carrito con productos nombra "Carrito, N producto(s)" |
 | `rootCategories` | `features/site/components/SiteFooter.tsx` | lee `listCategories()`, recorta a 8 y devuelve `[]` ante `MarketplaceUnavailableError` |
 | `steps` | `app/comercios/page.tsx` | los tres pasos de la página |
 | `termsDocument` | `features/site/lib/terms.ts` | secciones de los términos con `SITE_NAME` y los marcadores |
@@ -112,6 +126,7 @@ que enlaza.
 - `lib/marketplace/client.ts` (`listCategories`), `lib/marketplace/errors.ts`, `lib/marketplace/params.ts` (`DEFAULT_RADIUS_KM`) y `lib/marketplace/schemas.ts` (`CategoryNode`, sólo tipo).
 - `features/search/lib/query.ts` (`searchHref`) y `lib/site.ts` (`SITE_NAME`, `SITE_DESCRIPTION`, `POS_NAME`, `merchantWhatsapp`, `merchantEmail`).
 - `next` (tipo `Metadata`) en `legal.ts`.
+- `features/account/lib/returnPath.ts` (`loginHref`), `features/account/server/session.ts` (`accountContext`), `features/cart/components/CartLink.tsx` (`cartCount`) y `features/cart/lib/flag.ts` (`cartEnabled`) en `MobileNav`; `lucide-react` y `next/navigation` (`usePathname`) en `MobileNavLinks`.
 - `features/location/components/LocationBar.tsx`, `features/search/components/HeaderSearchSlot.tsx` y `SearchPill.tsx`, `features/cart/components/CartLink.tsx` y `features/account/components/AccountMenu.tsx` en `SiteHeader`.
 - `components/ui/button.tsx` (`buttonVariants`) y `lib/utils.ts` (`cn`).
 - `next/link` y `next/cache` (`cacheLife`).
@@ -138,6 +153,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 - `SiteHeader` y `SiteFooter` viven en el layout raíz, fuera de `app/error.tsx` (L-02): atrapa sólo `MarketplaceUnavailableError` y relanza lo demás.
 - El año sale de una función `'use cache'`: `new Date()` en el render exigiría `connection()` y volvería dinámico el layout.
 - Cada enlace mide al menos 44 px de alto en móvil.
+- La barra inferior es `fixed` y sólo bajo `md`: `app/layout.tsx` da al `body` un relleno inferior (`3.5rem` más el área segura) para que no tape el pie. En móvil "Salir" vive en las pestañas de `/cuenta` (`AccountNav`).
 - Las variables de contacto se leen al construir la página (prerender): cambiarlas exige un build nuevo. Los clics de contacto no se registran: `POST /api/events` exige `store_slug`.
 - `/comercios` es indexable, con canónica propia y entrada en el grupo `static` de `lib/sitemap.ts`; la marca del punto de venta sale de `POS_NAME`.
 - `/terminos` y `/privacidad` son borradores: aviso visible, `noindex, follow` y fuera del sitemap hasta que el área legal apruebe el texto y se ponga `LEGAL_DRAFT` en `false`. Sus textos no afirman nada que el sitio no haga: las cookies y los datos de `/privacidad` salen de `features/account/server/session.ts`, `features/cart/server/cookie.ts`, `features/location/server/actions.ts` y `app/api/events/route.ts`.
@@ -146,6 +162,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 ## 9. Pruebas
 
 - Comando: `npx vitest run features/site lib/__tests__/sitemap.test.ts`
+- `e2e/site.spec.ts` ("barra inferior en móvil"): los cinco destinos, el activo, Favoritos y Cuenta hacia `/entrar` sin sesión, carrito y cuenta ocultos en la cabecera, y que logo y ubicación no envuelvan en 360 y 320 px.
 - `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, y cada botón sólo con su dato. `lib/__tests__/sitemap.test.ts` cubre la entrada `/comercios` del grupo `static`.
 - `features/site/__tests__/legal.test.tsx`: marcadores permitidos, guarda sin borrador, metadatos y sitemap según el interruptor, el aviso de `LegalDocument` y las cuatro cookies de privacidad.
 - `features/site/__tests__/SiteFooter.test.tsx`: categorías y enlaces, corte en 8, columna omitida con API caída o sin raíces, error ajeno relanzado; simula `@/lib/marketplace/client` y `@/features/site/lib/year` (`cacheLife` no corre en vitest).

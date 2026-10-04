@@ -94,6 +94,7 @@ README: `features/site/README.md`
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
 | mostrar la cabecera del sitio con la ubicación visible | `<SiteHeader />` | `features/site/components/SiteHeader.tsx` |  |
+| navegar por la barra inferior en móvil | `<MobileNav />` | `features/site/components/MobileNav.tsx` | RN-SITE-07 |
 | mostrar el pie del sitio con sus columnas de enlaces | `<SiteFooter />` | `features/site/components/SiteFooter.tsx` | RN-SITE-01, RN-SITE-02 |
 | ofrecer contacto a un comercio que quiere aparecer en el buscador | `<MerchantContact whatsapp={string \| null} email={string \| null} />` | `features/site/components/MerchantContact.tsx` | RN-SITE-03 |
 | publicar los términos de uso como borrador legal | `<LegalDocument document={termsDocument} />` | `features/site/components/LegalDocument.tsx` | RN-SITE-04, RN-SITE-05 |

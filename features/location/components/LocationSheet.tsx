@@ -70,12 +70,12 @@ export function LocationSheet({
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="h-11 min-w-0 shrink-0 justify-start gap-2 rounded-xl px-2 text-left md:h-11"
+          className="h-11 min-w-0 flex-1 basis-0 justify-start gap-2 rounded-xl px-2 text-left md:flex-none md:basis-auto"
         >
           <MapPin aria-hidden="true" className="size-5 text-primary-text" />
-          <span className="flex min-w-0 flex-col items-start leading-tight">
+          <span className="flex min-w-0 max-w-40 flex-col items-start leading-tight sm:max-w-56">
             <span className="text-xs font-medium text-muted-foreground">Buscar cerca de</span>{" "}
-            <span className="flex max-w-40 items-center gap-1 text-sm sm:max-w-56">
+            <span className="flex max-w-full items-center gap-1 text-sm">
               <span className="truncate">{label === null ? "Elegir ubicación" : detail === null ? label : `${label} · ${detail}`}</span>
               <ChevronDown aria-hidden="true" className="size-3.5 shrink-0" />
             </span>

@@ -63,7 +63,7 @@ async function emptyCart(page: Page): Promise<void> {
 }
 
 function cartLink(page: Page, name: string) {
-  return page.locator("header").getByRole("link", { name, exact: true });
+  return page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name, exact: true });
 }
 
 test.describe("checkout y compras", () => {

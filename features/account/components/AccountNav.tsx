@@ -100,6 +100,17 @@ export function AccountNav({
               </li>
             );
           })}
+          <li className="shrink-0">
+            <form action={logout}>
+              <button
+                type="submit"
+                className="flex min-h-11 items-center gap-1.5 border-b-2 border-transparent px-3 text-sm font-medium whitespace-nowrap text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-foreground"
+              >
+                <LogOut aria-hidden="true" className="size-4" />
+                Salir
+              </button>
+            </form>
+          </li>
         </ul>
       </nav>
     </>

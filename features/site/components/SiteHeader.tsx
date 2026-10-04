@@ -35,14 +35,14 @@ export function SiteHeader() {
             </div>
           </HeaderSearchSlot>
         </Suspense>
-        <div className="ml-auto flex shrink-0 items-center gap-2">
+        <div className="ml-auto hidden shrink-0 items-center gap-2 md:flex">
           <Link
             href="/cuenta/favoritos"
             rel="nofollow"
             aria-label="Favoritos"
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon" }),
-              "hidden rounded-full md:inline-flex",
+              "rounded-full",
             )}
           >
             <Heart aria-hidden="true" className="size-5" />

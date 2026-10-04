@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F1 del lienzo "E · PosVen" (Inicio, búsqueda con sugerencias,
 resultados con filtros y orden, sin resultados) más la cabecera con ubicación y la barra inferior
 en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
-**Estado:** en curso · Fase actual: 2
+**Estado:** en curso · Fase actual: 3
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (decisiones), §4 (`ui.md`), §5 (mapa
@@ -49,7 +49,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   en verde y `npx playwright test e2e/search.spec.ts e2e/site.spec.ts` sin fallos nuevos.
 - **Commit:** `feat(site): cabecera con ubicación visible`
 
-### [ ] Fase 2 — Barra inferior en móvil
+### [x] Fase 2 — Barra inferior en móvil
 - **Repo:** posven-ecommerce
 - **Alcance:** Inicio, Buscar, Favoritos, Carrito y Cuenta, con ruta activa y contador del
   carrito; sólo bajo `md`; espacio inferior en el layout para que no tape el pie; e2e móvil.
@@ -101,10 +101,17 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   `SearchPill` pierde `degradeLocation` y `LocationBar`/`LocationSheet` pierden `compact`; el radio
   se lee de `radio` en la URL ("· N km", 10 por defecto, "· Todo el país", ciudad sin detalle);
   cabecera pasa de `sm` a `md`; carrito y cuenta siguen visibles en móvil hasta la fase 2.
+- 2026-10-04 — Fase 2: `MobileNav` (servidor, en Suspense tras el pie de `app/layout.tsx`) y
+  `MobileNavLinks` (cliente); sesión por `accountContext()` (cookie, sin `getMe`) y contador por
+  `cartCount()`, ahora exportado; Carrito sólo con `cartEnabled()`; la cabecera oculta carrito,
+  cuenta y favoritos bajo `md`; "Salir" pasa al final de las pestañas móviles de `AccountNav`;
+  el botón de ubicación es `flex-1 basis-0` bajo `md`; RN-SITE-07. 7 archivos de código, aceptado
+  por el revisor por ser un solo cambio.
 
 ## Notas para la próxima sesión
-- Fase 2: ocultar carrito y cuenta de `SiteHeader` bajo `md` y revisar que la cabecera móvil no
-  envuelva en 360 px o menos (sugerencia del revisor de la fase 1).
+- Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
+  antes en el rojo de "Comercio Aliado" (F2). Volver a correrlos cuando se levante. Fase 9: revisar
+  que el toaster no quede tapado por la barra inferior.
 - `e2e/product.spec.ts` líneas 19, 34 y 73 fallan desde antes de este plan (simulado de producto:
   "Destacado", WhatsApp, "Sin disponibilidad ahora."); no son de F1b.
 
@@ -114,4 +121,10 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · baja · sonnet
 - [ ] M-2 — Prueba de `radiusDetail` (coordenadas con y sin `radio`, `radio=pais`, ciudad sin
   detalle) mockeando `useSearchParams`, en `features/location/__tests__/`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-3 — El comentario de `features/cart/components/CartLink.tsx` (l.12) dice "en la cabecera";
+  `cartCount` ahora también lo usa la barra inferior.
+  posven-ecommerce · baja · sonnet
+- [ ] M-4 — `MobileNavLinks.tsx` usa `text-[10px]` en el contador: confirmar contra `ui.md` o
+  subir a `text-xs`.
   posven-ecommerce · baja · sonnet

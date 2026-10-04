@@ -124,3 +124,20 @@ test("cambiar el orden a menor precio lo escribe en la URL y ordena los resultad
   expect(prices.length).toBeGreaterThan(1);
   expect(prices).toEqual([...prices].sort((a, b) => a - b));
 });
+
+test("abierto ahora se activa desde la hoja de filtros y Limpiar filtros lo quita", async ({ page }) => {
+  await page.goto("/buscar?q=acetaminofen");
+  await expect(page.getByRole("navigation", { name: "Filtros activos" })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Filtros" }).click();
+  await page.getByRole("link", { name: "Abierto ahora" }).click();
+
+  await expect(page).toHaveURL(/abierto=1/);
+  const active = page.getByRole("navigation", { name: "Filtros activos" });
+  await expect(active.getByRole("link", { name: "Quitar filtro Abierto ahora" })).toBeVisible();
+
+  await active.getByRole("link", { name: "Limpiar filtros" }).click();
+
+  await expect(page).not.toHaveURL(/abierto=1/);
+  await expect(page.getByRole("navigation", { name: "Filtros activos" })).toHaveCount(0);
+});

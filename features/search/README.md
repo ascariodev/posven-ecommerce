@@ -2,27 +2,27 @@
 module: "search"
 path: "features/search"
 type: "feature"
-exports: ["SearchQuery", "parseSearchQuery", "searchHref", "SearchResults", "ProductCard", "FeaturedCard", "RadiusFilter", "Pagination", "EmptyState", "CategoryLinks", "categoryIcon", "categoryTint", "ProductThumb", "HeaderSearchSlot", "SearchPill", "CategoryRail", "NearbyProducts", "NearbyProductsSkeleton", "FiltersSheet", "SortLinks", "ResultsHeader", "SearchBox", "SuggestionsPanel", "buildPanelItems", "useSuggestions", "readRecents", "addRecent"]
+exports: ["SearchQuery", "parseSearchQuery", "searchHref", "SearchResults", "ProductCard", "FeaturedCard", "RadiusFilter", "Pagination", "EmptyState", "CategoryLinks", "categoryIcon", "categoryTint", "ProductThumb", "HeaderSearchSlot", "SearchPill", "CategoryRail", "NearbyProducts", "NearbyProductsSkeleton", "FiltersSheet", "SortLinks", "ResultsHeader", "findCategory", "OpenNowFilter", "ActiveFilters", "SearchBox", "SuggestionsPanel", "buildPanelItems", "useSuggestions", "readRecents", "addRecent"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "components/ui/button.tsx", "components/ui/input.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx", "components/ui/skeleton.tsx", "lib/utils.ts", "app/api/suggestions/route.ts"]
 tests: "features/search/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/search/lib/query.ts", "features/search/components/SearchResults.tsx", "features/search/components/ProductCard.tsx", "features/search/components/FeaturedCard.tsx", "features/search/components/RadiusFilter.tsx", "features/search/components/Pagination.tsx", "features/search/components/EmptyState.tsx", "features/search/components/CategoryLinks.tsx", "features/search/lib/categoryIcon.ts", "features/search/components/ProductThumb.tsx", "features/search/components/HeaderSearchSlot.tsx", "features/search/components/SearchPill.tsx", "features/search/components/CategoryRail.tsx", "features/search/components/NearbyProducts.tsx", "features/search/lib/categoryTint.ts", "features/search/components/FiltersSheet.tsx", "features/search/components/SortLinks.tsx", "features/search/components/ResultsHeader.tsx", "features/search/components/SearchBox.tsx", "features/search/components/SuggestionsPanel.tsx", "features/search/lib/panelItems.ts", "features/search/lib/useSuggestions.ts", "features/search/lib/recents.ts", "app/api/suggestions/route.ts", "app/layout.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/site/components/SiteHeader.tsx", "components/ui/skeleton.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx"]
+verified_against: ["features/search/lib/query.ts", "features/search/components/SearchResults.tsx", "features/search/components/ProductCard.tsx", "features/search/components/FeaturedCard.tsx", "features/search/components/RadiusFilter.tsx", "features/search/components/Pagination.tsx", "features/search/components/EmptyState.tsx", "features/search/components/CategoryLinks.tsx", "features/search/lib/categoryIcon.ts", "features/search/components/ProductThumb.tsx", "features/search/components/HeaderSearchSlot.tsx", "features/search/components/SearchPill.tsx", "features/search/components/CategoryRail.tsx", "features/search/components/NearbyProducts.tsx", "features/search/lib/categoryTint.ts", "features/search/components/FiltersSheet.tsx", "features/search/components/SortLinks.tsx", "features/search/components/ResultsHeader.tsx", "features/search/components/OpenNowFilter.tsx", "features/search/components/ActiveFilters.tsx", "features/search/components/SearchBox.tsx", "features/search/components/SuggestionsPanel.tsx", "features/search/lib/panelItems.ts", "features/search/lib/useSuggestions.ts", "features/search/lib/recents.ts", "app/api/suggestions/route.ts", "app/layout.tsx", "app/buscar/page.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/site/components/SiteHeader.tsx", "components/ui/skeleton.tsx", "components/ui/sheet.tsx", "components/ui/toggle.tsx"]
 capabilities:
   - intent: "buscar productos por texto o categoría cerca del usuario"
     intent_aliases: ["buscar producto", "resultados de busqueda", "pagina buscar", "buscar por categoria"]
     entrypoint: "<SearchResults />"
     file: "features/search/components/SearchResults.tsx"
-    input: "searchParams: Promise<Record<string, string | string[] | undefined>> con q, categoria, radio (3 | 10 | 25 | 50 | pais), orden (precio | cercania) y pagina"
-    output: "ResultsHeader (migas, título y total), SortLinks, chips de categoría, RadiusFilter (en línea desde md, en el Sheet de FiltersSheet en móvil) si hay ubicación, línea de tasa, FeaturedCard por destacado, ProductCard por resultado en rejilla y Pagination numerada; EmptyState si no hay nada"
+    input: "searchParams: Promise<Record<string, string | string[] | undefined>> con q, categoria, radio (3 | 10 | 25 | 50 | pais), orden (precio | cercania), abierto (1) y pagina"
+    output: "ResultsHeader (migas, título y total), ActiveFilters (chips y Limpiar filtros), SortLinks, chips de categoría, RadiusFilter (si hay ubicación) y OpenNowFilter (en la columna desde md, en el Sheet de FiltersSheet en móvil), línea de tasa, FeaturedCard por destacado, ProductCard por resultado en rejilla y Pagination numerada; EmptyState si no hay nada"
     source: "searchProducts() de lib/marketplace con geo de getEffectiveLocation() (cookie loc)"
-    rules: ["RN-SEARCH-01", "RN-SEARCH-03", "RN-SEARCH-04", "RN-SEARCH-06"]
+    rules: ["RN-SEARCH-01", "RN-SEARCH-03", "RN-SEARCH-04", "RN-SEARCH-06", "RN-SEARCH-07"]
   - intent: "leer y escribir los parámetros de la URL de /buscar"
     intent_aliases: ["parametros de busqueda", "url de buscar", "radio de busqueda", "enlace a buscar"]
     entrypoint: "parseSearchQuery() / searchHref()"
     file: "features/search/lib/query.ts"
     input: "Record<string, string | string[] | undefined> | SearchQuery"
-    output: "SearchQuery { q: string; categoria: string | null; radio: RadiusKm | null; pagina: number; sort?: OfferSort } | '/buscar?...'"
+    output: "SearchQuery { q: string; categoria: string | null; radio: RadiusKm | null; pagina: number; sort?: OfferSort; openNow?: boolean } | '/buscar?...'"
     source: "URL"
-    rules: ["RN-SEARCH-02", "RN-SEARCH-06"]
+    rules: ["RN-SEARCH-02", "RN-SEARCH-06", "RN-SEARCH-07"]
   - intent: "mostrar la píldora de búsqueda"
     intent_aliases: ["pildora de busqueda", "buscador del inicio", "buscador con ubicacion", "que y donde", "buscador de la cabecera", "caja de busqueda", "buscador"]
     entrypoint: "<SearchPill />"
@@ -53,12 +53,11 @@ capabilities:
 
 ## 1. Propósito
 
-La búsqueda de productos en `/buscar` y el buscador del inicio: lee `q`, `categoria`, `radio`, `orden` y
+La búsqueda de productos en `/buscar` y el buscador del inicio: lee `q`, `categoria`, `radio`, `orden`, `abierto` y
 `pagina` de la URL, pide `searchProducts()` con la ubicación de la cookie y pinta cabecera de
-resultados (migas, título y total), orden, chips de categoría, destacados, resultados, radio, paginación y el estado vacío con sugerencias; la píldora
+resultados (migas, título y total), orden, chips de categoría y filtros, destacados, resultados, paginación y el estado vacío; la píldora
 `SearchPill` y el carril `CategoryRail` arman el inicio. No calcula montos ni distancias ni ordena:
-el selector de orden sólo cambia `orden` en la URL y envía `sort` a `/search`; la API entrega el
-orden y los montos, y esto sólo los formatea.
+orden, horarios y montos los entrega la API; esto sólo los formatea.
 
 ## 2. Reglas de negocio
 
@@ -70,6 +69,7 @@ orden y los montos, y esto sólo los formatea.
 | `RN-SEARCH-04` | "Desde" antecede al precio sólo si `offers_count` es mayor que 1. | `features/search/__tests__/ProductCard.test.tsx` ("con una sola oferta no antepone Desde", "con varias ofertas antepone Desde") |
 | `RN-SEARCH-05` | Con menos de 2 caracteres el buscador no llama a `/api/suggestions`: sólo ofrece los recientes. | `features/search/__tests__/SearchBox.test.tsx` ("con una letra no llama a la API") |
 | `RN-SEARCH-06` | `orden` acepta `precio` o `cercania`; otro valor se ignora; sin él, o con `cercania` y sin ubicación, no se envía `sort`, así que manda el orden por defecto de la API. | `features/search/__tests__/query.test.ts` ("lee orden=precio y orden=cercania como sort", "sin orden o con un valor desconocido no trae sort"), `features/search/__tests__/SearchResults.test.tsx` ("pasa el orden de la URL a searchProducts") |
+| `RN-SEARCH-07` | `abierto=1` activa `openNow` y envía `open_now` a `/search`; la API decide qué tiendas están abiertas, el frontend no calcula horarios. Otro valor lo omite. | `features/search/__tests__/query.test.ts` ("abierto=1 activa openNow y otro valor o ausencia lo omite"), `features/search/__tests__/SearchResults.test.tsx` ("pasa open_now a searchProducts sólo con abierto=1") |
 
 ## 3. Dónde hacer cambios
 
@@ -83,7 +83,8 @@ orden y los montos, y esto sólo los formatea.
 | Tinte de una categoría sin imagen | `TINTS` en `categoryTint.ts` | `categoryTint.test.ts`; los colores son los tokens `primary-soft`, `success-soft`, `warning-soft` y `muted` de `app/globals.css` |
 | Píldora de búsqueda | `SearchPill.tsx` | el rol `combobox` con nombre "Buscar productos" y el botón "Buscar" que usa `e2e/search.spec.ts` (el botón de ubicación también empieza por "Buscar": se pulsa con `exact: true`) |
 | Carril de categorías del inicio | `CategoryRail.tsx` | chips `rounded-full` de 44 px (`buttonVariants` outline) con "Todo" primero; los enlaces se arman con `searchHref` y el nombre accesible de cada chip es el de la categoría |
-| Filtros en móvil | `FiltersSheet.tsx` (recibe el `RadiusFilter` como `children`) | el caso "elegir ciudad" de `e2e/search.spec.ts` abre "Filtros" en móvil |
+| Filtros en móvil | `FiltersSheet.tsx` (recibe distancia y disponibilidad como `children`) | los casos "elegir ciudad" y "abierto ahora" de `e2e/search.spec.ts` abren "Filtros" en móvil |
+| Un filtro nuevo | `SearchQuery`/`parseSearchQuery`/`searchHref` en `query.ts`, su enlace en la columna y en la hoja de `SearchResults.tsx` y su chip en `chipsFor` de `ActiveFilters.tsx` | `ActiveFilters.test.tsx`; el valor por defecto no es chip y `Limpiar filtros` lo restablece |
 | Panel de sugerencias (orden de secciones, enlaces) | `buildPanelItems` en `panelItems.ts` y `SuggestionsPanel.tsx` | `panelItems.test.ts`; los precios sólo por `formatUsd` y `formatVes` |
 | Teclado, ARIA y recientes del buscador | `SearchBox.tsx` y `recents.ts` | `SearchBox.test.tsx`, `recents.test.ts` y el caso de sugerencias de `e2e/search.spec.ts` |
 | Datos de la tarjeta de producto | `ProductCard.tsx` | `ProductCard.test.tsx`; los montos sólo por `formatUsd` y `formatVes` |
@@ -94,9 +95,9 @@ orden y los montos, y esto sólo los formatea.
 
 URL de la búsqueda, `features/search/lib/query.ts`:
 
-- `type SearchQuery = { q: string; categoria: string | null; radio: RadiusKm | null; pagina: number; sort?: OfferSort }`
-- `parseSearchQuery(raw: Record<string, string | string[] | undefined>): SearchQuery`: `q` recortado y cortado a 100 caracteres; `categoria` sólo si casa `^[a-z0-9-]+$`; `radio` `pais` es `null`, ausente o inválido es 10; `pagina` entero mayor o igual a 1, si no 1; `orden` `precio` es `price`, `cercania` es `distance` y cualquier otro valor deja `sort` ausente; de un arreglo toma el primer valor.
-- `searchHref(query: SearchQuery): string`: `/buscar?...` sin `q` vacío, `categoria` null, `radio` 10 ni `pagina` 1; `radio` null se escribe `pais`; `sort` se escribe `orden=precio` u `orden=cercania`.
+- `type SearchQuery = { q: string; categoria: string | null; radio: RadiusKm | null; pagina: number; sort?: OfferSort; openNow?: boolean }`
+- `parseSearchQuery(raw: Record<string, string | string[] | undefined>): SearchQuery`: `q` recortado y cortado a 100 caracteres; `categoria` sólo si casa `^[a-z0-9-]+$`; `radio` `pais` es `null`, ausente o inválido es 10; `pagina` entero mayor o igual a 1, si no 1; `orden` `precio` es `price`, `cercania` es `distance` y cualquier otro valor deja `sort` ausente; `abierto` `1` pone `openNow` y otro valor lo deja ausente; de un arreglo toma el primer valor.
+- `searchHref(query: SearchQuery): string`: `/buscar?...` sin `q` vacío, `categoria` null, `radio` 10 ni `pagina` 1; `radio` null se escribe `pais`; `sort` se escribe `orden=precio` u `orden=cercania`; `openNow` verdadero se escribe `abierto=1`.
 
 Componentes:
 
@@ -106,12 +107,15 @@ Componentes:
 - `CategoryRail({ categories }: { categories: CategoryNode[] })`, Server Component, `features/search/components/CategoryRail.tsx`: `<nav aria-label="Categorías">` con chips de ícono y nombre (más "Todo", sin categoría) a `searchHref({ q: "", categoria, radio: DEFAULT_RADIUS_KM, pagina: 1 })`, en scroll horizontal nativo; `null` sin categorías
 - `NearbyProducts(): Promise<React.JSX.Element | null>`, Server Component sin props, `features/search/components/NearbyProducts.tsx`: `listNearbyProducts({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1 })`, primeros 8 en `<ul>` de scroll horizontal nativo (`w-40` por tarjeta), con las tiendas, la distancia (`formatDistance`) y los montos que entrega la API; `null` sin productos o ante `MarketplaceUnavailableError`
 - `NearbyProductsSkeleton()`, fallback de `NearbyProducts`, `features/search/components/NearbyProducts.tsx`
-- `FiltersSheet({ children }: { children: ReactNode })`, `features/search/components/FiltersSheet.tsx` (`"use client"`): botón "Filtros" (sólo bajo `md`) que abre un `Sheet` inferior con los hijos; el `RadiusFilter` sigue siendo de servidor
+- `FiltersSheet({ children }: { children: ReactNode })`, `features/search/components/FiltersSheet.tsx` (`"use client"`): botón "Filtros" (sólo bajo `md`) que abre un `Sheet` inferior con los hijos (distancia y disponibilidad); los filtros siguen siendo de servidor
 - `SearchResults({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/search/components/SearchResults.tsx`
 - `ProductCard({ item }: { item: SearchItem })`, `features/search/components/ProductCard.tsx`
 - `FeaturedCard({ item }: { item: FeaturedProduct })`, `features/search/components/FeaturedCard.tsx`
 - `SortLinks({ query, hasLocation }: { query: SearchQuery; hasLocation: boolean })`, `features/search/components/SortLinks.tsx`: `<nav aria-label="Ordenar por">` con chips que cambian `orden` y vuelven a la página 1; con ubicación, "Más cercano" (el defecto) y "Menor precio"; sin ella, "Relevancia" y "Menor precio"
 - `ResultsHeader({ query, categories, total, geoKind, locationName, showTotal })`, `features/search/components/ResultsHeader.tsx`: migas `Inicio › categoría padre › categoría › texto`, título `h2` (el texto o la categoría) y total ("N productos", más "en {ciudad}", "a menos de N km" o "en todo el país" con ubicación); el total no se pinta con `showTotal` falso
+- `OpenNowFilter({ query }: { query: SearchQuery })`, `features/search/components/OpenNowFilter.tsx`: `<nav aria-label="Disponibilidad">` con el enlace "Abierto ahora" que alterna `abierto=1` y vuelve a la página 1
+- `ActiveFilters({ query, categories, hasLocation }: { query: SearchQuery; categories: CategoryNode[]; hasLocation: boolean })`, `features/search/components/ActiveFilters.tsx`: `<nav aria-label="Filtros activos">` con un chip enlace "Quitar filtro X" por categoría (sólo con texto de búsqueda), radio distinto de 10 (con ubicación) y "Abierto ahora", más "Limpiar filtros" que los restablece conservando texto y orden; nada si no hay filtros
+- `findCategory(nodes: CategoryNode[], slug: string, parent?: CategoryNode | null): { node: CategoryNode; parent: CategoryNode | null } | null`, `features/search/components/ResultsHeader.tsx`: busca una categoría en el árbol y devuelve su padre
 - `RadiusFilter({ query, geoKind, cityName }: { query: SearchQuery; geoKind: "coords" | "city"; cityName: string | null })`, `features/search/components/RadiusFilter.tsx`
 - `Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta })`, `features/search/components/Pagination.tsx`: Anterior, números (primera, última y vecinas de la actual con elipsis; la actual con `aria-current="page"`) y Siguiente, todos por `searchHref`
 - `EmptyState({ query, geoKind, categories }: { query: SearchQuery; geoKind: "coords" | "city" | null; categories: CategoryNode[] })`, `features/search/components/EmptyState.tsx`
@@ -142,7 +146,7 @@ Tintes, `features/search/lib/categoryTint.ts`:
 | Panel de sugerencias | `components/SearchBox.tsx`, `components/SuggestionsPanel.tsx` | el panel cuelga del contenedor `relative` de `SearchPill`; la ruta que consulta es `app/api/suggestions/route.ts` (no se cambia desde acá) |
 | Cabecera | `features/site/components/SiteHeader.tsx` (montada por `app/layout.tsx`) | `SearchPill compact` dentro de `HeaderSearchSlot` (en móvil, segunda fila a todo el ancho; desde `md`, centrada con `md:max-w-xl`), en un `<Suspense fallback={null}>` porque `usePathname` suspende en las rutas con parámetros de respaldo |
 | Cabecera y orden | `components/SearchResults.tsx` | `ResultsHeader` y `SortLinks` encabezan los resultados; el estado vacío sólo lleva el título |
-| Barra de filtros | `components/SearchResults.tsx` | chips de categoría raíz (`toggleVariants` sobre `<Link>`, el activo con `aria-current="true"` y `href` que la quita) y `RadiusFilter` en línea desde `md` o dentro de `FiltersSheet` en móvil |
+| Filtros | `components/SearchResults.tsx` | columna lateral desde `md` (categorías, `RadiusFilter` con ubicación y `OpenNowFilter`); en móvil, chips de categoría raíz (`toggleVariants` sobre `<Link>`, el activo con `aria-current="true"` y `href` que la quita) y `FiltersSheet` con distancia y disponibilidad; `ActiveFilters` debajo del encabezado en ambos |
 | Página | `app/buscar/page.tsx` | `metadata` estática con `robots` `noindex, follow`; `SearchPill compact` y resultados, cada uno en su `<Suspense>` |
 | Inicio | `app/page.tsx` | héroe sobre `bg-primary` (insignia, `h1`, texto y `SearchPill`), `CategoryRail`, `NearbyProducts` y `NearbyStores`, cada bloque en su `<Suspense>`; los productos van en un riel, no en rejilla (spec §7); el `h1` lo comprueba `e2e/search.spec.ts` |
 

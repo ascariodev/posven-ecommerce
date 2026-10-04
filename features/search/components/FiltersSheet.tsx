@@ -17,9 +17,9 @@ export function FiltersSheet({ children }: { children: ReactNode }) {
       <SheetContent side="bottom" className="rounded-t-3xl">
         <SheetHeader>
           <SheetTitle>Filtros</SheetTitle>
-          <SheetDescription>Distancia desde tu ubicación.</SheetDescription>
+          <SheetDescription>Distancia y disponibilidad de los comercios.</SheetDescription>
         </SheetHeader>
-        <div className="px-4 pb-6">{children}</div>
+        <div className="flex flex-col gap-6 px-4 pb-6">{children}</div>
       </SheetContent>
     </Sheet>
   );

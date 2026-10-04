@@ -5,7 +5,7 @@ import { searchHref, type SearchQuery } from "../lib/query";
 
 type Crumb = { label: string; href: string | null };
 
-function findCategory(
+export function findCategory(
   nodes: CategoryNode[],
   slug: string,
   parent: CategoryNode | null = null,

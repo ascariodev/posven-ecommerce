@@ -124,7 +124,7 @@ que enlaza.
 ## 6. Dependencias
 
 - `lib/marketplace/client.ts` (`listCategories`), `lib/marketplace/errors.ts`, `lib/marketplace/params.ts` (`DEFAULT_RADIUS_KM`) y `lib/marketplace/schemas.ts` (`CategoryNode`, sólo tipo).
-- `features/search/lib/query.ts` (`searchHref`) y `lib/site.ts` (`SITE_NAME`, `SITE_DESCRIPTION`, `POS_NAME`, `merchantWhatsapp`, `merchantEmail`).
+- `features/search/lib/query.ts` (`searchHref`, su única dependencia sobre ese archivo; el pie no pasa `openNow` ni `sort`, así que la URL queda sin `abierto` ni `orden`) y `lib/site.ts` (`SITE_NAME`, `SITE_DESCRIPTION`, `POS_NAME`, `merchantWhatsapp`, `merchantEmail`).
 - `next` (tipo `Metadata`) en `legal.ts`.
 - `features/account/lib/returnPath.ts` (`loginHref`), `features/account/server/session.ts` (`accountContext`), `features/cart/components/CartLink.tsx` (`cartCount`) y `features/cart/lib/flag.ts` (`cartEnabled`) en `MobileNav`; `lucide-react` y `next/navigation` (`usePathname`) en `MobileNavLinks`.
 - `features/location/components/LocationBar.tsx`, `features/search/components/HeaderSearchSlot.tsx` y `SearchPill.tsx`, `features/cart/components/CartLink.tsx` y `features/account/components/AccountMenu.tsx` en `SiteHeader`.

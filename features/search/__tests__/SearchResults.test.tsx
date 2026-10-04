@@ -44,6 +44,20 @@ describe("SearchResults", () => {
     expect(vi.mocked(searchProducts).mock.calls[2]?.[0].sort).toBeUndefined();
   });
 
+  it("pasa open_now a searchProducts sólo con abierto=1", async () => {
+    vi.mocked(searchProducts).mockResolvedValue({
+      data: [],
+      featured: [],
+      meta: { page: 1, per_page: 20, total: 0 },
+      rate: { rate: "100.00", date: "2026-10-03" },
+    } as unknown as Awaited<ReturnType<typeof searchProducts>>);
+    render(await SearchResults({ searchParams: Promise.resolve({ q: "arroz", abierto: "1" }) }));
+    expect(vi.mocked(searchProducts).mock.calls[0]?.[0]).toMatchObject({ openNow: true });
+    cleanup();
+    render(await SearchResults({ searchParams: Promise.resolve({ q: "arroz" }) }));
+    expect(vi.mocked(searchProducts).mock.calls[1]?.[0].openNow).toBeUndefined();
+  });
+
   describe("evento search", () => {
     function resultsFor(total: number) {
       return {

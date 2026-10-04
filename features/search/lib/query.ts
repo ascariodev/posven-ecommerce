@@ -6,6 +6,7 @@ export type SearchQuery = {
   radio: RadiusKm | null;
   pagina: number;
   sort?: OfferSort;
+  openNow?: boolean;
 };
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
@@ -45,6 +46,7 @@ export function parseSearchQuery(raw: RawSearchParams): SearchQuery {
     radio: parseRadius(firstValue(raw.radio)),
     pagina: parsePage(firstValue(raw.pagina)),
     ...(sort === undefined ? {} : { sort }),
+    ...(firstValue(raw.abierto) === "1" ? { openNow: true } : {}),
   };
 }
 
@@ -54,6 +56,7 @@ export function searchHref(query: SearchQuery): string {
   if (query.categoria !== null) params.set("categoria", query.categoria);
   if (query.radio === null) params.set("radio", NATIONWIDE);
   else if (query.radio !== DEFAULT_RADIUS_KM) params.set("radio", String(query.radio));
+  if (query.openNow === true) params.set("abierto", "1");
   if (query.sort !== undefined) params.set("orden", query.sort === "price" ? "precio" : "cercania");
   if (query.pagina !== 1) params.set("pagina", String(query.pagina));
   const search = params.toString();

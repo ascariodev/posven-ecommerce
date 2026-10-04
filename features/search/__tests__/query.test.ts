@@ -70,4 +70,24 @@ describe("searchHref", () => {
       "/buscar?q=arroz&orden=cercania&pagina=2",
     );
   });
+
+  it("escribe abierto=1 sólo con openNow y conserva orden", () => {
+    expect(searchHref({ q: "arroz", categoria: null, radio: 10, pagina: 1, openNow: true })).toBe(
+      "/buscar?q=arroz&abierto=1",
+    );
+    expect(searchHref({ q: "arroz", categoria: null, radio: 10, pagina: 1, openNow: true, sort: "price" })).toBe(
+      "/buscar?q=arroz&abierto=1&orden=precio",
+    );
+    expect(searchHref({ q: "arroz", categoria: null, radio: 10, pagina: 1, openNow: undefined })).toBe(
+      "/buscar?q=arroz",
+    );
+  });
+});
+
+describe("parseSearchQuery abierto", () => {
+  it("abierto=1 activa openNow y otro valor o ausencia lo omite", () => {
+    expect(parseSearchQuery({ q: "a", abierto: "1" }).openNow).toBe(true);
+    expect("openNow" in parseSearchQuery({ q: "a", abierto: "0" })).toBe(false);
+    expect("openNow" in parseSearchQuery({ q: "a" })).toBe(false);
+  });
 });

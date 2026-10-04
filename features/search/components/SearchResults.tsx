@@ -7,9 +7,11 @@ import { formatRate } from "@/lib/format";
 import { listCategories, searchProducts } from "@/lib/marketplace/client";
 import { cn } from "@/lib/utils";
 import { ViewBeacon } from "@/features/events/components/ViewBeacon";
+import { ActiveFilters } from "./ActiveFilters";
 import { EmptyState } from "./EmptyState";
 import { FeaturedCard } from "./FeaturedCard";
 import { FiltersSheet } from "./FiltersSheet";
+import { OpenNowFilter } from "./OpenNowFilter";
 import { Pagination } from "./Pagination";
 import { ProductCard } from "./ProductCard";
 import { parseSearchQuery, searchHref } from "../lib/query";
@@ -43,6 +45,7 @@ export async function SearchResults({
       geo: toGeoFilter(location),
       radiusKm: query.radio,
       page: query.pagina,
+      openNow: query.openNow === true ? true : undefined,
       sort: geoKind === null && query.sort === "distance" ? undefined : query.sort,
     }),
     listCategories(),
@@ -96,6 +99,10 @@ export async function SearchResults({
             <RadiusFilter query={query} geoKind={geoKind} cityName={geoKind === "city" ? locationName : null} />
           </div>
         )}
+        <div className="flex flex-col gap-4">
+          <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wider">Disponibilidad</h3>
+          <OpenNowFilter query={query} />
+        </div>
       </aside>
 
       {/* CONTENIDO PRINCIPAL Y FILTROS MOBILE */}
@@ -123,11 +130,18 @@ export async function SearchResults({
               })}
             </ul>
           </nav>
-          {geoKind !== null && (
-            <FiltersSheet key={searchHref(query)}>
-              <RadiusFilter query={query} geoKind={geoKind} cityName={geoKind === "city" ? locationName : null} />
-            </FiltersSheet>
-          )}
+          <FiltersSheet key={searchHref(query)}>
+            {geoKind !== null && (
+              <div className="flex flex-col gap-3">
+                <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wider">Distancia</h3>
+                <RadiusFilter query={query} geoKind={geoKind} cityName={geoKind === "city" ? locationName : null} />
+              </div>
+            )}
+            <div className="flex flex-col gap-3">
+              <h3 className="font-heading font-bold text-sm text-foreground uppercase tracking-wider">Disponibilidad</h3>
+              <OpenNowFilter query={query} />
+            </div>
+          </FiltersSheet>
         </div>
       <ResultsHeader
         query={query}
@@ -137,6 +151,7 @@ export async function SearchResults({
         locationName={locationName}
         showTotal={!isEmpty}
       />
+      <ActiveFilters query={query} categories={categories} hasLocation={geoKind !== null} />
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         {!isEmpty && <SortLinks query={query} hasLocation={geoKind !== null} />}
         <p className="ml-auto text-sm text-muted-foreground">{formatRate(rate)}</p>

@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F1 del lienzo "E · PosVen" (Inicio, búsqueda con sugerencias,
 resultados con filtros y orden, sin resultados) más la cabecera con ubicación y la barra inferior
 en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
-**Estado:** en curso · Fase actual: 7
+**Estado:** en curso · Fase actual: 8
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (decisiones), §4 (`ui.md`), §5 (mapa
@@ -74,7 +74,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - **Alcance:** cabecera de resultados (migas, título, total), orden por cercanía o precio
   (`sort` en `parseSearchQuery`/`searchHref`), tarjetas y paginación del lienzo.
 
-### [ ] Fase 7 — Resultados: filtros
+### [x] Fase 7 — Resultados: filtros
 - **Repo:** posven-ecommerce
 - **Alcance:** columna de filtros en escritorio y hoja en móvil con distancia, "abierto ahora"
   (`open_now`), categoría y chips de filtros activos con "Limpiar filtros".
@@ -131,8 +131,15 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   total con ubicación; `Pagination` con números y elipsis, sin "Página X de Y"; `ProductCard` y
   `FeaturedCard` sin cambios; RN-SEARCH-06. Los enlaces de filtros conservan `orden` porque
   extienden `query`.
+- 2026-10-04 — Fase 7: `SearchQuery.openNow?: boolean` con `abierto=1` (sólo si verdadero), que
+  viaja como `openNow` a `searchProducts`; columna de filtros desde `md` y `FiltersSheet` siempre
+  visible en móvil (Disponibilidad y Distancia sólo con ubicación); `OpenNowFilter` y
+  `ActiveFilters` (chips: categoría sólo con texto, radio distinto de 10 con ubicación, "Abierto
+  ahora"); "Limpiar filtros" conserva `q` y `orden`; `findCategory` exportado desde
+  `ResultsHeader`; RN-SEARCH-07.
 
 ## Notas para la próxima sesión
+- Fase 8: `EmptyState` aún no ofrece quitar "Abierto ahora" cuando no hay resultados.
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
   antes en el rojo de "Comercio Aliado" (F2). Volver a correrlos cuando se levante. Fase 9: revisar
   que el toaster no quede tapado por la barra inferior, y el aviso de hidratación en `MobileNav`
@@ -175,4 +182,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · baja · sonnet
 - [ ] M-13 — Prueba de que el evento `search` no se re-dispara al cambiar `orden` en la página 1
   (`SearchResults.test.tsx` o `ViewBeacon`).
+  posven-ecommerce · baja · sonnet
+- [ ] M-14 — `OpenNowFilter` es un enlace con `aria-current`; un lector no lo anuncia como
+  interruptor. Valorar `aria-pressed` o `role="switch"`.
   posven-ecommerce · baja · sonnet

@@ -1,7 +1,8 @@
 "use client";
 
+import Form from "next/form";
 import { useRouter } from "next/navigation";
-import { useId, useRef, useState, type FocusEvent, type KeyboardEvent } from "react";
+import { useId, useRef, useState, type FocusEvent, type FormEvent, type KeyboardEvent } from "react";
 import { Input } from "@/components/ui/input";
 import type { RadiusKm } from "@/lib/marketplace/params";
 import { buildPanelItems, type PanelItem } from "../lib/panelItems";
@@ -15,7 +16,15 @@ function currentRadio(): RadiusKm | null {
   return parseSearchQuery(Object.fromEntries(new URLSearchParams(window.location.search))).radio;
 }
 
-export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: string; className?: string }) {
+export function SearchBox({
+  defaultQuery = "",
+  className,
+  formId,
+}: {
+  defaultQuery?: string;
+  className?: string;
+  formId?: string;
+}) {
   const router = useRouter();
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -54,6 +63,11 @@ export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: str
     setOpen(true);
   }
 
+  function rememberQuery(event: FormEvent<HTMLFormElement>) {
+    const q = new FormData(event.currentTarget).get("q");
+    if (typeof q === "string") addRecent(q);
+  }
+
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Escape") {
       close();
@@ -80,12 +94,12 @@ export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: str
     }
   }
 
-  function handleBlur(event: FocusEvent<HTMLDivElement>) {
+  function handleBlur(event: FocusEvent<HTMLFormElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) close();
   }
 
   return (
-    <div onBlur={handleBlur}>
+    <Form action="/buscar" role="search" id={formId} onSubmit={rememberQuery} onBlur={handleBlur} className="min-w-0 flex-1">
       <Input
         ref={inputRef}
         name="q"
@@ -110,6 +124,6 @@ export function SearchBox({ defaultQuery = "", className }: { defaultQuery?: str
         className={className}
       />
       {expanded && <SuggestionsPanel id={listId} items={items} activeIndex={active} onPick={pick} onClearRecents={clear} />}
-    </div>
+    </Form>
   );
 }

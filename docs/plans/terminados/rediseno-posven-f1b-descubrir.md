@@ -152,8 +152,8 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 
 ## Notas para la próxima sesión
 - Mejoras aplicadas el 2026-10-04 en `main` sin push: todas las bajas (M-1..M-5, M-7..M-20;
-  M-21 cubierta por la M-4 de F0). Pendientes: M-6 (media), M-22 (baja) y M-23 (alta, plan nuevo
-  que cruza posveapi).
+  M-21 cubierta por la M-4 de F0). M-6 aplicada después, a pedido. Pendientes: M-22 (baja) y M-23 (alta, plan
+  nuevo que cruza posveapi).
 - Fase 9: comparar copia y orden de bloques de `EmptyState` contra W05/P05.
 - Los cambios de la fase 2 en `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` no se ejecutaron: caen
   antes en el rojo de "Comercio Aliado" (F2). Volver a correrlos cuando se levante. Fase 9: revisar
@@ -178,7 +178,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
   posven-ecommerce · baja · sonnet
 - [x] M-5 — `SearchBox`: `ArrowDown` con el panel cerrado lo abre pero no mueve la opción activa.
   posven-ecommerce · baja · sonnet
-- [ ] M-6 — Mover el `Form` con `onSubmit` de `SearchPill` dentro de `SearchBox` para que
+- [x] M-6 — Mover el `Form` con `onSubmit` de `SearchPill` dentro de `SearchBox` para que
   `SearchPill` vuelva a ser de servidor (regla `app-router` 4).
   posven-ecommerce · media · sonnet
 - [x] M-7 — Botón para borrar las búsquedas recientes del panel (no estaba en el alcance).
@@ -225,3 +225,6 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [ ] M-23 — `open_now` en `/products/nearby` (posveapi) y `listNearbyProducts`, para que "Quizás te
   sirve" filtre de verdad con "Abierto ahora" (hoy sólo lo rotula). Cruza el contrato.
   posveapi + posven-ecommerce · alta · plan nuevo
+- [ ] M-24 — `SearchBox.test.tsx`: un caso con `fireEvent.submit` del `Form` que compruebe que el
+  envío guarda el reciente (`readRecents`); hoy no hay prueba de ese camino.
+  posven-ecommerce · baja · sonnet

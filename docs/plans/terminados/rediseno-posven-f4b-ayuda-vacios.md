@@ -175,7 +175,7 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   se repite en cada vacío; extraer una constante o prop de acción en `components/EmptyState.tsx`.
 - [x] M-3 (baja, sonnet) — Vacíos dentro de secciones con su propio `h2` (`ProductOffers`,
   `StoreProducts`, `NearbyStores`): admitir `headingLevel: "h3"` en `components/EmptyState.tsx` y usarlo ahí.
-- [ ] M-4 (baja, sonnet) — La tarjeta con ícono grande puede verse desproporcionada en secciones de
+- [x] M-4 (baja, sonnet) — La tarjeta con ícono grande puede verse desproporcionada en secciones de
   la home (`NearbyStores`); validar en `/preview` y, si hace falta, variante compacta en `components/EmptyState.tsx`.
 - [ ] M-5 (media, sonnet) — El héroe de `/ayuda` queda dentro del `max-w-5xl` del `<main>` del
   layout y no a ancho completo como en W12/P12 (`max-width: 1200px`). Decidir un patrón de sección a

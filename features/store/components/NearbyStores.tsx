@@ -48,7 +48,7 @@ export async function NearbyStores() {
           </Link>
         </div>
         {stores.length === 0 ? (
-          <EmptyState icon={MapPinOff} title="Todavía no hay comercios cerca." headingLevel="h3" description="Prueba con otra ciudad." />
+          <EmptyState icon={MapPinOff} title="Todavía no hay comercios cerca." headingLevel="h3" compact description="Prueba con otra ciudad." />
         ) : (
           <ul className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {stores.map(({ store, featured }) => (

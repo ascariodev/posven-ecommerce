@@ -12,6 +12,7 @@ type EmptyStateProps = {
   titleClassName?: string;
   description?: string;
   className?: string;
+  compact?: boolean;
   children?: React.ReactNode;
 };
 
@@ -22,20 +23,35 @@ export function EmptyState({
   titleClassName,
   description,
   className,
+  compact = false,
   children,
 }: EmptyStateProps) {
   return (
     <Card
       className={cn(
-        "items-center gap-5 px-6 text-center md:flex-row md:gap-8 md:px-10 md:text-left",
+        "items-center text-center md:flex-row md:text-left",
+        compact ? "gap-4 px-5 [--card-spacing:--spacing(4)] md:gap-5 md:px-6" : "gap-5 px-6 md:gap-8 md:px-10",
         className,
       )}
     >
-      <span className="flex size-22 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-text md:size-30">
-        <Icon aria-hidden="true" className="size-10 stroke-[1.5] md:size-13" />
+      <span
+        className={cn(
+          "flex shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-text",
+          compact ? "size-14 md:size-16" : "size-22 md:size-30",
+        )}
+      >
+        <Icon aria-hidden="true" className={cn("stroke-[1.5]", compact ? "size-6 md:size-7" : "size-10 md:size-13")} />
       </span>
-      <div className="flex min-w-0 flex-col gap-3">
-        <Heading className={cn("font-heading text-[22px] font-semibold md:text-3xl", titleClassName)}>{title}</Heading>
+      <div className={cn("flex min-w-0 flex-col", compact ? "gap-2" : "gap-3")}>
+        <Heading
+          className={cn(
+            "font-heading font-semibold",
+            compact ? "text-lg md:text-xl" : "text-[22px] md:text-3xl",
+            titleClassName,
+          )}
+        >
+          {title}
+        </Heading>
         {description ? (
           <p className="text-[15px] leading-relaxed text-muted-foreground md:text-base">
             {description}

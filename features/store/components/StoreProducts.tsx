@@ -74,7 +74,7 @@ export async function StoreProducts({
     return (
       <section className="flex flex-col gap-4">
         <h2 className="font-heading text-xl font-bold tracking-tight">Productos</h2>
-        <EmptyState icon={StoreIcon} title="Esta tienda todavía no publicó productos." headingLevel="h3" />
+        <EmptyState icon={StoreIcon} title="Esta tienda todavía no publicó productos." headingLevel="h3" compact />
       </section>
     );
   }

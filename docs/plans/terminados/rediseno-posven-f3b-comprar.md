@@ -153,7 +153,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [x] M-2 — Unificar en un helper la condición de "tienda con tarifa" (hoy `FulfillmentSwitch`
   mira `delivery_fee_usd` y `CartStoreGroup` además `delivery_fee_ves`). Repo posven-ecommerce ·
   complejidad baja · modelo sonnet.
-- [ ] M-3 — `features/cart/__tests__/CartView.test.tsx`: afirmar el total del resumen dentro de su
+- [x] M-3 — `features/cart/__tests__/CartView.test.tsx`: afirmar el total del resumen dentro de su
   contenedor (no `getAllByText(...)[0]`) y formatear las líneas sueltas. Repo posven-ecommerce ·
   complejidad baja · modelo sonnet.
 - [ ] M-4 — Poner al día `features/site/README.md` (RANCIO por `features/cart/server/cart.ts`).

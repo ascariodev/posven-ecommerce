@@ -99,8 +99,10 @@ describe("CartContent", () => {
     expect(screen.getByText("$ 2,50 · Bs 91,25 c/u")).toBeTruthy();
     expect(screen.getByText("$ 5,10")).toBeTruthy();
     expect(screen.getAllByText("$ 6,20 · Bs 226,30")).toHaveLength(2);
-    expect(screen.getAllByText("$ 7,40")[0]).toBeTruthy();
-    expect(screen.getAllByText("Bs 270,10")[0]).toBeTruthy();
+    for (const container of [screen.getByTestId("cart-summary"), screen.getByTestId("cart-pay-bar")]) {
+      expect(within(container).getByText("$ 7,40")).toBeTruthy();
+      expect(within(container).getByText("Bs 270,10")).toBeTruthy();
+    }
     expect(screen.getByText("Tasa BCV del 26/09/2026: Bs 36,50")).toBeTruthy();
   });
 
@@ -142,17 +144,13 @@ describe("CartContent", () => {
     cleanup();
 
     render(<CartContent signedIn={false} cart={cart([store([line()])])} />);
-    expect(payLinks("Entra para pagar")).toEqual(both(
-      "/entrar?volver=%2Fcheckout",
-    ));
+    expect(payLinks("Entra para pagar")).toEqual(both("/entrar?volver=%2Fcheckout"));
   });
 
   it("Ir a pagar lleva la entrega elegida y Entra para pagar la conserva en volver", () => {
     const delivery = ["farmacia-central-valencia"];
     render(<CartContent signedIn delivery={delivery} cart={cart([store([line()])])} />);
-    expect(payLinks("Ir a pagar")).toEqual(both(
-      "/checkout?f-farmacia-central-valencia=delivery",
-    ));
+    expect(payLinks("Ir a pagar")).toEqual(both("/checkout?f-farmacia-central-valencia=delivery"));
     cleanup();
 
     render(<CartContent signedIn={false} delivery={delivery} cart={cart([store([line()])])} />);
@@ -162,7 +160,8 @@ describe("CartContent", () => {
   });
 
   it("sin líneas disponibles no ofrece pagar", () => {
-    render(<CartContent signedIn cart={{ ...cart([store([line({ status: "unavailable", unavailable_reason: "offer_gone" })])]), line_count: 0 }} />);
+    const unavailable = store([line({ status: "unavailable", unavailable_reason: "offer_gone" })]);
+    render(<CartContent signedIn cart={{ ...cart([unavailable]), line_count: 0 }} />);
     expect(screen.queryByRole("link", { name: "Ir a pagar" })).toBeNull();
   });
 
@@ -172,7 +171,6 @@ describe("CartContent", () => {
     expect(screen.getByText("Cerrada ahora")).toBeTruthy();
   });
 });
-
 
 describe("retiro o entrega por tienda", () => {
   it("ofrece Retiro y Entrega con la tarifa como enlaces que cambian la URL", () => {
@@ -232,8 +230,6 @@ describe("CartView", () => {
     vi.mocked(getCurrentCart).mockResolvedValue(cart([store([line()])]));
     render(await CartView({ searchParams: Promise.resolve({ "f-farmacia-central-valencia": "delivery" }) }));
     expect(getCurrentCart).toHaveBeenCalledWith("farmacia-central-valencia");
-    expect(payLinks("Ir a pagar")).toEqual(both(
-      "/checkout?f-farmacia-central-valencia=delivery",
-    ));
+    expect(payLinks("Ir a pagar")).toEqual(both("/checkout?f-farmacia-central-valencia=delivery"));
   });
 });

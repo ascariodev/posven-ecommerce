@@ -13,7 +13,7 @@ function payLabel(signedIn: boolean): string {
 
 export function CartSummary({ cart, payHref, signedIn }: SummaryProps) {
   return (
-    <Card>
+    <Card data-testid="cart-summary">
       <CardContent className="flex flex-col gap-1">
         <h2 className="font-heading text-lg font-semibold">Resumen</h2>
         <p className="flex items-baseline justify-between gap-4 pt-2">

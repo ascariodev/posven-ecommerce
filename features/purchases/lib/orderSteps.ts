@@ -22,7 +22,7 @@ export function orderSteps(order: TrackedOrder): OrderStep[] | null {
   const finished = order.status === "delivered";
   const { timeline } = order;
   const isPickup = order.fulfillment === "pickup";
-  const dates = [timeline.paid_at, isPickup ? null : timeline.ready_at, isPickup ? timeline.ready_at : timeline.dispatched_at, timeline.delivered_at];
+  const dates = [timeline.paid_at, null, isPickup ? timeline.ready_at : timeline.dispatched_at, timeline.delivered_at];
   return ORDER_STEP_TEXT[order.fulfillment].map((label, index) => {
     const state: OrderStepState = finished || index < current ? "done" : index === current ? "now" : "next";
     return { label, state, at: dates[index], hint: state === "now" && index < 3 ? ORDER_STEP_HINT[order.fulfillment][index] : null };

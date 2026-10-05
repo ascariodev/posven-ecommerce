@@ -65,11 +65,11 @@ describe("OrderTracker", () => {
     expect(screen.getByText("Pagado el 30/09/2026 14:00")).toBeTruthy();
   });
 
-  it("una entrega muestra cuándo estuvo preparada en Preparando", () => {
+  it("una entrega no fecha Preparando con ready_at, que es de retiros, y fecha En camino con dispatched_at", () => {
     const delivery = order({ fulfillment: "delivery", status: "out_for_delivery", timeline: { ...order().timeline, dispatched_at: "2026-09-30T18:40:00Z" } });
     render(<OrderTracker order={delivery} />);
     const items = screen.getAllByRole("listitem");
-    expect(items[1].textContent).toContain("30/09/2026 14:20");
+    expect(items[1].textContent).not.toContain("30/09/2026 14:20");
     expect(items[2].textContent).toContain("30/09/2026 14:40");
   });
 });

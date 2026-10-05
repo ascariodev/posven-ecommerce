@@ -189,6 +189,8 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [x] M-14 — Contraste: "Pagado el …" en el cancelado de `OrderTracker.tsx` usa
   `text-muted-foreground` sobre `bg-warning-soft` (ui.md lo pide sobre `bg-card`/`bg-background`).
   Repo posven-ecommerce · complejidad baja · modelo sonnet.
-- [ ] M-15 — El simulado (`lib/marketplace/mock/checkout.ts` `prepare()`) no pone `ready_at` en
+- [x] M-15 — El simulado (`lib/marketplace/mock/checkout.ts` `prepare()`) no pone `ready_at` en
   las entregas, así que la fecha de "Preparando" nunca se ve en modo simulado. Repo
-  posven-ecommerce · complejidad baja · modelo sonnet.
+  posven-ecommerce · complejidad baja · modelo sonnet. Aplicada del lado de la UI: la API real nunca
+  pone `ready_at` en una entrega (sólo `dispatched_at`) y el simulado ya la imita, así que
+  `orderSteps` deja Preparando sin fecha en la entrega.

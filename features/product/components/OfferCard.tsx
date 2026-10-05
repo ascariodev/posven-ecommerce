@@ -29,7 +29,7 @@ export function OfferCard({
           <div className="flex min-w-0 flex-col gap-1.5">
             <Link
               href={`/tienda/${store.slug}`}
-              className="font-heading text-lg font-bold text-foreground underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              className="inline-flex min-h-11 items-center font-heading text-lg font-bold text-foreground underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
             >
               {store.name}
             </Link>

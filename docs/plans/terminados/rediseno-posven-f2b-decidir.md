@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F2 del lienzo "E · PosVen": ficha de producto con la lista de
 tiendas para elegir, barra de compra fija y detalles plegables; página de tienda con portada; y
 directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el contrato de F2a.
-**Estado:** en curso: fase 7 de 7
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2, §4 (`ui.md`), §5 (ficha `P15`/`P06`,
@@ -83,7 +83,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   `listNearbyStores` (portada de F2a, abierto ahora, distancia, paginación), enlazada desde el
   inicio y la cabecera; `StoreCard` con portada.
 
-### [ ] Fase 7 — Revisión contra el lienzo y e2e completos
+### [x] Fase 7 — Revisión contra el lienzo y e2e completos
 - **Repo:** posven-ecommerce
 - **Alcance:** puerta de F2: Playwright completo con `MARKETPLACE_MODE=mock` sin fallos y
   revisión de ficha, tienda y directorio contra `P15`, `P06`, `W07` y `P07` en claro y oscuro;
@@ -108,7 +108,10 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 
 - 2026-10-04 — Fase 6: `/tiendas` indexable con canónica sin `pagina` y en el sitemap `static` (como el inicio, depende de la ubicación pero no explota parámetros como `/buscar`); `Pagination` pasa a `{ meta, hrefForPage }`; "Ver todos" de `NearbyStores` va a `/tiendas`; enlace "Tiendas" sólo en la cabecera de escritorio (la barra inferior conserva sus 5 destinos); `seo.md` suma `app/tiendas/**` — implementación.
 
+- 2026-10-04 — Fase 7: Playwright completo 47 y 1 skipped, vitest 698; ajustes menores: `grid-cols-[minmax(0,1fr)]` en ficha, `/tiendas` e inicio (desbordaban a 375 px, L-08 promovida a `ui.md` punto 9), acciones de la ficha bajo la categoría y M-1 (enlace de tienda a 44 px). Las diferencias mayores con el lienzo quedan como M-16..M-21 — implementación.
+
 ## Notas para la próxima sesión
+- Plan terminado 2026-10-04. `next build` sigue bloqueado por la ruta sin trackear `app/preview/rediseno/[pantalla]` de F0 (M-21). Capturas de la revisión en el scratchpad de la sesión (no persisten).
 - Fase 6 hecha: e2e site, product y search en verde (25) con el caso nuevo de `/tiendas`. La portada de `StoreCard` también sale en el inicio (`h-20`): revisarla contra el lienzo en la fase 7.
 - Fase 5 hecha: e2e product, cart, search y checkout en verde (26 y 1 skipped previo).
 - Fase 4 hecha: P15 usa pestañas ("Detalles" y "Retiro y entrega") y P06 una fila a `#detalles`; aquí son plegables como pidió el alcance (comparar en la fase 7).
@@ -118,7 +121,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - F1b y F2a terminados el 2026-10-04 (F2a en `posven/.claude/docs/plans/terminados/`); `is_best_price` es el mínimo entre las ofertas servidas y las ofertas a precio 0 no se publican (F2a M-5 y M-6).
 
 ## Mejoras propuestas
-- [ ] M-1 — Enlace del nombre de tienda en `OfferCard` con `inline-flex min-h-11 items-center` (zona táctil de 44 px).
+- [x] M-1 — Enlace del nombre de tienda en `OfferCard` con `inline-flex min-h-11 items-center` (zona táctil de 44 px).
   posven-ecommerce · baja · sonnet
 - [ ] M-2 — `OfferCard.test.tsx`: caso sin "Agregar al carrito" con restricción distinta de `none` o sin `accepts_orders`.
   posven-ecommerce · baja · sonnet
@@ -148,3 +151,15 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [ ] M-15 — Casos de `parsePage` (`abc`, `0`, repetido) y de destacados sin repetir en `StoresDirectory.test.tsx`, si faltan.
   posven-ecommerce · baja · sonnet
+- [ ] M-16 — P06: ofertas en filas compactas con el precio a la derecha y un solo "Agregar" en la barra (hoy cada oferta es tarjeta alta con "Elegir" y "Agregar al carrito"). Rediseño de `OfferCard`.
+  posven-ecommerce · media · sonnet
+- [ ] M-17 — P06: "Fuera de tu zona" plegado en móvil ("Ver N tiendas fuera de tu zona").
+  posven-ecommerce · baja · sonnet
+- [ ] M-18 — La barra de compra elige por defecto la de `is_best_price` aunque no reciba pedidos; preferir la más barata que sí los acepte (absorbe M-8).
+  posven-ecommerce · baja · sonnet
+- [ ] M-19 — W07/P07: barra lateral de categorías con conteos y filas de lista en móvil; requiere conteos en el contrato de tienda.
+  posveapi + posven-ecommerce · alta · plan nuevo
+- [ ] M-20 — En `/tiendas` de escritorio las `StoreCard` sin portada se estiran a la altura de las que la tienen.
+  posven-ecommerce · baja · sonnet
+- [ ] M-21 — `next build` falla por `app/preview/rediseno/[pantalla]` (sin trackear, de F0): decidir si se commitea arreglado o se retira tras aprobar `/preview`.
+  posven-ecommerce · media · decide el usuario

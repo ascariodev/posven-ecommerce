@@ -43,7 +43,7 @@ aplicada en: pendiente: el usuario decide promoverla a `posven-ecommerce/.claude
 Una grilla sin `grid-cols-*` crea una columna implícita `auto` que crece hasta el ancho mínimo de
 su contenido: unas pestañas con `overflow-x-auto` adentro la ensanchan y la página desborda en
 móvil (en Playwright, los desplegables de Radix quedan tapados). Se fija `grid-cols-[minmax(0,1fr)]`.
-aplicada en: `app/cuenta/layout.tsx`
+aplicada en: `.claude/rules/ui.md` (punto 9)
 
 ## L-09
 Una fase que cambia el comportamiento de un componente o una ruta de un módulo actualiza su README

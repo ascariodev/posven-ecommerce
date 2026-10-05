@@ -136,7 +136,7 @@ export default async function ProductPage({
         </ol>
       </nav>
       
-      <div className="grid items-start gap-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <div className="md:sticky md:top-20">
           <ProductGallery 
             images={[
@@ -151,7 +151,7 @@ export default async function ProductPage({
         <div className="flex flex-col gap-6">
           <Card className="overflow-hidden border-border shadow-card">
             <CardContent className="flex flex-col gap-4 p-6">
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1.5">
                   {product.brand !== null && (
                     <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -167,7 +167,7 @@ export default async function ProductPage({
                     </Badge>
                   )}
                 </div>
-                <div className="shrink-0 mt-1 flex flex-col gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Suspense fallback={<FavoriteButtonSkeleton />}>
                     <FavoriteButton target={{ kind: "product", slug: product.slug }} returnTo={`/p/${product.slug}`} />
                   </Suspense>

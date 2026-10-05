@@ -58,3 +58,5 @@ escribe `import { cn } from "cn"`, que se corrige a `@/lib/utils`.
    sin aprobación de quien coordina.
 8. **Tipografía.** `font-heading` (Poppins) sólo en títulos y precios, y los precios con
    `tabular-nums`; el resto hereda `font-sans` (Public Sans).
+9. **Grillas con columna explícita.** Toda `grid` lleva `grid-cols-*`; la de una columna en móvil es
+   `grid-cols-[minmax(0,1fr)]`: la columna implícita `auto` crece con su contenido y desborda a 375 px.

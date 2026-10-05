@@ -48,7 +48,7 @@ export async function NearbyStores() {
         {stores.length === 0 ? (
           <p className="text-muted-foreground">Todavía no hay comercios cerca. Prueba con otra ciudad.</p>
         ) : (
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {stores.map(({ store, featured }) => (
               <li key={store.slug}>
                 <StoreCard store={store} featured={featured} />
@@ -65,7 +65,7 @@ export function NearbyStoresSkeleton() {
   return (
     <div className="flex flex-col gap-6">
       <Skeleton className="h-20 rounded-2xl" />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 3 }, (_, index) => (
           <Skeleton key={index} className="h-20 rounded-2xl" />
         ))}

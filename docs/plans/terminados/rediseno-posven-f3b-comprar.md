@@ -3,7 +3,7 @@
 **Objetivo:** carrito agrupado por tienda con retiro o entrega y su costo antes de pagar, checkout
 de una página con el estilo del lienzo, y resultado del pago con la línea de estados de cada
 pedido; puerta: pago de prueba completo en modo simulado.
-**Estado:** en curso · Fase actual: 6
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §5 (`W08`/`P08`, `W09`/`P09`,
@@ -96,7 +96,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   vencido con el mismo estilo.
 - **Terminado cuando:** vitest de `features/checkout` en verde.
 
-### [ ] Fase 6 — Puerta: pago de prueba completo y revisión contra el lienzo
+### [x] Fase 6 — Puerta: pago de prueba completo y revisión contra el lienzo
 - **Repo:** posven-ecommerce
 - **Alcance:** e2e de la compra completa en modo simulado eligiendo entrega en el carrito hasta el
   seguimiento; revisión a 375 y 1280 px contra el lienzo; ajustes menores; las diferencias
@@ -137,10 +137,15 @@ pedido; puerta: pago de prueba completo en modo simulado.
   compras" y "Seguir comprando". Fallido y vencido con el mismo `Outcome` y "Volver al carrito".
   Se quita "Ver tu compra"; `e2e/checkout.spec.ts` entra al detalle con `goto` y usa
   `{ exact: true }` en "Código de retiro" (chocaba con la pista de `OrderTracker` desde la fase 4).
+- 2026-10-05 — Fase 6: e2e "entrega elegida en el carrito: viaja al checkout, se paga y el
+  seguimiento sale con los pasos de entrega" (cuenta `entrega@posven.test`, vacía el carrito al
+  empezar y al terminar; `toHaveURL` del resultado con 15 s). `whitespace-nowrap` en el precio de
+  línea del checkout. `next build` pasa; Playwright completo 48 OK + 1 skip; `checkout.spec` 4 de 5
+  corridas verdes (la primera tras reiniciar el servidor falló sin log).
 
 ## Notas para la próxima sesión
-- docs-check marca RANCIO `features/site/README.md` por `features/cart/server/cart.ts` (fase 1).
-- F3a terminado y subido (carrito con `fulfillment`, `delivery_fee_*`, `total_*`; `getCart(ctx, deliveryStores)` y `quoteGuestCart(ctx, items, deliveryStores)`).
+- Commits en `feat/rediseno-f3b-comprar`: c2503af, 4d5adb8, 3a1fdf3, b3293f9, 0283941 y 94930e2; sin merge ni push. Capturas de la revisión visual en el scratchpad de la sesión (no
+  versionadas).
 
 ## Mejoras propuestas
 - [ ] M-1 — Reflujar el comentario de `features/cart/server/cart.ts:18-21` a ~100 caracteres por
@@ -167,3 +172,12 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [ ] M-10 — `chargeText` está copiado en `CheckoutForm`, `PurchaseDetail` y `CheckoutResult`:
   moverlo a `features/purchases/lib/labels.ts`. Repo posven-ecommerce · complejidad baja · modelo
   sonnet.
+- [ ] M-11 — El e2e de compra puede fallar con el servidor recién arrancado (probable clic en
+  "Pagar" antes de hidratar): esperar una señal de hidratación antes del clic en
+  `e2e/checkout.spec.ts`, sin riesgo de pagar dos veces. Repo posven-ecommerce · complejidad media
+  · modelo sonnet.
+- [ ] M-12 — En el resultado a 375 px "pagaste Bs …" se parte en dos renglones
+  (`CheckoutResult.tsx`). Repo posven-ecommerce · complejidad baja · modelo sonnet.
+- [ ] M-13 — Diferencias con el lienzo del carrito: cabecera de tienda con distancia y estado
+  abierto, logotipo y la nota "Cada tienda prepara su parte"; el resultado aún no sigue del todo
+  el estilo del lienzo. Repo posven-ecommerce · complejidad media · modelo sonnet.

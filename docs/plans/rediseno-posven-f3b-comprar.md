@@ -3,7 +3,7 @@
 **Objetivo:** carrito agrupado por tienda con retiro o entrega y su costo antes de pagar, checkout
 de una página con el estilo del lienzo, y resultado del pago con la línea de estados de cada
 pedido; puerta: pago de prueba completo en modo simulado.
-**Estado:** en curso · Fase actual: 5
+**Estado:** en curso · Fase actual: 6
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §5 (`W08`/`P08`, `W09`/`P09`,
@@ -89,7 +89,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   `PurchaseDetail` lo usa; textos en `lib/labels.ts`.
 - **Terminado cuando:** vitest de `features/purchases` en verde.
 
-### [ ] Fase 5 — Resultado del pago con seguimiento
+### [x] Fase 5 — Resultado del pago con seguimiento
 - **Repo:** posven-ecommerce
 - **Alcance:** `P10`/`W10`: pagado con tarjeta de confirmación (código y lo cobrado), un bloque por
   tienda con `OrderTracker` y código de retiro, "Ver mis compras" y "Seguir comprando"; fallido y
@@ -132,6 +132,11 @@ pedido; puerta: pago de prueba completo en modo simulado.
   `accepted` es el paso 2 (la API no distingue preparado de preparando, sin fecha propia);
   `pending_payment` el 1; `cancelled` sin pasos, aparte. En `PurchaseDetail` reemplaza la lista de
   fechas y sólo sale con la compra pagada (RN-PURCHASES-05).
+- 2026-10-05 — Fase 5: `CheckoutResult({ code })` sin cambio de firma. Pagado: tarjeta con código
+  y lo cobrado (`chargeText`), un bloque por pedido con `OrderTracker` y código de retiro, "Ver mis
+  compras" y "Seguir comprando". Fallido y vencido con el mismo `Outcome` y "Volver al carrito".
+  Se quita "Ver tu compra"; `e2e/checkout.spec.ts` entra al detalle con `goto` y usa
+  `{ exact: true }` en "Código de retiro" (chocaba con la pista de `OrderTracker` desde la fase 4).
 
 ## Notas para la próxima sesión
 - docs-check marca RANCIO `features/site/README.md` por `features/cart/server/cart.ts` (fase 1).
@@ -157,3 +162,8 @@ pedido; puerta: pago de prueba completo en modo simulado.
   los mostraba la lista de fechas). Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [ ] M-8 — `OrderTracker`: texto `sr-only` ("completado", "pendiente") por paso, y test de
   `pending_payment`. Repo posven-ecommerce · complejidad baja · modelo sonnet.
+- [ ] M-9 — Enlace al detalle (`/cuenta/compras/<código>`, `prefetch={false}`) desde el resultado
+  del pago, con test, e2e y ficha. Repo posven-ecommerce · complejidad baja · modelo sonnet.
+- [ ] M-10 — `chargeText` está copiado en `CheckoutForm`, `PurchaseDetail` y `CheckoutResult`:
+  moverlo a `features/purchases/lib/labels.ts`. Repo posven-ecommerce · complejidad baja · modelo
+  sonnet.

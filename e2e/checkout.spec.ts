@@ -91,11 +91,15 @@ test.describe("checkout y compras", () => {
     await expect(page).toHaveURL(/\/checkout\/resultado\?compra=[A-HJKMNP-Z2-9]{8}$/);
     await expect(page.getByRole("heading", { level: 1, name: "¡Pago confirmado!" })).toBeVisible({ timeout: 15_000 });
 
-    await page.getByRole("link", { name: "Ver tu compra" }).click();
+    await expect(page.getByRole("list", { name: "Estado del pedido" })).toBeVisible();
+    const code = new URL(page.url()).searchParams.get("compra");
+    await page.getByRole("link", { name: "Ver mis compras" }).click();
+    await expect(page).toHaveURL(/\/cuenta\/compras$/);
+    await page.goto(`/cuenta/compras/${code}`);
     await expect(page).toHaveURL(/\/cuenta\/compras\/[A-HJKMNP-Z2-9]{8}$/);
     await expect(async () => {
       await page.reload();
-      await expect(page.getByText("Código de retiro")).toBeVisible({ timeout: 2_000 });
+      await expect(page.getByText("Código de retiro", { exact: true })).toBeVisible({ timeout: 2_000 });
     }).toPass({ timeout: 20_000 });
     await expect(page.getByText(/^[A-HJKMNP-Z2-9]{6}$/)).toBeVisible();
     const lines = page.getByRole("list", { name: "Productos de Farmacia Central" }).getByRole("listitem");

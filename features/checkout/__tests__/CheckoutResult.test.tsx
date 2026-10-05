@@ -1,8 +1,9 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getPurchase } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { Purchase, PurchaseStatus } from "@/lib/marketplace/schemas";
+import { order } from "@/features/purchases/__tests__/fixtures/testPurchase";
 import { CheckoutResult } from "@/features/checkout/components/CheckoutResult";
 
 vi.mock("next/navigation", () => ({
@@ -51,15 +52,32 @@ describe("CheckoutResult", () => {
     );
   });
 
-  it("pagada: código, total y enlace a la compra, sin consultar más", async () => {
-    vi.mocked(getPurchase).mockResolvedValue(purchase("paid"));
+  it("pagada: código, lo cobrado, un bloque por tienda con su línea de estados y el código de retiro", async () => {
+    const delivery = order({
+      store: { ...order().store, slug: "farmacia-norte", name: "Farmacia Norte" },
+      fulfillment: "delivery",
+      status: "accepted",
+      pickup_code: null,
+      timeline: { ...order().timeline, ready_at: null },
+    });
+    vi.mocked(getPurchase).mockResolvedValue({ ...purchase("paid"), orders: [order(), delivery] });
 
     render(await CheckoutResult({ code: "PV-00000A" }));
 
     expect(screen.getByRole("heading", { level: 1, name: "¡Pago confirmado!" })).toBeTruthy();
     expect(screen.getByText("PV-00000A")).toBeTruthy();
+    expect(screen.getByText(/pagaste Bs 237,25/)).toBeTruthy();
     expect(screen.getByText("Total $ 6,50 · Bs 237,25")).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Ver tu compra" }).getAttribute("href")).toBe("/cuenta/compras/PV-00000A");
+    expect(screen.getAllByRole("list", { name: "Estado del pedido" })).toHaveLength(2);
+    expect(screen.getByRole("heading", { level: 2, name: "Farmacia Central · retiro en tienda" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 2, name: "Farmacia Norte · entrega a domicilio" })).toBeTruthy();
+    expect(screen.getAllByText("1 producto · $ 6,70")).toHaveLength(2);
+    expect(screen.getAllByText("Código de retiro")).toHaveLength(1);
+    expect(screen.getByText("482913")).toBeTruthy();
+    const norte = screen.getAllByRole("list", { name: "Estado del pedido" })[1];
+    expect(within(norte).getByText("Preparando")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Ver mis compras" }).getAttribute("href")).toBe("/cuenta/compras");
+    expect(screen.getByRole("link", { name: "Seguir comprando" }).getAttribute("href")).toBe("/");
     expect(screen.queryByRole("status")).toBeNull();
   });
 

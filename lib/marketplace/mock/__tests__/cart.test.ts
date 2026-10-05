@@ -175,7 +175,7 @@ describe("carrito del comprador simulado", () => {
     expect(await errorCode(setCartItem(ctx, item(CENTRAL, "amoxicilina-500-mg-21-capsulas")))).toBe("product_restricted");
   });
 
-  it("un producto controlado (no récipe) se cotiza y se agrega como cualquier otro", async () => {
+  it("un producto controlado (no récipe) se cotiza y se agrega como cualquier otro; `controlled` está en el esquema pero la API de hoy no lo emite (ProductResource emite recipe o none)", async () => {
     const ctx = await session();
     const controlled = "clonazepam-0-5-mg-30-tabletas";
     const cart = await quoteGuestCart(ctx, [item(CENTRAL, controlled)]);

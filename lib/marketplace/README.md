@@ -270,7 +270,7 @@ Consultas, `lib/marketplace/params.ts`:
 
 Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 
-- `moneySchema` / `Money`; `rateSchema` / `Rate`; `availabilitySchema`; `restrictionSchema` / `Restriction`
+- `moneySchema` / `Money`; `rateSchema` / `Rate`; `availabilitySchema`; `restrictionSchema` / `Restriction` (`controlled` está en el esquema, pero la API de hoy no lo emite: `ProductResource` emite `recipe` o `none`)
 - `categorySchema` / `Category`; `categoryNodeSchema` / `CategoryNode`
 - `cityRefSchema` / `CityRef`; `locationStateSchema` / `LocationState`
 - `storeSummarySchema` / `StoreSummary`; `productSchema` / `Product`; `offerSchema` / `Offer`; `Offer` y `NearbyStore` traen `is_open` (booleano) y `closes_at` (HH:MM o nulo) opcionales, que calcula la API; `NearbyStore` trae además `cover_url` (URL o nulo, opcional) y `ProductOffer`, `is_best_price` (booleano opcional)

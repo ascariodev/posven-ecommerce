@@ -147,6 +147,11 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - Commits en `feat/rediseno-f3b-comprar`: c2503af, 4d5adb8, 3a1fdf3, b3293f9, 0283941 y 94930e2; sin merge ni push. Capturas de la revisión visual en el scratchpad de la sesión (no
   versionadas).
 
+- Mejoras (2026-10-05, rama `feat/rediseno-f3b-comprar`, el usuario pidió aplicar las 11 de nivel
+  bajo: M-1..M-10 y M-12; M-11 y M-13 quedan). Hechas: M-1 eeefdab, M-7 7c1e652, M-2 2e299f8, M-3
+  62870cc. En curso sin commit: M-8 (features/purchases, en revisión) y M-4 (features/site).
+  Siguen M-5, M-6, M-9, M-12 (checkout) y M-10 al final (toca labels.ts de purchases).
+
 ## Mejoras propuestas
 - [x] M-1 — Reflujar el comentario de `features/cart/server/cart.ts:18-21` a ~100 caracteres por
   línea. Repo posven-ecommerce · complejidad baja · modelo sonnet.
@@ -165,7 +170,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   complejidad baja · modelo sonnet.
 - [x] M-7 — `OrderTracker`: mostrar `paid_at` en el cancelado y `ready_at` en la entrega (antes
   los mostraba la lista de fechas). Repo posven-ecommerce · complejidad baja · modelo sonnet.
-- [ ] M-8 — `OrderTracker`: texto `sr-only` ("completado", "pendiente") por paso, y test de
+- [x] M-8 — `OrderTracker`: texto `sr-only` ("completado", "pendiente") por paso, y test de
   `pending_payment`. Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [ ] M-9 — Enlace al detalle (`/cuenta/compras/<código>`, `prefetch={false}`) desde el resultado
   del pago, con test, e2e y ficha. Repo posven-ecommerce · complejidad baja · modelo sonnet.

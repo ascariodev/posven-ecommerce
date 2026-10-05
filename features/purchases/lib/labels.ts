@@ -52,6 +52,8 @@ export const ORDER_STEP_TEXT: Record<Fulfillment, readonly [string, string, stri
   delivery: ["Pagado", "Preparando", "En camino", "Entregado"],
 };
 
+export const ORDER_STEP_STATE_TEXT = { done: "completado", next: "pendiente" } as const;
+
 export const ORDER_STEP_HINT: Record<Fulfillment, readonly [string, string, string]> = {
   pickup: ["Esperando la confirmación del pago", "La tienda está reuniendo tus productos", "Muestra tu código de retiro en caja"],
   delivery: ["Esperando la confirmación del pago", "La tienda está reuniendo tus productos", "Tu pedido va hacia tu dirección"],

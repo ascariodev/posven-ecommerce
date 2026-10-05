@@ -34,6 +34,25 @@ describe("OrderTracker", () => {
     expect(screen.getAllByRole("listitem").some((item) => item.hasAttribute("aria-current"))).toBe(false);
   });
 
+  it("cada paso dice por texto si está completado o pendiente, y el actual lo marca aria-current", () => {
+    render(<OrderTracker order={order()} />);
+    const items = screen.getAllByRole("listitem");
+    expect(within(items[0]).getByText(", completado").className).toContain("sr-only");
+    expect(within(items[3]).getByText(", pendiente").className).toContain("sr-only");
+    expect(items[2].getAttribute("aria-current")).toBe("step");
+    expect(items[2].textContent).not.toMatch(/completado|pendiente/);
+  });
+
+  it("un pedido con el pago pendiente tiene Pagado como paso actual y los demás pendientes", () => {
+    const pending = order({ status: "pending_payment", timeline: { paid_at: null, ready_at: null, dispatched_at: null, delivered_at: null, cancelled_at: null } });
+    expect(states(pending)).toEqual(["Pagado:now", "Preparado:next", "Listo para retirar:next", "Entregado:next"]);
+    render(<OrderTracker order={pending} />);
+    const items = screen.getAllByRole("listitem");
+    expect(items[0].getAttribute("aria-current")).toBe("step");
+    expect(items[0].textContent).toContain("Esperando la confirmación del pago");
+    expect(items.slice(1).every((item) => item.textContent?.includes("pendiente"))).toBe(true);
+  });
+
   it("un pedido cancelado se muestra aparte, sin pasos", () => {
     render(<OrderTracker order={order({ status: "cancelled", timeline: { ...order().timeline, cancelled_at: "2026-09-30T18:30:00Z" } })} />);
     expect(screen.getByText("Pedido cancelado")).toBeTruthy();

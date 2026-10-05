@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatDateTime } from "../lib/labels";
+import { formatDateTime, ORDER_STEP_STATE_TEXT } from "../lib/labels";
 import { orderSteps, type TrackedOrder } from "../lib/orderSteps";
 
 export function OrderTracker({ order, className }: { order: TrackedOrder; className?: string }) {
@@ -45,6 +45,7 @@ export function OrderTracker({ order, className }: { order: TrackedOrder; classN
           <span className="flex flex-col pt-0.5 md:pt-0">
             <span className={cn("text-sm text-foreground", step.state === "now" && "font-semibold", step.state === "next" && "text-muted-foreground")}>
               {step.label}
+              {step.state !== "now" && <span className="sr-only">, {ORDER_STEP_STATE_TEXT[step.state]}</span>}
             </span>
             {step.at !== null && <span className="text-xs text-muted-foreground">{formatDateTime(step.at)}</span>}
             {step.hint !== null && <span className="text-xs text-muted-foreground md:hidden">{step.hint}</span>}

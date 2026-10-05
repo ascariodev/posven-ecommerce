@@ -43,6 +43,7 @@ escribe `import { cn } from "cn"`, que se corrige a `@/lib/utils`.
 5. **Contraste AA, en claro y en oscuro.** El naranja nunca es color de texto: `text-primary` está
    prohibido y se usa `text-primary-text`; el texto sobre el naranja de marca es oscuro
    (`text-primary-foreground`), nunca blanco. El texto de error usa `text-destructive-text`.
+   `text-muted-foreground` sobre `bg-muted` no llega a 4,5:1: va sobre `bg-card` o `bg-background`.
    El foco visible usa `outline-foreground`, no el primario (el naranja sobre blanco no llega a
    3:1); el `ring` y el borde de foco de luma no lo reemplazan. Un control con
    `aria-invalid` lo cambia a `outline-destructive` (sí llega a 3:1) para no mezclar negro y rojo.

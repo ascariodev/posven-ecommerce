@@ -3,7 +3,7 @@
 **Objetivo:** carrito agrupado por tienda con retiro o entrega y su costo antes de pagar, checkout
 de una página con el estilo del lienzo, y resultado del pago con la línea de estados de cada
 pedido; puerta: pago de prueba completo en modo simulado.
-**Estado:** en curso · Fase actual: 2
+**Estado:** en curso · Fase actual: 3
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §5 (`W08`/`P08`, `W09`/`P09`,
@@ -64,7 +64,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   con esa tienda.
 - **Commit:** `feat(cart): el carrito lee la entrega elegida y la lleva al checkout (F3)`
 
-### [ ] Fase 2 — Carrito agrupado con retiro o entrega y resumen
+### [x] Fase 2 — Carrito agrupado con retiro o entrega y resumen
 - **Repo:** posven-ecommerce
 - **Alcance:** `P08`/`W08`: por tienda, selector Retiro o Entrega con la tarifa (enlaces que
   cambian la URL, funciona sin JS; sin tarifa, "Retiro sin costo"), líneas con cantidad, desglose
@@ -114,12 +114,26 @@ pedido; puerta: pago de prueba completo en modo simulado.
   `CartView({ searchParams })` obligatorio; `CartContent` recibe `delivery?: string[]` y arma el
   enlace con `checkoutPathFor`. `features/checkout/lib/params.ts` reexporta
   `FULFILLMENT_PARAM_PREFIX` y conserva sus exports.
+- 2026-10-05 — Fase 2: `CartView` se parte en `CartLine`, `CartStoreGroup`, `FulfillmentSwitch` y
+  `CartSummary` (resumen `md:sticky` y barra móvil `data-testid="cart-pay-bar"`, cada uno con su
+  "Ir a pagar", uno visible por viewport). `cartPathWith(delivery, slug, wantsDelivery)` en
+  `features/cart/lib/fulfillment.ts`. El `total_*` de tienda cae a `subtotal_*` si la API no lo
+  manda.
 
 ## Notas para la próxima sesión
 - docs-check marca RANCIO `features/purchases/README.md` por `e2e/checkout.spec.ts`: la fase 4
   toca esa ficha y lo resuelve.
+- docs-check marca RANCIO `features/site/README.md` por `features/cart/server/cart.ts` (fase 1).
 - F3a terminado y subido (carrito con `fulfillment`, `delivery_fee_*`, `total_*`; `getCart(ctx, deliveryStores)` y `quoteGuestCart(ctx, items, deliveryStores)`).
 
 ## Mejoras propuestas
 - [ ] M-1 — Reflujar el comentario de `features/cart/server/cart.ts:18-21` a ~100 caracteres por
   línea. Repo posven-ecommerce · complejidad baja · modelo sonnet.
+- [ ] M-2 — Unificar en un helper la condición de "tienda con tarifa" (hoy `FulfillmentSwitch`
+  mira `delivery_fee_usd` y `CartStoreGroup` además `delivery_fee_ves`). Repo posven-ecommerce ·
+  complejidad baja · modelo sonnet.
+- [ ] M-3 — `features/cart/__tests__/CartView.test.tsx`: afirmar el total del resumen dentro de su
+  contenedor (no `getAllByText(...)[0]`) y formatear las líneas sueltas. Repo posven-ecommerce ·
+  complejidad baja · modelo sonnet.
+- [ ] M-4 — Poner al día `features/site/README.md` (RANCIO por `features/cart/server/cart.ts`).
+  Repo posven-ecommerce · complejidad baja · modelo sonnet.

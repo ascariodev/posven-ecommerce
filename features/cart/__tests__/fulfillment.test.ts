@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  cartPathWith,
   checkoutPathFor,
   deliveryFromKey,
   deliveryKey,
@@ -41,5 +42,14 @@ describe("checkoutPathFor", () => {
 
   it("lleva la entrega elegida", () => {
     expect(checkoutPathFor(["farmacia-central-valencia"])).toBe("/checkout?f-farmacia-central-valencia=delivery");
+  });
+});
+
+describe("cartPathWith", () => {
+  it("agrega, quita y conserva las otras tiendas", () => {
+    expect(cartPathWith([], "a", true)).toBe("/carrito?f-a=delivery");
+    expect(cartPathWith(["a", "b"], "a", false)).toBe("/carrito?f-b=delivery");
+    expect(cartPathWith(["a"], "a", false)).toBe("/carrito");
+    expect(cartPathWith(["a"], "a", true)).toBe("/carrito?f-a=delivery");
   });
 });

@@ -25,6 +25,14 @@ export function deliveryFromKey(key: string): string[] {
   return key === "" ? [] : key.split(",");
 }
 
+export function cartPathWith(delivery: string[], slug: string, wantsDelivery: boolean): string {
+  const rest = delivery.filter((current) => current !== slug);
+  const query = new URLSearchParams();
+  setDeliveryParams(query, wantsDelivery ? [...rest, slug] : rest);
+  const search = query.toString();
+  return search === "" ? "/carrito" : `/carrito?${search}`;
+}
+
 export function checkoutPathFor(delivery: string[]): string {
   const query = new URLSearchParams();
   setDeliveryParams(query, delivery);

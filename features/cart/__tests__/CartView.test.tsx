@@ -59,6 +59,27 @@ function cart(stores: CartStore[]): Cart {
   return { stores, total_usd: "7.40", total_ves: "270.10", line_count: 1, rate };
 }
 
+// El resumen de escritorio y la barra de móvil llevan cada uno su enlace de pago.
+function payLinks(name: string): (string | null)[] {
+  return screen.getAllByRole("link", { name }).map((link) => link.getAttribute("href"));
+}
+
+function both(href: string): string[] {
+  return [href, href];
+}
+
+function deliveryStore(overrides: Partial<CartStore> = {}): CartStore {
+  return store([line()], {
+    offers_delivery: true,
+    fulfillment: "pickup",
+    delivery_fee_usd: "1.50",
+    delivery_fee_ves: "54.75",
+    total_usd: "6.20",
+    total_ves: "226.30",
+    ...overrides,
+  });
+}
+
 describe("CartContent", () => {
   it.each([
     ["null", null],
@@ -77,9 +98,9 @@ describe("CartContent", () => {
 
     expect(screen.getByText("$ 2,50 · Bs 91,25 c/u")).toBeTruthy();
     expect(screen.getByText("$ 5,10")).toBeTruthy();
-    expect(screen.getByText("$ 6,20 · Bs 226,30")).toBeTruthy();
-    expect(screen.getByText("$ 7,40")).toBeTruthy();
-    expect(screen.getByText("Bs 270,10")).toBeTruthy();
+    expect(screen.getAllByText("$ 6,20 · Bs 226,30")).toHaveLength(2);
+    expect(screen.getAllByText("$ 7,40")[0]).toBeTruthy();
+    expect(screen.getAllByText("Bs 270,10")[0]).toBeTruthy();
     expect(screen.getByText("Tasa BCV del 26/09/2026: Bs 36,50")).toBeTruthy();
   });
 
@@ -117,27 +138,27 @@ describe("CartContent", () => {
 
   it("con sesión ofrece Ir a pagar; sin ella, Entra para pagar hacia el checkout", () => {
     render(<CartContent signedIn cart={cart([store([line()])])} />);
-    expect(screen.getByRole("link", { name: "Ir a pagar" }).getAttribute("href")).toBe("/checkout");
+    expect(payLinks("Ir a pagar")).toEqual(both("/checkout"));
     cleanup();
 
     render(<CartContent signedIn={false} cart={cart([store([line()])])} />);
-    expect(screen.getByRole("link", { name: "Entra para pagar" }).getAttribute("href")).toBe(
+    expect(payLinks("Entra para pagar")).toEqual(both(
       "/entrar?volver=%2Fcheckout",
-    );
+    ));
   });
 
   it("Ir a pagar lleva la entrega elegida y Entra para pagar la conserva en volver", () => {
     const delivery = ["farmacia-central-valencia"];
     render(<CartContent signedIn delivery={delivery} cart={cart([store([line()])])} />);
-    expect(screen.getByRole("link", { name: "Ir a pagar" }).getAttribute("href")).toBe(
+    expect(payLinks("Ir a pagar")).toEqual(both(
       "/checkout?f-farmacia-central-valencia=delivery",
-    );
+    ));
     cleanup();
 
     render(<CartContent signedIn={false} delivery={delivery} cart={cart([store([line()])])} />);
-    expect(screen.getByRole("link", { name: "Entra para pagar" }).getAttribute("href")).toBe(
+    expect(payLinks("Entra para pagar")).toEqual(both(
       `/entrar?volver=${encodeURIComponent("/checkout?f-farmacia-central-valencia=delivery")}`,
-    );
+    ));
   });
 
   it("sin líneas disponibles no ofrece pagar", () => {
@@ -152,14 +173,67 @@ describe("CartContent", () => {
   });
 });
 
+
+describe("retiro o entrega por tienda", () => {
+  it("ofrece Retiro y Entrega con la tarifa como enlaces que cambian la URL", () => {
+    render(<CartContent signedIn cart={cart([deliveryStore()])} />);
+
+    const switcher = screen.getByRole("navigation", { name: "Cómo recibir lo de Farmacia Central" });
+    const pickup = within(switcher).getByRole("link", { name: "Retiro" });
+    const delivery = within(switcher).getByRole("link", { name: "Entrega · $ 1,50" });
+    expect(pickup.getAttribute("href")).toBe("/carrito");
+    expect(pickup.getAttribute("aria-current")).toBe("true");
+    expect(delivery.getAttribute("href")).toBe("/carrito?f-farmacia-central-valencia=delivery");
+    expect(delivery.getAttribute("aria-current")).toBeNull();
+  });
+
+  it("con entrega elegida marca Entrega, conserva las otras tiendas y desglosa la tarifa y el total de la API", () => {
+    const other = store([line({ product: { slug: "harina", name: "Harina", image_url: null, category: null } })], {
+      store: { ...store([]).store, slug: "abasto-la-esquina", name: "Abasto La Esquina" },
+    });
+    render(
+      <CartContent
+        signedIn
+        delivery={["farmacia-central-valencia", "abasto-la-esquina"]}
+        cart={cart([deliveryStore({ fulfillment: "delivery", total_usd: "9.99", total_ves: "364.64" }), other])}
+      />,
+    );
+
+    const switcher = screen.getByRole("navigation", { name: "Cómo recibir lo de Farmacia Central" });
+    const delivery = within(switcher).getByRole("link", { name: "Entrega · $ 1,50" });
+    expect(delivery.getAttribute("aria-current")).toBe("true");
+    expect(within(switcher).getByRole("link", { name: "Retiro" }).getAttribute("href")).toBe(
+      "/carrito?f-abasto-la-esquina=delivery",
+    );
+    expect(screen.getByText("Entrega a domicilio")).toBeTruthy();
+    expect(screen.getByText("$ 1,50 · Bs 54,75")).toBeTruthy();
+    expect(screen.getByText("$ 9,99 · Bs 364,64")).toBeTruthy();
+  });
+
+  it("sin tarifa de entrega, Retiro sin costo y sin enlaces", () => {
+    render(<CartContent signedIn cart={cart([store([line()], { offers_delivery: false, delivery_fee_usd: null, delivery_fee_ves: null })])} />);
+
+    expect(screen.getByText("Retiro sin costo")).toBeTruthy();
+    expect(screen.queryByRole("navigation", { name: /Cómo recibir/ })).toBeNull();
+    expect(screen.getByText("Retiro en tienda")).toBeTruthy();
+  });
+
+  it("el resumen y la barra móvil muestran el total del carrito", () => {
+    render(<CartContent signedIn cart={cart([store([line()])])} />);
+
+    expect(screen.getByRole("heading", { name: "Resumen" })).toBeTruthy();
+    expect(within(screen.getByTestId("cart-pay-bar")).getByText("$ 7,40")).toBeTruthy();
+  });
+});
+
 describe("CartView", () => {
   it("/carrito?f-<tienda>=delivery pide el carrito con esa tienda y la lleva al checkout", async () => {
     vi.mocked(accountContext).mockResolvedValue({ session: "7|token", clientIp: null });
     vi.mocked(getCurrentCart).mockResolvedValue(cart([store([line()])]));
     render(await CartView({ searchParams: Promise.resolve({ "f-farmacia-central-valencia": "delivery" }) }));
     expect(getCurrentCart).toHaveBeenCalledWith("farmacia-central-valencia");
-    expect(screen.getByRole("link", { name: "Ir a pagar" }).getAttribute("href")).toBe(
+    expect(payLinks("Ir a pagar")).toEqual(both(
       "/checkout?f-farmacia-central-valencia=delivery",
-    );
+    ));
   });
 });

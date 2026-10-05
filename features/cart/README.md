@@ -2,10 +2,10 @@
 module: "cart"
 path: "features/cart"
 type: "feature"
-exports: ["cartEnabled", "FULFILLMENT_PARAM_PREFIX", "SearchParams", "readDeliveryStores", "setDeliveryParams", "deliveryKey", "deliveryFromKey", "checkoutPathFor", "cartCount", "CART_COOKIE", "cartCookieOptions", "parseCartCookie", "serializeCart", "readGuestCart", "writeGuestCart", "getSessionCart", "getCurrentCart", "mergeGuestCart", "addToCart", "setQuantity", "removeLine", "AddToCartState", "INITIAL_ADD_TO_CART_STATE", "AddToCartButton", "CartLink", "CartLinkSkeleton", "CartView", "CartContent", "CartViewSkeleton", "LineForm"]
+exports: ["cartEnabled", "FULFILLMENT_PARAM_PREFIX", "SearchParams", "readDeliveryStores", "setDeliveryParams", "deliveryKey", "deliveryFromKey", "cartPathWith", "checkoutPathFor", "cartCount", "CART_COOKIE", "cartCookieOptions", "parseCartCookie", "serializeCart", "readGuestCart", "writeGuestCart", "getSessionCart", "getCurrentCart", "mergeGuestCart", "addToCart", "setQuantity", "removeLine", "AddToCartState", "INITIAL_ADD_TO_CART_STATE", "AddToCartButton", "CartLink", "CartLinkSkeleton", "CartView", "CartContent", "CartViewSkeleton", "CartLine", "CartStoreGroup", "FulfillmentSwitch", "CartSummary", "CartPayBar", "LineForm"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/server/session.ts", "features/account/lib/returnPath.ts", "features/search/components/ProductThumb.tsx", "components/ui/button.tsx", "components/ui/badge.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx"]
 tests: "features/cart/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/cart/lib/flag.ts", "features/cart/lib/fulfillment.ts", "features/cart/__tests__/fulfillment.test.ts", "features/cart/__tests__/cart.test.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/cart/server/actions.ts", "features/cart/lib/addToCartState.ts", "features/cart/components/AddToCartButton.tsx", "features/events/lib/beacon.ts", "features/cart/components/CartLink.tsx", "features/cart/components/CartView.tsx", "features/cart/components/LineForm.tsx", "features/cart/__tests__/flag.test.ts", "features/cart/__tests__/cookie.test.ts", "features/cart/__tests__/actions.test.ts", "features/cart/__tests__/AddToCartButton.test.tsx", "features/cart/__tests__/CartLink.test.tsx", "features/cart/__tests__/CartView.test.tsx", "features/cart/__tests__/LineForm.test.tsx", "features/account/server/actions.ts", "features/product/components/OfferCard.tsx", "features/store/components/StoreProducts.tsx", "app/carrito/page.tsx", "app/layout.tsx", "app/robots.ts", "e2e/cart.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
+verified_against: ["features/cart/lib/flag.ts", "features/cart/lib/fulfillment.ts", "features/cart/__tests__/fulfillment.test.ts", "features/cart/__tests__/cart.test.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/cart/server/actions.ts", "features/cart/lib/addToCartState.ts", "features/cart/components/AddToCartButton.tsx", "features/events/lib/beacon.ts", "features/cart/components/CartLink.tsx", "features/cart/components/CartView.tsx", "features/cart/components/CartLine.tsx", "features/cart/components/CartStoreGroup.tsx", "features/cart/components/FulfillmentSwitch.tsx", "features/cart/components/CartSummary.tsx", "features/cart/components/LineForm.tsx", "features/cart/__tests__/flag.test.ts", "features/cart/__tests__/cookie.test.ts", "features/cart/__tests__/actions.test.ts", "features/cart/__tests__/AddToCartButton.test.tsx", "features/cart/__tests__/CartLink.test.tsx", "features/cart/__tests__/CartView.test.tsx", "features/cart/__tests__/LineForm.test.tsx", "features/account/server/actions.ts", "features/product/components/OfferCard.tsx", "features/store/components/StoreProducts.tsx", "app/carrito/page.tsx", "app/layout.tsx", "app/robots.ts", "e2e/cart.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
 capabilities:
   - intent: "agregar un producto de una tienda al carrito"
     intent_aliases: ["agregar al carrito", "comprar", "anadir al carrito", "boton agregar"]
@@ -36,7 +36,7 @@ capabilities:
     entrypoint: "<CartView />"
     file: "features/cart/components/CartView.tsx"
     input: "searchParams de /carrito (f-<tienda>=delivery); en app/carrito/page.tsx dentro de <Suspense>"
-    output: "tiendas con sus líneas (cantidad, Quitar uno, Agregar uno, Quitar; las no disponibles con su motivo), subtotales, total en USD y Bs, la tasa e 'Ir a pagar' (con sesión) o 'Entra para pagar' (sin ella) si hay líneas ok, que llevan la entrega elegida (/checkout?f-<tienda>=delivery); vacío con 'Buscar productos'"
+    output: "tiendas con sus líneas (cantidad, Quitar uno, Agregar uno, Quitar; las no disponibles con su motivo), por tienda el selector Retiro o Entrega con la tarifa (enlaces a /carrito?f-<tienda>=delivery; sin tarifa, 'Retiro sin costo') y el desglose de productos, entrega y total de la tienda; resumen con el total en USD y Bs y la tasa en escritorio y barra fija inferior en móvil, con 'Ir a pagar' (con sesión) o 'Entra para pagar' (sin ella) si hay líneas ok, que llevan la entrega elegida (/checkout?f-<tienda>=delivery); vacío con 'Buscar productos'"
     source: "getCurrentCart(); las Server Actions setQuantity y removeLine, que devuelven su estado y avisan el error por toast"
     rules: ["RN-CART-01"]
 ---
@@ -70,7 +70,7 @@ las líneas en 99).
 | Límites de la cookie | `server/cookie.ts` (`MAX_ENCODED_BYTES`) y `cartItemsSchema` en `lib/marketplace/schemas.ts` | la spec cuentas-y-compras §5.2 primero; sus casos en `__tests__/cookie.test.ts` |
 | Una acción nueva del carrito | `server/actions.ts` (sólo acciones de formulario: todo export es un endpoint público) | lo que reciba contexto o token, en `server/cart.ts`; su prueba en `__tests__/actions.test.ts` |
 | Cuándo sale "Agregar" | `features/product/components/OfferCard.tsx` y `features/store/components/StoreProducts.tsx` | sus pruebas y `RN-CART-03` |
-| Textos de motivos no disponibles | `UNAVAILABLE_TEXT` en `components/CartView.tsx` | `__tests__/CartView.test.tsx` y `e2e/cart.spec.ts` |
+| Textos de motivos no disponibles | `UNAVAILABLE_TEXT` en `components/CartLine.tsx` | `__tests__/CartView.test.tsx` y `e2e/cart.spec.ts` |
 
 ## 4. API pública
 
@@ -82,7 +82,8 @@ las líneas en 99).
 - `AddToCartState` e `INITIAL_ADD_TO_CART_STATE`, `features/cart/lib/addToCartState.ts`.
 - `AddToCartButton({ storeSlug, storeName, productSlug, productName, nameQualifier? })`, Client Component; nombre accesible "Agregar al carrito: {producto} de {tienda}", o "Agregar al carrito {nameQualifier}: …" (la barra de compra de la ficha usa "de la tienda elegida").
 - `cartCount(): Promise<number | null>`, `features/cart/components/CartLink.tsx`: `line_count` del comprador o las entradas de `mp_cart` del invitado; `null` si la API no responde (L-02). Lo usan `CartLink` y la barra inferior de `features/site`.
-- `readDeliveryStores(searchParams): string[]`, `setDeliveryParams(query: URLSearchParams, delivery: string[]): void`, `deliveryKey(delivery): string` (ordenada y sin repetidos), `deliveryFromKey(key): string[]`, `checkoutPathFor(delivery): string`, `FULFILLMENT_PARAM_PREFIX` (`"f-"`) y `type SearchParams`, `features/cart/lib/fulfillment.ts` (sin `server-only`; el checkout reutiliza la lectura y escritura de `f-<tienda>=delivery`).
+- `readDeliveryStores(searchParams): string[]`, `setDeliveryParams(query: URLSearchParams, delivery: string[]): void`, `deliveryKey(delivery): string` (ordenada y sin repetidos), `deliveryFromKey(key): string[]`, `cartPathWith(delivery, slug, wantsDelivery): string` (ruta `/carrito` con esa tienda en entrega o en retiro, sin tocar las otras), `checkoutPathFor(delivery): string`, `FULFILLMENT_PARAM_PREFIX` (`"f-"`) y `type SearchParams`, `features/cart/lib/fulfillment.ts` (sin `server-only`; el checkout reutiliza la lectura y escritura de `f-<tienda>=delivery`).
+- `CartLine({ line, storeSlug })`, `CartStoreGroup({ entry, delivery })`, `FulfillmentSwitch({ entry, delivery })`, `CartSummary({ cart, payHref, signedIn })` y `CartPayBar({ cart, payHref, signedIn })` (`null` sin líneas ok), `features/cart/components/`: piezas de `CartContent`; `FulfillmentSwitch` es un `<nav>` de dos enlaces (Retiro, Entrega · tarifa) con `aria-current`.
 - `CartLink()` y `CartLinkSkeleton()`, `CartView({ searchParams })`, `CartContent({ cart, signedIn, delivery? }: { cart: Cart | null; signedIn: boolean; delivery?: string[] })` y `CartViewSkeleton()`. Con `line_count > 0`, `CartContent` enlaza "Ir a pagar" a `/checkout` (más `?f-<tienda>=delivery` por cada tienda con entrega) con sesión, o "Entra para pagar" a `/entrar?volver=` con esa misma ruta codificada sin ella.
 
 ## 5. Estructura interna
@@ -91,13 +92,16 @@ las líneas en 99).
 |---|---|---|
 | Interruptor | `lib/flag.ts` | misma regla que `usesMock()` de `lib/marketplace/client.ts` más `MARKETPLACE_CART_ENABLED` |
 | Cookie | `server/cookie.ts` | parseo estricto, tope de bytes, escritura y borrado |
-| Entrega en la URL | `lib/fulfillment.ts` | lee y escribe `f-<tienda>=delivery`, la clave estable para `cache` y la ruta al checkout |
+| Entrega en la URL | `lib/fulfillment.ts` | lee y escribe `f-<tienda>=delivery`, la clave estable para `cache`, la ruta al checkout y la de `/carrito` con una tienda en entrega o retiro |
 | Lectura y fusión | `server/cart.ts` | carrito de la petición con la entrega elegida (401 sigue como invitado) y fusión al entrar |
 | Acciones | `server/actions.ts` | agregar (+1), fijar cantidad y quitar, repartidas entre comprador (API) e invitado (cookie); devuelven `AddToCartState`; 401 borra `mp_session` y sigue como invitado; `refresh()` tras escribir |
 | Línea | `components/LineForm.tsx` | `useActionState` por formulario de línea; el toast de error va dentro de la acción |
 | Botón | `components/AddToCartButton.tsx` | `useActionState`; vuelve a montar el aviso en cada respuesta para que se anuncie; tras un "agregado" manda `add_to_cart` con `sendBeaconEvent`, y con error no manda nada |
 | Contador | `cartCount` en `components/CartLink.tsx` | L-02: degrada a "Carrito" ante cualquier error de la API |
-| Página | `components/CartView.tsx` | agrupación por tienda tal como llega; `LineForm` por línea; la línea no disponible atenúa sólo la imagen (el texto conserva el contraste AA) |
+| Página | `components/CartView.tsx` | rejilla de tiendas y resumen; el pago lleva la entrega elegida |
+| Tienda | `components/CartStoreGroup.tsx`, `components/FulfillmentSwitch.tsx` | tienda tal como llega, selector Retiro o Entrega y desglose con los montos de la API (el total de la tienda cae al subtotal si la API no lo manda) |
+| Línea del carrito | `components/CartLine.tsx` | `LineForm` por línea; la línea no disponible atenúa sólo la imagen (el texto conserva el contraste AA) |
+| Resumen | `components/CartSummary.tsx` | tarjeta fija en escritorio y barra inferior fija en móvil, ambas con el total del carrito y su enlace de pago |
 
 ## 6. Dependencias
 
@@ -140,8 +144,8 @@ export default function Page({ searchParams }: PageProps<"/carrito">) {
 - `features/cart/__tests__/actions.test.ts`: agregar como invitado y con sesión, topes, errores de la API, 401 en `addToCart` y `setQuantity`, y los avisos de `setQuantity` y `removeLine` (mensaje de la API, genérico, API caída, `retryAfter`, cantidad y referencia inválidas).
 - `features/cart/__tests__/LineForm.test.tsx`: campos enviados, toast de error y ninguno en un cambio exitoso.
 - `features/cart/__tests__/AddToCartButton.test.tsx`: nombre accesible, estado agregado con el beacon `add_to_cart` (tienda y producto) y error por toast sin beacon.
-- `features/cart/__tests__/fulfillment.test.ts`: lectura de las tiendas con entrega, valores ignorados, clave estable y ruta al checkout.
+- `features/cart/__tests__/fulfillment.test.ts`: lectura de las tiendas con entrega, valores ignorados, clave estable, ruta al checkout y `cartPathWith`.
 - `features/cart/__tests__/cart.test.ts`: `getCurrentCart` pide `getCart` y `quoteGuestCart` con las tiendas con entrega.
-- `features/cart/__tests__/CartView.test.tsx`: vacío, montos formateados que no salen de la aritmética (subtotal y total incluidos), una línea `ok` y una no disponible en la misma tienda (grupo "Cantidad de X" sólo en la `ok`), topes de cantidad, tienda cerrada, "Ir a pagar" y "Entra para pagar" (con y sin entrega elegida), `CartView` que lee `f-<tienda>` de la URL, y nada sin líneas disponibles.
+- `features/cart/__tests__/CartView.test.tsx`: selector Retiro o Entrega (enlaces, `aria-current`, tarifa y total de la API, sin tarifa), resumen y barra móvil con enlace de pago cada uno; vacío, montos formateados que no salen de la aritmética (subtotal y total incluidos), una línea `ok` y una no disponible en la misma tienda (grupo "Cantidad de X" sólo en la `ok`), topes de cantidad, tienda cerrada, "Ir a pagar" y "Entra para pagar" (con y sin entrega elegida), `CartView` que lee `f-<tienda>` de la URL, y nada sin líneas disponibles.
 - `features/cart/__tests__/CartLink.test.tsx`: `line_count`, invitado sin API, degradación y el interruptor.
 - `e2e/cart.spec.ts` (en serie): invitado en ficha, tienda y `/carrito` (sin toast al cambiar y quitar líneas); sin botón en tienda que no vende ni en restringidos; fusión al registrarse y al entrar; `noindex`, `robots.txt` y sitemap; y un `test.fixme` sin JavaScript.

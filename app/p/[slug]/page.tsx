@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/components/FavoriteButton";
@@ -11,6 +10,7 @@ import { productJsonLd } from "@/features/product/lib/jsonld";
 import { loadProduct } from "@/features/product/server/load";
 import { productMetadata } from "@/features/product/lib/metadata";
 import { PriceSummary } from "@/features/product/components/PriceSummary";
+import { ProductDetails } from "@/features/product/components/ProductDetails";
 import { ProductGallery } from "@/features/product/components/ProductGallery";
 import { ProductOffers, ProductOffersSkeleton } from "@/features/product/components/ProductOffers";
 import { ShareButton } from "@/features/product/components/ShareButton";
@@ -195,27 +195,7 @@ export default async function ProductPage({
             </Suspense>
           )}
 
-          {/* Información Adicional con Acordeón (details/summary) */}
-          {product.attributes.length > 0 && (
-            <Card className="overflow-hidden border-border shadow-card">
-              <CardContent className="p-0">
-                <h3 className="font-heading font-bold text-lg p-5 border-b border-border bg-muted/10">Información Adicional</h3>
-                <div className="flex flex-col divide-y divide-border">
-                  {product.attributes.map((attribute) => (
-                    <details key={attribute.name} className="group">
-                      <summary className="flex cursor-pointer items-center justify-between p-5 text-sm font-medium text-foreground hover:bg-muted/10 focus-visible:outline-none focus-visible:bg-muted/20 list-none [&::-webkit-details-marker]:hidden">
-                        {attribute.name}
-                        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
-                      </summary>
-                      <div className="p-5 pt-0 text-sm text-muted-foreground leading-relaxed bg-muted/5">
-                        {attribute.value}
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <ProductDetails product={product} />
         </div>
       </div>
 

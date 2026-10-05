@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F2 del lienzo "E · PosVen": ficha de producto con la lista de
 tiendas para elegir, barra de compra fija y detalles plegables; página de tienda con portada; y
 directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el contrato de F2a.
-**Estado:** en curso: fase 4 de 7
+**Estado:** en curso: fase 5 de 7
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2, §4 (`ui.md`), §5 (ficha `P15`/`P06`,
@@ -67,7 +67,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - **Alcance:** tienda elegida en la lista, precio y "Agregar al carrito" fijos abajo en móvil
   (sobre la barra inferior de F1b) y en la columna en escritorio; accesible por teclado.
 
-### [ ] Fase 4 — Detalles plegables de la ficha
+### [x] Fase 4 — Detalles plegables de la ficha
 - **Repo:** posven-ecommerce
 - **Alcance:** descripción, presentación, restricciones y datos del producto en secciones
   plegables según `P15`/`P06`, sin perder el JSON-LD ni la canónica.
@@ -102,7 +102,10 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 
 - 2026-10-04 — Fase 3: `OfferSelection.tsx` (cliente) con contexto, botón "Elegir"/"Elegida" (`aria-pressed`) y `PurchaseBar`; sólo con carrito encendido y `restriction === "none"`; por defecto la de `is_best_price` o la primera servida; `AddToCartButton` gana `nameQualifier?` para no duplicar el nombre del botón de la tarjeta; `globals.css` pone `scroll-padding` con `:root:has([data-purchase-bar])` — implementación.
 
+- 2026-10-04 — Fase 4: `ProductDetails` (Server Component) con dos `<details>`: "Detalles del producto" abierto (marca, categoría, EAN, venta) y "Descripción y presentación" plegado con `attributes` (el contrato no trae descripción propia); títulos en `h2`; las filas van con borde, no `bg-muted`, por AA — implementación y revisión.
+
 ## Notas para la próxima sesión
+- Fase 4 hecha: P15 usa pestañas ("Detalles" y "Retiro y entrega") y P06 una fila a `#detalles`; aquí son plegables como pidió el alcance (comparar en la fase 7).
 - Fase 3 hecha: barra fija en móvil sobre `MobileNav` (`bottom-(--toast-bottom)`) y pegada en la columna desde `md`; e2e product, cart y checkout en verde. La fase 7 compara la barra con P15/P06 en claro y oscuro.
 - Fase 2 hecha: e2e product, cart y checkout en verde (18 y 1 `fixme` previo). `npx next build` no termina por la ruta sin trackear `app/preview/rediseno/[pantalla]` (de F0, sin commitear): la puerta de la fase 7 debe resolverlo. En dev sale el aviso "runtime data during prerendering" por `await params` fuera de Suspense: es intencional (regla seo 7) y `generateStaticParams` existe. P06 pliega "Fuera de tu zona" en móvil; aquí sigue desplegado (ver fase 7).
 - Fase 1 hecha: `OfferCard` con enlace a la tienda, `ContactButtons`, pill desde `is_best_price` y horario desde `is_open`/`closes_at`; `ProductOffers` ya no marca por posición. En la fase 2, comprobar contra `P15` si `ContactButtons` debe llevar "Ver ruta" (hoy trae WhatsApp, llamada y ruta).

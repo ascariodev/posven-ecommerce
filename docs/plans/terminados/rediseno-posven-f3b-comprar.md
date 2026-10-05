@@ -186,7 +186,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [ ] M-13 — Diferencias con el lienzo del carrito: cabecera de tienda con distancia y estado
   abierto, logotipo y la nota "Cada tienda prepara su parte"; el resultado aún no sigue del todo
   el estilo del lienzo. Repo posven-ecommerce · complejidad media · modelo sonnet.
-- [ ] M-14 — Contraste: "Pagado el …" en el cancelado de `OrderTracker.tsx` usa
+- [x] M-14 — Contraste: "Pagado el …" en el cancelado de `OrderTracker.tsx` usa
   `text-muted-foreground` sobre `bg-warning-soft` (ui.md lo pide sobre `bg-card`/`bg-background`).
   Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [ ] M-15 — El simulado (`lib/marketplace/mock/checkout.ts` `prepare()`) no pone `ready_at` en

@@ -10,7 +10,7 @@ export function OrderTracker({ order, className }: { order: TrackedOrder; classN
       <div className={cn("flex flex-col gap-1 rounded-2xl bg-warning-soft p-4 text-sm text-foreground", className)}>
         <p className="font-semibold">Pedido cancelado</p>
         {order.timeline.cancelled_at !== null && <p>{formatDateTime(order.timeline.cancelled_at)}</p>}
-        {order.timeline.paid_at !== null && <p className="text-muted-foreground">Pagado el {formatDateTime(order.timeline.paid_at)}</p>}
+        {order.timeline.paid_at !== null && <p>Pagado el {formatDateTime(order.timeline.paid_at)}</p>}
       </div>
     );
   }

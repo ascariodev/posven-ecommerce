@@ -644,7 +644,8 @@ export const purchasePageSchema = z.object({
 export type PurchasePage = z.infer<typeof purchasePageSchema>;
 
 // "Volver a comprar" (spec cuentas-y-compras §4.1 BuyAgainItem y §4.2). `status` sólo admite `ok` o
-// `unavailable`; el precio llega aunque la disponibilidad sea nula (agotado con oferta).
+// `unavailable`; `availability` es nulo en todo ítem `unavailable` (como el carrito), aunque el precio
+// llegue (oferta agotada), y también sin oferta, caso en que el precio es nulo.
 export const buyAgainItemSchema = z.object({
   product: lineProductSchema,
   store: storeSummarySchema,

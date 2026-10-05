@@ -303,7 +303,7 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 - `checkoutStartSchema` / `CheckoutStart` (exactamente uno de `redirect_url`, http o https, e `instructions`)
 - `purchaseStatusSchema` / `PurchaseStatus`; `storeOrderStatusSchema` / `StoreOrderStatus` (con `pending_payment`, enmienda L); `orderAddressSchema` / `OrderAddress` (sin `id` ni coordenadas)
 - `storeOrderLineSchema` / `StoreOrderLine`; `storeOrderSchema` / `StoreOrder` (fechas ISO con zona o nulas); `purchaseSchema` / `Purchase`; `purchasePageSchema` / `PurchasePage`
-- `buyAgainItemSchema` / `BuyAgainItem` (`status` sólo `ok` o `unavailable`; precio presente aunque `availability` sea nulo); `buyAgainResponseSchema` / `BuyAgainResponse` (hasta 8 ítems y `rate`)
+- `buyAgainItemSchema` / `BuyAgainItem` (`status` sólo `ok` o `unavailable`; `availability` nulo en todo ítem `unavailable`, aunque el precio llegue con oferta agotada); `buyAgainResponseSchema` / `BuyAgainResponse` (hasta 8 ítems y `rate`)
 
 ## 5. Estructura interna
 

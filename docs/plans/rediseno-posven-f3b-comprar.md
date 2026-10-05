@@ -3,7 +3,7 @@
 **Objetivo:** carrito agrupado por tienda con retiro o entrega y su costo antes de pagar, checkout
 de una página con el estilo del lienzo, y resultado del pago con la línea de estados de cada
 pedido; puerta: pago de prueba completo en modo simulado.
-**Estado:** en curso · Fase actual: 3
+**Estado:** en curso · Fase actual: 4
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §5 (`W08`/`P08`, `W09`/`P09`,
@@ -72,7 +72,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   total e "Ir a pagar" en móvil. Se parte `CartView` en piezas; tests de componentes.
 - **Terminado cuando:** vitest de `features/cart` en verde y `e2e/cart.spec.ts` sin regresiones.
 
-### [ ] Fase 3 — [riesgo] Checkout de una página con el estilo del lienzo
+### [x] Fase 3 — [riesgo] Checkout de una página con el estilo del lienzo
 - **Repo:** posven-ecommerce
 - **Alcance:** `P09`/`W09` sin pasos: direcciones como tarjetas de radio (cambian `direccion=`),
   "Cómo recibes cada parte" por tienda, facturación y resumen fijo en escritorio, con barra de pago
@@ -119,6 +119,13 @@ pedido; puerta: pago de prueba completo en modo simulado.
   "Ir a pagar", uno visible por viewport). `cartPathWith(delivery, slug, wantsDelivery)` en
   `features/cart/lib/fulfillment.ts`. El `total_*` de tienda cae a `subtotal_*` si la API no lo
   manda.
+- 2026-10-05 — Fase 3: `CheckoutForm` se parte en `CheckoutAddressPicker({ addresses, addressId,
+  disabled, onChange })` y `CheckoutStoreSection({ entry, store, changed, delivery, disabled,
+  onFulfillment })`; se exportan `SECTION_LABEL_CLASSES` y `LINK_CLASSES`. Tiendas en `h3` bajo
+  `h2` de sección. Facturación dentro de "Tu pedido" (`bill_to_me` va en el form). Un solo botón
+  de pago, fijo en móvil (`data-testid="checkout-pay-bar"`) y en el resumen desde `md`. No se
+  reusa `FulfillmentSwitch` (enlaces a `/carrito`; el checkout usa radios). La tarifa se ve en la
+  fila "Envío", no en la opción de entrega. Acción, campos ocultos, errores y URL sin cambios.
 
 ## Notas para la próxima sesión
 - docs-check marca RANCIO `features/purchases/README.md` por `e2e/checkout.spec.ts`: la fase 4
@@ -137,3 +144,8 @@ pedido; puerta: pago de prueba completo en modo simulado.
   complejidad baja · modelo sonnet.
 - [ ] M-4 — Poner al día `features/site/README.md` (RANCIO por `features/cart/server/cart.ts`).
   Repo posven-ecommerce · complejidad baja · modelo sonnet.
+- [ ] M-5 — Mover `LINK_CLASSES` y `SECTION_LABEL_CLASSES` a `features/checkout/lib/styles.ts`
+  armadas con `cn` (ui.md regla 3). Repo posven-ecommerce · complejidad baja · modelo sonnet.
+- [ ] M-6 — Mostrar la tarifa como pista en la opción "Entrega a domicilio" de
+  `CheckoutStoreSection.tsx` si la Quote la trae en retiro, con test. Repo posven-ecommerce ·
+  complejidad baja · modelo sonnet.

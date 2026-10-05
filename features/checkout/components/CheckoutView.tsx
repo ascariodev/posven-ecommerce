@@ -49,10 +49,12 @@ export async function CheckoutView({
 
 export function CheckoutViewSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
-      <Skeleton className="h-24 w-full rounded-lg" />
-      <Skeleton className="h-56 w-full rounded-lg" />
-      <Skeleton className="h-32 w-full rounded-lg" />
+    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-5 md:grid-cols-[minmax(0,1fr)_360px] md:gap-6">
+      <div className="flex flex-col gap-5">
+        <Skeleton className="h-32 w-full rounded-2xl" />
+        <Skeleton className="h-56 w-full rounded-2xl" />
+      </div>
+      <Skeleton className="h-64 w-full rounded-2xl" />
     </div>
   );
 }

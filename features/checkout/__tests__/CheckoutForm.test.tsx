@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { DeliveryUnavailableReason } from "@/lib/marketplace/schemas";
+import type { Address, DeliveryUnavailableReason } from "@/lib/marketplace/schemas";
 import { payCheckout } from "@/features/checkout/server/actions";
 import { CheckoutForm } from "@/features/checkout/components/CheckoutForm";
 import { ABASTO, CENTRAL, cartStore, quote, quoteStore } from "@/features/checkout/__tests__/fixtures/testQuote";
@@ -32,6 +32,21 @@ function renderForm(overrides: Partial<Parameters<typeof CheckoutForm>[0]> = {})
       {...overrides}
     />,
   );
+}
+
+function address(id: number, label: string): Address {
+  return {
+    id,
+    label,
+    recipient_name: "Comprador",
+    phone: "+584141234569",
+    city: { slug: "valencia", name: "Valencia" },
+    line: "Av. Bolívar Norte",
+    reference: null,
+    lat: 10.17,
+    lng: -68,
+    is_default: id === 2,
+  };
 }
 
 function hiddenValue(container: HTMLElement, name: string): string | null {
@@ -77,28 +92,36 @@ describe("CheckoutForm", () => {
   });
 
   it("elegir entrega vuelve a cotizar por la URL, sin mover el scroll", () => {
-    renderForm({
-      addresses: [
-        {
-          id: 2,
-          label: "Oficina",
-          recipient_name: "Comprador",
-          phone: "+584141234569",
-          city: { slug: "valencia", name: "Valencia" },
-          line: "Av. Bolívar Norte",
-          reference: null,
-          lat: 10.17,
-          lng: -68,
-          is_default: true,
-        },
-      ],
-      addressId: 2,
-    });
+    renderForm({ addresses: [address(2, "Oficina")], addressId: 2 });
 
     const group = screen.getByRole("radiogroup", { name: "Entrega en Farmacia Central" });
     fireEvent.click(within(group).getByRole("radio", { name: "Entrega a domicilio" }));
 
     expect(replace).toHaveBeenCalledWith(`/checkout?direccion=2&f-${CENTRAL}=delivery`, { scroll: false });
+  });
+
+  it("las direcciones son tarjetas de radio y elegir otra vuelve a cotizar con direccion=", () => {
+    renderForm({
+      quote: quote([quoteStore({ fulfillment: "delivery" }), quoteStore({ store_slug: ABASTO })]),
+      addresses: [address(2, "Oficina"), address(5, "Casa")],
+      addressId: 2,
+    });
+
+    const group = screen.getByRole("radiogroup", { name: "Dirección de entrega" });
+    expect((within(group).getByRole("radio", { name: /^Oficina/ }) as HTMLButtonElement).getAttribute("aria-checked")).toBe("true");
+    fireEvent.click(within(group).getByRole("radio", { name: /^Casa/ }));
+
+    expect(replace).toHaveBeenCalledWith(`/checkout?direccion=5&f-${CENTRAL}=delivery`, { scroll: false });
+    expect(screen.getByRole("link", { name: "Agregar otra dirección" }).getAttribute("href")).toBe("/cuenta/direcciones?volver=/checkout");
+  });
+
+  it("el botón de pago va dentro del formulario y en la barra de pago", () => {
+    renderForm();
+
+    const pay = screen.getByRole("button", { name: "Pagar Bs 255,60 de forma segura" }) as HTMLButtonElement;
+    expect(pay.type).toBe("submit");
+    expect(pay.form).not.toBeNull();
+    expect(screen.getByTestId("checkout-pay-bar").contains(pay)).toBe(true);
   });
 
   it("los campos ocultos llevan lo de la Quote vigente", () => {
@@ -129,7 +152,7 @@ describe("CheckoutForm", () => {
     expect(screen.getByRole("alert").textContent).toBe("Tu compra cambió. Revisa los precios y la entrega.");
     expect(screen.getByText("$ 7,80")).toBeTruthy();
     expect(hiddenValue(container, "quote_hash")).toBe("hash-2");
-    const [central, abasto] = screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.parentElement as HTMLElement);
+    const [central, abasto] = screen.getAllByRole("heading", { level: 3 }).map((heading) => heading.parentElement as HTMLElement);
     expect(within(central).queryByText("Cambió")).toBeTruthy();
     expect(within(abasto).queryByText("Cambió")).toBeNull();
   });
@@ -155,7 +178,7 @@ describe("CheckoutForm", () => {
     });
 
     expect(hiddenValue(container, "quote_hash")).toBe("hash-3");
-    const [central, abasto] = screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.parentElement as HTMLElement);
+    const [central, abasto] = screen.getAllByRole("heading", { level: 3 }).map((heading) => heading.parentElement as HTMLElement);
     expect(within(central).queryByText("Cambió")).toBeNull();
     expect(within(abasto).queryByText("Cambió")).toBeTruthy();
   });

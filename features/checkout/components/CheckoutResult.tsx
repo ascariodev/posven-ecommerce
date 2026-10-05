@@ -2,6 +2,7 @@ import { Check, X } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { emptyActionClass } from "@/components/EmptyState";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -126,11 +127,11 @@ export async function CheckoutResult({ code }: { code: string }) {
             <Link
               href="/cuenta/compras"
               prefetch={false}
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}
+              className={emptyActionClass}
             >
               Ver mis compras
             </Link>
-            <Link href="/" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}>
+            <Link href="/" className={emptyActionClass}>
               Seguir comprando
             </Link>
           </Actions>

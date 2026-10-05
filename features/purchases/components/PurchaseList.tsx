@@ -1,10 +1,9 @@
 import { Receipt } from "lucide-react";
 import Link from "next/link";
-import { EmptyState } from "@/components/EmptyState";
+import { EmptyState, emptyActionClass } from "@/components/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { formatUsd, formatVes } from "@/lib/format";
-import { cn } from "@/lib/utils";
 import type { Purchase, PurchasePage } from "@/lib/marketplace/schemas";
 import { formatDateTime, purchaseStatusText, storeCountText } from "../lib/labels";
 
@@ -58,7 +57,7 @@ export function PurchaseList({ page }: { page: PurchasePage }) {
   if (data.length === 0 && meta.page === 1) {
     return (
       <EmptyState icon={Receipt} title="Todavía no tienes compras.">
-        <Link href="/buscar" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}>
+        <Link href="/buscar" className={emptyActionClass}>
           Buscar productos
         </Link>
       </EmptyState>

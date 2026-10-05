@@ -2,15 +2,13 @@ import { Heart } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { EmptyState } from "@/components/EmptyState";
-import { buttonVariants } from "@/components/ui/button";
+import { EmptyState, emptyActionClass } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FavoriteToggleForm } from "@/features/account/components/FavoriteToggleForm";
 import { requireCustomer } from "@/features/account/server/session";
 import { ProductThumb } from "@/features/search/components/ProductThumb";
 import { listFavorites } from "@/lib/marketplace/client";
 import type { FavoriteTarget } from "@/lib/marketplace/params";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Favoritos",
@@ -40,7 +38,7 @@ async function FavoritesPanel() {
       <h1 className="text-2xl font-bold tracking-tight text-foreground">Favoritos</h1>
       {isEmpty && (
         <EmptyState icon={Heart} title="Todavía no tienes favoritos.">
-          <Link href="/buscar" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}>
+          <Link href="/buscar" className={emptyActionClass}>
             Buscar productos
           </Link>
         </EmptyState>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-import { EmptyState } from "@/components/EmptyState";
+import { EmptyState, emptyActionClass } from "@/components/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,7 +11,6 @@ import { AddressActionButton } from "@/features/account/components/AddressAction
 import { AddressForm } from "@/features/account/components/AddressForm";
 import { requireCustomer } from "@/features/account/server/session";
 import { listAddresses, listLocations } from "@/lib/marketplace/client";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Direcciones",
@@ -52,7 +51,7 @@ async function AddressesPanel({ searchParams }: { searchParams: PageProps<"/cuen
       )}
       {addresses.length === 0 ? (
         <EmptyState icon={MapPin} title="Todavía no tienes direcciones guardadas.">
-          <Link href="/buscar" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}>
+          <Link href="/buscar" className={emptyActionClass}>
             Buscar productos
           </Link>
         </EmptyState>

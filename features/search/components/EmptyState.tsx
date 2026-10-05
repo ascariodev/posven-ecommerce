@@ -1,12 +1,11 @@
 import { SearchX } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { EmptyState as EmptyStateCard } from "@/components/EmptyState";
+import { EmptyState as EmptyStateCard, emptyActionClass } from "@/components/EmptyState";
 import { buttonVariants } from "@/components/ui/button";
 import { RADIUS_OPTIONS } from "@/lib/marketplace/params";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
 import { SITE_NAME } from "@/lib/site";
-import { cn } from "@/lib/utils";
 import { CategoryLinks } from "./CategoryLinks";
 import { searchHref, type SearchQuery } from "../lib/query";
 
@@ -48,8 +47,6 @@ export function EmptyState({
   const offerOpenNowOff = query.openNow === true;
   const related = relatedCategories(categories, query.categoria);
 
-  const actionClass = cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card");
-
   return (
     <section className="flex flex-col gap-4">
       <EmptyStateCard
@@ -67,12 +64,12 @@ export function EmptyState({
           </Link>
         )}
         {offerOpenNowOff && (
-          <Link href={searchHref({ ...query, openNow: undefined, pagina: 1 })} className={actionClass}>
+          <Link href={searchHref({ ...query, openNow: undefined, pagina: 1 })} className={emptyActionClass}>
             Quitar «Abierto ahora»
           </Link>
         )}
         {offerNationwide && (
-          <Link href={searchHref({ ...query, radio: null, pagina: 1 })} className={actionClass}>
+          <Link href={searchHref({ ...query, radio: null, pagina: 1 })} className={emptyActionClass}>
             Buscar en todo el país
           </Link>
         )}

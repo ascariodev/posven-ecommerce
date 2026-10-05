@@ -171,7 +171,7 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
 - [x] M-1 (baja, sonnet) — El mensaje de `CheckoutEmpty` puede venir de la API y ahora es el `h2` a
   `md:text-3xl`; si se ve grande, ajustar el título con `className`. `features/checkout/components/CheckoutEmpty.tsx`,
   `components/EmptyState.tsx`.
-- [ ] M-2 (baja, sonnet) — La clase de acción `cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")`
+- [x] M-2 (baja, sonnet) — La clase de acción `cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")`
   se repite en cada vacío; extraer una constante o prop de acción en `components/EmptyState.tsx`.
 - [ ] M-3 (baja, sonnet) — Vacíos dentro de secciones con su propio `h2` (`ProductOffers`,
   `StoreProducts`, `NearbyStores`): admitir `headingLevel: "h3"` en `components/EmptyState.tsx` y usarlo ahí.

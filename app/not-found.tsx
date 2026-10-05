@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Compass } from "lucide-react";
-import { EmptyState } from "@/components/EmptyState";
+import { EmptyState, emptyActionClass } from "@/components/EmptyState";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
@@ -15,7 +14,7 @@ export default function NotFound() {
       <Link href="/" className={buttonVariants({ size: "lg" })}>
         Ir al inicio
       </Link>
-      <Link href="/buscar" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}>
+      <Link href="/buscar" className={emptyActionClass}>
         Buscar productos
       </Link>
     </EmptyState>

@@ -16,7 +16,7 @@ export default function HelpPage() {
   return (
     <div className="flex flex-col gap-10">
       <HelpCenter canContact={whatsapp !== null || email !== null} />
-      <MerchantContact purpose="support" whatsapp={whatsapp} email={email} />
+      <MerchantContact whatsapp={whatsapp} email={email} />
     </div>
   );
 }

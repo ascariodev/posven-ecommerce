@@ -31,12 +31,12 @@ capabilities:
     output: "footer con columnas Marca (SITE_NAME y SITE_DESCRIPTION), Categorías (hasta 8 raíces de listCategories() hacia /buscar?categoria=<slug>), Ayuda (/ayuda), Comercios (/vende), Legal (/terminos y /privacidad) y la línea '© <año> SITE_NAME'; sin API o sin raíces no pinta la columna de categorías"
     source: "listCategories() de lib/marketplace/client.ts y footerYear()"
     rules: ["RN-SITE-01", "RN-SITE-02"]
-  - intent: "ofrecer contacto a un comercio que quiere aparecer en el buscador"
-    intent_aliases: ["para comercios", "contacto comercios", "whatsapp comercios", "captar tiendas", "contacto de soporte", "banda de contacto de la ayuda"]
-    entrypoint: "<MerchantContact whatsapp={string | null} email={string | null} purpose?={'merchant' | 'support'} />"
+  - intent: "ofrecer contacto de soporte al comprador en la ayuda"
+    intent_aliases: ["contacto de soporte", "banda de contacto de la ayuda", "whatsapp de soporte", "no encontraste la respuesta"]
+    entrypoint: "<MerchantContact whatsapp={string | null} email={string | null} />"
     file: "features/site/components/MerchantContact.tsx"
-    input: "whatsapp (dígitos) y email, cada uno string o null, y purpose (por defecto merchant); las páginas los toman de merchantWhatsapp() y merchantEmail() de lib/site.ts"
-    output: "bloque con botón de WhatsApp (https://wa.me/<dígitos>?text=...) y enlace mailto:, cada uno sólo con su dato; null si faltan ambos. merchant: tarjeta 'Escríbenos' con el mensaje de alta de comercio; support: banda sobre bg-ink '¿No encontraste la respuesta?' con el mensaje de ayuda a compradores, sin horarios"
+    input: "whatsapp (dígitos) y email, cada uno string o null; las páginas los toman de merchantWhatsapp() y merchantEmail() de lib/site.ts"
+    output: "bloque con botón de WhatsApp (https://wa.me/<dígitos>?text=...) y enlace mailto:, cada uno sólo con su dato; null si faltan ambos. banda sobre bg-ink '¿No encontraste la respuesta?' con el mensaje de ayuda a compradores, sin horarios"
     source: "variables de entorno MERCHANT_WHATSAPP y MERCHANT_EMAIL, leídas al construir"
     rules: ["RN-SITE-03"]
   - intent: "publicar los términos de uso como borrador legal"
@@ -71,7 +71,7 @@ que enlaza.
 |---|---|---|
 | `RN-SITE-01` | El pie muestra a lo sumo 8 categorías raíz, en el orden de la API. | `features/site/__tests__/SiteFooter.test.tsx` ("corta las categorías en 8") |
 | `RN-SITE-02` | Sin API (`MarketplaceUnavailableError`) o sin raíces, el pie omite la columna de categorías y conserva el resto. | `features/site/__tests__/SiteFooter.test.tsx` ("omite la columna de categorías si la API falla", "omite la columna de categorías si no hay raíces") |
-| `RN-SITE-03` | El contacto (de comercios o de soporte) pinta cada botón sólo con su variable y se omite entero si faltan `MERCHANT_WHATSAPP` y `MERCHANT_EMAIL`. | `features/site/__tests__/MerchantContact.test.tsx` |
+| `RN-SITE-03` | La banda de contacto de soporte pinta cada botón sólo con su variable y se omite entero si faltan `MERCHANT_WHATSAPP` y `MERCHANT_EMAIL`. | `features/site/__tests__/MerchantContact.test.tsx` |
 | `RN-SITE-04` | Los textos legales sólo usan los marcadores de `LEGAL_MARKERS`, y con `LEGAL_DRAFT` en `false` no queda ninguno en el texto. | `features/site/__tests__/legal.test.tsx` ("marcadores legales") |
 | `RN-SITE-05` | Con `LEGAL_DRAFT` en `true` las páginas legales llevan `noindex, follow` y quedan fuera del sitemap; en `false` llevan canónica y entran al grupo `static`. | `features/site/__tests__/legal.test.tsx` ("interruptor de borrador") |
 | `RN-SITE-06` | El texto de privacidad nombra las cuatro cookies que escribe el sitio (`mp_session`, `mp_cart`, `loc`, `sid`). | `features/site/__tests__/legal.test.tsx` ("privacidad") |
@@ -85,7 +85,7 @@ que enlaza.
 | Destinos, orden o contador de la barra inferior | `tabs` en `MobileNavLinks.tsx` y `MobileNav` en `MobileNav.tsx` | `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` buscan el carrito por nombre accesible dentro de la barra; `e2e/account.spec.ts` la cuenta |
 | Columnas o enlaces del pie | `SiteFooter` en `SiteFooter.tsx` | los enlaces que busca `SiteFooter.test.tsx` |
 | Cuántas categorías se muestran | `MAX_FOOTER_CATEGORIES` en `SiteFooter.tsx` | RN-SITE-01 y su prueba |
-| Botones o textos de contacto de `/vende` y de la banda de `/ayuda` | `MerchantContact` y su `COPY` por `purpose` en `MerchantContact.tsx` | RN-SITE-03 y su prueba |
+| Botones o textos de contacto de `/vende` y de la banda de `/ayuda` | `MerchantContact` y `MESSAGES` en `MerchantContact.tsx` | RN-SITE-03 y su prueba |
 | Metadatos de `/ayuda` o su banda | `app/ayuda/page.tsx` | la canónica sigue en `/ayuda`; el contenido vive en `features/help` |
 | Redirección de `/comercios` a `/vende` | `redirects` de `next.config.ts` | permanente (308); `e2e/site.spec.ts` la comprueba |
 | Aprobar el texto legal | `LEGAL_DRAFT` en `legal.ts`, tras reemplazar los marcadores en `terms.ts` | RN-SITE-04 y RN-SITE-05; ya no hay aviso ni `noindex` |
@@ -102,8 +102,8 @@ que enlaza.
 - `SiteFooter(): Promise<React.JSX.Element>`, `features/site/components/SiteFooter.tsx`: Server Component async.
 - `FooterCategories({ categories }: { categories: CategoryNode[] }): React.JSX.Element | null`, `features/site/components/SiteFooter.tsx`: columna de categorías; `null` con la lista vacía.
 - `footerYear(): Promise<number>`, `features/site/lib/year.ts`: año actual, en caché de `cacheLife("days")`.
-- `merchantContactHref(whatsapp: string | null, email: string | null, purpose?: "merchant" | "support"): string | null`, `features/site/components/MerchantContact.tsx`: destino de contacto con el mensaje del propósito: `https://wa.me/<dígitos>?text=...`, si no `mailto:<correo>`, y `null` sin ninguno; lo usan los CTA de `/vende`.
-- `MerchantContact({ whatsapp, email, purpose }: { whatsapp: string | null; email: string | null; purpose?: "merchant" | "support" }): React.JSX.Element | null`, `features/site/components/MerchantContact.tsx`: bloque de contacto (`merchant` por defecto); `null` si ambos son `null`.
+- `merchantContactHref(whatsapp: string | null, email: string | null, purpose?: "merchant" | "support"): string | null`, `features/site/components/MerchantContact.tsx`: destino de contacto con el mensaje del propósito (`merchant` por defecto, el alta de comercio; `support`, la ayuda al comprador): `https://wa.me/<dígitos>?text=...`, si no `mailto:<correo>`, y `null` sin ninguno; lo usan los CTA de `/vende`.
+- `MerchantContact({ whatsapp, email }: { whatsapp: string | null; email: string | null }): React.JSX.Element | null`, `features/site/components/MerchantContact.tsx`: banda de soporte de `/ayuda`; `null` si ambos son `null`.
 - `LegalDocument({ document }: { document: LegalDocumentContent }): React.JSX.Element`, `features/site/components/LegalDocument.tsx`: prosa legal con aviso de borrador.
 - `LEGAL_DRAFT: boolean`, `LEGAL_MARKERS: readonly string[]` y `LEGAL_PATHS: readonly string[]`, `features/site/lib/legal.ts`: interruptor, los cinco marcadores permitidos y las rutas legales registradas.
 - `legalMetadata({ title, description, path }, draft?): Metadata`, `legalSitemapPaths(draft?): readonly string[]` y `legalText(document): string`, `features/site/lib/legal.ts`.
@@ -118,7 +118,7 @@ que enlaza.
 | `MobileNav` | `features/site/components/MobileNav.tsx` | `cartEnabled()`, `accountContext()` y `cartCount()` en paralelo; el contador sólo se pide con el carrito encendido |
 | `tabs` | `features/site/components/MobileNavLinks.tsx` | arma los cinco destinos (Carrito sólo con `cartEnabled`); Favoritos y Cuenta usan `loginHref` sin sesión; Cuenta no se marca activa en `/cuenta/favoritos`; el carrito con productos nombra "Carrito, N producto(s)" |
 | `rootCategories` | `features/site/components/SiteFooter.tsx` | lee `listCategories()`, recorta a 8 y devuelve `[]` ante `MarketplaceUnavailableError` |
-| `COPY` | `features/site/components/MerchantContact.tsx` | textos, mensaje de WhatsApp y estilo de cada `purpose` |
+| `MESSAGES` | `features/site/components/MerchantContact.tsx` | mensaje de WhatsApp de cada `purpose` (alta de comercio y ayuda) |
 | `merchantContactHref` | `features/site/components/MerchantContact.tsx` | arma el destino de contacto (WhatsApp, correo o `null`) para los CTA de `features/merchants` |
 | `termsDocument` | `features/site/lib/terms.ts` | secciones de los términos con `SITE_NAME` y los marcadores |
 | `privacyDocument` | `features/site/lib/privacy.ts` | ocho secciones de privacidad con `SITE_NAME` y los marcadores |
@@ -169,6 +169,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
 - Comando: `npx vitest run features/site lib/__tests__/sitemap.test.ts`
 - `e2e/site.spec.ts` ("barra inferior en móvil"): los cinco destinos (sin Tiendas), el activo, Favoritos y Cuenta hacia `/entrar` sin sesión, carrito y cuenta ocultos en la cabecera, y que logo y ubicación no envuelvan en 360 y 320 px.
-- `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, y cada botón sólo con su dato. `lib/__tests__/sitemap.test.ts` cubre las entradas `/tiendas`, `/ayuda` y `/vende` del grupo `static`. `e2e/site.spec.ts` comprueba `/ayuda` (canónica, filtro de preguntas, enlace del pie) y `/vende` (canónica, secciones y CTA con destino), y el 308 de `/comercios`.
+- `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, cada botón sólo con su dato, y el título, el mensaje y la banda de soporte. `lib/__tests__/sitemap.test.ts` cubre las entradas `/tiendas`, `/ayuda` y `/vende` del grupo `static`. `e2e/site.spec.ts` comprueba `/ayuda` (canónica, filtro de preguntas, enlace del pie) y `/vende` (canónica, secciones y CTA con destino), y el 308 de `/comercios`.
 - `features/site/__tests__/legal.test.tsx`: marcadores permitidos, guarda sin borrador, metadatos y sitemap según el interruptor, el aviso de `LegalDocument` y las cuatro cookies de privacidad.
 - `features/site/__tests__/SiteFooter.test.tsx`: categorías y enlaces, corte en 8, columna omitida con API caída o sin raíces, error ajeno relanzado; simula `@/lib/marketplace/client` y `@/features/site/lib/year` (`cacheLife` no corre en vitest).

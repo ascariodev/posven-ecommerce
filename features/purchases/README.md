@@ -2,10 +2,10 @@
 module: "purchases"
 path: "features/purchases"
 type: "feature"
-exports: ["PURCHASE_STATUS_TEXT", "ORDER_STATUS_TEXT", "FULFILLMENT_TEXT", "ORDER_STEP_TEXT", "ORDER_STEP_HINT", "ORDER_STEP_STATE_TEXT", "orderSteps", "OrderTracker", "formatDateTime", "chargeText", "storeCountText", "readPurchasesPage", "isPageOutOfRange", "PurchaseList", "PurchaseRow", "PurchaseRows", "purchaseHref", "PurchaseDetail", "RecentPurchases"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/EmptyState.tsx"]
+exports: ["PURCHASE_STATUS_TEXT", "ORDER_STATUS_TEXT", "FULFILLMENT_TEXT", "ORDER_STEP_TEXT", "ORDER_STEP_HINT", "ORDER_STEP_STATE_TEXT", "orderSteps", "OrderTracker", "formatDateTime", "chargeText", "storeCountText", "readPurchasesPage", "isPageOutOfRange", "PurchaseList", "PurchaseRow", "PurchaseRows", "purchaseHref", "PurchaseDetail", "RecentPurchases", "BuyAgain"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/EmptyState.tsx", "features/cart/components/AddToCartButton.tsx", "features/search/components/ProductThumb.tsx"]
 tests: "features/purchases/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/purchases/lib/labels.ts", "features/purchases/lib/pagination.ts", "features/purchases/lib/orderSteps.ts", "features/purchases/components/OrderTracker.tsx", "features/purchases/__tests__/OrderTracker.test.tsx", "features/purchases/__tests__/pagination.test.ts", "features/purchases/__tests__/labels.test.ts", "features/purchases/components/PurchaseList.tsx", "features/purchases/components/PurchaseDetail.tsx", "features/purchases/components/RecentPurchases.tsx", "features/purchases/__tests__/PurchaseList.test.tsx", "features/purchases/__tests__/PurchaseDetail.test.tsx", "features/purchases/__tests__/RecentPurchases.test.tsx", "app/cuenta/compras/page.tsx", "app/cuenta/compras/[codigo]/page.tsx", "app/cuenta/page.tsx", "app/cuenta/layout.tsx", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "components/EmptyState.tsx"]
+verified_against: ["features/purchases/lib/labels.ts", "features/purchases/lib/pagination.ts", "features/purchases/lib/orderSteps.ts", "features/purchases/components/OrderTracker.tsx", "features/purchases/__tests__/OrderTracker.test.tsx", "features/purchases/__tests__/pagination.test.ts", "features/purchases/__tests__/labels.test.ts", "features/purchases/components/PurchaseList.tsx", "features/purchases/components/PurchaseDetail.tsx", "features/purchases/components/RecentPurchases.tsx", "features/purchases/components/BuyAgain.tsx", "features/purchases/__tests__/BuyAgain.test.tsx", "features/purchases/__tests__/PurchaseList.test.tsx", "features/purchases/__tests__/PurchaseDetail.test.tsx", "features/purchases/__tests__/RecentPurchases.test.tsx", "app/cuenta/compras/page.tsx", "app/cuenta/compras/[codigo]/page.tsx", "app/cuenta/page.tsx", "app/cuenta/layout.tsx", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "components/EmptyState.tsx"]
 capabilities:
   - intent: "listar las compras del comprador, paginadas"
     intent_aliases: ["mis compras", "historial de compras", "pedidos", "compras anteriores"]
@@ -39,6 +39,14 @@ capabilities:
     output: "tarjeta 'Para retirar' del primer pedido listo con código, las 3 primeras de la página 1 y 'Ver todas'; null sin compras"
     source: "GET /me/purchases?page=1"
     rules: ["RN-PURCHASES-01", "RN-PURCHASES-04"]
+  - intent: "volver a comprar productos de compras pagadas desde el resumen de la cuenta"
+    intent_aliases: ["volver a comprar", "comprar de nuevo", "recomprar", "repetir compra"]
+    entrypoint: "<BuyAgain />"
+    file: "features/purchases/components/BuyAgain.tsx"
+    input: "ctx: AccountContext; en app/cuenta/page.tsx dentro de <Suspense>, con el carrito encendido"
+    output: "tarjetas con imagen, producto, tienda, precio de hoy y 'Agregar al carrito' (suma 1); un ítem unavailable sin botón y con su motivo; null sin ítems"
+    source: "GET /me/buy-again"
+    rules: ["RN-PURCHASES-06"]
 ---
 
 # Módulo `purchases`
@@ -59,6 +67,7 @@ API. El pago y su resultado viven en `features/checkout`.
 | `RN-PURCHASES-03` | El estado de cada pedido y su línea de estados sólo se muestran con la compra `paid`: el contrato no tiene un estado de pedido para una compra sin pagar (hueco a acordar con posveapi). | `features/purchases/__tests__/PurchaseDetail.test.tsx` ("con la compra sin pagar no muestra el estado del pedido") |
 | `RN-PURCHASES-05` | La línea sale de `status` y `fulfillment`; `accepted` es el paso 2 (la API no distingue preparado de aceptado); `delivered` deja todo hecho. `cancelled` va aparte. `ready_at` sólo fecha el retiro: Preparando no lleva fecha. | `features/purchases/__tests__/OrderTracker.test.tsx` |
 | `RN-PURCHASES-04` | El resumen destaca en "Para retirar" el código del primer pedido `ready_for_pickup` con `pickup_code` no nulo de la página 1; los demás pedidos siguen en la lista. Sin ninguno no se pinta. | `features/purchases/__tests__/RecentPurchases.test.tsx` |
+| `RN-PURCHASES-06` | "Volver a comprar" pinta lo que da `GET /me/buy-again`: precio de la API y "Agregar" sólo en `status: ok`; el `unavailable` lleva su motivo. Sin ítems o con la API caída no se pinta, salvo un 401. | `features/purchases/__tests__/BuyAgain.test.tsx`; `e2e/checkout.spec.ts` ("compra completa...") |
 
 ## 3. Dónde hacer cambios
 
@@ -69,6 +78,7 @@ API. El pago y su resultado viven en `features/checkout`.
 | Un dato nuevo del pedido | `components/PurchaseDetail.tsx` | el esquema en `lib/marketplace/schemas.ts` primero (spec §4.1) |
 | Qué pedido destaca "Para retirar" | `firstReadyForPickup` en `components/RecentPurchases.tsx` | `__tests__/RecentPurchases.test.tsx` |
 | Tamaño de "Últimas compras" | `RECENT_COUNT` en `components/RecentPurchases.tsx` | `__tests__/RecentPurchases.test.tsx` |
+| Textos de motivo o tarjeta de "Volver a comprar" | `UNAVAILABLE_TEXT` y `BuyAgainCard` en `components/BuyAgain.tsx` | `__tests__/BuyAgain.test.tsx`; el motivo repite `UNAVAILABLE_TEXT` de `features/cart/components/CartLine.tsx` |
 
 ## 4. API pública
 
@@ -80,6 +90,7 @@ API. El pago y su resultado viven en `features/checkout`.
 - `PurchaseDetail({ purchase }: { purchase: Purchase })`, `features/purchases/components/PurchaseDetail.tsx`.
 - `readPurchasesPage(raw: string | string[] | undefined): number` (inválida es 1) e `isPageOutOfRange(page: PurchasePage): boolean`, `features/purchases/lib/pagination.ts`.
 - `RecentPurchases({ ctx }: { ctx: AccountContext })`, `features/purchases/components/RecentPurchases.tsx` (Server Component async): con la API caída o un error de cuenta que no sea 401 devuelve `null`.
+- `BuyAgain({ ctx }: { ctx: AccountContext })`, `features/purchases/components/BuyAgain.tsx` (Server Component async): con la API caída, un error de cuenta que no sea 401 o sin ítems devuelve `null`.
 
 ## 5. Estructura interna
 
@@ -91,11 +102,13 @@ API. El pago y su resultado viven en `features/checkout`.
 | Línea de estados | `components/OrderTracker.tsx`, `lib/orderSteps.ts` | pasos y estado de cada uno desde `status`, `fulfillment` y `timeline`; fechas con `formatDateTime`; es un Server Component sin estado |
 | Paginación | `lib/pagination.ts` | lectura de `?pagina` y la decisión del 404, fuera de la ruta para probarlas |
 | Resumen | `components/RecentPurchases.tsx` | reutiliza `PurchaseRow`; degrada a nada si la API falla, para no tumbar `/cuenta` (excepción de `app-router.md` 7) |
+| Volver a comprar | `components/BuyAgain.tsx` | tarjetas desde `getBuyAgain`; `AddToCartButton` en los `ok`, insignia de motivo en los `unavailable`; degrada a nada como el resumen (excepción de `app-router.md` 7) |
 | Rutas | `app/cuenta/compras/page.tsx`, `app/cuenta/compras/[codigo]/page.tsx` | `noindex`, `requireCustomer`, 404 con el carrito apagado, código inválido o `not_found`; título fijo "Detalle de compra" (el código es de la petición) |
 
 ## 6. Dependencias
 
-- `lib/marketplace/client.ts` (`listPurchases`), `schemas.ts`, `params.ts`; `lib/format.ts` (también en `lib/labels.ts`, para `chargeText`), `lib/utils.ts` (`cn`).
+- `features/cart/components/AddToCartButton.tsx` y `features/search/components/ProductThumb.tsx` (`BuyAgain`).
+- `lib/marketplace/client.ts` (`listPurchases`, `getBuyAgain`), `schemas.ts`, `params.ts`; `lib/format.ts` (también en `lib/labels.ts`, para `chargeText`), `lib/utils.ts` (`cn`).
 - `components/ui/` (`Badge`, `buttonVariants`, `Card`); `lucide-react` (`Check`).
 - Las rutas usan `features/account/server/session.ts`, `features/cart/lib/flag.ts` y `PURCHASE_CODE_PATTERN` de `features/checkout/components/CheckoutResult.tsx`.
 
@@ -127,4 +140,5 @@ async function Purchases({ ctx }: { ctx: AccountContext }) {
 - `features/purchases/__tests__/labels.test.ts`: `chargeText` en VES y en USD.
 - `features/purchases/__tests__/pagination.test.ts`: `?pagina` válida e inválida; fuera de rango, vacía en la 1 y en rango.
 - `features/purchases/__tests__/RecentPurchases.test.tsx`: las 3 primeras y "Ver todas"; la tarjeta "Para retirar" con el primer pedido listo, y sin ella si ninguno tiene código; nada sin compras, con la API caída o con un 429; un 401 sube.
-- `e2e/checkout.spec.ts`: el detalle con el código de retiro y el reembolso, y "Últimas compras" en `/cuenta`.
+- `features/purchases/__tests__/BuyAgain.test.tsx`: tarjeta con tienda, precio y "Agregar"; el `unavailable` sin botón y con motivo; nada sin ítems, con la API caída o con un 429; un 401 sube.
+- `e2e/checkout.spec.ts`: el detalle con el código de retiro y el reembolso, y "Últimas compras" y "Volver a comprar" (con "Agregar") en `/cuenta`.

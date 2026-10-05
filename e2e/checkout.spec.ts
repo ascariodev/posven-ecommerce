@@ -125,7 +125,12 @@ test.describe("checkout y compras", () => {
 
     await page.goto("/cuenta");
     await expect(page.getByRole("list", { name: "Últimas compras" }).getByRole("link")).toHaveCount(1);
-    await expect(cartLink(page, "Carrito")).toBeVisible();
+    const buyAgain = page.getByRole("list", { name: "Volver a comprar" });
+    await expect(buyAgain.getByRole("link", { name: /^Acetaminofén/ })).toBeVisible();
+    await expect(buyAgain.getByRole("link", { name: /Alcohol/ })).toHaveCount(0);
+    await buyAgain.getByRole("button", { name: /^Agregar al carrito: Acetaminofén/ }).click();
+    await expect(buyAgain.getByText("Agregado")).toBeVisible();
+    await expect(cartLink(page, "Carrito, 1 producto")).toBeVisible();
 
     await page.goto("/cuenta/configuracion");
     const deleteForm = page.locator("form").filter({ has: page.getByRole("button", { name: "Eliminar mi cuenta" }) });

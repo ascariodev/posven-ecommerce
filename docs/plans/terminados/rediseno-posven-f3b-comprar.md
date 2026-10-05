@@ -161,7 +161,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [x] M-3 — `features/cart/__tests__/CartView.test.tsx`: afirmar el total del resumen dentro de su
   contenedor (no `getAllByText(...)[0]`) y formatear las líneas sueltas. Repo posven-ecommerce ·
   complejidad baja · modelo sonnet.
-- [ ] M-4 — Poner al día `features/site/README.md` (RANCIO por `features/cart/server/cart.ts`).
+- [x] M-4 — Poner al día `features/site/README.md` (RANCIO por `features/cart/server/cart.ts`).
   Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [ ] M-5 — Mover `LINK_CLASSES` y `SECTION_LABEL_CLASSES` a `features/checkout/lib/styles.ts`
   armadas con `cn` (ui.md regla 3). Repo posven-ecommerce · complejidad baja · modelo sonnet.

@@ -3,7 +3,7 @@
 **Objetivo:** que `/ayuda` y `/vende` existan con el diseño del lienzo (W12, P12, P13), que
 `/comercios` redirija a `/vende`, y que los estados vacíos, el error y el 404 sigan el estilo E con
 un estado vacío compartido.
-**Estado:** en curso · Fase actual: 7
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` §5 (W12, P12, P13),
@@ -164,11 +164,8 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   spec; sin costo ni liquidación; sin contacto no hay CTA ni banda final), en `features/merchants/README.md`.
 
 ## Notas para la próxima sesión
-- Fases 1 a 6 hechas. Sigue la fase 7 (cierre: e2e completo). El usuario revisa los textos de
-  `features/merchants/lib/content.ts`. En la fase 7, `features/site/README.md` y
-  `.claude/rules/seo.md` (ítems 5 y 8) citan `/comercios` y pasan a `/vende`.
-- El usuario revisa los textos de `features/help/lib/content.ts`, en especial las preguntas agregadas
-  fuera del lienzo.
+- Plan terminado. Pendiente: el usuario revisa los textos de `features/help/lib/content.ts` y
+  `features/merchants/lib/content.ts`; mejoras M-1 a M-10.
 
 ## Mejoras propuestas
 - [ ] M-1 (baja, sonnet) — El mensaje de `CheckoutEmpty` puede venir de la API y ahora es el `h2` a

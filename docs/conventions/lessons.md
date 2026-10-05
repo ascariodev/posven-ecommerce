@@ -39,12 +39,6 @@ ella, una regex que perdió el escape (`d{7}` por `\d{7}`) rechaza todo lo váli
 en verde. Tras escribir una regex, se relee el archivo para confirmar las barras invertidas.
 aplicada en: pendiente: el usuario decide promoverla a `posven-ecommerce/.claude/rules/contract.md` (punto 5), propuesto al cerrar el plan del registro del comprador
 
-## L-08
-Una grilla sin `grid-cols-*` crea una columna implícita `auto` que crece hasta el ancho mínimo de
-su contenido: unas pestañas con `overflow-x-auto` adentro la ensanchan y la página desborda en
-móvil (en Playwright, los desplegables de Radix quedan tapados). Se fija `grid-cols-[minmax(0,1fr)]`.
-aplicada en: `.claude/rules/ui.md` (punto 9)
-
 ## L-09
 Una fase que cambia el comportamiento de un componente o una ruta de un módulo actualiza su README
 en el mismo cambio: la ficha del símbolo, la fila de tests, las dependencias y `verified_against`,
@@ -58,20 +52,8 @@ hidratación: con `cacheComponents` el HTML prerenderizado puede ser de otra rut
 se calcula sólo tras hidratar (`useSyncExternalStore` con instantánea de servidor `false`).
 aplicada en: `features/site/components/MobileNavLinks.tsx`
 
-## L-11
-Un test de regresión que pasa con y sin el arreglo no prueba nada: suele llegar al estado por un
-camino que ya lo limpia (teclear en un input que resetea la marca). Se corre contra el código sin
-el arreglo y se exige que falle.
-aplicada en: `.claude/rules/tests.md`
-
 ## L-12
 `cache` de React indexa por la lista de argumentos: `f("")` y `f()` son claves distintas y la
 lectura se repite. Quien comparte un `cache` con otro llamador lo invoca con los mismos argumentos
 (sin el valor por defecto explícito), y una prueba memoizando por argumentos lo fija.
 aplicada en: `features/cart/__tests__/cart.test.ts`
-
-## L-13
-En el e2e, `locator.count()` devuelve lo que hay en ese instante: con una página en streaming
-cuenta el esqueleto y un bucle que vacía o recorre termina sin hacer nada. Se espera antes el
-elemento o su estado vacío (`expect(a.or(b)).toBeVisible()`).
-aplicada en: `.claude/rules/tests.md`

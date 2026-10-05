@@ -3,16 +3,16 @@ module: "store"
 path: "features/store"
 type: "feature"
 exports: ["StoreCard", "NearbyStores", "NearbyStoresSkeleton", "SponsoredStore", "StoreLogo", "StoreOpenBadge", "storeInitials", "formatSchedule", "openingHoursJsonLd", "storeJsonLd", "StoreHeader", "StoreProducts", "StoreProductsSkeleton", "StoresDirectory", "StoresDirectorySkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts", "features/search/components/ProductThumb.tsx", "features/search/components/Pagination.tsx"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts", "features/search/components/ProductThumb.tsx", "features/search/components/Pagination.tsx", "components/EmptyState.tsx"]
 tests: "features/store/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/store/components/StoreCard.tsx", "features/store/components/StoreLogo.tsx", "features/store/components/NearbyStores.tsx", "features/store/components/SponsoredStore.tsx", "features/store/lib/initials.ts", "features/store/lib/schedule.ts", "features/store/lib/jsonld.ts", "features/store/components/StoreHeader.tsx", "features/store/components/StoreProducts.tsx", "features/search/components/ProductThumb.tsx", "features/store/components/StoresDirectory.tsx", "features/search/components/Pagination.tsx", "app/tiendas/page.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx"]
+verified_against: ["features/store/components/StoreCard.tsx", "features/store/components/StoreLogo.tsx", "features/store/components/NearbyStores.tsx", "features/store/components/SponsoredStore.tsx", "features/store/lib/initials.ts", "features/store/lib/schedule.ts", "features/store/lib/jsonld.ts", "features/store/components/StoreHeader.tsx", "features/store/components/StoreProducts.tsx", "features/search/components/ProductThumb.tsx", "features/store/components/StoresDirectory.tsx", "features/search/components/Pagination.tsx", "app/tiendas/page.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "components/EmptyState.tsx"]
 capabilities:
   - intent: "mostrar la tienda patrocinada y los comercios cercanos en la portada"
     intent_aliases: ["tiendas cercanas", "tiendas cerca de mi", "comercios cercanos", "tiendas destacadas"]
     entrypoint: "<NearbyStores />"
     file: "features/store/components/NearbyStores.tsx"
     input: "sin props; lee la cookie loc; se monta dentro de <Suspense fallback={<NearbyStoresSkeleton />}>"
-    output: "tarjeta PATROCINADO con el primer destacado y sección 'Comercios cerca' (con ubicación) o 'Comercios en {SITE_NAME}' (sin ella): el resto de destacados primero, hasta 6 StoreCard en rejilla sm:2 lg:3 y 'Ver todos' a /tiendas; sin comercios, un aviso que invita a probar otra ciudad; con la API caída no pinta nada"
+    output: "tarjeta PATROCINADO con el primer destacado y sección 'Comercios cerca' (con ubicación) o 'Comercios en {SITE_NAME}' (sin ella): el resto de destacados primero, hasta 6 StoreCard en rejilla sm:2 lg:3 y 'Ver todos' a /tiendas; sin comercios, un EmptyState (components/EmptyState.tsx) que invita a probar otra ciudad; con la API caída no pinta nada"
     source: "listNearbyStores() de lib/marketplace con geo de getEffectiveLocation() (cookie loc)"
     rules: ["RN-STORE-02"]
   - intent: "mostrar la tarjeta de una tienda"
@@ -28,7 +28,7 @@ capabilities:
     entrypoint: "<StoresDirectory />"
     file: "features/store/components/StoresDirectory.tsx"
     input: "searchParams con pagina opcional (entero >= 1, si no 1); lee la cookie loc; se monta en <Suspense fallback={<StoresDirectorySkeleton />}>"
-    output: "total de comercios, rejilla de StoreCard (destacados primero sin repetirse) y Pagination hacia /tiendas?pagina={n}; sin comercios, un aviso; un error de la API sube a app/error.tsx"
+    output: "total de comercios, rejilla de StoreCard (destacados primero sin repetirse) y Pagination hacia /tiendas?pagina={n}; sin comercios, un EmptyState (components/EmptyState.tsx) con 'No hay más comercios.' desde la página 2; un error de la API sube a app/error.tsx"
     source: "listNearbyStores() de lib/marketplace con geo de getEffectiveLocation() (cookie loc) y la página de la URL"
     rules: ["RN-STORE-02", "RN-STORE-04", "RN-STORE-05"]
   - intent: "mostrar la cabecera de la página de una tienda con su horario y contacto"
@@ -44,7 +44,7 @@ capabilities:
     entrypoint: "<StoreProducts />"
     file: "features/store/components/StoreProducts.tsx"
     input: "slug: string; searchParams con pagina opcional (entero >= 1, si no 1); se monta en <Suspense fallback={<StoreProductsSkeleton />}>"
-    output: "sección 'Productos': tasa, rejilla de 2 a 4 columnas con una tarjeta por producto (miniatura ProductThumb, enlace a /p/{slug}, USD, Bs, 'Pocas unidades', 'Requiere récipe' y antigüedad); 'Anterior' y 'Siguiente' a /tienda/{slug}?pagina={n}; sin productos (meta.total 0), el aviso de tienda sin productos publicados"
+    output: "sección 'Productos': tasa, rejilla de 2 a 4 columnas con una tarjeta por producto (miniatura ProductThumb, enlace a /p/{slug}, USD, Bs, 'Pocas unidades', 'Requiere récipe' y antigüedad); 'Anterior' y 'Siguiente' a /tienda/{slug}?pagina={n}; sin productos (meta.total 0), un EmptyState (components/EmptyState.tsx) de tienda sin productos publicados"
     source: "getStore({ slug, page }) de lib/marketplace"
     rules: []
   - intent: "armar el JSON-LD de una tienda"

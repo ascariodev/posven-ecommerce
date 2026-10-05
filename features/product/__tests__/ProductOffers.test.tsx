@@ -184,7 +184,7 @@ describe("ProductOffers", () => {
 
     render(await ProductOffers({ product, searchParams: searchParams({}) }));
 
-    expect(screen.getByText("No hay ofertas cerca. Prueba con otra ciudad.")).toBeTruthy();
+    expect(screen.getByText("No hay ofertas cerca.")).toBeTruthy();
   });
 });
 

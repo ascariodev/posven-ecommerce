@@ -1,3 +1,5 @@
+import { MapPinOff } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toGeoFilter } from "@/features/location/lib/cookie";
 import { getEffectiveLocation } from "@/features/location/server/location";
@@ -47,7 +49,7 @@ export async function ProductOffers({
     return (
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-bold tracking-tight">Dónde comprarlo</h2>
-        <p className="text-muted-foreground">No hay ofertas cerca. Prueba con otra ciudad.</p>
+        <EmptyState icon={MapPinOff} title="No hay ofertas cerca." description="Prueba con otra ciudad." />
       </section>
     );
   }

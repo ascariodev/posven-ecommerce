@@ -3,7 +3,7 @@
 **Objetivo:** que `/ayuda` y `/vende` existan con el diseño del lienzo (W12, P12, P13), que
 `/comercios` redirija a `/vende`, y que los estados vacíos, el error y el 404 sigan el estilo E con
 un estado vacío compartido.
-**Estado:** en curso · Fase actual: 3
+**Estado:** en curso · Fase actual: 4
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` §5 (W12, P12, P13),
@@ -60,7 +60,7 @@ un estado vacío compartido.
 - **Terminado cuando:** tsc limpio, vitest de cart, checkout, purchases y account en verde, y
   `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` en verde.
 
-### [ ] Fase 3 — Vacíos de descubrir
+### [x] Fase 3 — Vacíos de descubrir
 - **Repo:** posven-ecommerce
 - **Alcance:** sin resultados (`features/search/components/EmptyState.tsx`, con sus acciones, chips
   de categoría y "Quizás te sirve"), tienda sin productos (`StoreProducts.tsx`), ficha sin ofertas
@@ -125,10 +125,13 @@ un estado vacío compartido.
 - 2026-10-05 — Vacíos de compra y cuenta: título = texto original, `h2`, íconos `ShoppingCart`,
   `Receipt`, `Heart` y `MapPin`, acciones como botón `outline` `lg` con `bg-card` (favoritos y
   direcciones pasaron de enlace subrayado a botón, mismo destino).
+- 2026-10-05 — Vacíos de descubrir: search importa el compartido como `EmptyStateCard`; sin
+  resultados con `SearchX`, ampliar radio en primario y el resto outline, y debajo "Quizás te sirve",
+  categorías y el enlace a `/comercios` (cambia en la fase 7). Íconos `StoreIcon` y `MapPinOff`; en
+  directorio, cercanos y ofertas "Prueba con otra ciudad." pasó a descripción.
 
 ## Notas para la próxima sesión
-- Fase 1 hecha. `features/search/components/EmptyState.tsx` tiene el mismo nombre que
-  `components/EmptyState.tsx`: la fase 3 cuida los imports al migrarlo.
+- Fases 1 a 3 hechas. Sigue la fase 4 (módulo de ayuda, sin ruta).
 
 ## Mejoras propuestas
 - [ ] M-1 (baja, sonnet) — El mensaje de `CheckoutEmpty` puede venir de la API y ahora es el `h2` a
@@ -136,3 +139,7 @@ un estado vacío compartido.
   `components/EmptyState.tsx`.
 - [ ] M-2 (baja, sonnet) — La clase de acción `cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")`
   se repite en cada vacío; extraer una constante o prop de acción en `components/EmptyState.tsx`.
+- [ ] M-3 (baja, sonnet) — Vacíos dentro de secciones con su propio `h2` (`ProductOffers`,
+  `StoreProducts`, `NearbyStores`): admitir `headingLevel: "h3"` en `components/EmptyState.tsx` y usarlo ahí.
+- [ ] M-4 (baja, sonnet) — La tarjeta con ícono grande puede verse desproporcionada en secciones de
+  la home (`NearbyStores`); validar en `/preview` y, si hace falta, variante compacta en `components/EmptyState.tsx`.

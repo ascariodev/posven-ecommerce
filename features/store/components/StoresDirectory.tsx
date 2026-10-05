@@ -1,4 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { MapPinOff } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/features/search/components/Pagination";
 import { toGeoFilter } from "@/features/location/lib/cookie";
@@ -43,13 +44,11 @@ export async function StoresDirectory({
 
   if (stores.length === 0) {
     return (
-      <Card>
-        <CardContent>
-          <p className="text-muted-foreground">
-            {page > 1 ? "No hay más comercios." : "Todavía no hay comercios cerca. Prueba con otra ciudad."}
-          </p>
-        </CardContent>
-      </Card>
+      <EmptyState
+        icon={MapPinOff}
+        title={page > 1 ? "No hay más comercios." : "Todavía no hay comercios cerca."}
+        description={page > 1 ? undefined : "Prueba con otra ciudad."}
+      />
     );
   }
 

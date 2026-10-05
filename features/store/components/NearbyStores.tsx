@@ -1,4 +1,6 @@
+import { MapPinOff } from "lucide-react";
 import Link from "next/link";
+import { EmptyState } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toGeoFilter } from "@/features/location/lib/cookie";
 import { getEffectiveLocation } from "@/features/location/server/location";
@@ -46,7 +48,7 @@ export async function NearbyStores() {
           </Link>
         </div>
         {stores.length === 0 ? (
-          <p className="text-muted-foreground">Todavía no hay comercios cerca. Prueba con otra ciudad.</p>
+          <EmptyState icon={MapPinOff} title="Todavía no hay comercios cerca." description="Prueba con otra ciudad." />
         ) : (
           <ul className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {stores.map(({ store, featured }) => (

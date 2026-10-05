@@ -1,4 +1,6 @@
+import { Store as StoreIcon } from "lucide-react";
 import Link from "next/link";
+import { EmptyState } from "@/components/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -72,7 +74,7 @@ export async function StoreProducts({
     return (
       <section className="flex flex-col gap-4">
         <h2 className="font-heading text-xl font-bold tracking-tight">Productos</h2>
-        <p className="text-muted-foreground">Esta tienda todavía no publicó productos.</p>
+        <EmptyState icon={StoreIcon} title="Esta tienda todavía no publicó productos." />
       </section>
     );
   }

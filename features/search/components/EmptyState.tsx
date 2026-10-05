@@ -1,9 +1,12 @@
+import { SearchX } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { EmptyState as EmptyStateCard } from "@/components/EmptyState";
 import { buttonVariants } from "@/components/ui/button";
 import { RADIUS_OPTIONS } from "@/lib/marketplace/params";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
 import { SITE_NAME } from "@/lib/site";
+import { cn } from "@/lib/utils";
 import { CategoryLinks } from "./CategoryLinks";
 import { searchHref, type SearchQuery } from "../lib/query";
 
@@ -45,41 +48,35 @@ export function EmptyState({
   const offerOpenNowOff = query.openNow === true;
   const related = relatedCategories(categories, query.categoria);
 
+  const actionClass = cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card");
+
   return (
-    <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-card">
-      <h2 className="text-xl font-bold tracking-tight text-foreground">
-        {query.q !== ""
-          ? `No encontramos resultados para «${query.q}».`
-          : "No encontramos resultados en esta categoría."}
-      </h2>
-      {query.q !== "" && (
-        <p className="text-sm text-muted-foreground">Prueba con menos palabras o revisa cómo está escrito.</p>
-      )}
-      {(widerRadius !== undefined || offerNationwide || offerOpenNowOff) && (
-        <div className="flex flex-wrap gap-2">
-          {widerRadius !== undefined && (
-            <Link
-              href={searchHref({ ...query, radio: widerRadius, pagina: 1 })}
-              className={buttonVariants({ size: "sm" })}
-            >
-              Ampliar a {widerRadius} km
-            </Link>
-          )}
-          {offerOpenNowOff && (
-            <Link
-              href={searchHref({ ...query, openNow: undefined, pagina: 1 })}
-              className={buttonVariants({ variant: "outline", size: "sm" })}
-            >
-              Quitar «Abierto ahora»
-            </Link>
-          )}
-          {offerNationwide && (
-            <Link href={searchHref({ ...query, radio: null, pagina: 1 })} className={buttonVariants({ variant: "outline", size: "sm" })}>
-              Buscar en todo el país
-            </Link>
-          )}
-        </div>
-      )}
+    <section className="flex flex-col gap-4">
+      <EmptyStateCard
+        icon={SearchX}
+        title={
+          query.q !== ""
+            ? `No encontramos resultados para «${query.q}».`
+            : "No encontramos resultados en esta categoría."
+        }
+        description={query.q !== "" ? "Prueba con menos palabras o revisa cómo está escrito." : undefined}
+      >
+        {widerRadius !== undefined && (
+          <Link href={searchHref({ ...query, radio: widerRadius, pagina: 1 })} className={buttonVariants({ size: "lg" })}>
+            Ampliar a {widerRadius} km
+          </Link>
+        )}
+        {offerOpenNowOff && (
+          <Link href={searchHref({ ...query, openNow: undefined, pagina: 1 })} className={actionClass}>
+            Quitar «Abierto ahora»
+          </Link>
+        )}
+        {offerNationwide && (
+          <Link href={searchHref({ ...query, radio: null, pagina: 1 })} className={actionClass}>
+            Buscar en todo el país
+          </Link>
+        )}
+      </EmptyStateCard>
       {nearby}
       {related.length > 0 && (
         <div className="flex flex-col gap-2">

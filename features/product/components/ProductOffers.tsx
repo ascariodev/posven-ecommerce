@@ -49,7 +49,7 @@ export async function ProductOffers({
     return (
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-bold tracking-tight">Dónde comprarlo</h2>
-        <EmptyState icon={MapPinOff} title="No hay ofertas cerca." description="Prueba con otra ciudad." />
+        <EmptyState icon={MapPinOff} title="No hay ofertas cerca." headingLevel="h3" description="Prueba con otra ciudad." />
       </section>
     );
   }

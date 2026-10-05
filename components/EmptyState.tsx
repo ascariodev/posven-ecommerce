@@ -8,7 +8,7 @@ export const emptyActionClass = cn(buttonVariants({ variant: "outline", size: "l
 type EmptyStateProps = {
   icon: LucideIcon;
   title: string;
-  headingLevel?: "h1" | "h2";
+  headingLevel?: "h1" | "h2" | "h3";
   titleClassName?: string;
   description?: string;
   className?: string;

@@ -23,6 +23,12 @@ describe("EmptyState", () => {
     expect(container.querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
   });
 
+  it("usa h3 dentro de una sección con su propio h2", () => {
+    render(<EmptyState icon={SearchX} title="Sin ofertas" headingLevel="h3" />);
+    expect(screen.getByRole("heading", { level: 3, name: "Sin ofertas" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { level: 2 })).toBeNull();
+  });
+
   it("sin texto ni acciones no deja contenedores vacíos", () => {
     const { container } = render(<EmptyState icon={SearchX} title="Vacío" />);
     expect(container.querySelector("p")).toBeNull();

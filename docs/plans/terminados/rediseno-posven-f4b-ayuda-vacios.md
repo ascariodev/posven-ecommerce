@@ -173,7 +173,7 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   `components/EmptyState.tsx`.
 - [x] M-2 (baja, sonnet) — La clase de acción `cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")`
   se repite en cada vacío; extraer una constante o prop de acción en `components/EmptyState.tsx`.
-- [ ] M-3 (baja, sonnet) — Vacíos dentro de secciones con su propio `h2` (`ProductOffers`,
+- [x] M-3 (baja, sonnet) — Vacíos dentro de secciones con su propio `h2` (`ProductOffers`,
   `StoreProducts`, `NearbyStores`): admitir `headingLevel: "h3"` en `components/EmptyState.tsx` y usarlo ahí.
 - [ ] M-4 (baja, sonnet) — La tarjeta con ícono grande puede verse desproporcionada en secciones de
   la home (`NearbyStores`); validar en `/preview` y, si hace falta, variante compacta en `components/EmptyState.tsx`.

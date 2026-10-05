@@ -7,18 +7,11 @@ import { formatUsd, formatVes } from "@/lib/format";
 import {
   CART_MAX_QUANTITY as MAX_QUANTITY,
   type CartLine as CartLineData,
-  type UnavailableReason,
 } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
+import { UNAVAILABLE_TEXT } from "../lib/unavailable";
 import { removeLine, setQuantity } from "../server/actions";
 import { LineForm } from "./LineForm";
-
-const UNAVAILABLE_TEXT: Record<UnavailableReason, string> = {
-  out_of_stock: "Sin existencias",
-  store_not_selling: "La tienda ya no vende en línea",
-  offer_gone: "Ya no se ofrece en esta tienda",
-  restricted: "Se vende sólo en tienda",
-};
 
 // Los montos son las cadenas de la API formateadas: aquí no se suma ni se multiplica nada.
 export function CartLine({ line, storeSlug }: { line: CartLineData; storeSlug: string }) {

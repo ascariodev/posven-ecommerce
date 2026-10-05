@@ -2,21 +2,15 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
+import { UNAVAILABLE_TEXT } from "@/features/cart/lib/unavailable";
 import { ProductThumb } from "@/features/search/components/ProductThumb";
 import { formatUsd, formatVes } from "@/lib/format";
 import { getBuyAgain } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
-import type { BuyAgainItem, UnavailableReason } from "@/lib/marketplace/schemas";
+import type { BuyAgainItem } from "@/lib/marketplace/schemas";
 
 const HEADING_ID = "volver-a-comprar-titulo";
-
-const UNAVAILABLE_TEXT: Record<UnavailableReason, string> = {
-  out_of_stock: "Sin existencias",
-  store_not_selling: "La tienda ya no vende en línea",
-  offer_gone: "Ya no se ofrece en esta tienda",
-  restricted: "Se vende sólo en tienda",
-};
 
 // Bloque secundario de /cuenta: con la API caída o un error de cuenta que no sea de sesión no se
 // pinta (excepción de app-router.md 7). Un 401 sube: la sesión venció.

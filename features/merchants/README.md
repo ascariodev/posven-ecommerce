@@ -3,7 +3,7 @@ module: "merchants"
 path: "features/merchants"
 type: "feature"
 exports: ["MerchantsLanding", "ExampleStoreCard", "MERCHANT_STEPS", "MERCHANT_BENEFITS", "MERCHANT_QUESTIONS", "EXAMPLE_PRICE_USD", "EXAMPLE_DISTANCE_KM", "MerchantStep", "MerchantBenefit", "MerchantBenefitIcon", "MerchantQuestion"]
-depends_on: ["features/site/components/MerchantContact.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/format.ts", "lib/site.ts"]
+depends_on: ["features/site/components/MerchantContact.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/format.ts", "lib/site.ts", "lib/utils.ts", "lib/marketplace/schemas.ts"]
 tests: "features/merchants/__tests__/*.test.{ts,tsx}"
 verified_against: ["features/merchants/lib/content.ts", "features/merchants/components/MerchantsLanding.tsx", "features/merchants/components/ExampleStoreCard.tsx", "features/merchants/__tests__/content.test.ts", "features/merchants/__tests__/MerchantsLanding.test.tsx", "app/vende/page.tsx", "features/site/components/MerchantContact.tsx", "lib/format.ts", "lib/site.ts", "lib/sitemap.ts", "e2e/site.spec.ts"]
 capabilities:
@@ -78,6 +78,7 @@ precio o cercanía (§5.2) y venta en línea opcional.
 ## 6. Dependencias
 
 - `features/site/components/MerchantContact.tsx` (`merchantContactHref`), `lib/site.ts` (`POS_NAME`), `lib/format.ts` (`formatUsd`, `formatDistance`) y `lib/utils.ts` (`cn`).
+- `lib/marketplace/schemas.ts` (tipo `Money`).
 - `components/ui/button.tsx` (`buttonVariants`) y `components/ui/card.tsx`.
 - `lucide-react` para los íconos.
 

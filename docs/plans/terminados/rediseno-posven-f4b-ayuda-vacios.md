@@ -181,7 +181,7 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   layout y no a ancho completo como en W12/P12 (`max-width: 1200px`). Decidir un patrón de sección a
   sangre para el sitio. `app/layout.tsx`, `features/help/components/HelpCenter.tsx`.
 - [x] M-6 (baja, sonnet) — `.claude/rules/seo.md` ítem 3 podría listar `/ayuda` entre las indexables.
-- [ ] M-7 (baja, sonnet) — `features/merchants/README.md`: `depends_on` omite `lib/utils.ts` y
+- [x] M-7 (baja, sonnet) — `features/merchants/README.md`: `depends_on` omite `lib/utils.ts` y
   `lib/marketplace/schemas.ts` (tipo `Money`).
 - [x] M-8 (baja, sonnet) — `.claude/rules/seo.md` pasa el tope orientativo (67 líneas): condensar.
 - [ ] M-9 (baja, sonnet) — `e2e/site.spec.ts`: la aserción de pasos de `/vende` es débil; comprobar

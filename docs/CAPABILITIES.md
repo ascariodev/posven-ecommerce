@@ -64,6 +64,14 @@ README: `features/location/README.md`
 | guardar la ubicación del usuario por geolocalización o ciudad elegida | `setLocationFromCoords() / setLocationCity() / clearLocation()` | `features/location/server/actions.ts` | RN-LOCATION-01, RN-LOCATION-03 |
 | mostrar y cambiar la ubicación en pantalla | `<LocationBar />` | `features/location/components/LocationBar.tsx` | RN-LOCATION-02, RN-LOCATION-03 |
 
+## merchants
+
+README: `features/merchants/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| explicar a un comercio cómo aparecer en el buscador y darle un contacto | `<MerchantsLanding whatsapp={string \| null} email={string \| null} />` | `features/merchants/components/MerchantsLanding.tsx` | RN-MERCHANTS-01, RN-MERCHANTS-02, RN-MERCHANTS-03 |
+
 ## product
 
 README: `features/product/README.md`

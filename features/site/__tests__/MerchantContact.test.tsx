@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { MerchantContact } from "@/features/site/components/MerchantContact";
+import { MerchantContact, merchantContactHref } from "@/features/site/components/MerchantContact";
 
 afterEach(cleanup);
 
@@ -38,5 +38,14 @@ describe("MerchantContact de soporte", () => {
   it("sin variables no pinta nada", () => {
     const { container } = render(<MerchantContact purpose="support" whatsapp={null} email={null} />);
     expect(container.innerHTML).toBe("");
+  });
+});
+
+describe("merchantContactHref", () => {
+  it("prefiere WhatsApp con el mensaje del propósito, luego el correo y si no, null", () => {
+    expect(decodeURIComponent(merchantContactHref("584121234567", "a@b.com") ?? "")).toContain("quiero que mi comercio aparezca");
+    expect(decodeURIComponent(merchantContactHref("584121234567", null, "support") ?? "")).toContain("necesito ayuda");
+    expect(merchantContactHref(null, "a@b.com")).toBe("mailto:a@b.com");
+    expect(merchantContactHref(null, null)).toBeNull();
   });
 });

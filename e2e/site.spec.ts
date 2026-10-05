@@ -51,7 +51,7 @@ for (const path of ["/terminos", "/privacidad"]) {
   });
 }
 
-test("el sitemap static incluye /tiendas, /comercios, /ayuda y no las legales mientras son borrador", async ({
+test("el sitemap static incluye /tiendas, /comercios, /ayuda, /vende y no las legales mientras son borrador", async ({
   request,
 }) => {
   const response = await request.get("/sitemap/static.xml");
@@ -60,6 +60,7 @@ test("el sitemap static incluye /tiendas, /comercios, /ayuda y no las legales mi
   expect(sitemap).toContain("http://localhost:3000/tiendas");
   expect(sitemap).toContain("http://localhost:3000/comercios");
   expect(sitemap).toContain("http://localhost:3000/ayuda");
+  expect(sitemap).toContain("http://localhost:3000/vende");
   expect(sitemap).not.toContain("/terminos");
   expect(sitemap).not.toContain("/privacidad");
 });
@@ -130,4 +131,33 @@ test("/ayuda tiene canónica propia, filtra las preguntas y se llega desde el pi
 
   await search.fill("zzzzqqq");
   await expect(page.getByRole("heading", { name: "Sin coincidencias" })).toBeVisible();
+});
+
+test("/vende tiene canónica propia, sus secciones y el contacto sólo con destino", async ({ page }) => {
+  const response = await page.goto("/vende");
+  expect(response?.status()).toBe(200);
+
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/vende");
+  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Tu inventario, visible para los compradores de tu zona" }),
+  ).toBeVisible();
+  await expect(page.getByText("Así te ven los compradores")).toBeVisible();
+  await expect(page.getByText("$ 1,35")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tres pasos y estás en línea" })).toBeVisible();
+  await expect(page.getByRole("listitem").filter({ has: page.getByRole("heading", { level: 3 }) })).not.toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Preguntas de comercios" })).toBeVisible();
+  await expect(page.locator("details")).not.toHaveCount(0);
+
+  const cta = page.getByRole("link", { name: "Quiero aparecer" });
+  const total = await cta.count();
+  if (total === 0) {
+    await expect(page.getByRole("heading", { name: "¿Listo para que te encuentren?" })).toHaveCount(0);
+  } else {
+    expect(total).toBe(2);
+    for (const href of await cta.evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
+      expect(href).toMatch(/^(https:\/\/wa\.me\/\d+\?text=|mailto:)/);
+    }
+  }
 });

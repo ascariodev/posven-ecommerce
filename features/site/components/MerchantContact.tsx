@@ -26,6 +26,16 @@ const COPY: Record<
   },
 };
 
+export function merchantContactHref(
+  whatsapp: string | null,
+  email: string | null,
+  purpose: ContactPurpose = "merchant",
+): string | null {
+  if (whatsapp !== null) return `https://wa.me/${whatsapp}?text=${encodeURIComponent(COPY[purpose].message)}`;
+  if (email !== null) return `mailto:${email}`;
+  return null;
+}
+
 export function MerchantContact({
   whatsapp,
   email,

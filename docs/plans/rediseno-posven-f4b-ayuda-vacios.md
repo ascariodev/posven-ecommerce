@@ -3,7 +3,7 @@
 **Objetivo:** que `/ayuda` y `/vende` existan con el diseño del lienzo (W12, P12, P13), que
 `/comercios` redirija a `/vende`, y que los estados vacíos, el error y el 404 sigan el estilo E con
 un estado vacío compartido.
-**Estado:** en curso · Fase actual: 6
+**Estado:** en curso · Fase actual: 7
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` §5 (W12, P12, P13),
@@ -88,7 +88,7 @@ un estado vacío compartido.
 - **Terminado cuando:** `next build` sin errores, vitest de site y sitemap en verde y un e2e de
   `/ayuda` (canónica, filtro de preguntas, enlace del pie) pasa.
 
-### [ ] Fase 6 — Ruta `/vende`
+### [x] Fase 6 — Ruta `/vende`
 - **Repo:** posven-ecommerce
 - **Alcance:** `app/vende/page.tsx` y su módulo con el lienzo P13: héroe con la tarjeta de ejemplo
   "Así te ven los compradores" (montos por `lib/format.ts`), tres pasos, tres beneficios, preguntas
@@ -142,6 +142,13 @@ un estado vacío compartido.
   sin contacto, "Sin coincidencias" no invita a escribir. Metadatos estáticos; `/ayuda` en el grupo
   `static` del sitemap; el pie suma la columna "Ayuda" (5 columnas en `lg`). El héroe queda dentro
   del `max-w-5xl` del layout, como el resto del sitio (ver M-5).
+- 2026-10-05 — `/vende`: módulo `features/merchants/` (`MerchantsLanding`, `ExampleStoreCard`,
+  contenido en `lib/content.ts`). `features/site/components/MerchantContact.tsx` exporta
+  `merchantContactHref(whatsapp, email, purpose?)` (`wa.me`, si no `mailto:`, si no `null`) para los
+  CTA. "Quiero aparecer" en héroe y banda final, ocultos sin destino; "Hablar con el equipo" se
+  quitó (mismo destino) y el héroe lleva "Cómo funciona" (`#como`). Pasos y beneficios reescritos a
+  la spec; se quitaron "¿Cuánto cuesta aparecer?" y "¿Cómo recibo el dinero...?". La tarjeta de
+  ejemplo usa `lib/format.ts` (distancia "a 800 m" en vez de "0,8 km" del lienzo).
 
 ## Identificadores que estrena
 
@@ -149,9 +156,12 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
 
 - `RN-HELP-01` a `RN-HELP-04` (Fase 4): reglas del contenido y del filtro de la ayuda; el
   enunciado de cada una vive en `features/help/README.md`, una afirmación por regla.
+- `RN-MERCHANTS-01` a `RN-MERCHANTS-03` (Fase 6): contenido de `/vende` (cada pregunta cita su
+  spec; sin costo ni liquidación; sin contacto no hay CTA ni banda final), en `features/merchants/README.md`.
 
 ## Notas para la próxima sesión
-- Fases 1 a 5 hechas. Sigue la fase 6 (`/vende`). En la fase 7, `features/site/README.md` y
+- Fases 1 a 6 hechas. Sigue la fase 7 (cierre: e2e completo). El usuario revisa los textos de
+  `features/merchants/lib/content.ts`. En la fase 7, `features/site/README.md` y
   `.claude/rules/seo.md` (ítems 5 y 8) citan `/comercios` y pasan a `/vende`.
 - El usuario revisa los textos de `features/help/lib/content.ts`, en especial las preguntas agregadas
   fuera del lienzo.
@@ -170,3 +180,8 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   layout y no a ancho completo como en W12/P12 (`max-width: 1200px`). Decidir un patrón de sección a
   sangre para el sitio. `app/layout.tsx`, `features/help/components/HelpCenter.tsx`.
 - [ ] M-6 (baja, sonnet) — `.claude/rules/seo.md` ítem 3 podría listar `/ayuda` entre las indexables.
+- [ ] M-7 (baja, sonnet) — `features/merchants/README.md`: `depends_on` omite `lib/utils.ts` y
+  `lib/marketplace/schemas.ts` (tipo `Money`).
+- [ ] M-8 (baja, sonnet) — `.claude/rules/seo.md` pasa el tope orientativo (67 líneas): condensar.
+- [ ] M-9 (baja, sonnet) — `e2e/site.spec.ts`: la aserción de pasos de `/vende` es débil; comprobar
+  los tres `h3` de los pasos.

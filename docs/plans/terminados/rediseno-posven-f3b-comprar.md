@@ -163,7 +163,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [ ] M-6 — Mostrar la tarifa como pista en la opción "Entrega a domicilio" de
   `CheckoutStoreSection.tsx` si la Quote la trae en retiro, con test. Repo posven-ecommerce ·
   complejidad baja · modelo sonnet.
-- [ ] M-7 — `OrderTracker`: mostrar `paid_at` en el cancelado y `ready_at` en la entrega (antes
+- [x] M-7 — `OrderTracker`: mostrar `paid_at` en el cancelado y `ready_at` en la entrega (antes
   los mostraba la lista de fechas). Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [ ] M-8 — `OrderTracker`: texto `sr-only` ("completado", "pendiente") por paso, y test de
   `pending_payment`. Repo posven-ecommerce · complejidad baja · modelo sonnet.
@@ -181,3 +181,9 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [ ] M-13 — Diferencias con el lienzo del carrito: cabecera de tienda con distancia y estado
   abierto, logotipo y la nota "Cada tienda prepara su parte"; el resultado aún no sigue del todo
   el estilo del lienzo. Repo posven-ecommerce · complejidad media · modelo sonnet.
+- [ ] M-14 — Contraste: "Pagado el …" en el cancelado de `OrderTracker.tsx` usa
+  `text-muted-foreground` sobre `bg-warning-soft` (ui.md lo pide sobre `bg-card`/`bg-background`).
+  Repo posven-ecommerce · complejidad baja · modelo sonnet.
+- [ ] M-15 — El simulado (`lib/marketplace/mock/checkout.ts` `prepare()`) no pone `ready_at` en
+  las entregas, así que la fecha de "Preparando" nunca se ve en modo simulado. Repo
+  posven-ecommerce · complejidad baja · modelo sonnet.

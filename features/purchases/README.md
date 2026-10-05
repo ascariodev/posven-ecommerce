@@ -28,7 +28,7 @@ capabilities:
     entrypoint: "<OrderTracker />"
     file: "features/purchases/components/OrderTracker.tsx"
     input: "order: Pick<StoreOrder, 'status' | 'fulfillment' | 'timeline'>; className opcional"
-    output: "lista de 4 pasos (retiro: Pagado, Preparado, Listo para retirar, Entregado; entrega: Pagado, Preparando, En camino, Entregado) con fecha y pista del actual; un aviso aparte si está cancelado"
+    output: "lista de 4 pasos (retiro: Pagado, Preparado, Listo para retirar, Entregado; entrega: Pagado, Preparando, En camino, Entregado) con fecha y pista del actual (en la entrega, Preparando lleva `ready_at`); un aviso aparte si está cancelado, con la fecha de cancelación y la de pago"
     source: "status, fulfillment y timeline de un StoreOrder (GET /me/purchases/{code})"
     rules: ["RN-PURCHASES-05"]
   - intent: "mostrar las últimas compras en el resumen de la cuenta"
@@ -57,7 +57,7 @@ API. El pago y su resultado viven en `features/checkout`.
 | `RN-PURCHASES-01` | Las compras llegan de 10 en 10, más recientes primero, paginadas con `?pagina=N` (la 1 sin parámetro); una página vacía tras la 1 es 404. "Últimas compras" muestra las 3 primeras de la página 1 y no se pinta si la API falla, salvo un 401. | `features/purchases/__tests__/pagination.test.ts`; `features/purchases/__tests__/PurchaseList.test.tsx`; `features/purchases/__tests__/RecentPurchases.test.tsx`; `lib/marketplace/mock/__tests__/checkout.test.ts` ("el listado va de 10 en 10...") |
 | `RN-PURCHASES-02` | El detalle destaca el `pickup_code` ("Código de retiro") cuando no es nulo y marca cada línea `missing` con "Faltante · reembolsado"; el reembolsado del pedido sale sólo si no es cero. | `features/purchases/__tests__/PurchaseDetail.test.tsx`; `e2e/checkout.spec.ts` ("compra completa...") |
 | `RN-PURCHASES-03` | El estado de cada pedido y su línea de estados sólo se muestran con la compra `paid`: el contrato no tiene un estado de pedido para una compra sin pagar (hueco a acordar con posveapi). | `features/purchases/__tests__/PurchaseDetail.test.tsx` ("con la compra sin pagar no muestra el estado del pedido") |
-| `RN-PURCHASES-05` | La línea de estados sale de `status` y `fulfillment`; `accepted` es el paso 2 (la API no distingue preparado de aceptado) y `delivered` deja todos hechos. Un `cancelled` no tiene pasos: se pinta aparte. | `features/purchases/__tests__/OrderTracker.test.tsx` |
+| `RN-PURCHASES-05` | La línea de estados sale de `status` y `fulfillment`; `accepted` es el paso 2 (la API no distingue preparado de aceptado) y `delivered` deja todos hechos. Un `cancelled` no tiene pasos: se pinta aparte, con `cancelled_at` y `paid_at`. En una entrega, `ready_at` fecha Preparando. | `features/purchases/__tests__/OrderTracker.test.tsx` |
 | `RN-PURCHASES-04` | El resumen destaca en "Para retirar" el código del primer pedido `ready_for_pickup` con `pickup_code` no nulo de la página 1; los demás pedidos siguen en la lista. Sin ninguno no se pinta. | `features/purchases/__tests__/RecentPurchases.test.tsx` |
 
 ## 3. Dónde hacer cambios
@@ -123,7 +123,7 @@ async function Purchases({ ctx }: { ctx: AccountContext }) {
 - Comando: el de la sección Verificación de `posven-ecommerce/CLAUDE.md` (`npx vitest run features/purchases`).
 - `features/purchases/__tests__/PurchaseList.test.tsx`: fecha de Caracas, fila completa, vacío y paginación en la primera y la última página.
 - `features/purchases/__tests__/PurchaseDetail.test.tsx`: código de retiro, faltante reembolsado y montos sin calcular; entrega con dirección y envío; estado y línea de estados ocultos sin pagar.
-- `features/purchases/__tests__/OrderTracker.test.tsx`: pasos de retiro y entrega, pedido entregado sin paso actual y cancelado aparte.
+- `features/purchases/__tests__/OrderTracker.test.tsx`: pasos de retiro y entrega, pedido entregado sin paso actual, la fecha de preparado en la entrega y cancelado aparte con su fecha de pago.
 - `features/purchases/__tests__/pagination.test.ts`: `?pagina` válida e inválida; fuera de rango, vacía en la 1 y en rango.
 - `features/purchases/__tests__/RecentPurchases.test.tsx`: las 3 primeras y "Ver todas"; la tarjeta "Para retirar" con el primer pedido listo, y sin ella si ninguno tiene código; nada sin compras, con la API caída o con un 429; un 401 sube.
 - `e2e/checkout.spec.ts`: el detalle con el código de retiro y el reembolso, y "Últimas compras" en `/cuenta`.

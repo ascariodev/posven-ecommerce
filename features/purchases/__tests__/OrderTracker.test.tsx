@@ -40,4 +40,17 @@ describe("OrderTracker", () => {
     expect(screen.getByText("30/09/2026 14:30")).toBeTruthy();
     expect(screen.queryByRole("list")).toBeNull();
   });
+
+  it("un pedido cancelado muestra cuándo se pagó", () => {
+    render(<OrderTracker order={order({ status: "cancelled", timeline: { ...order().timeline, cancelled_at: "2026-09-30T18:30:00Z" } })} />);
+    expect(screen.getByText("Pagado el 30/09/2026 14:00")).toBeTruthy();
+  });
+
+  it("una entrega muestra cuándo estuvo preparada en Preparando", () => {
+    const delivery = order({ fulfillment: "delivery", status: "out_for_delivery", timeline: { ...order().timeline, dispatched_at: "2026-09-30T18:40:00Z" } });
+    render(<OrderTracker order={delivery} />);
+    const items = screen.getAllByRole("listitem");
+    expect(items[1].textContent).toContain("30/09/2026 14:20");
+    expect(items[2].textContent).toContain("30/09/2026 14:40");
+  });
 });

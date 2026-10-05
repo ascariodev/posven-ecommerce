@@ -1,34 +1,34 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { ChevronDown, PiggyBank } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/components/FavoriteButton";
 import { cartEnabled } from "@/features/cart/lib/flag";
-import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
-import { MarketPricesModal } from "@/features/product/components/MarketPricesModal";
 import { ViewBeacon } from "@/features/events/components/ViewBeacon";
 import { productJsonLd } from "@/features/product/lib/jsonld";
 import { loadProduct } from "@/features/product/server/load";
 import { productMetadata } from "@/features/product/lib/metadata";
+import { PriceSummary } from "@/features/product/components/PriceSummary";
 import { ProductGallery } from "@/features/product/components/ProductGallery";
+import { ProductOffers, ProductOffersSkeleton } from "@/features/product/components/ProductOffers";
 import { ShareButton } from "@/features/product/components/ShareButton";
 import { ProductCard } from "@/features/search/components/ProductCard";
 import { breadcrumbListJsonLd, serializeJsonLd } from "@/lib/jsonld";
-import { listCategories, listSitemap, searchProducts, getProductOffers } from "@/lib/marketplace/client";
+import { listCategories, listSitemap, searchProducts } from "@/lib/marketplace/client";
 import type { CategoryNode, ProductDetail } from "@/lib/marketplace/schemas";
 import { getEffectiveLocation } from "@/features/location/server/location";
 import { toGeoFilter } from "@/features/location/lib/cookie";
 import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
-import { formatUsd, formatVes } from "@/lib/format";
 
 const RESTRICTED_NOTE = {
-  recipe: "Requiere récipe.",
-  controlled: "Venta controlada.",
+  recipe: "Requiere récipe, consúltalo en la tienda.",
+  controlled: "Venta controlada, consúltalo en la tienda.",
 } as const;
 
 type Params = Promise<{ slug: string }>;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 const STATIC_PRODUCT_COUNT = 20;
 
@@ -70,93 +70,6 @@ function JsonLdScript({ data }: { data: object }) {
   );
 }
 
-async function ProductBuyBox({ product }: { product: ProductDetail }) {
-  const { location } = await getEffectiveLocation();
-  const geo = toGeoFilter(location);
-  const response = await getProductOffers({
-    slug: product.slug,
-    geo,
-    radiusKm: geo ? DEFAULT_RADIUS_KM : null,
-    sort: "price",
-  });
-
-  const page = response === null || "redirect_to" in response ? null : response;
-  const offers = page !== null ? page.offers : [];
-  const bestOffer = offers.length > 0 ? offers[0] : null;
-  const offersCount = offers.length;
-
-  return (
-    <div className="flex flex-col gap-4 mt-2">
-      {bestOffer ? (
-        <>
-          <div className="flex flex-col gap-4 pt-4 border-t border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-primary-text mb-1">Desde</p>
-                <p className="font-heading text-4xl font-extrabold text-foreground leading-none">{formatUsd(bestOffer.price_usd)}</p>
-                <p className="text-sm font-medium text-muted-foreground mt-1">{formatVes(bestOffer.price_ves)}</p>
-              </div>
-              <Badge variant="success">En inventario</Badge>
-            </div>
-            {cartEnabled() && product.restriction === "none" && (
-              <AddToCartButton
-                storeSlug={bestOffer.store.slug}
-                storeName="Comercio Aliado"
-                productSlug={product.slug}
-                productName={product.name}
-                variant="default"
-                size="lg"
-                className="w-full mt-2"
-              />
-            )}
-          </div>
-
-          <div className="mt-2 flex flex-col gap-4">
-            <div className="flex items-start gap-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
-              <div className="bg-primary/10 p-2 rounded-full">
-                <PiggyBank className="w-6 h-6 text-primary-text" />
-              </div>
-              <div>
-                <p className="font-bold text-foreground text-sm">
-                  Este producto está disponible en <span className="text-primary-text underline decoration-primary/30 underline-offset-2">{offersCount} farmacias</span>
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Vamos a cotizar por ti en todas ellas y elegiremos la opción más barata para llevarla a tu casa.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center gap-3 p-4 bg-card rounded-xl border border-border shadow-card text-center">
-              <h4 className="font-bold text-foreground text-sm">Precios de mercado para este medicamento</h4>
-              <div className="flex w-full justify-between px-4 mt-2">
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Mínimo</span>
-                  <span className="font-bold text-sm text-foreground">{formatUsd(product.offers_summary.low_price_usd ?? bestOffer.price_usd)}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Máximo</span>
-                  <span className="font-bold text-sm text-foreground">{formatUsd(product.offers_summary.high_price_usd ?? bestOffer.price_usd)}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground">Farmacias</span>
-                  <span className="font-bold text-sm text-foreground">{offersCount}</span>
-                </div>
-              </div>
-              <div className="mt-2">
-                <MarketPricesModal offers={offers} />
-              </div>
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className="pt-4 border-t border-border">
-          <p className="text-muted-foreground text-sm">Sin disponibilidad en este momento para tu zona.</p>
-        </div>
-      )}
-    </div>
-  );
-}
-
 async function RelatedProducts({ categorySlug, title }: { categorySlug: string | null, title: string }) {
   const { location } = await getEffectiveLocation();
   const geo = toGeoFilter(location);
@@ -186,8 +99,10 @@ async function RelatedProducts({ categorySlug, title }: { categorySlug: string |
 
 export default async function ProductPage({
   params,
+  searchParams,
 }: {
   params: Params;
+  searchParams: SearchParams;
 }) {
   const { slug } = await params;
   const { data: product } = await loadProduct(slug);
@@ -222,7 +137,7 @@ export default async function ProductPage({
       </nav>
       
       <div className="grid items-start gap-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <div className="sticky top-20">
+        <div className="md:sticky md:top-20">
           <ProductGallery 
             images={[
               product.image_url,
@@ -265,11 +180,20 @@ export default async function ProductPage({
                 <p className="text-sm font-medium text-warning">{RESTRICTED_NOTE[product.restriction]}</p>
               )}
 
-              <Suspense fallback={<div className="h-24 w-full bg-muted/20 animate-pulse rounded-md mt-4"></div>}>
-                <ProductBuyBox product={product} />
-              </Suspense>
+              <PriceSummary summary={product.offers_summary} />
             </CardContent>
           </Card>
+
+          {product.offers_summary.offer_count === 0 ? (
+            <p className="text-muted-foreground">Sin disponibilidad ahora.</p>
+          ) : (
+            <Suspense fallback={<ProductOffersSkeleton />}>
+              <ProductOffers
+                product={{ slug: product.slug, name: product.name, restriction: product.restriction }}
+                searchParams={searchParams}
+              />
+            </Suspense>
+          )}
 
           {/* Información Adicional con Acordeón (details/summary) */}
           {product.attributes.length > 0 && (

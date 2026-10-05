@@ -93,6 +93,23 @@ describe("ProductOffers", () => {
     expect(within(outside).getByText("$ 2,70")).toBeTruthy();
   });
 
+  it("muestra tres ofertas del radio y deja las demás tras Ver N tiendas más", async () => {
+    const inside = ["a", "b", "c", "d", "e"].map((slug) => offer(`tienda-${slug}`, `Tienda ${slug}`));
+    vi.mocked(getProductOffers).mockResolvedValue(page(inside, []));
+
+    render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+    const items = within(screen.getByRole("list", { name: "Ofertas" })).getAllByRole("listitem");
+    expect(items.map((item) => within(item).getByRole("link", { name: /^Tienda / }).textContent)).toEqual([
+      "Tienda a",
+      "Tienda b",
+      "Tienda c",
+    ]);
+    expect(screen.getByText("Ver 2 tiendas más").tagName).toBe("SUMMARY");
+    const more = within(screen.getByRole("list", { name: "Más ofertas" })).getAllByRole("listitem");
+    expect(more).toHaveLength(2);
+  });
+
   it("sin ubicación no ofrece Más cerca y pide sort price aunque venga orden=cerca", async () => {
     vi.mocked(getProductOffers).mockResolvedValue(page([offer("abasto-la-esquina", "Abasto La Esquina")], []));
 

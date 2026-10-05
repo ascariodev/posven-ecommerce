@@ -3,9 +3,9 @@ module: "product"
 path: "features/product"
 type: "feature"
 exports: ["loadProduct", "productMetadata", "productJsonLd", "PriceSummary", "SortLinks", "OfferCard", "ProductOffers", "ProductOffersSkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "features/search/components/ProductThumb.tsx", "lib/jsonld.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "features/search/components/ProductCard.tsx", "lib/jsonld.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts"]
 tests: "features/product/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/product/server/load.ts", "features/product/lib/metadata.ts", "features/product/lib/jsonld.ts", "features/product/components/PriceSummary.tsx", "features/product/components/SortLinks.tsx", "features/product/components/OfferCard.tsx", "features/product/components/ProductOffers.tsx", "app/p/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "features/search/components/ProductThumb.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx"]
+verified_against: ["features/product/server/load.ts", "features/product/lib/metadata.ts", "features/product/lib/jsonld.ts", "features/product/components/PriceSummary.tsx", "features/product/components/SortLinks.tsx", "features/product/components/OfferCard.tsx", "features/product/components/ProductOffers.tsx", "app/p/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "features/search/components/ProductCard.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/skeleton.tsx", "components/ui/toggle.tsx"]
 capabilities:
   - intent: "cargar un producto por slug con su 404 y su redirección"
     intent_aliases: ["producto por slug", "pagina de producto", "redireccion de producto", "producto no existe"]
@@ -28,7 +28,7 @@ capabilities:
     entrypoint: "<ProductOffers />"
     file: "features/product/components/ProductOffers.tsx"
     input: "product: { slug, name, restriction }; searchParams con orden=cerca opcional; lee la cookie loc; se monta en <Suspense fallback={<ProductOffersSkeleton />}>"
-    output: "sección 'Dónde comprarlo': tasa, SortLinks con ubicación, destacadas y ofertas del radio en un OfferCard cada una (cada una lleva 'Mejor precio' sólo si la API manda is_best_price), las de outside_radius bajo 'Fuera de tu zona'; sin ofertas, 'No hay ofertas cerca. Prueba con otra ciudad.'"
+    output: "sección 'Dónde comprarlo': tasa, SortLinks con ubicación, destacadas y las tres primeras ofertas del radio en un OfferCard cada una, las demás del radio tras 'Ver N tiendas más' (details nativo; cada una lleva 'Mejor precio' sólo si la API manda is_best_price), las de outside_radius bajo 'Fuera de tu zona'; sin ofertas, 'No hay ofertas cerca. Prueba con otra ciudad.'"
     source: "getProductOffers() de lib/marketplace con geo de getEffectiveLocation() y DEFAULT_RADIUS_KM"
     rules: ["RN-PRODUCT-03", "RN-PRODUCT-04", "RN-PRODUCT-05"]
 ---
@@ -47,7 +47,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 |---|---|---|
 | `RN-PRODUCT-01` | El `AggregateOffer` del JSON-LD sale de `offers_summary`, nacional: la cookie no lo cambia. | `features/product/__tests__/jsonld.test.ts` ("con ofertas trae un AggregateOffer con los valores de offers_summary", "sin ofertas no trae offers") |
 | `RN-PRODUCT-02` | Un producto sin ofertas en el país muestra "Sin disponibilidad ahora." y lleva `noindex`. | `features/product/__tests__/metadata.test.ts` ("sin ofertas lleva noindex y la descripción de sin disponibilidad"); `e2e/product.spec.ts` ("un producto sin ofertas muestra sin disponibilidad y lleva noindex") |
-| `RN-PRODUCT-03` | Las ofertas destacadas, dos como máximo, van primero y no se repiten; las de fuera del radio van bajo "Fuera de tu zona". | `features/product/__tests__/ProductOffers.test.tsx` ("las destacadas van primero con Destacado y las de fuera del radio bajo Fuera de tu zona") |
+| `RN-PRODUCT-03` | Las ofertas destacadas, dos como máximo, van primero y no se repiten; del radio se ven las tres primeras y las demás tras "Ver N tiendas más"; las de fuera del radio van bajo "Fuera de tu zona". | `features/product/__tests__/ProductOffers.test.tsx` ("las destacadas van primero con Destacado y las de fuera del radio bajo Fuera de tu zona", "muestra tres ofertas del radio y deja las demás tras Ver N tiendas más") |
 | `RN-PRODUCT-04` | "Más cerca" sólo se ofrece con ubicación; sin ella el orden es por precio. | `features/product/__tests__/ProductOffers.test.tsx` ("sin ubicación no ofrece Más cerca y pide sort price aunque venga orden=cerca", "con coordenadas y orden=cerca pide sort distance y radiusKm 10") |
 | `RN-PRODUCT-05` | "Mejor precio" sale de `is_best_price` de la oferta, que la API calcula; sin el campo no se marca. No depende de la posición, del orden ni de la lista. | `features/product/__tests__/OfferCard.test.tsx` ("Mejor precio sale de is_best_price y no de la posición"); `features/product/__tests__/ProductOffers.test.tsx` ("marca Mejor precio sólo donde la API manda is_best_price, sea cual sea la posición", "una destacada con is_best_price lleva Mejor precio y sin el campo nadie lo lleva", "sin is_best_price en la respuesta no marca Mejor precio, ni en el orden Más cerca") |
 
@@ -85,8 +85,8 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 | Resumen de precio | `components/PriceSummary.tsx` | "Desde $X", "hasta $Y" si la cadena del máximo difiere de la del mínimo, "en N tiendas" y "Precio en todo el país"; nada si `low_price_usd` es `null` |
 | Orden | `components/SortLinks.tsx` | enlaces "Menor precio" y "Más cerca" con `toggleVariants` (`data-state`) y `aria-current="true"` en el activo |
 | Oferta | `components/OfferCard.tsx` | fila con enlace a `/tienda/{slug}`, ciudad, distancia, precios, "Mejor precio" (`offer.is_best_price`), "Destacado", "Abierto · cierra HH:MM", "Abierto" o "Cerrado" (`is_open` y `closes_at`; nada si `is_open` falta), "Pocas unidades", antigüedad, `AddToCartButton` (con el carrito encendido, tienda con `accepts_orders` y producto sin restricción, `RN-CART-03`) y `ContactButtons` |
-| Ofertas | `components/ProductOffers.tsx` | ubicación efectiva, `sort` y radio, la llamada a `getProductOffers`, el reparto en destacadas, radio y "Fuera de tu zona"; sin marcas propias: `OfferCard` lee `is_best_price` |
-| Página | `app/p/[slug]/page.tsx` | `generateStaticParams` (20 slugs o `__vacio`), `generateMetadata`, migas (sólo "Inicio" es enlace; `BreadcrumbList` Inicio y producto), ficha en dos columnas (imagen y panel con `PriceSummary`, sin `sticky`), `ViewBeacon` y `ProductOffers` en `<Suspense>` |
+| Ofertas | `components/ProductOffers.tsx` | ubicación efectiva, `sort` y radio, la llamada a `getProductOffers`, el reparto en destacadas, radio (tres visibles, el resto en un `<details>` "Ver N tiendas más", lista "Más ofertas") y "Fuera de tu zona"; sin marcas propias: `OfferCard` lee `is_best_price` |
+| Página | `app/p/[slug]/page.tsx` | `generateStaticParams` (20 slugs o `__vacio`), `generateMetadata`, migas (sólo "Inicio" es enlace; `BreadcrumbList` Inicio y producto), ficha en dos columnas (`ProductGallery`, fija con `sticky` sólo desde `md` para no tapar las ofertas en móvil, y al lado, el panel con `PriceSummary`, `ProductOffers` en `<Suspense>` o "Sin disponibilidad ahora." si `offer_count` es 0, y los atributos plegables), `ViewBeacon` y dos bloques de productos relacionados en `<Suspense>` |
 
 ## 6. Dependencias
 
@@ -94,7 +94,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 - `lib/format.ts`, `lib/jsonld.ts`, `lib/site.ts`.
 - `features/location/server/location.ts` (`getEffectiveLocation`) y `features/location/lib/cookie.ts` (`toGeoFilter`).
 - `features/events/components/ContactButtons.tsx` y `features/events/components/ViewBeacon.tsx`.
-- `features/search/components/ProductThumb.tsx` (imagen o ícono de categoría de la ficha).
+- `features/search/components/ProductCard.tsx` (productos relacionados de la ficha).
 - `components/ui/` (`Badge`, `buttonVariants`, `toggleVariants`, `Card`, `Skeleton`).
 - `next/navigation`, `next/link`, `next/image`.
 
@@ -118,7 +118,7 @@ const { data: product } = await loadProduct(slug);
   (`is_best_price`): el frontend no compara precios ni infiere la marca por posición. Tampoco
   calcula horarios: `is_open` y `closes_at` se muestran tal cual.
 
-- "Agregar al carrito" sale en las tres listas de ofertas (destacadas, del radio y "Fuera de tu zona") sólo si `cartEnabled()`, `store.accepts_orders` y `restriction: "none"`; con el carrito encendido, el panel de la ficha muestra "Requiere récipe, consúltalo en la tienda." o "Venta controlada, consúltalo en la tienda." en lugar de la insignia "Requiere récipe" (`RN-CART-03`, enmienda E de cuentas-y-compras).
+- "Agregar al carrito" sale en las tres listas de ofertas (destacadas, del radio y "Fuera de tu zona") sólo si `cartEnabled()`, `store.accepts_orders` y `restriction: "none"`; con el carrito encendido, el panel de la ficha muestra además "Requiere récipe, consúltalo en la tienda." o "Venta controlada, consúltalo en la tienda." (`RN-CART-03`); la insignia "Requiere récipe" sale siempre con `restriction: "recipe"`.
 
 - `loadProduct` corre fuera de `<Suspense>` en la página para que `notFound()` dé 404 y `permanentRedirect()` dé 308 antes del primer byte; `app/p/` no lleva `loading.tsx`.
 - `generateStaticParams` devuelve al menos un slug: con Cache Components un arreglo vacío rompe el build.
@@ -133,6 +133,6 @@ const { data: product } = await loadProduct(slug);
 - Comando: `npx vitest run features/product`; los códigos 404 y 308, con `next build` y `next start`.
 - `features/product/__tests__/metadata.test.ts`: canónica, descripción en plural y singular, `noindex` sin ofertas.
 - `features/product/__tests__/jsonld.test.ts`: `AggregateOffer` desde `offers_summary`, sin `offers` ni `gtin` cuando faltan.
-- `features/product/__tests__/ProductOffers.test.tsx`: destacadas primero, "Fuera de tu zona", orden y radio según ubicación, respuesta `null` y "Mejor precio" (tres casos de RN-PRODUCT-05).
+- `features/product/__tests__/ProductOffers.test.tsx`: destacadas primero, tres del radio y "Ver N tiendas más", "Fuera de tu zona", orden y radio según ubicación, respuesta `null` y "Mejor precio" (tres casos de RN-PRODUCT-05).
 - `features/product/__tests__/OfferCard.test.tsx`: tienda con enlace y nombre en el botón, contacto, "Mejor precio" por `is_best_price` y estados de horario.
 - `features/product/__tests__/PriceSummary.test.tsx`: rango con y sin máximo distinto, "en 1 tienda" y "en N tiendas", sin precio mínimo no pinta nada.

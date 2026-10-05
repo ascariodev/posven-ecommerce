@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F2 del lienzo "E · PosVen": ficha de producto con la lista de
 tiendas para elegir, barra de compra fija y detalles plegables; página de tienda con portada; y
 directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el contrato de F2a.
-**Estado:** en curso: fase 2 de 7
+**Estado:** en curso: fase 3 de 7
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2, §4 (`ui.md`), §5 (ficha `P15`/`P06`,
@@ -55,7 +55,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - **Terminado cuando:** tsc y eslint limpios y `vitest run --root <repo> features/product` en verde.
 - **Commit:** `feat(product): OfferCard con tienda, contacto y mejor precio de la API`
 
-### [ ] Fase 2 — [riesgo] La ficha muestra la lista de tiendas
+### [x] Fase 2 — [riesgo] La ficha muestra la lista de tiendas
 - **Repo:** posven-ecommerce
 - **Alcance:** `app/p/[slug]` monta `ProductOffers` (destacadas, orden y "ver más") en lugar de
   `ProductBuyBox` y `MarketPricesModal`, que se retiran si quedan sin uso; e2e de ficha, carrito y
@@ -98,7 +98,10 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 
 - 2026-10-04 — Fase 1: `OfferCard` queda `{ offer, product, featured, now }` (sin `best`); `now` sólo alimenta `formatUpdatedAgo` — implementación.
 
+- 2026-10-04 — Fase 2: la ficha muestra destacadas y las tres primeras del radio; el resto va en un `<details>` "Ver N tiendas más"; `PriceSummary` toma el rango de `offers_summary`; la galería es `md:sticky` (en móvil tapaba las ofertas); vuelven los textos de récipe y venta controlada; `ContactButtons` conserva "Ver ruta" (coincide con P15/P06) — implementación.
+
 ## Notas para la próxima sesión
+- Fase 2 hecha: e2e product, cart y checkout en verde (18 y 1 `fixme` previo). `npx next build` no termina por la ruta sin trackear `app/preview/rediseno/[pantalla]` (de F0, sin commitear): la puerta de la fase 7 debe resolverlo. En dev sale el aviso "runtime data during prerendering" por `await params` fuera de Suspense: es intencional (regla seo 7) y `generateStaticParams` existe. P06 pliega "Fuera de tu zona" en móvil; aquí sigue desplegado (ver fase 7).
 - Fase 1 hecha: `OfferCard` con enlace a la tienda, `ContactButtons`, pill desde `is_best_price` y horario desde `is_open`/`closes_at`; `ProductOffers` ya no marca por posición. En la fase 2, comprobar contra `P15` si `ContactButtons` debe llevar "Ver ruta" (hoy trae WhatsApp, llamada y ruta).
 - F1b y F2a terminados el 2026-10-04 (F2a en `posven/.claude/docs/plans/terminados/`); `is_best_price` es el mínimo entre las ofertas servidas y las ofertas a precio 0 no se publican (F2a M-5 y M-6).
 
@@ -106,4 +109,10 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - [ ] M-1 — Enlace del nombre de tienda en `OfferCard` con `inline-flex min-h-11 items-center` (zona táctil de 44 px).
   posven-ecommerce · baja · sonnet
 - [ ] M-2 — `OfferCard.test.tsx`: caso sin "Agregar al carrito" con restricción distinta de `none` o sin `accepts_orders`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-3 — `ProductOffers`: al abrir "Ver N tiendas más" el `summary` se oculta (`group-open:hidden`) y el foco cae al `body`; mover el foco a la primera oferta o dejar un "Ver menos".
+  posven-ecommerce · baja · sonnet
+- [ ] M-4 — La galería de la ficha repite `product.image_url` tres veces ("Mocks temporales" de la capa de Jose).
+  posven-ecommerce · baja · sonnet
+- [ ] M-5 — El README de product no lista `ProductGallery` ni `ShareButton` entre sus exports (deuda previa).
   posven-ecommerce · baja · sonnet

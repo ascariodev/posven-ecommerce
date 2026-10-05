@@ -135,7 +135,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [ ] M-7 — Prueba de `ProductOffers` async: sin carrito o con restricción no hay barra, e `is_best_price` define la elegida.
   posven-ecommerce · baja · sonnet
-- [ ] M-8 — Tiendas sin `accepts_orders` muestran "Elegir" y la barra sólo dice que no reciben pedidos: confirmar el estado con el lienzo.
+- [x] M-8 — Tiendas sin `accepts_orders` muestran "Elegir" y la barra sólo dice que no reciben pedidos: confirmar el estado con el lienzo.
   posven-ecommerce · baja · sonnet
 - [ ] M-9 — `is_open` y `closes_at` en `GET /stores/{slug}` (posveapi, spec §3 primero) para que la cabecera de tienda muestre "Abierto · cierra HH:MM"; puede ir junto a la M-23 de F1b (`open_now` en `/products/nearby`).
   posveapi + posven-ecommerce · alta · plan nuevo
@@ -155,7 +155,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · media · sonnet
 - [ ] M-17 — P06: "Fuera de tu zona" plegado en móvil ("Ver N tiendas fuera de tu zona").
   posven-ecommerce · baja · sonnet
-- [ ] M-18 — La barra de compra elige por defecto la de `is_best_price` aunque no reciba pedidos; preferir la más barata que sí los acepte (absorbe M-8).
+- [x] M-18 — La barra de compra elige por defecto la de `is_best_price` aunque no reciba pedidos; preferir la más barata que sí los acepte (absorbe M-8).
   posven-ecommerce · baja · sonnet
 - [ ] M-19 — W07/P07: barra lateral de categorías con conteos y filas de lista en móvil; requiere conteos en el contrato de tienda.
   posveapi + posven-ecommerce · alta · plan nuevo

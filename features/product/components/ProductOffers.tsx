@@ -59,7 +59,12 @@ export async function ProductOffers({
 
   const served = [...page.featured, ...inside, ...outside];
   const withBar = cartEnabled() && product.restriction === "none";
-  const defaultOffer = served.find((offer) => offer.is_best_price === true) ?? served[0];
+  const orderable = served.filter((offer) => offer.store.accepts_orders);
+  const defaultOffer =
+    orderable.find((offer) => offer.is_best_price === true) ??
+    orderable[0] ??
+    served.find((offer) => offer.is_best_price === true) ??
+    served[0];
 
   const content = (
     <section className={cn("flex flex-col gap-4", withBar && "pb-24 md:pb-0")}>

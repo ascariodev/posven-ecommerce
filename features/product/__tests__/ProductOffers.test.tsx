@@ -236,4 +236,53 @@ describe("botón Agregar al carrito en las ofertas (RN-CART-03)", () => {
 
     expect(addButtons()).toHaveLength(0);
   });
+
+  describe("tienda por defecto de la barra de compra", () => {
+    const barStore = () => within(screen.getByRole("region", { name: "Compra" }));
+    const closed = (slug: string, name: string, overrides: Partial<ProductOffer> = {}) => offer(slug, name, overrides);
+    const open = (slug: string, name: string, overrides: Partial<ProductOffer> = {}) => {
+      const base = offer(slug, name, overrides);
+      return { ...base, store: { ...base.store, accepts_orders: true } };
+    };
+
+    it("salta la de is_best_price que no recibe pedidos y toma la que sí, también marcada", async () => {
+      vi.mocked(getProductOffers).mockResolvedValue(
+        page(
+          [
+            closed("sin-pedidos", "Sin Pedidos", { is_best_price: true }),
+            open("segunda", "Segunda Tienda"),
+            open("tercera", "Tercera Tienda", { is_best_price: true }),
+          ],
+          [],
+        ),
+      );
+
+      render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+      expect(barStore().getByText("Tercera Tienda")).toBeTruthy();
+    });
+
+    it("sin is_best_price que acepte pedidos, toma la primera servida que acepte", async () => {
+      vi.mocked(getProductOffers).mockResolvedValue(
+        page(
+          [closed("sin-pedidos", "Sin Pedidos", { is_best_price: true }), open("segunda", "Segunda Tienda")],
+          [],
+        ),
+      );
+
+      render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+      expect(barStore().getByText("Segunda Tienda")).toBeTruthy();
+    });
+
+    it("si ninguna acepta pedidos, conserva la de is_best_price", async () => {
+      vi.mocked(getProductOffers).mockResolvedValue(
+        page([closed("primera", "Primera Tienda"), closed("mejor", "Mejor Tienda", { is_best_price: true })], []),
+      );
+
+      render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+      expect(barStore().getByText("Mejor Tienda")).toBeTruthy();
+    });
+  });
 });

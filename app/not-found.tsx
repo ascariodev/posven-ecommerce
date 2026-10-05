@@ -1,13 +1,23 @@
 import Link from "next/link";
+import { Compass } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
-    <section className="flex flex-col items-start gap-4 rounded-lg border border-border bg-card p-8 shadow-card">
-      <h1 className="text-3xl font-bold tracking-tight">No encontramos esta página</h1>
-      <Link href="/" className={buttonVariants({ variant: "outline" })}>
+    <EmptyState
+      icon={Compass}
+      headingLevel="h1"
+      title="No encontramos esta página"
+      description="Puede que el enlace haya cambiado o que la página ya no exista."
+    >
+      <Link href="/" className={buttonVariants({ size: "lg" })}>
         Ir al inicio
       </Link>
-    </section>
+      <Link href="/buscar" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}>
+        Buscar productos
+      </Link>
+    </EmptyState>
   );
 }

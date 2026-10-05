@@ -98,3 +98,11 @@ test.describe("barra inferior en móvil", () => {
     }
   });
 });
+
+test("una ruta inexistente responde 404 con el estado vacío del sitio", async ({ page }) => {
+  const response = await page.goto("/esta-ruta-no-existe");
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole("heading", { level: 1, name: "No encontramos esta página" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Ir al inicio" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Buscar productos" })).toHaveAttribute("href", "/buscar");
+});

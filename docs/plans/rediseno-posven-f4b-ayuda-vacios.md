@@ -3,7 +3,7 @@
 **Objetivo:** que `/ayuda` y `/vende` existan con el diseño del lienzo (W12, P12, P13), que
 `/comercios` redirija a `/vende`, y que los estados vacíos, el error y el 404 sigan el estilo E con
 un estado vacío compartido.
-**Estado:** en curso · Fase actual: 1
+**Estado:** en curso · Fase actual: 2
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` §5 (W12, P12, P13),
@@ -28,7 +28,7 @@ un estado vacío compartido.
 
 ## Fases
 
-### [ ] Fase 1 — Estado vacío compartido en el 404 y el error
+### [x] Fase 1 — Estado vacío compartido en el 404 y el error
 - **Repo:** posven-ecommerce
 - **Alcance:** un componente de estado vacío para todo el sitio, con el molde de
   `maqueta/_screens/sin-resultados.tsx`: `Card`, ícono de `lucide-react` en círculo
@@ -118,8 +118,13 @@ un estado vacío compartido.
 - 2026-10-05 — El buscador de `/ayuda` filtra las preguntas en el navegador, sin API. Elegido por
   el usuario.
 - 2026-10-05 — Preguntas plegables con `<details>`: evita una dependencia nueva (accordion).
+- 2026-10-05 — Estado vacío como componente propio `components/EmptyState.tsx` (no `shadcn add empty`:
+  su título es un `div` sin nivel, usa borde punteado y no usa `Card`). Props: `icon`, `title`,
+  `description?`, `className?`, `headingLevel` (`"h1" | "h2"`, por defecto `"h2"`) y `children`
+  para las acciones; Server Component. El error dice "Intentar de nuevo" (antes "Reintentar").
 
 ## Notas para la próxima sesión
-- Crear la rama `feat/rediseno-f4b` desde `main` antes de la fase 1.
+- Fase 1 hecha. `features/search/components/EmptyState.tsx` tiene el mismo nombre que
+  `components/EmptyState.tsx`: la fase 3 cuida los imports al migrarlo.
 
 ## Mejoras propuestas

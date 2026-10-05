@@ -1,5 +1,7 @@
 "use client";
 
+import { TriangleAlert } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
 
 export default function ErrorPage({
@@ -9,13 +11,18 @@ export default function ErrorPage({
   retry: () => void;
 }) {
   return (
-    <section className="flex flex-col items-start gap-4 rounded-lg border border-border bg-card p-8 shadow-card">
+    <>
       <meta name="robots" content="noindex" />
-      <h1 className="text-3xl font-bold tracking-tight">No pudimos cargar esta página</h1>
-      <p className="text-muted-foreground">
-        El servicio de búsqueda no responde. Intenta de nuevo en unos segundos.
-      </p>
-      <Button onClick={() => retry()}>Reintentar</Button>
-    </section>
+      <EmptyState
+        icon={TriangleAlert}
+        headingLevel="h1"
+        title="No pudimos cargar esta página"
+        description="Algo falló de nuestro lado. Intenta de nuevo en unos segundos."
+      >
+        <Button size="lg" onClick={() => retry()}>
+          Intentar de nuevo
+        </Button>
+      </EmptyState>
+    </>
   );
 }

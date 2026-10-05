@@ -3,7 +3,7 @@
 **Objetivo:** que `/ayuda` y `/vende` existan con el diseño del lienzo (W12, P12, P13), que
 `/comercios` redirija a `/vende`, y que los estados vacíos, el error y el 404 sigan el estilo E con
 un estado vacío compartido.
-**Estado:** en curso · Fase actual: 4
+**Estado:** en curso · Fase actual: 5
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` §5 (W12, P12, P13),
@@ -69,7 +69,7 @@ un estado vacío compartido.
 - **Terminado cuando:** tsc limpio, vitest de search, store y product en verde, y
   `e2e/search.spec.ts` y `e2e/product.spec.ts` en verde.
 
-### [ ] Fase 4 — Contenido y buscador de la ayuda
+### [x] Fase 4 — Contenido y buscador de la ayuda
 - **Repo:** posven-ecommerce
 - **Alcance:** módulo nuevo (por ejemplo `features/help/`) con README desde la plantilla: temas y
   preguntas frecuentes de compradores como datos, y un Client Component que filtra las preguntas por
@@ -129,9 +129,25 @@ un estado vacío compartido.
   resultados con `SearchX`, ampliar radio en primario y el resto outline, y debajo "Quizás te sirve",
   categorías y el enlace a `/comercios` (cambia en la fase 7). Íconos `StoreIcon` y `MapPinOff`; en
   directorio, cercanos y ofertas "Prueba con otra ciudad." pasó a descripción.
+- 2026-10-05 — Ayuda (`features/help/`): `HelpCenter` (Client Component) pinta héroe con buscador,
+  temas y preguntas en `<details>`; la ruta de la fase 5 sólo añade la banda de contacto. Cada tema
+  enlaza a `#pregunta-<id>` de su primera pregunta; "Sin coincidencias" usa `components/EmptyState`.
+  Del lienzo W12 se quitaron "¿Puedo pagar en bolívares?" (pasarela real sin decidir) y el tema
+  "Devoluciones" (no hay política; el reembolso de faltantes va en "¿Qué pasa si la tienda no tiene
+  el producto?"). Se agregaron, con fuente comprobable: costo de entrega, varias tiendas, pago
+  pendiente (con pago tardío), cuenta, factura y récipe. La banda de contacto no promete horarios.
+
+## Identificadores que estrena
+
+Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
+
+- `RN-HELP-01` a `RN-HELP-04` (Fase 4): reglas del contenido y del filtro de la ayuda; el
+  enunciado de cada una vive en `features/help/README.md`, una afirmación por regla.
 
 ## Notas para la próxima sesión
-- Fases 1 a 3 hechas. Sigue la fase 4 (módulo de ayuda, sin ruta).
+- Fases 1 a 4 hechas. Sigue la fase 5 (ruta `/ayuda`, banda de contacto, sitemap, pie; README de site).
+- El usuario revisa los textos de `features/help/lib/content.ts`, en especial las preguntas agregadas
+  fuera del lienzo.
 
 ## Mejoras propuestas
 - [ ] M-1 (baja, sonnet) — El mensaje de `CheckoutEmpty` puede venir de la API y ahora es el `h2` a

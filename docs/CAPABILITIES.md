@@ -46,6 +46,14 @@ README: `features/events/README.md`
 | mostrar los botones de contacto de una tienda | `<ContactButtons />` | `features/events/components/ContactButtons.tsx` | RN-EVENTS-03 |
 | registrar la vista de una página de producto o de tienda | `<ViewBeacon />` | `features/events/components/ViewBeacon.tsx` |  |
 
+## help
+
+README: `features/help/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| buscar una respuesta en el centro de ayuda de compradores | `<HelpCenter />` | `features/help/components/HelpCenter.tsx` | RN-HELP-01, RN-HELP-02, RN-HELP-03, RN-HELP-04 |
+
 ## location
 
 README: `features/location/README.md`

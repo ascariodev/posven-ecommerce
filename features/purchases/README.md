@@ -3,16 +3,16 @@ module: "purchases"
 path: "features/purchases"
 type: "feature"
 exports: ["PURCHASE_STATUS_TEXT", "ORDER_STATUS_TEXT", "FULFILLMENT_TEXT", "ORDER_STEP_TEXT", "ORDER_STEP_HINT", "ORDER_STEP_STATE_TEXT", "orderSteps", "OrderTracker", "formatDateTime", "chargeText", "storeCountText", "readPurchasesPage", "isPageOutOfRange", "PurchaseList", "PurchaseRow", "PurchaseRows", "purchaseHref", "PurchaseDetail", "RecentPurchases"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/EmptyState.tsx"]
 tests: "features/purchases/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/purchases/lib/labels.ts", "features/purchases/lib/pagination.ts", "features/purchases/lib/orderSteps.ts", "features/purchases/components/OrderTracker.tsx", "features/purchases/__tests__/OrderTracker.test.tsx", "features/purchases/__tests__/pagination.test.ts", "features/purchases/__tests__/labels.test.ts", "features/purchases/components/PurchaseList.tsx", "features/purchases/components/PurchaseDetail.tsx", "features/purchases/components/RecentPurchases.tsx", "features/purchases/__tests__/PurchaseList.test.tsx", "features/purchases/__tests__/PurchaseDetail.test.tsx", "features/purchases/__tests__/RecentPurchases.test.tsx", "app/cuenta/compras/page.tsx", "app/cuenta/compras/[codigo]/page.tsx", "app/cuenta/page.tsx", "app/cuenta/layout.tsx", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
+verified_against: ["features/purchases/lib/labels.ts", "features/purchases/lib/pagination.ts", "features/purchases/lib/orderSteps.ts", "features/purchases/components/OrderTracker.tsx", "features/purchases/__tests__/OrderTracker.test.tsx", "features/purchases/__tests__/pagination.test.ts", "features/purchases/__tests__/labels.test.ts", "features/purchases/components/PurchaseList.tsx", "features/purchases/components/PurchaseDetail.tsx", "features/purchases/components/RecentPurchases.tsx", "features/purchases/__tests__/PurchaseList.test.tsx", "features/purchases/__tests__/PurchaseDetail.test.tsx", "features/purchases/__tests__/RecentPurchases.test.tsx", "app/cuenta/compras/page.tsx", "app/cuenta/compras/[codigo]/page.tsx", "app/cuenta/page.tsx", "app/cuenta/layout.tsx", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "components/EmptyState.tsx"]
 capabilities:
   - intent: "listar las compras del comprador, paginadas"
     intent_aliases: ["mis compras", "historial de compras", "pedidos", "compras anteriores"]
     entrypoint: "<PurchaseList />"
     file: "features/purchases/components/PurchaseList.tsx"
     input: "page: PurchasePage (de listPurchases en app/cuenta/compras/page.tsx, con ?pagina=N)"
-    output: "filas con código, estado, fecha, tiendas y total enlazadas al detalle; 'Anteriores' y 'Siguientes'; vacío con 'Buscar productos'"
+    output: "filas con código, estado, fecha, tiendas y total enlazadas al detalle; 'Anteriores' y 'Siguientes'; vacío con el estado vacío compartido y 'Buscar productos'"
     source: "GET /me/purchases?page de posveapi vía BFF"
     rules: ["RN-PURCHASES-01"]
   - intent: "ver el detalle de una compra con el código de retiro y los reembolsos"
@@ -73,7 +73,7 @@ API. El pago y su resultado viven en `features/checkout`.
 ## 4. API pública
 
 - `PURCHASE_STATUS_TEXT`, `ORDER_STATUS_TEXT`, `FULFILLMENT_TEXT`, `formatDateTime(iso: string): string` ("30/09/2026 14:00" en hora de Caracas), `chargeText(charge: Charge): string` (lo cobrado en su moneda, por `formatVes` o `formatUsd`; lo usan `CheckoutForm`, `CheckoutResult` y `PurchaseDetail`) y `storeCountText(count: number): string`, `features/purchases/lib/labels.ts`.
-- `PurchaseList({ page }: { page: PurchasePage })`, `PurchaseRow({ purchase })`, `PurchaseRows({ purchases, label })` (lista en una sola tarjeta con separadores) y `purchaseHref(code: string): string`, `features/purchases/components/PurchaseList.tsx`.
+- `PurchaseList({ page }: { page: PurchasePage })`, `PurchaseRow({ purchase })`, `PurchaseRows({ purchases, label })` (lista en una sola tarjeta con separadores) y `purchaseHref(code: string): string`, `features/purchases/components/PurchaseList.tsx`; sin compras en la página 1, `PurchaseList` pinta `EmptyState` (`components/EmptyState.tsx`) con 'Buscar productos'.
 - `ORDER_STEP_TEXT` y `ORDER_STEP_HINT` (por `Fulfillment`: los 4 pasos y las pistas de los 3 primeros) y `ORDER_STEP_STATE_TEXT` (`done`: "completado", `next`: "pendiente"; el paso actual lo anuncia `aria-current`), `features/purchases/lib/labels.ts`.
 - `orderSteps(order: TrackedOrder): OrderStep[] | null` (`null` si está cancelado; `OrderStep = { label, state: "done" | "now" | "next", at, hint }`), `features/purchases/lib/orderSteps.ts`.
 - `OrderTracker({ order, className }: { order: TrackedOrder; className?: string })` (`TrackedOrder = Pick<StoreOrder, "status" | "fulfillment" | "timeline">`; vertical en móvil, horizontal desde `md`), `features/purchases/components/OrderTracker.tsx`. Se usa desde otros módulos con ese import (`features/checkout/components/CheckoutResult.tsx` lo pinta por pedido).

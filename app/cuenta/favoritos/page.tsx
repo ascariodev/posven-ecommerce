@@ -1,19 +1,21 @@
+import { Heart } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { EmptyState } from "@/components/EmptyState";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FavoriteToggleForm } from "@/features/account/components/FavoriteToggleForm";
 import { requireCustomer } from "@/features/account/server/session";
 import { ProductThumb } from "@/features/search/components/ProductThumb";
 import { listFavorites } from "@/lib/marketplace/client";
 import type { FavoriteTarget } from "@/lib/marketplace/params";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Favoritos",
   robots: { index: false, follow: false },
 };
-
-const linkClasses = "text-sm font-medium text-foreground underline underline-offset-4";
 
 function RemoveFavoriteForm({ target, name }: { target: FavoriteTarget; name: string }) {
   return (
@@ -37,12 +39,11 @@ async function FavoritesPanel() {
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold tracking-tight text-foreground">Favoritos</h1>
       {isEmpty && (
-        <div className="flex flex-col gap-2">
-          <p className="text-muted-foreground">Todavía no tienes favoritos.</p>
-          <Link href="/buscar" className={linkClasses}>
+        <EmptyState icon={Heart} title="Todavía no tienes favoritos.">
+          <Link href="/buscar" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}>
             Buscar productos
           </Link>
-        </div>
+        </EmptyState>
       )}
       {products.length > 0 && (
         <section aria-labelledby="favoritos-productos" className="flex flex-col gap-3">

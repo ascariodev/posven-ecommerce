@@ -1,6 +1,9 @@
+import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import { EmptyState } from "@/components/EmptyState";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import type { Cart } from "@/lib/marketplace/schemas";
 import { accountContext } from "@/features/account/server/session";
 import { loginHref } from "@/features/account/lib/returnPath";
@@ -20,12 +23,11 @@ export function CartContent({
 }) {
   if (cart === null || cart.stores.length === 0) {
     return (
-      <div className="flex flex-col items-start gap-3">
-        <p className="text-muted-foreground">Tu carrito está vacío.</p>
-        <Link href="/buscar" className={buttonVariants({ variant: "outline" })}>
+      <EmptyState icon={ShoppingCart} title="Tu carrito está vacío.">
+        <Link href="/buscar" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}>
           Buscar productos
         </Link>
-      </div>
+      </EmptyState>
     );
   }
   const checkoutPath = checkoutPathFor(delivery);

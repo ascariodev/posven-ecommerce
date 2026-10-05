@@ -3,7 +3,7 @@
 **Objetivo:** que `/ayuda` y `/vende` existan con el diseño del lienzo (W12, P12, P13), que
 `/comercios` redirija a `/vende`, y que los estados vacíos, el error y el 404 sigan el estilo E con
 un estado vacío compartido.
-**Estado:** en curso · Fase actual: 2
+**Estado:** en curso · Fase actual: 3
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` §5 (W12, P12, P13),
@@ -49,7 +49,7 @@ un estado vacío compartido.
   caso nuevo de `e2e/site.spec.ts` pasa.
 - **Commit:** `feat(site): estado vacío compartido en el 404 y el error (F4b)`
 
-### [ ] Fase 2 — Vacíos de compra y cuenta
+### [x] Fase 2 — Vacíos de compra y cuenta
 - **Repo:** posven-ecommerce
 - **Alcance:** carrito vacío (`features/cart/components/CartView.tsx`), checkout vacío
   (`CheckoutEmpty.tsx`), sin compras (`features/purchases/components/PurchaseList.tsx`), sin
@@ -122,9 +122,17 @@ un estado vacío compartido.
   su título es un `div` sin nivel, usa borde punteado y no usa `Card`). Props: `icon`, `title`,
   `description?`, `className?`, `headingLevel` (`"h1" | "h2"`, por defecto `"h2"`) y `children`
   para las acciones; Server Component. El error dice "Intentar de nuevo" (antes "Reintentar").
+- 2026-10-05 — Vacíos de compra y cuenta: título = texto original, `h2`, íconos `ShoppingCart`,
+  `Receipt`, `Heart` y `MapPin`, acciones como botón `outline` `lg` con `bg-card` (favoritos y
+  direcciones pasaron de enlace subrayado a botón, mismo destino).
 
 ## Notas para la próxima sesión
 - Fase 1 hecha. `features/search/components/EmptyState.tsx` tiene el mismo nombre que
   `components/EmptyState.tsx`: la fase 3 cuida los imports al migrarlo.
 
 ## Mejoras propuestas
+- [ ] M-1 (baja, sonnet) — El mensaje de `CheckoutEmpty` puede venir de la API y ahora es el `h2` a
+  `md:text-3xl`; si se ve grande, ajustar el título con `className`. `features/checkout/components/CheckoutEmpty.tsx`,
+  `components/EmptyState.tsx`.
+- [ ] M-2 (baja, sonnet) — La clase de acción `cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")`
+  se repite en cada vacío; extraer una constante o prop de acción en `components/EmptyState.tsx`.

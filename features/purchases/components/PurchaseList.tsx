@@ -1,7 +1,10 @@
+import { Receipt } from "lucide-react";
 import Link from "next/link";
+import { EmptyState } from "@/components/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { formatUsd, formatVes } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import type { Purchase, PurchasePage } from "@/lib/marketplace/schemas";
 import { formatDateTime, purchaseStatusText, storeCountText } from "../lib/labels";
 
@@ -54,12 +57,11 @@ export function PurchaseList({ page }: { page: PurchasePage }) {
   const { data, meta } = page;
   if (data.length === 0 && meta.page === 1) {
     return (
-      <div className="flex flex-col items-start gap-3">
-        <p className="text-muted-foreground">Todavía no tienes compras.</p>
-        <Link href="/buscar" className={buttonVariants({ variant: "outline" })}>
+      <EmptyState icon={Receipt} title="Todavía no tienes compras.">
+        <Link href="/buscar" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}>
           Buscar productos
         </Link>
-      </div>
+      </EmptyState>
     );
   }
   const hasPrevious = meta.page > 1;

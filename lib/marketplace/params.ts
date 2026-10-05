@@ -85,6 +85,17 @@ export function pageQuery(page: number): URLSearchParams {
   return new URLSearchParams({ page: String(page) });
 }
 
+export function cartFulfillmentQuery(deliveryStores: string[]): URLSearchParams {
+  const query = new URLSearchParams();
+  for (const slug of deliveryStores) query.set(`fulfillment[${slug}]`, "delivery");
+  return query;
+}
+
+export function cartFulfillmentBody(deliveryStores: string[]): { fulfillment?: Record<string, "delivery"> } {
+  if (deliveryStores.length === 0) return {};
+  return { fulfillment: Object.fromEntries(deliveryStores.map((slug) => [slug, "delivery" as const])) };
+}
+
 export type AccountContext = { session: string | null; clientIp: string | null };
 
 export type FavoriteTarget = { kind: "product" | "store"; slug: string };

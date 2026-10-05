@@ -34,6 +34,8 @@ export function resetMockCarts(): void {
   delete stateHolder[STATE_KEY];
 }
 
+type PricedStore = CartStore & Required<Pick<CartStore, "total_usd" | "total_ves">>;
+
 type CatalogProduct = { product: CartLine["product"]; restricted: boolean; offers: MockOffer[] };
 
 function findStore(slug: string): MockStore | undefined {
@@ -93,9 +95,10 @@ function okAmounts(lines: CartLine[], field: "line_usd" | "line_ves"): Money[] {
 }
 
 // Cotiza entradas: agrupa por tienda en el orden de llegada, omite tiendas o productos inexistentes
-// y suma sólo las líneas `ok` (enmienda D). La usa también el checkout simulado.
-export function quoteItems(items: CartItem[]): Cart {
-  const stores: CartStore[] = [];
+// y suma sólo las líneas `ok` (enmienda D). `deliveryStores` son las tiendas con entrega elegida: la
+// toman si tienen radio y tarifa y alguna línea `ok` (RN-MKT-70). La usa también el checkout simulado.
+export function quoteItems(items: CartItem[], deliveryStores: string[] = []): Cart {
+  const stores: PricedStore[] = [];
   for (const item of items) {
     const store = findStore(item.store_slug);
     const catalog = findProduct(item.product_slug);
@@ -125,17 +128,22 @@ export function quoteItems(items: CartItem[]): Cart {
     entry.subtotal_usd = sum(okAmounts(entry.lines, "line_usd"));
     entry.subtotal_ves = sum(okAmounts(entry.lines, "line_ves"));
     const store = findStore(entry.store.slug);
-    const feeAvailable = store?.offers_delivery === true && store.delivery_fee_usd !== null && store.delivery_fee_ves !== null;
-    entry.delivery_fee_usd = feeAvailable ? store.delivery_fee_usd : null;
-    entry.delivery_fee_ves = feeAvailable ? store.delivery_fee_ves : null;
-    entry.total_usd = entry.subtotal_usd;
-    entry.total_ves = entry.subtotal_ves;
+    const fee =
+      store?.offers_delivery === true && store.delivery_radius_km !== null && store.delivery_fee_usd !== null && store.delivery_fee_ves !== null
+        ? { usd: store.delivery_fee_usd, ves: store.delivery_fee_ves }
+        : null;
+    const delivery = fee !== null && entry.lines.some((line) => line.status === "ok") && deliveryStores.includes(entry.store.slug);
+    entry.fulfillment = delivery ? "delivery" : "pickup";
+    entry.delivery_fee_usd = fee?.usd ?? null;
+    entry.delivery_fee_ves = fee?.ves ?? null;
+    entry.total_usd = delivery ? sum([entry.subtotal_usd, fee.usd]) : entry.subtotal_usd;
+    entry.total_ves = delivery ? sum([entry.subtotal_ves, fee.ves]) : entry.subtotal_ves;
   }
   const lines = stores.flatMap((entry) => entry.lines);
   return {
     stores,
-    total_usd: sum(stores.map((entry) => entry.total_usd ?? entry.subtotal_usd)),
-    total_ves: sum(stores.map((entry) => entry.total_ves ?? entry.subtotal_ves)),
+    total_usd: sum(stores.map((entry) => entry.total_usd)),
+    total_ves: sum(stores.map((entry) => entry.total_ves)),
     line_count: lines.filter((line) => line.status === "ok").length,
     rate: MOCK_RATE,
   };
@@ -163,12 +171,12 @@ function parseItems(items: unknown): CartItem[] {
   return parsed.data;
 }
 
-export async function quoteGuestCart(_ctx: AccountContext, items: CartItem[]): Promise<Cart> {
-  return quoteItems(parseItems(items));
+export async function quoteGuestCart(_ctx: AccountContext, items: CartItem[], deliveryStores: string[] = []): Promise<Cart> {
+  return quoteItems(parseItems(items), deliveryStores);
 }
 
-export async function getCart(ctx: AccountContext): Promise<Cart> {
-  return quoteItems(cartItemsFor(customerIdFor(ctx)));
+export async function getCart(ctx: AccountContext, deliveryStores: string[] = []): Promise<Cart> {
+  return quoteItems(cartItemsFor(customerIdFor(ctx)), deliveryStores);
 }
 
 export function cartItemsFor(customerId: number): CartItem[] {

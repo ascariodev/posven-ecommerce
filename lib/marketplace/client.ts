@@ -3,6 +3,8 @@ import { cacheLife, cacheTag } from "next/cache";
 import { accountCommand, accountRequest, postJson, requestJson, requestJsonOrNull } from "./http";
 import * as mock from "./mock/adapter";
 import {
+  cartFulfillmentBody,
+  cartFulfillmentQuery,
   nearbyProductsQuery,
   pageQuery,
   productQuery,
@@ -330,14 +332,14 @@ export async function removeFavorite(ctx: AccountContext, target: FavoriteTarget
 
 // Carrito (spec cuentas-y-compras §4.2 con la enmienda del 2026-09-30): nada de un comprador en
 // 'use cache'. El invitado cotiza su cookie; el usuario usa su carrito del servidor.
-export async function quoteGuestCart(ctx: AccountContext, items: CartItem[]): Promise<Cart> {
-  if (usesMock()) return mock.quoteGuestCart(ctx, items);
-  return accountRequest({ method: "POST", path: "/cart/quote", ctx, body: { items } }, cartSchema);
+export async function quoteGuestCart(ctx: AccountContext, items: CartItem[], deliveryStores: string[] = []): Promise<Cart> {
+  if (usesMock()) return mock.quoteGuestCart(ctx, items, deliveryStores);
+  return accountRequest({ method: "POST", path: "/cart/quote", ctx, body: { items, ...cartFulfillmentBody(deliveryStores) } }, cartSchema);
 }
 
-export async function getCart(ctx: AccountContext): Promise<Cart> {
-  if (usesMock()) return mock.getCart(ctx);
-  return accountRequest({ method: "GET", path: "/me/cart", ctx }, cartSchema);
+export async function getCart(ctx: AccountContext, deliveryStores: string[] = []): Promise<Cart> {
+  if (usesMock()) return mock.getCart(ctx, deliveryStores);
+  return accountRequest({ method: "GET", path: "/me/cart", ctx, query: cartFulfillmentQuery(deliveryStores) }, cartSchema);
 }
 
 export async function setCartItem(ctx: AccountContext, item: CartItemPut): Promise<Cart> {

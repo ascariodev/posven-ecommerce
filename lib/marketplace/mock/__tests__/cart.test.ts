@@ -61,6 +61,27 @@ describe("cotización del carrito simulado", () => {
     expect(cart.total_usd).toBe(sum([central.total_usd ?? "0.00", naguanagua.total_usd ?? "0.00"]));
   });
 
+  it("la entrega elegida suma la tarifa al total de la tienda y del carrito", async () => {
+    const items = [item(CENTRAL, ACETAMINOFEN, 2), item("abasto-la-esquina", "arroz-blanco-tipo-i-1-kg")];
+    const pickup = await quoteGuestCart(anonymous, items);
+    const cart = await quoteGuestCart(anonymous, items, [CENTRAL]);
+    expect(cart.stores[0]).toMatchObject({ fulfillment: "delivery", subtotal_usd: "5.00", delivery_fee_usd: "1.50", total_usd: "6.50", total_ves: "237.25" });
+    expect(cart.stores[1]).toMatchObject({ fulfillment: "pickup", total_usd: pickup.stores[1].subtotal_usd });
+    expect(cart.total_usd).toBe(sum(["6.50", pickup.stores[1].subtotal_usd]));
+    expect(cart.total_ves).toBe(sum(["237.25", pickup.stores[1].subtotal_ves]));
+  });
+
+  it("pedir entrega a una tienda sin tarifa, sin líneas ok o ajena al carrito la deja en retiro", async () => {
+    const cart = await quoteGuestCart(
+      anonymous,
+      [item("abasto-la-esquina", "arroz-blanco-tipo-i-1-kg"), item(CENTRAL, "jarabe-para-la-tos-120-ml")],
+      ["abasto-la-esquina", CENTRAL, "no-esta-en-el-carrito"],
+    );
+    const [abasto, central] = cart.stores;
+    expect(abasto).toMatchObject({ fulfillment: "pickup", delivery_fee_usd: null, total_usd: abasto.subtotal_usd });
+    expect(central).toMatchObject({ fulfillment: "pickup", delivery_fee_usd: "1.50", subtotal_usd: "0.00", total_usd: "0.00" });
+  });
+
   it("vacío: sin tiendas, totales en cero y line_count 0", async () => {
     const cart = await quoteGuestCart(anonymous, []);
     expect(cart).toEqual({ stores: [], total_usd: "0.00", total_ves: "0.00", line_count: 0, rate: MOCK_RATE });
@@ -106,6 +127,13 @@ describe("cotización del carrito simulado", () => {
 });
 
 describe("carrito del comprador simulado", () => {
+  it("GET aplica la entrega elegida igual que la cotización del invitado", async () => {
+    const ctx = await session();
+    await mergeCart(ctx, [item(CENTRAL, ACETAMINOFEN, 2)]);
+    expect((await getCart(ctx)).stores[0]).toMatchObject({ fulfillment: "pickup", total_usd: "5.00" });
+    expect((await getCart(ctx, [CENTRAL])).stores[0]).toMatchObject({ fulfillment: "delivery", total_usd: "6.50" });
+  });
+
   it("PUT agrega con techo de stock", async () => {
     const ctx = await session();
     const cart = await setCartItem(ctx, item(CENTRAL, ACETAMINOFEN, 99));

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { nearbyProductsQuery, productQuery, searchQuery, storesQuery, suggestionsQuery } from "@/lib/marketplace/params";
+import { cartFulfillmentBody, cartFulfillmentQuery, nearbyProductsQuery, productQuery, searchQuery, storesQuery, suggestionsQuery } from "@/lib/marketplace/params";
 
 const LOCATION_KEYS = ["lat", "lng", "city", "radius_km"];
 
@@ -141,5 +141,20 @@ describe("nearbyProductsQuery", () => {
   it("con ciudad sin radio no envía ubicación", () => {
     const query = nearbyProductsQuery({ geo: { city: "valencia" }, radiusKm: null, page: 1 });
     expect(keysOf(query)).toEqual(["page"]);
+  });
+});
+
+describe("elección de entrega del carrito", () => {
+  it("la consulta lleva una clave fulfillment[<slug>]=delivery por tienda y nada si no hay", () => {
+    expect(cartFulfillmentQuery([]).toString()).toBe("");
+    const query = cartFulfillmentQuery(["farmacia-central", "abasto"]);
+    expect(query.get("fulfillment[farmacia-central]")).toBe("delivery");
+    expect(query.get("fulfillment[abasto]")).toBe("delivery");
+    expect([...query.keys()]).toHaveLength(2);
+  });
+
+  it("el cuerpo omite fulfillment sin entrega elegida y mapea cada slug a delivery", () => {
+    expect(cartFulfillmentBody([])).toEqual({});
+    expect(cartFulfillmentBody(["farmacia-central"])).toEqual({ fulfillment: { "farmacia-central": "delivery" } });
   });
 });

@@ -161,5 +161,5 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posveapi + posven-ecommerce · alta · plan nuevo
 - [ ] M-20 — En `/tiendas` de escritorio las `StoreCard` sin portada se estiran a la altura de las que la tienen.
   posven-ecommerce · baja · sonnet
-- [ ] M-21 — `next build` falla por `app/preview/rediseno/[pantalla]` (sin trackear, de F0): decidir si se commitea arreglado o se retira tras aprobar `/preview`.
+- [x] M-21 — `next build` fallaba por `app/preview/rediseno/[pantalla]` (sin trackear, de F0): por decisión del usuario la maqueta pasó a `docs/design/2026-10-03-rediseno/maqueta/`, sin trackear; `next build` y `tsc` pasan.
   posven-ecommerce · media · decide el usuario

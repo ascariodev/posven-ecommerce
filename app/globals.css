@@ -144,6 +144,10 @@ body {
   isolation: isolate;
 }
 
+body:has([data-full-bleed]) {
+  overflow-x: clip;
+}
+
 body::before {
   content: "";
   position: fixed;

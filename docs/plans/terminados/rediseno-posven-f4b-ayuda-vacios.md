@@ -177,7 +177,7 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   `StoreProducts`, `NearbyStores`): admitir `headingLevel: "h3"` en `components/EmptyState.tsx` y usarlo ahí.
 - [x] M-4 (baja, sonnet) — La tarjeta con ícono grande puede verse desproporcionada en secciones de
   la home (`NearbyStores`); validar en `/preview` y, si hace falta, variante compacta en `components/EmptyState.tsx`.
-- [ ] M-5 (media, sonnet) — El héroe de `/ayuda` queda dentro del `max-w-5xl` del `<main>` del
+- [x] M-5 (media, sonnet) — El héroe de `/ayuda` queda dentro del `max-w-5xl` del `<main>` del
   layout y no a ancho completo como en W12/P12 (`max-width: 1200px`). Decidir un patrón de sección a
   sangre para el sitio. `app/layout.tsx`, `features/help/components/HelpCenter.tsx`.
 - [ ] M-6 (baja, sonnet) — `.claude/rules/seo.md` ítem 3 podría listar `/ayuda` entre las indexables.
@@ -190,3 +190,9 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   tras retirar `/comercios`), conservando el mensaje que usa `merchantContactHref`, y ajustar los
   `intent_aliases` de `features/site/README.md`. `features/site/components/MerchantContact.tsx`, su
   test, `features/site/README.md`, `docs/CAPABILITIES.md`.
+- [ ] M-11 (baja, sonnet) — El e2e de ancho completo de `/ayuda` (375 px, `e2e/site.spec.ts`) pasa aun
+  sin el `overflow-x: clip` (Chromium headless no tiene barra clásica); cubrir el caso con barra o
+  aclarar en el nombre que sólo mide el ancho.
+- Patrón M-5: sección a sangre con `data-full-bleed`, `w-screen`, `ml-[calc(50%-50vw)]` y `-mt-8`
+  (depende del `py-8` de `<main>` en `app/layout.tsx`), más `body:has([data-full-bleed]) { overflow-x: clip }`
+  en `app/globals.css`; con barra clásica el héroe se recorta 7.5 px por lado, sin efecto visible.

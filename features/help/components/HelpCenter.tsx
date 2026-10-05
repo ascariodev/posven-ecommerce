@@ -48,7 +48,7 @@ export function HelpCenter({
 
   return (
     <>
-      <section className="bg-primary-soft">
+      <section data-full-bleed className="-mt-8 ml-[calc(50%-50vw)] w-screen bg-primary-soft">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-4 px-4 py-8 text-center md:px-8 md:py-12">
           <h1 className="font-heading text-2xl font-semibold md:text-4xl">¿En qué te ayudamos?</h1>
           <label className="flex h-14 w-full max-w-2xl items-center gap-2 rounded-2xl border border-input-border bg-card px-4 shadow-card">

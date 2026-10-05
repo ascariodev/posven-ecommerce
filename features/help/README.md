@@ -5,7 +5,7 @@ type: "feature"
 exports: ["HelpCenter", "HELP_TOPICS", "HELP_QUESTIONS", "filterQuestions", "HelpTopic", "HelpQuestion", "HelpTopicIcon"]
 depends_on: ["components/EmptyState.tsx", "components/ui/card.tsx", "components/ui/input.tsx"]
 tests: "features/help/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/help/lib/content.ts", "features/help/lib/filter.ts", "features/help/components/HelpCenter.tsx", "features/help/__tests__/content.test.ts", "features/help/__tests__/filter.test.ts", "features/help/__tests__/HelpCenter.test.tsx", "app/ayuda/page.tsx", "components/EmptyState.tsx", "features/product/components/OfferCard.tsx", "features/purchases/lib/labels.ts", "features/purchases/components/PurchaseDetail.tsx", "features/checkout/components/CheckoutStoreSection.tsx", "features/cart/components/CartStoreGroup.tsx", "features/product/components/ProductDetails.tsx", "lib/format.ts"]
+verified_against: ["features/help/lib/content.ts", "features/help/lib/filter.ts", "features/help/components/HelpCenter.tsx", "features/help/__tests__/content.test.ts", "features/help/__tests__/filter.test.ts", "features/help/__tests__/HelpCenter.test.tsx", "app/ayuda/page.tsx", "app/globals.css", "components/EmptyState.tsx", "features/product/components/OfferCard.tsx", "features/purchases/lib/labels.ts", "features/purchases/components/PurchaseDetail.tsx", "features/checkout/components/CheckoutStoreSection.tsx", "features/cart/components/CartStoreGroup.tsx", "features/product/components/ProductDetails.tsx", "lib/format.ts"]
 capabilities:
   - intent: "buscar una respuesta en el centro de ayuda de compradores"
     intent_aliases: ["ayuda", "preguntas frecuentes", "faq", "buscar en la ayuda", "centro de ayuda", "soporte comprador"]
@@ -96,6 +96,7 @@ export default function Page() {
 
 - Sin llamadas a la API ni al navegador hacia posveapi: el contenido es estático.
 - Sin montos en las respuestas; los plazos y reglas salen de la spec citada.
+- El héroe va a ancho completo dentro del `max-w-5xl` del `<main>` (`w-screen`, margen izquierdo `calc(50% - 50vw)` y `-mt-8` contra el `py-8` del layout); `data-full-bleed` activa `body:has([data-full-bleed]) { overflow-x: clip }` en `app/globals.css`, que evita el desborde horizontal por el ancho de la barra de scroll. Una sección a sangre nueva usa el mismo atributo.
 - Las preguntas plegables usan `<details>`; el filtro abre todas las coincidencias y, sin texto, sólo la primera.
 - El enlace de cada tema apunta a `#pregunta-<id>` de su primera pregunta; un tema sin preguntas no tiene enlace (`content.test.ts`, "todo tema tiene al menos una pregunta").
 

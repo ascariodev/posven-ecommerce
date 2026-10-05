@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { order, purchase } from "@/features/purchases/__tests__/fixtures/testPurchase";
-import { chargeText, purchaseProgress } from "@/features/purchases/lib/labels";
+import { chargeText, purchaseProgress, purchaseStatusText } from "@/features/purchases/lib/labels";
 import { formatUsd, formatVes } from "@/lib/format";
 
 describe("chargeText", () => {
@@ -26,5 +26,17 @@ describe("purchaseProgress", () => {
     ["pago fallido", purchase({ status: "failed" }), "Pago fallido", "destructive"],
   ] as const)("%s", (_name, input, text, variant) => {
     expect(purchaseProgress(input)).toEqual({ text, variant });
+  });
+});
+
+describe("Cancelada", () => {
+  it.each([
+    ["todos los pedidos cancelados", purchase({ orders: [order({ status: "cancelled" })] }), true],
+    ["un pedido activo", purchase({ orders: [order({ status: "cancelled" }), order({ status: "accepted" })] }), false],
+    ["sin pedidos", purchase({ orders: [] }), false],
+    ["sin pagar", purchase({ status: "pending_payment", orders: [order({ status: "cancelled" })] }), false],
+  ] as const)("historial y cuenta coinciden: %s", (_name, input, cancelled) => {
+    expect(purchaseStatusText(input) === "Cancelada").toBe(cancelled);
+    expect(purchaseProgress(input).text === "Cancelada").toBe(cancelled);
   });
 });

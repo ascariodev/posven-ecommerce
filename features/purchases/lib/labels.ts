@@ -8,9 +8,12 @@ export const PURCHASE_STATUS_TEXT: Record<PurchaseStatus, string> = {
   failed: "Pago fallido",
 };
 
+export function isCancelledPurchase(purchase: Purchase): boolean {
+  return purchase.status === "paid" && purchase.orders.length > 0 && purchase.orders.every((order) => order.status === "cancelled");
+}
+
 export function purchaseStatusText(purchase: Purchase): string {
-  const allCancelled = purchase.orders.length > 0 && purchase.orders.every((order) => order.status === "cancelled");
-  return purchase.status === "paid" && allCancelled ? "Cancelada" : PURCHASE_STATUS_TEXT[purchase.status];
+  return isCancelledPurchase(purchase) ? "Cancelada" : PURCHASE_STATUS_TEXT[purchase.status];
 }
 
 export const ORDER_STATUS_TEXT: Record<StoreOrderStatus, string> = {
@@ -31,10 +34,8 @@ export function purchaseProgress(purchase: Purchase): PurchaseProgress {
     return { text: PURCHASE_STATUS_TEXT[purchase.status], variant: "destructive" };
   }
   if (purchase.status === "pending_payment") return { text: PURCHASE_STATUS_TEXT.pending_payment, variant: "warning" };
+  if (isCancelledPurchase(purchase)) return { text: "Cancelada", variant: "destructive" };
   const statuses = purchase.orders.map((order) => order.status);
-  if (statuses.length > 0 && statuses.every((status) => status === "cancelled")) {
-    return { text: "Cancelada", variant: "destructive" };
-  }
   const active = statuses.filter((status) => status !== "cancelled");
   if (active.length > 0 && active.every((status) => status === "delivered")) return { text: "Entregada", variant: "success" };
   if (active.includes("ready_for_pickup")) return { text: ORDER_STATUS_TEXT.ready_for_pickup, variant: "success" };

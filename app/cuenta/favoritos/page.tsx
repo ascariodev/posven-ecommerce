@@ -76,7 +76,7 @@ async function FavoritesPanel() {
                   <RemoveFavoriteForm
                     target={{ kind: "product", slug: product.slug }}
                     name={product.name}
-                    className="relative z-10 px-1"
+                    className="relative z-10 w-fit px-1"
                   />
                 </Card>
               </li>
@@ -107,7 +107,7 @@ async function FavoritesPanel() {
                     <RemoveFavoriteForm
                       target={{ kind: "store", slug: store.slug }}
                       name={store.name}
-                      className="relative z-10 shrink-0"
+                      className="relative z-10 w-fit shrink-0"
                     />
                   </div>
                 </Card>

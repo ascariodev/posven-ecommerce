@@ -27,6 +27,22 @@ test("/comercios tiene canónica propia y es indexable", async ({ page }) => {
   await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
 });
 
+test("/tiendas lista las tiendas, tiene canónica propia, es indexable y se llega desde el inicio", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "Ver todos" }).click();
+  await expect(page).toHaveURL(/\/tiendas$/);
+
+  await expect(page.getByRole("heading", { level: 1, name: "Tiendas" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Comercios" }).getByRole("link").first()).toHaveAttribute(
+    "href",
+    /^\/tienda\//,
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/tiendas");
+  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+});
+
 for (const path of ["/terminos", "/privacidad"]) {
   test(`${path} lleva noindex mientras es borrador`, async ({ page }) => {
     await page.goto(path);
@@ -35,12 +51,13 @@ for (const path of ["/terminos", "/privacidad"]) {
   });
 }
 
-test("el sitemap static incluye /comercios y no las legales mientras son borrador", async ({
+test("el sitemap static incluye /tiendas, /comercios y no las legales mientras son borrador", async ({
   request,
 }) => {
   const response = await request.get("/sitemap/static.xml");
   expect(response.status()).toBe(200);
   const sitemap = await response.text();
+  expect(sitemap).toContain("http://localhost:3000/tiendas");
   expect(sitemap).toContain("http://localhost:3000/comercios");
   expect(sitemap).not.toContain("/terminos");
   expect(sitemap).not.toContain("/privacidad");

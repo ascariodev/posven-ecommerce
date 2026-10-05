@@ -12,7 +12,7 @@ capabilities:
     entrypoint: "<SiteHeader />"
     file: "features/site/components/SiteHeader.tsx"
     input: "sin props; se monta en app/layout.tsx antes de <main>"
-    output: "cabecera pegajosa con logo, botón de ubicación (LocationBar con degrade), buscador compacto (HeaderSearchSlot lo oculta en / y /buscar), desde md, enlace a favoritos, carrito y cuenta (bajo md los reemplaza la barra inferior)"
+    output: "cabecera pegajosa con logo, botón de ubicación (LocationBar con degrade), buscador compacto (HeaderSearchSlot lo oculta en / y /buscar), desde md, enlace a Tiendas (/tiendas), favoritos, carrito y cuenta (bajo md los reemplaza la barra inferior, que no lleva Tiendas: son cinco destinos)"
     source: "LocationBar, SearchPill, CartLink y AccountSlot"
     rules: []
   - intent: "navegar por la barra inferior en móvil"
@@ -112,7 +112,7 @@ que enlaza.
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| `SiteHeader` | `features/site/components/SiteHeader.tsx` | logo con ficha de la inicial de `SITE_NAME`, `LocationBar degrade`, `SearchPill compact` en `HeaderSearchSlot` (segunda fila en móvil), enlace a `/cuenta/favoritos` oculto bajo `md`, `CartLink` y `AccountSlot`, los dos últimos y favoritos en un grupo `hidden md:flex` |
+| `SiteHeader` | `features/site/components/SiteHeader.tsx` | logo con ficha de la inicial de `SITE_NAME`, `LocationBar degrade`, `SearchPill compact` en `HeaderSearchSlot` (segunda fila en móvil), enlace a `/tiendas` (`buttonVariants` ghost), enlace a `/cuenta/favoritos`, `CartLink` y `AccountSlot`, todos en un grupo `hidden md:flex` |
 | `MobileNav` | `features/site/components/MobileNav.tsx` | `cartEnabled()`, `accountContext()` y `cartCount()` en paralelo; el contador sólo se pide con el carrito encendido |
 | `tabs` | `features/site/components/MobileNavLinks.tsx` | arma los cinco destinos (Carrito sólo con `cartEnabled`); Favoritos y Cuenta usan `loginHref` sin sesión; Cuenta no se marca activa en `/cuenta/favoritos`; el carrito con productos nombra "Carrito, N producto(s)" |
 | `rootCategories` | `features/site/components/SiteFooter.tsx` | lee `listCategories()`, recorta a 8 y devuelve `[]` ante `MarketplaceUnavailableError` |
@@ -156,14 +156,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 - La barra inferior es `fixed` y sólo bajo `md`: `app/layout.tsx` da al `body` un relleno inferior (`3.5rem` más el área segura) para que no tape el pie. En móvil "Salir" vive en las pestañas de `/cuenta` (`AccountNav`).
 - El `Toaster` (`app/layout.tsx`, primitiva `components/ui/sonner.tsx`) toma `offset.bottom` y `mobileOffset.bottom` de `--toast-bottom` (`app/globals.css`): sobre la barra inferior (`4rem` más el área segura) bajo `md` y `24px`, el de defecto de sonner, desde `md`. Sonner sólo usa `mobileOffset` bajo 600 px, así que entre 600 y 767 px manda `offset`; por eso ambos leen la misma variable, sin medir en JS.
 - Las variables de contacto se leen al construir la página (prerender): cambiarlas exige un build nuevo. Los clics de contacto no se registran: `POST /api/events` exige `store_slug`.
-- `/comercios` es indexable, con canónica propia y entrada en el grupo `static` de `lib/sitemap.ts`; la marca del punto de venta sale de `POS_NAME`.
+- `/comercios` es indexable, con canónica propia y entrada en el grupo `static` de `lib/sitemap.ts`, igual que `/tiendas` (`features/store`); la marca del punto de venta sale de `POS_NAME`.
 - `/terminos` y `/privacidad` son borradores: aviso visible, `noindex, follow` y fuera del sitemap hasta que el área legal apruebe el texto y se ponga `LEGAL_DRAFT` en `false`. Sus textos no afirman nada que el sitio no haga: las cookies y los datos de `/privacidad` salen de `features/account/server/session.ts`, `features/cart/server/cookie.ts`, `features/location/server/actions.ts` y `app/api/events/route.ts`.
 - Los enlaces a `/comercios`, `/terminos` y `/privacidad` son rutas fijas; la marca sale sólo de `SITE_NAME`.
 
 ## 9. Pruebas
 
 - Comando: `npx vitest run features/site lib/__tests__/sitemap.test.ts`
-- `e2e/site.spec.ts` ("barra inferior en móvil"): los cinco destinos, el activo, Favoritos y Cuenta hacia `/entrar` sin sesión, carrito y cuenta ocultos en la cabecera, y que logo y ubicación no envuelvan en 360 y 320 px.
-- `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, y cada botón sólo con su dato. `lib/__tests__/sitemap.test.ts` cubre la entrada `/comercios` del grupo `static`.
+- `e2e/site.spec.ts` ("barra inferior en móvil"): los cinco destinos (sin Tiendas), el activo, Favoritos y Cuenta hacia `/entrar` sin sesión, carrito y cuenta ocultos en la cabecera, y que logo y ubicación no envuelvan en 360 y 320 px.
+- `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, y cada botón sólo con su dato. `lib/__tests__/sitemap.test.ts` cubre las entradas `/tiendas` y `/comercios` del grupo `static`.
 - `features/site/__tests__/legal.test.tsx`: marcadores permitidos, guarda sin borrador, metadatos y sitemap según el interruptor, el aviso de `LegalDocument` y las cuatro cookies de privacidad.
 - `features/site/__tests__/SiteFooter.test.tsx`: categorías y enlaces, corte en 8, columna omitida con API caída o sin raíces, error ajeno relanzado; simula `@/lib/marketplace/client` y `@/features/site/lib/year` (`cacheLife` no corre en vitest).

@@ -53,7 +53,7 @@ describe("NearbyStores", () => {
     const links = screen.getAllByRole("link");
     expect(links.map((link) => link.getAttribute("href"))).toEqual([
       "/tienda/farmacia-central",
-      "/comercios",
+      "/tiendas",
       "/tienda/abasto-la-esquina",
     ]);
     expect(within(links[0]).getByText("Ver tienda")).toBeTruthy();
@@ -69,7 +69,7 @@ describe("NearbyStores", () => {
     render(await NearbyStores());
 
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"));
-    expect(hrefs).toEqual(["/tienda/a", "/comercios", "/tienda/b", "/tienda/c"]);
+    expect(hrefs).toEqual(["/tienda/a", "/tiendas", "/tienda/b", "/tienda/c"]);
     expect(within(screen.getAllByRole("link")[2]).getByText("Destacado")).toBeTruthy();
   });
 

@@ -36,6 +36,9 @@ export function SiteHeader() {
           </HeaderSearchSlot>
         </Suspense>
         <div className="ml-auto hidden shrink-0 items-center gap-2 md:flex">
+          <Link href="/tiendas" className={buttonVariants({ variant: "ghost" })}>
+            Tiendas
+          </Link>
           <Link
             href="/cuenta/favoritos"
             rel="nofollow"

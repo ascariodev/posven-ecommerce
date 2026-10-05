@@ -46,6 +46,16 @@ describe("StoreCard", () => {
     expect(container.querySelector("img")).toBeNull();
   });
 
+  it("muestra la portada sólo si la tienda es premium y la trae", () => {
+    const cover = "https://cdn.example.com/portada.png";
+    const { container, rerender } = render(<StoreCard store={store({ is_premium: true, cover_url: cover })} />);
+    expect(container.querySelector("img")?.getAttribute("src")).toContain("portada.png");
+    rerender(<StoreCard store={store({ is_premium: false, cover_url: cover })} />);
+    expect(container.querySelector("img")).toBeNull();
+    rerender(<StoreCard store={store({ is_premium: true, cover_url: null })} />);
+    expect(container.querySelector("img")).toBeNull();
+  });
+
   it("featured muestra Destacado", () => {
     render(<StoreCard store={store()} featured />);
     expect(screen.getByText("Destacado")).toBeTruthy();

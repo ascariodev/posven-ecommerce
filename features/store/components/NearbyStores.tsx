@@ -39,7 +39,7 @@ export async function NearbyStores() {
             {location !== null ? "Comercios cerca" : `Comercios en ${SITE_NAME}`}
           </h2>
           <Link
-            href="/comercios"
+            href="/tiendas"
             className="inline-flex h-11 items-center rounded-lg px-2 text-sm font-semibold text-primary-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
           >
             Ver todos

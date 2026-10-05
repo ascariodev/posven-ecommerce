@@ -192,7 +192,7 @@ export async function SearchResults({
               ))}
             </ul>
           )}
-          <Pagination query={query} meta={meta} />
+          <Pagination meta={meta} hrefForPage={(pagina) => searchHref({ ...query, pagina })} />
         </>
       )}
     </div>

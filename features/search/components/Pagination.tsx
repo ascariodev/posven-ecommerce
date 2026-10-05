@@ -2,7 +2,6 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import type { PageMeta } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
-import { searchHref, type SearchQuery } from "../lib/query";
 
 type PageItem = number | "gap-start" | "gap-end";
 
@@ -20,12 +19,12 @@ function pageItems(current: number, last: number): PageItem[] {
 
 const pageNumber = "min-w-11 px-3 tabular-nums";
 
-export function Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta }) {
+export function Pagination({ meta, hrefForPage }: { meta: PageMeta; hrefForPage: (page: number) => string }) {
   const lastPage = Math.max(1, Math.ceil(meta.total / meta.per_page));
   return (
     <nav aria-label="Paginación" className="flex flex-wrap items-center justify-center gap-2">
       {meta.page > 1 && (
-        <Link href={searchHref({ ...query, pagina: meta.page - 1 })} className={buttonVariants({ variant: "outline", size: "sm" })}>
+        <Link href={hrefForPage(meta.page - 1)} className={buttonVariants({ variant: "outline", size: "sm" })}>
           Anterior
         </Link>
       )}
@@ -47,7 +46,7 @@ export function Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta
                 </span>
               ) : (
                 <Link
-                  href={searchHref({ ...query, pagina: item })}
+                  href={hrefForPage(item)}
                   aria-label={`Ir a la página ${item}`}
                   className={cn(buttonVariants({ variant: "ghost", size: "sm" }), pageNumber)}
                 >
@@ -59,7 +58,7 @@ export function Pagination({ query, meta }: { query: SearchQuery; meta: PageMeta
         )}
       </ol>
       {meta.page < lastPage && (
-        <Link href={searchHref({ ...query, pagina: meta.page + 1 })} className={buttonVariants({ variant: "outline", size: "sm" })}>
+        <Link href={hrefForPage(meta.page + 1)} className={buttonVariants({ variant: "outline", size: "sm" })}>
           Siguiente
         </Link>
       )}

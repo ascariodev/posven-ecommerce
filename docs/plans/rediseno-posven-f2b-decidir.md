@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F2 del lienzo "E · PosVen": ficha de producto con la lista de
 tiendas para elegir, barra de compra fija y detalles plegables; página de tienda con portada; y
 directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el contrato de F2a.
-**Estado:** en curso: fase 6 de 7
+**Estado:** en curso: fase 7 de 7
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2, §4 (`ui.md`), §5 (ficha `P15`/`P06`,
@@ -77,7 +77,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - **Alcance:** `StoreHeader` con portada, estado abierto/cierra, contacto y favorito según
   `W07`/`P07`; `StoreProducts` con los tokens y la tarjeta de F1b.
 
-### [ ] Fase 6 — Directorio de comercios
+### [x] Fase 6 — Directorio de comercios
 - **Repo:** posven-ecommerce
 - **Alcance:** ruta nueva con la skill `new-page` que lista las tiendas cercanas con
   `listNearbyStores` (portada de F2a, abierto ahora, distancia, paginación), enlazada desde el
@@ -106,7 +106,10 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 
 - 2026-10-04 — Fase 5: `StoreHeader` pasa a `{ store, children? }` (la página mete `FavoriteButton` en Suspense y `ContactButtons`); "Abierto · cierra" queda fuera de F2b porque `GET /stores/{slug}` no trae `is_open`/`closes_at` (M-9); las pestañas de categoría de W07 también, porque `Store` no trae conteos — implementación.
 
+- 2026-10-04 — Fase 6: `/tiendas` indexable con canónica sin `pagina` y en el sitemap `static` (como el inicio, depende de la ubicación pero no explota parámetros como `/buscar`); `Pagination` pasa a `{ meta, hrefForPage }`; "Ver todos" de `NearbyStores` va a `/tiendas`; enlace "Tiendas" sólo en la cabecera de escritorio (la barra inferior conserva sus 5 destinos); `seo.md` suma `app/tiendas/**` — implementación.
+
 ## Notas para la próxima sesión
+- Fase 6 hecha: e2e site, product y search en verde (25) con el caso nuevo de `/tiendas`. La portada de `StoreCard` también sale en el inicio (`h-20`): revisarla contra el lienzo en la fase 7.
 - Fase 5 hecha: e2e product, cart, search y checkout en verde (26 y 1 skipped previo).
 - Fase 4 hecha: P15 usa pestañas ("Detalles" y "Retiro y entrega") y P06 una fila a `#detalles`; aquí son plegables como pidió el alcance (comparar en la fase 7).
 - Fase 3 hecha: barra fija en móvil sobre `MobileNav` (`bottom-(--toast-bottom)`) y pegada en la columna desde `md`; e2e product, cart y checkout en verde. La fase 7 compara la barra con P15/P06 en claro y oscuro.
@@ -138,4 +141,10 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - [ ] M-11 — `sizes` de `ProductThumb` acordes a la rejilla de 2 a 4 columnas de `StoreProducts`.
   posven-ecommerce · baja · sonnet
 - [ ] M-12 — Tests de `StoreHeader` (portada sólo premium, hijos) pendientes desde RN-STORE-04.
+  posven-ecommerce · baja · sonnet
+- [ ] M-13 — Fila de `/tiendas` (indexable, canónica sin `pagina`) en la spec hiperlocal §4.1 (`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`), que `seo.md` cita como fuente de qué se indexa.
+  posven/.claude · baja · sonnet
+- [ ] M-14 — `/tiendas?pagina=N` fuera de rango responde 200 con "No hay más comercios": `noindex` o `notFound()`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-15 — Casos de `parsePage` (`abc`, `0`, repetido) y de destacados sin repetir en `StoresDirectory.test.tsx`, si faltan.
   posven-ecommerce · baja · sonnet

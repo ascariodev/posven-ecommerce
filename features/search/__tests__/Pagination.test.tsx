@@ -1,5 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
+import { searchHref } from "@/features/search/lib/query";
 import { Pagination } from "@/features/search/components/Pagination";
 
 afterEach(() => {
@@ -9,8 +10,8 @@ afterEach(() => {
 function renderPage(page: number, total: number) {
   render(
     <Pagination
-      query={{ q: "arroz", categoria: null, radio: 10, pagina: page, sort: "price" }}
       meta={{ page, per_page: 20, total }}
+      hrefForPage={(pagina) => searchHref({ q: "arroz", categoria: null, radio: 10, pagina, sort: "price" })}
     />,
   );
 }

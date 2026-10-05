@@ -45,10 +45,10 @@ capabilities:
 
 ## 1. Propósito
 
-Carrito del comprador en el ecommerce (plan 4a de cuentas y compras): agregar desde la ficha y la
+Carrito del comprador en el ecommerce: agregar desde la ficha y la
 tienda, el carrito de invitado en la cookie `mp_cart`, su fusión al entrar o registrarse, la página
 `/carrito` y el contador de la cabecera. No calcula montos: muestra los de la API. Desde `/carrito`
-se va al checkout (módulo `features/checkout`, plan 4b).
+se va al checkout (módulo `features/checkout`).
 
 ## 2. Reglas de negocio
 
@@ -99,7 +99,7 @@ las líneas en 99).
 
 ## 6. Dependencias
 
-- `lib/marketplace/client.ts` (`quoteGuestCart`, `getCart`, `setCartItem`, `mergeCart`), `errors.ts`, `schemas.ts`, `params.ts`.
+- `lib/marketplace/client.ts` (`quoteGuestCart`, `getCart`, `setCartItem`, `mergeCart`), `errors.ts`, `schemas.ts`, `params.ts`. `quoteGuestCart(ctx, items, deliveryStores?)` y `getCart(ctx, deliveryStores?)` aceptan las tiendas con entrega elegida; el módulo no las pasa, así que el carrito sale en retiro y su total es el subtotal.
 - `features/account/server/session.ts` (`accountContext`, `SESSION_COOKIE`, `sessionCookieOptions`); `features/account/server/actions.ts` llama a `mergeGuestCart`.
 - `features/events/lib/beacon.ts` (`sendBeaconEvent`), desde `components/AddToCartButton.tsx`.
 - `features/search/components/ProductThumb.tsx`; `lib/format.ts`; `components/ui/` (`Button`, `buttonVariants`, `Badge`, `Card`, `Skeleton`); `lucide-react`.

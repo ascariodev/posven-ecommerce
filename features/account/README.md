@@ -27,7 +27,7 @@ capabilities:
     intent_aliases: ["cabecera de la cuenta", "boton entrar", "menu de la cuenta", "mi cuenta", "salir"]
     entrypoint: "<AccountSlot />"
     file: "features/account/components/AccountMenu.tsx"
-    input: "sin props; se monta dentro de <Suspense fallback={<AccountSlotSkeleton />}> en app/layout.tsx"
+    input: "sin props; se monta dentro de <Suspense fallback={<AccountSlotSkeleton />}> en features/site/components/SiteHeader.tsx"
     output: "enlace Entrar sin comprador o con la API caída (L-02); con comprador, AccountDropdown: botón Mi cuenta que abre un DropdownMenu de shadcn con los enlaces de accountLinks (Resumen, Mis compras con el carrito encendido, Perfil, Direcciones, Favoritos, Configuración) y Salir"
     source: "getCurrentCustomer() de features/account/server/session.ts"
     rules: ["RN-ACCOUNT-05"]
@@ -185,7 +185,7 @@ Formularios `"use client"` con `useActionState`:
 | Guardia de `/cuenta` | `proxy.ts` | sin la cookie `mp_session` redirige a `loginHref(pathname)`; con cookie sigue y la validez la resuelve `requireCustomer` |
 | Sesión vencida | `app/api/sesion/vencida/route.ts` | `GET` borra `mp_session` y responde 303 a `/entrar?volver=<safeReturnPath(volver)>&aviso=sesion` |
 | Pantallas de cuenta | `app/cuenta/layout.tsx`, `app/cuenta/page.tsx`, `app/cuenta/{perfil,direcciones,favoritos,configuracion}/page.tsx` | `metadata` `noindex, nofollow`; el layout pinta `AccountNav` (en su `<Suspense>`, con `AccountIdentity` en el suyo) y los hijos en un panel, sin leer la sesión él mismo; cada página empieza con `requireCustomer("<su ruta>")` en un hijo dentro de `<Suspense>` |
-| Montaje en la cabecera y las fichas | `features/site/components/SiteHeader.tsx`, `app/p/[slug]/page.tsx`, `app/tienda/[slug]/page.tsx` | `<AccountSlot />` dentro de `SiteHeader` (`features/site/components/SiteHeader.tsx`), después del `<Suspense>` de `HeaderSearchSlot`; `<FavoriteButton />` en su propio `<Suspense>`; `<main>` y la resolución del 404 quedan fuera de toda frontera |
+| Montaje en la cabecera y las fichas | `features/site/components/SiteHeader.tsx`, `app/p/[slug]/page.tsx`, `app/tienda/[slug]/page.tsx` | `<AccountSlot />` dentro de `SiteHeader` (`features/site/components/SiteHeader.tsx`), después del `<Suspense>` de `HeaderSearchSlot`; `<FavoriteButton />` en su propio `<Suspense>` (en la tienda, como hijo de `StoreHeader`); `<main>` y la resolución del 404 quedan fuera de toda frontera |
 | Páginas de acceso | `app/entrar/page.tsx`, `app/registro/page.tsx`, `app/recuperar/page.tsx`, `app/restablecer/[token]/page.tsx`, `app/verificar/[token]/page.tsx` | `metadata` con `noindex, nofollow`; leen `searchParams` o `params` en un hijo dentro de `<Suspense>` |
 
 ## 6. Dependencias

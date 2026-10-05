@@ -3,7 +3,7 @@ import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { CartItem } from "@/lib/marketplace/schemas";
 import { loginCustomer, resetMockAccounts } from "@/lib/marketplace/mock/accounts";
-import { MOCK_PRODUCTS, MOCK_RATE } from "@/lib/marketplace/mock/fixtures";
+import { MOCK_PRODUCTS, MOCK_RATE, MOCK_STORES } from "@/lib/marketplace/mock/fixtures";
 import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "@/lib/marketplace/mock/cart";
 import { sum } from "@/lib/marketplace/mock/money";
 
@@ -80,6 +80,26 @@ describe("cotización del carrito simulado", () => {
     const [abasto, central] = cart.stores;
     expect(abasto).toMatchObject({ fulfillment: "pickup", delivery_fee_usd: null, total_usd: abasto.subtotal_usd });
     expect(central).toMatchObject({ fulfillment: "pickup", delivery_fee_usd: "1.50", subtotal_usd: "0.00", total_usd: "0.00" });
+  });
+
+  it("una tienda con entrega pero sin radio queda sin tarifa y en retiro aunque se pida entrega", async () => {
+    const store = MOCK_STORES.find((entry) => entry.summary.slug === CENTRAL);
+    if (store === undefined) throw new Error("falta la tienda del simulado");
+    const radius = store.delivery_radius_km;
+    store.delivery_radius_km = null;
+    try {
+      expect(store.offers_delivery).toBe(true);
+      const cart = await quoteGuestCart(anonymous, [item(CENTRAL, ACETAMINOFEN, 2)], [CENTRAL]);
+      expect(cart.stores[0]).toMatchObject({
+        offers_delivery: true,
+        fulfillment: "pickup",
+        delivery_fee_usd: null,
+        delivery_fee_ves: null,
+        total_usd: cart.stores[0].subtotal_usd,
+      });
+    } finally {
+      store.delivery_radius_km = radius;
+    }
   });
 
   it("vacío: sin tiendas, totales en cero y line_count 0", async () => {

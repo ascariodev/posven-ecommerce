@@ -168,7 +168,7 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   `features/merchants/lib/content.ts`; mejoras M-1 a M-10.
 
 ## Mejoras propuestas
-- [ ] M-1 (baja, sonnet) — El mensaje de `CheckoutEmpty` puede venir de la API y ahora es el `h2` a
+- [x] M-1 (baja, sonnet) — El mensaje de `CheckoutEmpty` puede venir de la API y ahora es el `h2` a
   `md:text-3xl`; si se ve grande, ajustar el título con `className`. `features/checkout/components/CheckoutEmpty.tsx`,
   `components/EmptyState.tsx`.
 - [ ] M-2 (baja, sonnet) — La clase de acción `cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")`

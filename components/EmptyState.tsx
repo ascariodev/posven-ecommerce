@@ -6,6 +6,7 @@ type EmptyStateProps = {
   icon: LucideIcon;
   title: string;
   headingLevel?: "h1" | "h2";
+  titleClassName?: string;
   description?: string;
   className?: string;
   children?: React.ReactNode;
@@ -15,6 +16,7 @@ export function EmptyState({
   icon: Icon,
   title,
   headingLevel: Heading = "h2",
+  titleClassName,
   description,
   className,
   children,
@@ -30,7 +32,7 @@ export function EmptyState({
         <Icon aria-hidden="true" className="size-10 stroke-[1.5] md:size-13" />
       </span>
       <div className="flex min-w-0 flex-col gap-3">
-        <Heading className="font-heading text-[22px] font-semibold md:text-3xl">{title}</Heading>
+        <Heading className={cn("font-heading text-[22px] font-semibold md:text-3xl", titleClassName)}>{title}</Heading>
         {description ? (
           <p className="text-[15px] leading-relaxed text-muted-foreground md:text-base">
             {description}

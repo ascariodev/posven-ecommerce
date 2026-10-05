@@ -172,7 +172,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   los mostraba la lista de fechas). Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [x] M-8 — `OrderTracker`: texto `sr-only` ("completado", "pendiente") por paso, y test de
   `pending_payment`. Repo posven-ecommerce · complejidad baja · modelo sonnet.
-- [ ] M-9 — Enlace al detalle (`/cuenta/compras/<código>`, `prefetch={false}`) desde el resultado
+- [x] M-9 — Enlace al detalle (`/cuenta/compras/<código>`, `prefetch={false}`) desde el resultado
   del pago, con test, e2e y ficha. Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [ ] M-10 — `chargeText` está copiado en `CheckoutForm`, `PurchaseDetail` y `CheckoutResult`:
   moverlo a `features/purchases/lib/labels.ts`. Repo posven-ecommerce · complejidad baja · modelo

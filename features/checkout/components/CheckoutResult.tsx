@@ -6,6 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/server/session";
+import { purchaseHref } from "@/features/purchases/components/PurchaseList";
 import { OrderTracker } from "@/features/purchases/components/OrderTracker";
 import { FULFILLMENT_TEXT } from "@/features/purchases/lib/labels";
 import { formatUsd, formatVes } from "@/lib/format";
@@ -122,7 +123,14 @@ export async function CheckoutResult({ code }: { code: string }) {
             <StoreBlock key={order.store.slug} order={order} />
           ))}
           <Actions>
-            <Link href="/cuenta/compras" prefetch={false} className={buttonVariants({ size: "lg" })}>
+            <Link href={purchaseHref(purchase.code)} prefetch={false} className={buttonVariants({ size: "lg" })}>
+              Ver detalle del pedido
+            </Link>
+            <Link
+              href="/cuenta/compras"
+              prefetch={false}
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}
+            >
               Ver mis compras
             </Link>
             <Link href="/" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "bg-card")}>

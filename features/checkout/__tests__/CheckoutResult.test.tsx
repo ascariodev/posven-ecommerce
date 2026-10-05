@@ -76,6 +76,9 @@ describe("CheckoutResult", () => {
     expect(screen.getByText("482913")).toBeTruthy();
     const norte = screen.getAllByRole("list", { name: "Estado del pedido" })[1];
     expect(within(norte).getByText("Preparando")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Ver detalle del pedido" }).getAttribute("href")).toBe(
+      "/cuenta/compras/PV-00000A",
+    );
     expect(screen.getByRole("link", { name: "Ver mis compras" }).getAttribute("href")).toBe("/cuenta/compras");
     expect(screen.getByRole("link", { name: "Seguir comprando" }).getAttribute("href")).toBe("/");
     expect(screen.queryByRole("status")).toBeNull();

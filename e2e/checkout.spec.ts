@@ -95,7 +95,9 @@ test.describe("checkout y compras", () => {
     const code = new URL(page.url()).searchParams.get("compra");
     await page.getByRole("link", { name: "Ver mis compras" }).click();
     await expect(page).toHaveURL(/\/cuenta\/compras$/);
-    await page.goto(`/cuenta/compras/${code}`);
+    await page.goBack();
+    await page.getByRole("link", { name: "Ver detalle del pedido" }).click();
+    await expect(page).toHaveURL(new RegExp(`/cuenta/compras/${code}$`));
     await expect(page).toHaveURL(/\/cuenta\/compras\/[A-HJKMNP-Z2-9]{8}$/);
     await expect(async () => {
       await page.reload();

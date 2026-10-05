@@ -54,7 +54,7 @@ async function FavoritesPanel() {
           <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => (
               <li key={product.slug}>
-                <Card className="relative h-full gap-2.5 p-2.5 pb-3">
+                <Card className="relative h-full gap-2.5 p-2.5 pb-3 has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-foreground">
                   <ProductThumb
                     imageUrl={product.image_url}
                     category={product.category}
@@ -67,7 +67,7 @@ async function FavoritesPanel() {
                     )}
                     <Link
                       href={`/p/${product.slug}`}
-                      className="line-clamp-2 text-[15px] leading-snug font-semibold text-foreground after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                      className="line-clamp-2 text-[15px] leading-snug font-semibold text-foreground after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none"
                     >
                       {product.name}
                     </Link>
@@ -92,13 +92,13 @@ async function FavoritesPanel() {
           <ul className="grid gap-3 md:grid-cols-2">
             {stores.map((store) => (
               <li key={store.slug}>
-                <Card className="relative h-full gap-0 py-0">
+                <Card className="relative h-full gap-0 py-0 has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-foreground">
                   <div className="flex items-center gap-3 p-3">
                     <StoreLogo store={store} className="size-12 shrink-0 rounded-xl" />
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <Link
                         href={`/tienda/${store.slug}`}
-                        className="truncate font-semibold text-foreground after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                        className="truncate font-semibold text-foreground after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none"
                       >
                         {store.name}
                       </Link>

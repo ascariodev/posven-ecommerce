@@ -154,3 +154,4 @@ README: `lib/marketplace/README.md`
 | listar, marcar y desmarcar los productos y las tiendas favoritas del comprador | `listFavorites()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07 |
 | cotizar el carrito de invitado y leer, cambiar o fusionar el carrito del comprador | `getCart()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07, RN-MARKETPLACE-08 |
 | cotizar el checkout, iniciar el pago y leer las compras del comprador | `quoteCheckout()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07, RN-MARKETPLACE-09 |
+| listar los productos que el comprador ya compró, con su precio y disponibilidad de hoy, para volver a comprarlos | `getBuyAgain()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-02, RN-MARKETPLACE-05, RN-MARKETPLACE-07 |

@@ -643,6 +643,26 @@ export const purchasePageSchema = z.object({
 });
 export type PurchasePage = z.infer<typeof purchasePageSchema>;
 
+// "Volver a comprar" (spec cuentas-y-compras §4.1 BuyAgainItem y §4.2). `status` sólo admite `ok` o
+// `unavailable`; el precio llega aunque la disponibilidad sea nula (agotado con oferta).
+export const buyAgainItemSchema = z.object({
+  product: lineProductSchema,
+  store: storeSummarySchema,
+  price_usd: moneySchema.nullable(),
+  price_ves: moneySchema.nullable(),
+  availability: availabilitySchema.nullable(),
+  status: z.enum(["ok", "unavailable"]),
+  unavailable_reason: unavailableReasonSchema.nullable(),
+  last_purchased_at: dateTimeSchema,
+});
+export type BuyAgainItem = z.infer<typeof buyAgainItemSchema>;
+
+export const buyAgainResponseSchema = z.object({
+  data: z.array(buyAgainItemSchema).max(8),
+  rate: rateSchema,
+});
+export type BuyAgainResponse = z.infer<typeof buyAgainResponseSchema>;
+
 // Cuerpo de error de cuenta, carrito y checkout; `quote` sólo viene en `quote_changed` (enmienda G).
 export const accountErrorBodySchema = z.object({
   error: z.object({

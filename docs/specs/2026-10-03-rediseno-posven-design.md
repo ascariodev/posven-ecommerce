@@ -186,6 +186,7 @@ contra el contrato actual:
 8. **Alertas de precio y disponibilidad.** Falta todo (endpoint y cuenta). F4.
 9. **Eventos `search` y `add_to_cart`.** `eventTypeSchema` sólo tiene vistas y clics de contacto.
    Plan propio entre F0 y F1 (§6).
+10. **"Volver a comprar".** Hecho: `GET /me/buy-again` de posveapi responde `{ data, rate }` con hasta 8 `BuyAgainItem` (producto, tienda, `price_usd`, `price_ves` y `availability` de hoy, `status` `ok` o `unavailable` con su `unavailable_reason`, `last_purchased_at`) de las compras pagadas, el más reciente primero, sin récipe (spec cuentas-y-compras §4.1 y §4.2). `getBuyAgain` del cliente la pide, `buyAgainItemSchema` y `buyAgainResponseSchema` la declaran y el simulado la deriva de las compras pagadas. El bloque de `/cuenta` lo usa en F4c.
 
 "Disponible en N tiendas" no pide campo: `offers_count` ya viene en cada resultado.
 

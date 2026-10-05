@@ -6,6 +6,7 @@ import { loginCustomer, registerCustomer, resetMockAccounts, updateMe } from "@/
 import { deleteAccount } from "@/lib/marketplace/mock/adapter";
 import { cartItemsFor, resetMockCarts, setCartItem } from "@/lib/marketplace/mock/cart";
 import {
+  getBuyAgain,
   getPurchase,
   hasOpenOrders,
   listPurchases,
@@ -17,6 +18,44 @@ import {
 const anonymous: AccountContext = { session: null, clientIp: null };
 
 // Tiendas del simulado: farmacia-central-valencia reparte en 5 km (envío 1.50 / 54.75);
+describe("volver a comprar simulado", () => {
+  async function settled(ctx: AccountContext, quoteInput: CheckoutQuoteInput): Promise<void> {
+    const { purchase_code } = await pay(ctx, quoteInput);
+    await getPurchase(ctx, purchase_code);
+    expect((await getPurchase(ctx, purchase_code)).status).toBe("paid");
+  }
+
+  it("sin compras pagadas responde vacío con la tasa", async () => {
+    const ctx = await buyer();
+    await add(ctx, CENTRAL, ACETAMINOFEN);
+    await pay(ctx, input([[CENTRAL, "pickup"]]));
+
+    const result = await getBuyAgain(ctx);
+
+    expect(result.data).toEqual([]);
+    expect(result.rate.usd_ves).toMatch(/^\d+\.\d{2}$/);
+  });
+
+  it("un ítem por par, el más reciente primero, sin la línea faltante y sólo del comprador", async () => {
+    const ctx = await buyer();
+    await add(ctx, CENTRAL, ACETAMINOFEN);
+    await add(ctx, CENTRAL, ALCOHOL);
+    await settled(ctx, input([[CENTRAL, "pickup"]]));
+    await add(ctx, ALTAMIRA, ACETAMINOFEN);
+    await add(ctx, CENTRAL, ACETAMINOFEN);
+    await settled(ctx, input([[ALTAMIRA, "pickup"], [CENTRAL, "pickup"]]));
+
+    const { data } = await getBuyAgain(ctx);
+
+    expect(data.map((item) => [item.store.slug, item.product.slug])).toEqual([
+      [ALTAMIRA, ACETAMINOFEN],
+      [CENTRAL, ACETAMINOFEN],
+    ]);
+    expect(data.every((item) => item.status === "ok" && item.unavailable_reason === null && item.price_usd !== null)).toBe(true);
+    expect((await getBuyAgain(await deliveryBuyer())).data).toEqual([]);
+  });
+});
+
 // farmacia-altamira reparte en Caracas; abasto-la-esquina no reparte. La dirección 2 de
 // entrega@posven.test está a 1,2 km de farmacia-central-valencia.
 const CENTRAL = "farmacia-central-valencia";

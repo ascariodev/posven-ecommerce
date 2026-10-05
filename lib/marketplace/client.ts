@@ -25,6 +25,7 @@ import {
   categoriesResponseSchema,
   checkoutStartSchema,
   customerEnvelopeSchema,
+  buyAgainResponseSchema,
   favoritesResponseSchema,
   locationsResponseSchema,
   nearbyProductsResponseSchema,
@@ -53,6 +54,7 @@ import {
   type LocationState,
   type MarketplaceEvent,
   type NearbyProductsResponse,
+  type BuyAgainResponse,
   type ProductResponse,
   type ProfilePatch,
   type Purchase,
@@ -366,6 +368,11 @@ export async function startCheckout(ctx: AccountContext, input: CheckoutInput): 
 export async function listPurchases(ctx: AccountContext, page: number): Promise<PurchasePage> {
   if (usesMock()) return mock.listPurchases(ctx, page);
   return accountRequest({ method: "GET", path: "/me/purchases", ctx, query: pageQuery(page) }, purchasePageSchema);
+}
+
+export async function getBuyAgain(ctx: AccountContext): Promise<BuyAgainResponse> {
+  if (usesMock()) return mock.getBuyAgain(ctx);
+  return accountRequest({ method: "GET", path: "/me/buy-again", ctx }, buyAgainResponseSchema);
 }
 
 export async function getPurchase(ctx: AccountContext, code: string): Promise<Purchase> {

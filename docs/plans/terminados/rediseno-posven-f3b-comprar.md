@@ -181,7 +181,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   "Pagar" antes de hidratar): esperar una señal de hidratación antes del clic en
   `e2e/checkout.spec.ts`, sin riesgo de pagar dos veces. Repo posven-ecommerce · complejidad media
   · modelo sonnet.
-- [ ] M-12 — En el resultado a 375 px "pagaste Bs …" se parte en dos renglones
+- [x] M-12 — En el resultado a 375 px "pagaste Bs …" se parte en dos renglones
   (`CheckoutResult.tsx`). Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [ ] M-13 — Diferencias con el lienzo del carrito: cabecera de tienda con distancia y estado
   abierto, logotipo y la nota "Cada tienda prepara su parte"; el resultado aún no sigue del todo

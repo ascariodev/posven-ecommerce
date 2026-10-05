@@ -113,7 +113,8 @@ export async function CheckoutResult({ code }: { code: string }) {
           <Outcome tone="success">
             <h1 className={headingClasses}>¡Pago confirmado!</h1>
             <p className="text-foreground tabular-nums">
-              Código <strong>{purchase.code}</strong> · pagaste {chargeText(purchase.charge)}
+              Código <strong>{purchase.code}</strong> ·{" "}
+              <span className="whitespace-nowrap">pagaste {chargeText(purchase.charge)}</span>
             </p>
             <p className="text-sm text-muted-foreground tabular-nums">
               Total {formatUsd(purchase.total_usd)} · {formatVes(purchase.total_ves)}

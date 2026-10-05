@@ -6,7 +6,7 @@ import { requireCustomer } from "@/features/account/server/session";
 import { ResendVerificationForm } from "@/features/account/components/VerifyEmailForm";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { BuyAgain } from "@/features/purchases/components/BuyAgain";
-import { RecentPurchases } from "@/features/purchases/components/RecentPurchases";
+import { LastPurchase, RecentPurchases } from "@/features/purchases/components/RecentPurchases";
 
 export const metadata: Metadata = {
   title: "Mi cuenta",
@@ -39,13 +39,18 @@ async function AccountSummary() {
         </Card>
       )}
       {withPurchases && (
-        <Suspense fallback={<Skeleton className="h-40 w-full" />}>
-          <RecentPurchases ctx={ctx} />
+        <Suspense fallback={<Skeleton className="h-28 w-full" />}>
+          <LastPurchase ctx={ctx} />
         </Suspense>
       )}
       {withPurchases && (
         <Suspense fallback={<Skeleton className="h-32 w-full" />}>
           <BuyAgain ctx={ctx} />
+        </Suspense>
+      )}
+      {withPurchases && (
+        <Suspense fallback={<Skeleton className="h-40 w-full" />}>
+          <RecentPurchases ctx={ctx} />
         </Suspense>
       )}
     </div>

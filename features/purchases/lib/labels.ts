@@ -22,6 +22,26 @@ export const ORDER_STATUS_TEXT: Record<StoreOrderStatus, string> = {
   cancelled: "Cancelado",
 };
 
+export type PurchaseProgress = { text: string; variant: "warning" | "success" | "destructive" };
+
+// Estado de una compra para el comprador: la pagada se lee por el avance de sus pedidos y el
+// resto por el estado del pago.
+export function purchaseProgress(purchase: Purchase): PurchaseProgress {
+  if (purchase.status === "expired" || purchase.status === "failed") {
+    return { text: PURCHASE_STATUS_TEXT[purchase.status], variant: "destructive" };
+  }
+  if (purchase.status === "pending_payment") return { text: PURCHASE_STATUS_TEXT.pending_payment, variant: "warning" };
+  const statuses = purchase.orders.map((order) => order.status);
+  if (statuses.length > 0 && statuses.every((status) => status === "cancelled")) {
+    return { text: "Cancelada", variant: "destructive" };
+  }
+  const active = statuses.filter((status) => status !== "cancelled");
+  if (active.length > 0 && active.every((status) => status === "delivered")) return { text: "Entregada", variant: "success" };
+  if (active.includes("ready_for_pickup")) return { text: ORDER_STATUS_TEXT.ready_for_pickup, variant: "success" };
+  if (active.includes("out_for_delivery")) return { text: ORDER_STATUS_TEXT.out_for_delivery, variant: "warning" };
+  return { text: "Preparando", variant: "warning" };
+}
+
 export const FULFILLMENT_TEXT: Record<Fulfillment, string> = {
   pickup: "Retiro en tienda",
   delivery: "Entrega a domicilio",

@@ -31,7 +31,7 @@ Rige al editar `app/` y `features/`.
    lo que lee la API desde `app/layout.tsx` (la cabecera) atrapa `MarketplaceUnavailableError` y
    degrada, porque `app/error.tsx` no cubre el layout raíz (`LocationBar` con `degrade`, que
    `features/site/components/SiteHeader.tsx` activa, `AccountSlot` y `CartLink`). Otra, un bloque
-   secundario de una página que no debe tumbarla: "Últimas compras" y "Volver a comprar" de `/cuenta`
+   secundario de una página que no debe tumbarla: "Tu última compra", "Compras recientes" y "Volver a comprar" de `/cuenta`
    (`features/purchases/components/RecentPurchases.tsx` y `BuyAgain.tsx`) no se pintan si la API falla, igual que
    `NearbyProducts` y `NearbyStores` de la portada, y `NearbyProducts` en el estado vacío de
    `/buscar` ("Quizás te sirve", montado desde `features/search/components/SearchResults.tsx`).

@@ -124,7 +124,7 @@ test.describe("checkout y compras", () => {
     await expect(page.getByText("Reembolsado", { exact: true })).toBeVisible();
 
     await page.goto("/cuenta");
-    await expect(page.getByRole("list", { name: "Últimas compras" }).getByRole("link")).toHaveCount(1);
+    await expect(page.getByRole("list", { name: "Compras recientes" }).getByRole("link")).toHaveCount(1);
     const buyAgain = page.getByRole("list", { name: "Volver a comprar" });
     await expect(buyAgain.getByRole("link", { name: /^Acetaminofén/ })).toBeVisible();
     await expect(buyAgain.getByRole("link", { name: /Alcohol/ })).toHaveCount(0);

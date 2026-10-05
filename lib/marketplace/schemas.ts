@@ -463,6 +463,9 @@ export const cartLineSchema = z.object({
 });
 export type CartLine = z.infer<typeof cartLineSchema>;
 
+export const fulfillmentSchema = z.enum(["pickup", "delivery"]);
+export type Fulfillment = z.infer<typeof fulfillmentSchema>;
+
 export const cartStoreSchema = z.object({
   store: storeSummarySchema,
   is_open: z.boolean(),
@@ -472,6 +475,11 @@ export const cartStoreSchema = z.object({
   lines: z.array(cartLineSchema).min(1),
   subtotal_usd: moneySchema,
   subtotal_ves: moneySchema,
+  fulfillment: fulfillmentSchema.optional(),
+  delivery_fee_usd: moneySchema.nullable().optional(),
+  delivery_fee_ves: moneySchema.nullable().optional(),
+  total_usd: moneySchema.optional(),
+  total_ves: moneySchema.optional(),
 });
 export type CartStore = z.infer<typeof cartStoreSchema>;
 
@@ -486,9 +494,6 @@ export type Cart = z.infer<typeof cartSchema>;
 
 // Checkout y compras (spec cuentas-y-compras §4.1 Quote, Purchase y StoreOrder; §4.2; enmienda F,
 // G y H).
-export const fulfillmentSchema = z.enum(["pickup", "delivery"]);
-export type Fulfillment = z.infer<typeof fulfillmentSchema>;
-
 export const deliveryUnavailableReasonSchema = z.enum(["no_delivery", "out_of_radius", "no_address"]);
 export type DeliveryUnavailableReason = z.infer<typeof deliveryUnavailableReasonSchema>;
 

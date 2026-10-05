@@ -111,6 +111,11 @@ export function quoteItems(items: CartItem[]): Cart {
         lines: [],
         subtotal_usd: "0.00",
         subtotal_ves: "0.00",
+        fulfillment: "pickup",
+        delivery_fee_usd: null,
+        delivery_fee_ves: null,
+        total_usd: "0.00",
+        total_ves: "0.00",
       };
       stores.push(entry);
     }
@@ -119,12 +124,18 @@ export function quoteItems(items: CartItem[]): Cart {
   for (const entry of stores) {
     entry.subtotal_usd = sum(okAmounts(entry.lines, "line_usd"));
     entry.subtotal_ves = sum(okAmounts(entry.lines, "line_ves"));
+    const store = findStore(entry.store.slug);
+    const feeAvailable = store?.offers_delivery === true && store.delivery_fee_usd !== null && store.delivery_fee_ves !== null;
+    entry.delivery_fee_usd = feeAvailable ? store.delivery_fee_usd : null;
+    entry.delivery_fee_ves = feeAvailable ? store.delivery_fee_ves : null;
+    entry.total_usd = entry.subtotal_usd;
+    entry.total_ves = entry.subtotal_ves;
   }
   const lines = stores.flatMap((entry) => entry.lines);
   return {
     stores,
-    total_usd: sum(stores.map((entry) => entry.subtotal_usd)),
-    total_ves: sum(stores.map((entry) => entry.subtotal_ves)),
+    total_usd: sum(stores.map((entry) => entry.total_usd ?? entry.subtotal_usd)),
+    total_ves: sum(stores.map((entry) => entry.total_ves ?? entry.subtotal_ves)),
     line_count: lines.filter((line) => line.status === "ok").length,
     rate: MOCK_RATE,
   };

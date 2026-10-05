@@ -5,6 +5,7 @@ import type { CartItem } from "@/lib/marketplace/schemas";
 import { loginCustomer, resetMockAccounts } from "@/lib/marketplace/mock/accounts";
 import { MOCK_PRODUCTS, MOCK_RATE } from "@/lib/marketplace/mock/fixtures";
 import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "@/lib/marketplace/mock/cart";
+import { sum } from "@/lib/marketplace/mock/money";
 
 const anonymous: AccountContext = { session: null, clientIp: null };
 
@@ -48,6 +49,16 @@ describe("cotización del carrito simulado", () => {
     vi.setSystemTime(new Date("2026-10-05T10:00:00Z"));
     const monday = await quoteGuestCart(anonymous, [item(CENTRAL, ACETAMINOFEN)]);
     expect(monday.stores[0].closes_at).toBe("20:00");
+  });
+
+  it("cada tienda sale en retiro con su tarifa, nula si no ofrece entrega, y el total es el subtotal", async () => {
+    const cart = await quoteGuestCart(anonymous, [item(CENTRAL, ACETAMINOFEN, 2), item("farmacia-naguanagua", ACETAMINOFEN)]);
+    const [central, naguanagua] = cart.stores;
+    expect(central).toMatchObject({ fulfillment: "pickup", delivery_fee_usd: "1.50", delivery_fee_ves: "54.75" });
+    expect(central.total_usd).toBe(central.subtotal_usd);
+    expect(central.total_ves).toBe(central.subtotal_ves);
+    expect(naguanagua).toMatchObject({ fulfillment: "pickup", delivery_fee_usd: null, delivery_fee_ves: null });
+    expect(cart.total_usd).toBe(sum([central.total_usd ?? "0.00", naguanagua.total_usd ?? "0.00"]));
   });
 
   it("vacío: sin tiendas, totales en cero y line_count 0", async () => {

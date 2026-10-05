@@ -182,9 +182,7 @@ contra el contrato actual:
 4. **Abierto ahora y "Cierra pronto".** Hecho: `offerSchema` (búsqueda y ficha) y `nearbyStoreSchema` traen `is_open` y `closes_at` (HH:MM, nulo sin tramo vigente ni próximo hoy), opcionales para el consumidor y calculados por la API (el simulado los saca de `MOCK_STORE_DETAILS`); `searchQuery` envía `open_now=true` para el filtro "abierto ahora" de `/search`. El aviso "Cierra pronto" se define en F1b a partir de `closes_at`, sin calcular horarios en el frontend.
 5. **`cover_url` en las tiendas cercanas.** Hecho: `GET /stores` de posveapi lo trae en cada tienda (URL o nulo; sólo premium con portada) y `nearbyStoreSchema` lo declara opcional; el simulado lo saca de `MOCK_STORE_DETAILS`.
 6. **`is_best_price` en `productOfferSchema`.** Hecho: la API lo marca en la oferta de menor `price_usd` entre las destacadas y las de dentro del radio (empates, todas; `outside_radius` nunca) y `productOfferSchema` lo declara opcional; el simulado lo calcula igual. Los componentes que hoy deducen "Mejor precio" por posición lo adoptan en F2b.
-7. **Costo de entrega en el carrito.** `quoteStoreSchema` ya trae `delivery_fee_*` por tienda, pero
-   sólo en la cotización del checkout; `cartStoreSchema` no. F3 decide entre un campo en el carrito
-   o pedir la cotización con la dirección guardada por defecto.
+7. **Costo de entrega en el carrito.** Hecho: `GET /me/cart` y `POST /cart/quote` aceptan la elección de entrega por tienda y `cartStoreSchema` trae `fulfillment`, `delivery_fee_usd`, `delivery_fee_ves`, `total_usd` y `total_ves` (opcionales para el consumidor, calculados por la API; sin elección todo es retiro y el total es el subtotal). El carrito no valida el radio: eso sigue en el checkout. El simulado devuelve retiro con la tarifa de la tienda. Las pantallas de F3b lo usan.
 8. **Alertas de precio y disponibilidad.** Falta todo (endpoint y cuenta). F4.
 9. **Eventos `search` y `add_to_cart`.** `eventTypeSchema` sólo tiene vistas y clics de contacto.
    Plan propio entre F0 y F1 (§6).
@@ -195,7 +193,7 @@ contra el contrato actual:
 
 - Destinos de la barra inferior en móvil (F1).
 - Aprobar `vaul` (drawer) y `embla-carousel` (carrusel) o quedarse sólo con `sheet` (F1 y F2).
-- Compra como invitado (F3).
+- Compra como invitado: queda fuera de F3 (el checkout exige cuenta); se decide en un plan posterior.
 - Qué campos de §7 pide posveapi primero.
 - Nombre de la tienda y contacto en `OfferCard`: el cambio que muestra "Comercio Aliado" y quitó
   `ContactButtons` se consulta con su autor antes de F2; F0 sólo le cambia tokens.

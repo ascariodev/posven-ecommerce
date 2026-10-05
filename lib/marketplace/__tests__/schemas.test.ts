@@ -593,6 +593,14 @@ describe("closes_at en cartStoreSchema", () => {
   it("rechaza una hora mal formada", () => {
     expect(cartStoreSchema.safeParse({ ...store, closes_at: "8pm" }).success).toBe(false);
   });
+
+  it("fulfillment, delivery_fee_* y total_* son opcionales y se validan si vienen", () => {
+    const delivery = { fulfillment: "delivery", delivery_fee_usd: "1.50", delivery_fee_ves: "54.75", total_usd: "2.50", total_ves: "91.25" };
+    expect(cartStoreSchema.safeParse({ ...store, ...delivery }).success).toBe(true);
+    expect(cartStoreSchema.safeParse({ ...store, ...delivery, delivery_fee_usd: null, delivery_fee_ves: null }).success).toBe(true);
+    expect(cartStoreSchema.safeParse({ ...store, fulfillment: "courier" }).success).toBe(false);
+    expect(cartStoreSchema.safeParse({ ...store, total_usd: "2.5" }).success).toBe(false);
+  });
 });
 
 describe("is_open y closes_at", () => {

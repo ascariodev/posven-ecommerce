@@ -22,6 +22,7 @@ export function AddToCartButton({
   variant = "outline",
   size = "sm",
   className,
+  nameQualifier,
 }: {
   storeSlug: string;
   storeName: string;
@@ -30,6 +31,7 @@ export function AddToCartButton({
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
+  nameQualifier?: string;
 }) {
   // El evento se envía dentro de la acción, tras el await, y no en un efecto: la respuesta puede
   // refrescar la página y el efecto no llegaría a correr (L-06).
@@ -63,7 +65,7 @@ export function AddToCartButton({
         variant={variant}
         size={size}
         disabled={pending}
-        aria-label={`${label}: ${productName} de ${storeName}`}
+        aria-label={`${label}${nameQualifier ? ` ${nameQualifier}` : ""}: ${productName} de ${storeName}`}
         className="w-full sm:w-auto font-bold transition-transform active:scale-95"
       >
         <ShoppingCart aria-hidden="true" className={cn("mr-2", size === "lg" ? "size-5" : "size-4")} />

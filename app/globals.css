@@ -176,3 +176,8 @@ body::before {
     --toast-bottom: 24px;
   }
 }
+
+:root:has([data-purchase-bar]) {
+  scroll-padding-top: 8rem;
+  scroll-padding-bottom: calc(var(--toast-bottom) + 9rem);
+}

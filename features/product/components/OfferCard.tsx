@@ -7,6 +7,7 @@ import { ContactButtons } from "@/features/events/components/ContactButtons";
 import { formatDistance, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
 import type { ProductOffer, Restriction } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
+import { OfferSelectButton } from "./OfferSelection";
 
 export function OfferCard({
   offer,
@@ -58,16 +59,21 @@ export function OfferCard({
 
         <div className="flex flex-col gap-3 border-t border-border pt-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs font-medium text-muted-foreground">{formatUpdatedAgo(offer.updated_at, now)}</p>
-          {cartEnabled() && store.accepts_orders && product.restriction === "none" && (
-            <div className="w-full sm:w-auto">
-              <AddToCartButton
-                storeSlug={store.slug}
-                storeName={store.name}
-                productSlug={product.slug}
-                productName={product.name}
-              />
-            </div>
-          )}
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-start">
+            {cartEnabled() && product.restriction === "none" && (
+              <OfferSelectButton storeSlug={store.slug} storeName={store.name} />
+            )}
+            {cartEnabled() && store.accepts_orders && product.restriction === "none" && (
+              <div className="w-full sm:w-auto">
+                <AddToCartButton
+                  storeSlug={store.slug}
+                  storeName={store.name}
+                  productSlug={product.slug}
+                  productName={product.name}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

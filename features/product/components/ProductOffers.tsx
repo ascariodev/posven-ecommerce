@@ -1,14 +1,27 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { toGeoFilter } from "@/features/location/lib/cookie";
 import { getEffectiveLocation } from "@/features/location/server/location";
+import { cartEnabled } from "@/features/cart/lib/flag";
 import { formatRate } from "@/lib/format";
 import { getProductOffers } from "@/lib/marketplace/client";
 import { DEFAULT_RADIUS_KM, type OfferSort } from "@/lib/marketplace/params";
-import type { ProductDetail } from "@/lib/marketplace/schemas";
+import type { ProductDetail, ProductOffer } from "@/lib/marketplace/schemas";
+import { cn } from "@/lib/utils";
 import { OfferCard } from "./OfferCard";
+import { OfferSelectionProvider, PurchaseBar, type SelectableOffer } from "./OfferSelection";
 import { SortLinks } from "./SortLinks";
 
 const VISIBLE_OFFERS = 3;
+
+function selectable(offer: ProductOffer): SelectableOffer {
+  return {
+    storeSlug: offer.store.slug,
+    storeName: offer.store.name,
+    priceUsd: offer.price_usd,
+    priceVes: offer.price_ves,
+    canOrder: offer.store.accepts_orders,
+  };
+}
 
 export async function ProductOffers({
   product,
@@ -44,8 +57,12 @@ export async function ProductOffers({
   const visible = inside.slice(0, VISIBLE_OFFERS);
   const more = inside.slice(VISIBLE_OFFERS);
 
-  return (
-    <section className="flex flex-col gap-4">
+  const served = [...page.featured, ...inside, ...outside];
+  const withBar = cartEnabled() && product.restriction === "none";
+  const defaultOffer = served.find((offer) => offer.is_best_price === true) ?? served[0];
+
+  const content = (
+    <section className={cn("flex flex-col gap-4", withBar && "pb-24 md:pb-0")}>
       <h2 className="text-xl font-bold tracking-tight">Dónde comprarlo</h2>
       <p className="text-sm text-muted-foreground">{formatRate(page.rate)}</p>
       {location !== null && <SortLinks slug={product.slug} sort={sort} />}
@@ -89,7 +106,15 @@ export async function ProductOffers({
           </ul>
         </>
       )}
+      {withBar && <PurchaseBar product={product} />}
     </section>
+  );
+
+  if (!withBar) return content;
+  return (
+    <OfferSelectionProvider offers={served.map(selectable)} defaultSlug={defaultOffer.store.slug}>
+      {content}
+    </OfferSelectionProvider>
   );
 }
 

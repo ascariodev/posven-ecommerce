@@ -381,7 +381,15 @@ function productPage(
           .slice(0, MIN_OFFERS_IN_SCOPE - inScope.length)
       : [];
 
-  const bestPrice = Math.min(...[...featured, ...rest].map((entry) => Number(entry.offer.price_usd)));
+  const served = [
+    ...rest.map((entry) => ({ entry, outsideRadius: false })),
+    ...outside.map((entry) => ({ entry, outsideRadius: true })),
+  ].slice(0, MAX_OFFERS);
+  const bestPrice = Math.min(
+    ...[...featured, ...served.filter((item) => !item.outsideRadius).map((item) => item.entry)].map((entry) =>
+      Number(entry.offer.price_usd),
+    ),
+  );
   const toProductOffer = (entry: StoreOffer, outsideRadius: boolean): ProductOffer => ({
     ...toOffer(entry.offer, entry.store, scope),
     outside_radius: outsideRadius,
@@ -391,10 +399,7 @@ function productPage(
   return {
     data: { ...item.product, offers_summary: summarize(item.offers) },
     featured: featured.map((entry) => toProductOffer(entry, false)),
-    offers: [
-      ...rest.map((entry) => toProductOffer(entry, false)),
-      ...outside.map((entry) => toProductOffer(entry, true)),
-    ].slice(0, MAX_OFFERS),
+    offers: served.map((item) => toProductOffer(item.entry, item.outsideRadius)),
     rate: MOCK_RATE,
   };
 }

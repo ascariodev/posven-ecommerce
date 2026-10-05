@@ -149,8 +149,8 @@ pedido; puerta: pago de prueba completo en modo simulado.
 
 - Mejoras (2026-10-05, rama `feat/rediseno-f3b-comprar`, el usuario pidió aplicar las 11 de nivel
   bajo: M-1..M-10 y M-12; M-11 y M-13 quedan). Hechas: M-1 eeefdab, M-7 7c1e652, M-2 2e299f8, M-3
-  62870cc. En curso sin commit: M-8 (features/purchases, en revisión) y M-4 (features/site).
-  Siguen M-5, M-6, M-9, M-12 (checkout) y M-10 al final (toca labels.ts de purchases).
+  62870cc, M-8 59f26ac, M-4 d483aaa, M-5 e33f56a, M-6 a49aabc, M-9 7ffc03e, M-12 f0e95ee y M-10
+  en el commit que marca esta línea. Quedan M-11, M-13, M-14 y M-15.
 
 ## Mejoras propuestas
 - [x] M-1 — Reflujar el comentario de `features/cart/server/cart.ts:18-21` a ~100 caracteres por
@@ -174,7 +174,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   `pending_payment`. Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [x] M-9 — Enlace al detalle (`/cuenta/compras/<código>`, `prefetch={false}`) desde el resultado
   del pago, con test, e2e y ficha. Repo posven-ecommerce · complejidad baja · modelo sonnet.
-- [ ] M-10 — `chargeText` está copiado en `CheckoutForm`, `PurchaseDetail` y `CheckoutResult`:
+- [x] M-10 — `chargeText` está copiado en `CheckoutForm`, `PurchaseDetail` y `CheckoutResult`:
   moverlo a `features/purchases/lib/labels.ts`. Repo posven-ecommerce · complejidad baja · modelo
   sonnet.
 - [ ] M-11 — El e2e de compra puede fallar con el servidor recién arrancado (probable clic en

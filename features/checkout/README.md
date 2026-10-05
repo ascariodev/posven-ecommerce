@@ -86,7 +86,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 ## 6. Dependencias
 
 - `features/cart/lib/fulfillment.ts` (`readDeliveryStores`, `setDeliveryParams`, `FULFILLMENT_PARAM_PREFIX`); `features/cart/server/cart.ts` (`getSessionCart`, memoizado por petición) y `lib/marketplace/client.ts` (`listAddresses`, `quoteCheckout`, `startCheckout`, `getPurchase`), `errors.ts`, `schemas.ts`, `params.ts`.
-- `features/purchases/components/OrderTracker.tsx`, `features/purchases/components/PurchaseList.tsx` (`purchaseHref`) y `features/purchases/lib/labels.ts` (`FULFILLMENT_TEXT`); `features/account/server/session.ts` (`requireCustomer`, `withSession`), `features/account/components/VerifyEmailForm.tsx` (`ResendVerificationForm`), `features/cart/lib/flag.ts` (`cartEnabled`).
+- `features/purchases/components/OrderTracker.tsx`, `features/purchases/components/PurchaseList.tsx` (`purchaseHref`) y `features/purchases/lib/labels.ts` (`FULFILLMENT_TEXT`, `chargeText`); `features/account/server/session.ts` (`requireCustomer`, `withSession`), `features/account/components/VerifyEmailForm.tsx` (`ResendVerificationForm`), `features/cart/lib/flag.ts` (`cartEnabled`).
 - `lib/format.ts`; `lib/utils.ts` (`cn`); `components/ui/` (`Badge`, `Button`, `Card`, `RadioGroup`, `Skeleton`); `lucide-react` (`LockIcon`, `House`, `Plus`, `Store`, `Truck`, `Check`, `X`).
 
 ## 7. Ejemplo de uso

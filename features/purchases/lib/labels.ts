@@ -1,4 +1,5 @@
-import type { Fulfillment, Purchase, PurchaseStatus, StoreOrderStatus } from "@/lib/marketplace/schemas";
+import { formatUsd, formatVes } from "@/lib/format";
+import type { Charge, Fulfillment, Purchase, PurchaseStatus, StoreOrderStatus } from "@/lib/marketplace/schemas";
 
 export const PURCHASE_STATUS_TEXT: Record<PurchaseStatus, string> = {
   pending_payment: "Pago pendiente",
@@ -41,6 +42,10 @@ const DATE_PARTS = new Intl.DateTimeFormat("es-VE", {
 export function formatDateTime(iso: string): string {
   const parts = Object.fromEntries(DATE_PARTS.formatToParts(new Date(iso)).map((part) => [part.type, part.value]));
   return `${parts.day}/${parts.month}/${parts.year} ${parts.hour}:${parts.minute}`;
+}
+
+export function chargeText(charge: Charge): string {
+  return charge.currency === "VES" ? formatVes(charge.amount) : formatUsd(charge.amount);
 }
 
 export function storeCountText(count: number): string {

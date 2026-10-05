@@ -2,17 +2,13 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatRate, formatUsd, formatVes } from "@/lib/format";
-import type { Charge, Purchase, StoreOrder } from "@/lib/marketplace/schemas";
+import type { Purchase, StoreOrder } from "@/lib/marketplace/schemas";
 import { OrderTracker } from "./OrderTracker";
-import { formatDateTime, FULFILLMENT_TEXT, ORDER_STATUS_TEXT, purchaseStatusText } from "../lib/labels";
+import { chargeText, formatDateTime, FULFILLMENT_TEXT, ORDER_STATUS_TEXT, purchaseStatusText } from "../lib/labels";
 
 // Los montos son las cadenas de la API formateadas: el reembolso y el envío no se restan ni se suman.
 
 const ZERO = "0.00";
-
-function chargeText(charge: Charge): string {
-  return charge.currency === "VES" ? formatVes(charge.amount) : formatUsd(charge.amount);
-}
 
 function Row({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
   return (

@@ -8,11 +8,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/server/session";
 import { purchaseHref } from "@/features/purchases/components/PurchaseList";
 import { OrderTracker } from "@/features/purchases/components/OrderTracker";
-import { FULFILLMENT_TEXT } from "@/features/purchases/lib/labels";
+import { chargeText, FULFILLMENT_TEXT } from "@/features/purchases/lib/labels";
 import { formatUsd, formatVes } from "@/lib/format";
 import { getPurchase } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
-import type { Charge, Purchase, StoreOrder } from "@/lib/marketplace/schemas";
+import type { Purchase, StoreOrder } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
 import { PurchasePoller } from "./PurchasePoller";
 
@@ -33,10 +33,6 @@ async function readPurchase(code: string): Promise<Purchase> {
 }
 
 const headingClasses = "font-heading text-2xl font-semibold md:text-3xl";
-
-function chargeText(charge: Charge): string {
-  return charge.currency === "VES" ? formatVes(charge.amount) : formatUsd(charge.amount);
-}
 
 function productsText(count: number): string {
   return count === 1 ? "1 producto" : `${count} productos`;

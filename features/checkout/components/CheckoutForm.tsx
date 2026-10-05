@@ -8,13 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useActionToast } from "@/hooks/useActionToast";
 import { formatRate, formatUsd, formatVes } from "@/lib/format";
-import type { Address, CartStore, Charge, Quote, QuoteStore } from "@/lib/marketplace/schemas";
+import type { Address, CartStore, Quote, QuoteStore } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
 import { ResendVerificationForm } from "@/features/account/components/VerifyEmailForm";
 import { payCheckout } from "../server/actions";
 import { CheckoutAddressPicker } from "./CheckoutAddressPicker";
 import { CheckoutEmpty } from "./CheckoutEmpty";
 import { CheckoutStoreSection, DELIVERY_UNAVAILABLE_TEXT } from "./CheckoutStoreSection";
+import { chargeText } from "@/features/purchases/lib/labels";
 import { INITIAL_CHECKOUT_STATE } from "../lib/checkoutState";
 import { checkoutHref, FULFILLMENT_PARAM_PREFIX } from "../lib/params";
 import { LINK_CLASSES, SECTION_LABEL_CLASSES } from "../lib/styles";
@@ -25,10 +26,6 @@ import { LINK_CLASSES, SECTION_LABEL_CLASSES } from "../lib/styles";
 export { DELIVERY_UNAVAILABLE_TEXT };
 
 const PROFILE_HREF = "/cuenta/perfil";
-
-function chargeText(charge: Charge): string {
-  return charge.currency === "VES" ? formatVes(charge.amount) : formatUsd(charge.amount);
-}
 
 function hasChanged(store: QuoteStore, previous: Quote | null): boolean {
   if (previous === null) return false;

@@ -153,7 +153,9 @@ test("/vende tiene canónica propia, sus secciones y el contacto sólo con desti
   await expect(page.getByText("Así te ven los compradores")).toBeVisible();
   await expect(page.getByText("$ 1,35")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tres pasos y estás en línea" })).toBeVisible();
-  await expect(page.getByRole("listitem").filter({ has: page.getByRole("heading", { level: 3 }) })).not.toHaveCount(0);
+  for (const title of ["Activa tu tienda en el panel", "Tus precios vienen de tu caja", "Recibe visitas, contactos y pedidos"]) {
+    await expect(page.getByRole("heading", { level: 3, name: title })).toBeVisible();
+  }
   await expect(page.getByRole("heading", { name: "Preguntas de comercios" })).toBeVisible();
   await expect(page.locator("details")).not.toHaveCount(0);
 

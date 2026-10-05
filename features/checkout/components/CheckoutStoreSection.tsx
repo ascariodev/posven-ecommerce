@@ -3,6 +3,7 @@ import { useId } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { hasDeliveryFee } from "@/features/cart/lib/fulfillment";
 import { formatUsd, formatVes } from "@/lib/format";
 import type { CartStore, DeliveryUnavailableReason, QuoteStore } from "@/lib/marketplace/schemas";
 
@@ -42,6 +43,7 @@ export function CheckoutStoreSection({
   const reasonId = useId();
   const name = entry.store.name;
   const reason = store.delivery_unavailable_reason;
+  const feeHint = store.fulfillment === "pickup" && store.delivery_available && hasDeliveryFee(entry);
   return (
     <Card>
       <CardContent className="flex flex-col gap-4">
@@ -83,7 +85,14 @@ export function CheckoutStoreSection({
                 aria-describedby={reason === null ? undefined : reasonId}
               />
               <Truck aria-hidden="true" className="size-4.5 shrink-0 text-primary-text" />
-              Entrega a domicilio
+              <span className="flex flex-col">
+                Entrega a domicilio
+                {feeHint && (
+                  <span className="text-xs font-normal tabular-nums text-muted-foreground">
+                    {formatUsd(entry.delivery_fee_usd)} · {formatVes(entry.delivery_fee_ves)}
+                  </span>
+                )}
+              </span>
             </label>
           </RadioGroup>
           {reason !== null && (

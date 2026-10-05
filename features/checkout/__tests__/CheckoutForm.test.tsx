@@ -83,6 +83,18 @@ describe("CheckoutForm", () => {
     expect(screen.getByText(text).id).toBe(delivery.getAttribute("aria-describedby"));
   });
 
+  it("en retiro muestra la tarifa de la tienda como pista en la entrega, y sin tarifa no", () => {
+    const withFee = { ...cartStore(CENTRAL, "Farmacia Central"), delivery_fee_usd: "1.70", delivery_fee_ves: "62.05" };
+    const { unmount } = renderForm({ stores: [withFee] });
+    const group = screen.getByRole("radiogroup", { name: "Entrega en Farmacia Central" });
+    expect(within(group).getByRole("radio", { name: /^Entrega a domicilio\s*\$ 1,70 · Bs 62,05$/ })).toBeTruthy();
+    unmount();
+
+    renderForm({ stores: [cartStore(CENTRAL, "Farmacia Central")] });
+    const bare = screen.getByRole("radiogroup", { name: "Entrega en Farmacia Central" });
+    expect(within(bare).getByRole("radio", { name: "Entrega a domicilio" })).toBeTruthy();
+  });
+
   it("sin direcciones ofrece agregar una y volver al checkout", () => {
     renderForm();
 

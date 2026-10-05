@@ -165,7 +165,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [x] M-5 — Mover `LINK_CLASSES` y `SECTION_LABEL_CLASSES` a `features/checkout/lib/styles.ts`
   armadas con `cn` (ui.md regla 3). Repo posven-ecommerce · complejidad baja · modelo sonnet.
-- [ ] M-6 — Mostrar la tarifa como pista en la opción "Entrega a domicilio" de
+- [x] M-6 — Mostrar la tarifa como pista en la opción "Entrega a domicilio" de
   `CheckoutStoreSection.tsx` si la Quote la trae en retiro, con test. Repo posven-ecommerce ·
   complejidad baja · modelo sonnet.
 - [x] M-7 — `OrderTracker`: mostrar `paid_at` en el cancelado y `ready_at` en la entrega (antes

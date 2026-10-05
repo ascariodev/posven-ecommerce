@@ -17,10 +17,9 @@ import { accountContext } from "@/features/account/server/session";
 import { loginHref } from "@/features/account/lib/returnPath";
 import { cn } from "@/lib/utils";
 import { removeLine, setQuantity } from "../server/actions";
+import { checkoutPathFor, deliveryKey, readDeliveryStores, type SearchParams } from "../lib/fulfillment";
 import { getCurrentCart } from "../server/cart";
 import { LineForm } from "./LineForm";
-
-const CHECKOUT_PATH = "/checkout";
 
 const UNAVAILABLE_TEXT: Record<UnavailableReason, string> = {
   out_of_stock: "Sin existencias",
@@ -146,7 +145,16 @@ function StoreGroup({ entry }: { entry: CartStore }) {
   );
 }
 
-export function CartContent({ cart, signedIn }: { cart: Cart | null; signedIn: boolean }) {
+export function CartContent({
+  cart,
+  signedIn,
+  delivery = [],
+}: {
+  cart: Cart | null;
+  signedIn: boolean;
+  delivery?: string[];
+}) {
+  const checkoutPath = checkoutPathFor(delivery);
   if (cart === null || cart.stores.length === 0) {
     return (
       <div className="flex flex-col items-start gap-3">
@@ -172,7 +180,7 @@ export function CartContent({ cart, signedIn }: { cart: Cart | null; signedIn: b
           <p className="text-right text-sm text-muted-foreground">{formatRate(cart.rate)}</p>
           {cart.line_count > 0 && (
             <Link
-              href={signedIn ? CHECKOUT_PATH : loginHref(CHECKOUT_PATH)}
+              href={signedIn ? checkoutPath : loginHref(checkoutPath)}
               className={cn(buttonVariants({ size: "lg" }), "mt-3 w-full")}
             >
               {signedIn ? "Ir a pagar" : "Entra para pagar"}
@@ -184,9 +192,10 @@ export function CartContent({ cart, signedIn }: { cart: Cart | null; signedIn: b
   );
 }
 
-export async function CartView() {
-  const [cart, ctx] = await Promise.all([getCurrentCart(), accountContext()]);
-  return <CartContent cart={cart} signedIn={ctx.session !== null} />;
+export async function CartView({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const delivery = readDeliveryStores(await searchParams);
+  const [cart, ctx] = await Promise.all([getCurrentCart(deliveryKey(delivery)), accountContext()]);
+  return <CartContent cart={cart} signedIn={ctx.session !== null} delivery={delivery} />;
 }
 
 export function CartViewSkeleton() {

@@ -3,9 +3,9 @@ module: "checkout"
 path: "features/checkout"
 type: "feature"
 exports: ["readCheckoutParams", "checkoutHref", "FULFILLMENT_PARAM_PREFIX", "CheckoutParams", "loadCheckout", "CheckoutData", "payCheckout", "CheckoutState", "INITIAL_CHECKOUT_STATE", "PAY_FAILED", "CheckoutView", "CheckoutViewSkeleton", "EMAIL_UNVERIFIED_MESSAGE", "CheckoutForm", "DELIVERY_UNAVAILABLE_TEXT", "CheckoutEmpty", "CART_EMPTY_MESSAGE", "CheckoutResult", "CheckoutResultSkeleton", "PURCHASE_CODE_PATTERN", "resultHref", "PurchasePoller", "POLL_DELAYS_MS", "POLL_MAX_MS"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/server/session.ts", "features/cart/server/cart.ts", "features/account/components/VerifyEmailForm.tsx", "features/account/server/actions.ts", "features/cart/lib/flag.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/radio-group.tsx", "components/ui/select.tsx", "components/ui/skeleton.tsx"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/utils.ts", "features/account/server/session.ts", "features/cart/server/cart.ts", "features/account/components/VerifyEmailForm.tsx", "features/account/server/actions.ts", "features/cart/lib/flag.ts", "features/cart/lib/fulfillment.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "components/ui/radio-group.tsx", "components/ui/select.tsx", "components/ui/skeleton.tsx"]
 tests: "features/checkout/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/checkout/lib/params.ts", "features/checkout/server/checkout.ts", "features/cart/server/cart.ts", "features/checkout/server/actions.ts", "features/checkout/lib/checkoutState.ts", "features/checkout/components/CheckoutView.tsx", "features/checkout/components/CheckoutForm.tsx", "features/checkout/components/CheckoutEmpty.tsx", "features/checkout/components/CheckoutResult.tsx", "features/checkout/components/PurchasePoller.tsx", "features/checkout/__tests__/params.test.ts", "features/checkout/__tests__/server.test.ts", "features/checkout/__tests__/actions.test.ts", "features/checkout/__tests__/CheckoutForm.test.tsx", "features/checkout/__tests__/CheckoutResult.test.tsx", "features/checkout/__tests__/PurchasePoller.test.tsx", "app/checkout/page.tsx", "app/checkout/resultado/page.tsx", "app/robots.ts", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
+verified_against: ["features/checkout/lib/params.ts", "features/checkout/server/checkout.ts", "features/cart/server/cart.ts", "features/cart/lib/fulfillment.ts", "features/checkout/server/actions.ts", "features/checkout/lib/checkoutState.ts", "features/checkout/components/CheckoutView.tsx", "features/checkout/components/CheckoutForm.tsx", "features/checkout/components/CheckoutEmpty.tsx", "features/checkout/components/CheckoutResult.tsx", "features/checkout/components/PurchasePoller.tsx", "features/checkout/__tests__/params.test.ts", "features/checkout/__tests__/server.test.ts", "features/checkout/__tests__/actions.test.ts", "features/checkout/__tests__/CheckoutForm.test.tsx", "features/checkout/__tests__/CheckoutResult.test.tsx", "features/checkout/__tests__/PurchasePoller.test.tsx", "app/checkout/page.tsx", "app/checkout/resultado/page.tsx", "app/robots.ts", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
 capabilities:
   - intent: "pagar el carrito: elegir dirección y retiro o entrega por tienda, ver la cotización e iniciar el pago"
     intent_aliases: ["checkout", "pagar", "finalizar compra", "cotizar envio", "retiro o entrega"]
@@ -54,7 +54,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 
 | Tipo de cambio | Dónde va | Además hay que |
 |---|---|---|
-| Un parámetro nuevo de la elección | `lib/params.ts` (`readCheckoutParams` y `checkoutHref`) | su lectura en `server/checkout.ts` (`loadCheckout`) y su caso en `__tests__/params.test.ts` |
+| Un parámetro nuevo de la elección | `lib/params.ts` (`readCheckoutParams` y `checkoutHref`); la entrega por tienda (`f-<tienda>`) vive en `features/cart/lib/fulfillment.ts` | su lectura en `server/checkout.ts` (`loadCheckout`) y su caso en `__tests__/params.test.ts` |
 | Un error nuevo del pago | `stateFrom` en `server/actions.ts` y el tipo `CheckoutState` | cómo lo muestra `components/CheckoutForm.tsx` y su caso en `__tests__/actions.test.ts` |
 | Un error nuevo de facturación o de la casilla | `components/CheckoutForm.tsx` (casilla y aviso) y `stateFrom` en `server/actions.ts` | `__tests__/CheckoutForm.test.tsx`, `__tests__/actions.test.ts` y `e2e/checkout.spec.ts` |
 | Textos de "sin entrega" | `DELIVERY_UNAVAILABLE_TEXT` en `components/CheckoutForm.tsx` | `__tests__/CheckoutForm.test.tsx` y `e2e/checkout.spec.ts` |
@@ -62,7 +62,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 
 ## 4. API pública
 
-- `readCheckoutParams(searchParams): CheckoutParams`, `checkoutHref(addressId: number | null, delivery: string[]): string`, `FULFILLMENT_PARAM_PREFIX` y `type CheckoutParams = { addressId: number | null; delivery: string[] }`, `features/checkout/lib/params.ts` (sin `server-only`: lo usa el formulario del cliente).
+- `readCheckoutParams(searchParams): CheckoutParams`, `checkoutHref(addressId: number | null, delivery: string[]): string`, `FULFILLMENT_PARAM_PREFIX` (reexportado de `features/cart/lib/fulfillment.ts`) y `type CheckoutParams = { addressId: number | null; delivery: string[] }`, `features/checkout/lib/params.ts` (sin `server-only`: lo usa el formulario del cliente); la dirección la lee aquí y las entregas con `readDeliveryStores` del carrito.
 - `loadCheckout(ctx: AccountContext, params: CheckoutParams): Promise<CheckoutData>` y `type CheckoutData`, `features/checkout/server/checkout.ts` (`server-only`): carrito, direcciones y Quote; vacío si no hay líneas `ok` o la API responde `cart_empty`; si la dirección deja de valer al cotizar, cotiza sin ella.
 - `payCheckout(prev: CheckoutState, formData: FormData): Promise<CheckoutState>`, `features/checkout/server/actions.ts` (`"use server"`, sólo esta acción): campos `address_id`, `store_slug` repetido, `f-<tienda>`, `quote_hash`, `idempotency_key` y, si la casilla va marcada, `bill_to_me=on` (que `readInput` convierte en `bill_to_me: true`; sin ella se omite); redirige a `redirect_url` o devuelve las instrucciones.
 - `CheckoutState`, `INITIAL_CHECKOUT_STATE` y `PAY_FAILED`, `features/checkout/lib/checkoutState.ts`.
@@ -73,7 +73,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| Elección en la URL | `lib/params.ts` | lectura estricta de `searchParams` y la URL de vuelta |
+| Elección en la URL | `lib/params.ts` | lectura estricta de la dirección, entregas por `features/cart/lib/fulfillment.ts`, y la URL de vuelta |
 | Lectura | `server/checkout.ts` | dirección pedida, predeterminada, primera o ninguna; retiro sin dirección; `cart_empty` y dirección inválida |
 | Página | `components/CheckoutView.tsx` | `requireCustomer("/checkout")`, `connection()` antes de `crypto.randomUUID()` (guía `08-caching.md`), aviso de correo sin verificar; monta `CheckoutForm` con `key` = `quote_hash` para que una Quote nueva lo reinicie |
 | Formulario | `components/CheckoutForm.tsx` | `Select` de direcciones y `RadioGroup` por tienda que navegan con `router.replace(..., { scroll: false })` en una transición ("Actualizando…" y "Pagar" deshabilitado entretanto); formulario de pago con `useActionState`; el botón dice "Pagar {monto} de forma segura" ("Procesando pago seguro…" al enviar) y lleva `LockIcon` |
@@ -82,7 +82,7 @@ mostrada justo antes, también tras dos `quote_changed` seguidos.
 
 ## 6. Dependencias
 
-- `features/cart/server/cart.ts` (`getSessionCart`, memoizado por petición) y `lib/marketplace/client.ts` (`listAddresses`, `quoteCheckout`, `startCheckout`, `getPurchase`), `errors.ts`, `schemas.ts`, `params.ts`.
+- `features/cart/lib/fulfillment.ts` (`readDeliveryStores`, `setDeliveryParams`, `FULFILLMENT_PARAM_PREFIX`); `features/cart/server/cart.ts` (`getSessionCart`, memoizado por petición) y `lib/marketplace/client.ts` (`listAddresses`, `quoteCheckout`, `startCheckout`, `getPurchase`), `errors.ts`, `schemas.ts`, `params.ts`.
 - `features/account/server/session.ts` (`requireCustomer`, `withSession`), `features/account/components/VerifyEmailForm.tsx` (`ResendVerificationForm`), `features/cart/lib/flag.ts` (`cartEnabled`).
 - `lib/format.ts`; `components/ui/` (`Badge`, `Button`, `Card`, `RadioGroup`, `Select`, `Skeleton`); `lucide-react` (`LockIcon`).
 

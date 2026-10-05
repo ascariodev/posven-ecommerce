@@ -1,10 +1,13 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Cart, CartLine, CartStore } from "@/lib/marketplace/schemas";
-import { CartContent } from "@/features/cart/components/CartView";
+import { CartContent, CartView } from "@/features/cart/components/CartView";
+import { accountContext } from "@/features/account/server/session";
+import { getCurrentCart } from "@/features/cart/server/cart";
 
 vi.mock("@/features/cart/server/actions", () => ({ setQuantity: vi.fn(), removeLine: vi.fn() }));
 vi.mock("@/features/cart/server/cart", () => ({ getCurrentCart: vi.fn() }));
+vi.mock("@/features/account/server/session", () => ({ accountContext: vi.fn() }));
 
 afterEach(() => {
   cleanup();
@@ -123,6 +126,20 @@ describe("CartContent", () => {
     );
   });
 
+  it("Ir a pagar lleva la entrega elegida y Entra para pagar la conserva en volver", () => {
+    const delivery = ["farmacia-central-valencia"];
+    render(<CartContent signedIn delivery={delivery} cart={cart([store([line()])])} />);
+    expect(screen.getByRole("link", { name: "Ir a pagar" }).getAttribute("href")).toBe(
+      "/checkout?f-farmacia-central-valencia=delivery",
+    );
+    cleanup();
+
+    render(<CartContent signedIn={false} delivery={delivery} cart={cart([store([line()])])} />);
+    expect(screen.getByRole("link", { name: "Entra para pagar" }).getAttribute("href")).toBe(
+      `/entrar?volver=${encodeURIComponent("/checkout?f-farmacia-central-valencia=delivery")}`,
+    );
+  });
+
   it("sin líneas disponibles no ofrece pagar", () => {
     render(<CartContent signedIn cart={{ ...cart([store([line({ status: "unavailable", unavailable_reason: "offer_gone" })])]), line_count: 0 }} />);
     expect(screen.queryByRole("link", { name: "Ir a pagar" })).toBeNull();
@@ -132,5 +149,17 @@ describe("CartContent", () => {
     render(<CartContent signedIn cart={cart([store([line()], { is_open: false })])} />);
 
     expect(screen.getByText("Cerrada ahora")).toBeTruthy();
+  });
+});
+
+describe("CartView", () => {
+  it("/carrito?f-<tienda>=delivery pide el carrito con esa tienda y la lleva al checkout", async () => {
+    vi.mocked(accountContext).mockResolvedValue({ session: "7|token", clientIp: null });
+    vi.mocked(getCurrentCart).mockResolvedValue(cart([store([line()])]));
+    render(await CartView({ searchParams: Promise.resolve({ "f-farmacia-central-valencia": "delivery" }) }));
+    expect(getCurrentCart).toHaveBeenCalledWith("farmacia-central-valencia");
+    expect(screen.getByRole("link", { name: "Ir a pagar" }).getAttribute("href")).toBe(
+      "/checkout?f-farmacia-central-valencia=delivery",
+    );
   });
 });

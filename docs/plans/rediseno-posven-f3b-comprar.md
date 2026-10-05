@@ -3,7 +3,7 @@
 **Objetivo:** carrito agrupado por tienda con retiro o entrega y su costo antes de pagar, checkout
 de una página con el estilo del lienzo, y resultado del pago con la línea de estados de cada
 pedido; puerta: pago de prueba completo en modo simulado.
-**Estado:** pendiente, espera el plan F3a · Fase actual: 1
+**Estado:** en curso · Fase actual: 2
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §5 (`W08`/`P08`, `W09`/`P09`,
@@ -13,7 +13,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   `docs/design/2026-10-03-rediseno/maqueta/_screens/{carrito,checkout,pedido}.tsx` (sin trackear,
   sólo referencia: datos de ejemplo y montos escritos a mano que la app no copia).
 - Repo y rama: `posven-ecommerce` en
-  `C:\Users\Windows 11\Documents\Development\posven\posven-ecommerce`, rama `main`.
+  `C:\Users\Windows 11\Documents\Development\posven\posven-ecommerce`, rama `feat/rediseno-f3b-comprar` (desde `main`, autorizada por el usuario).
 - Requiere el plan `posven/.claude/docs/plans/rediseno-posven-f3a-contrato.md` terminado: el
   carrito trae por tienda `fulfillment`, `delivery_fee_*` y `total_*`, y `getCart` y
   `quoteGuestCart` reciben las tiendas con entrega elegida.
@@ -43,7 +43,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
 
 ## Fases
 
-### [ ] Fase 1 — El carrito lee la entrega elegida de la URL
+### [x] Fase 1 — El carrito lee la entrega elegida de la URL
 - **Repo:** posven-ecommerce
 - **Alcance:**
   - La lectura y escritura de `f-<slug>=delivery` sale de `features/checkout/lib/params.ts` a un
@@ -108,8 +108,18 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - 2026-10-04 — Checkout en una sola página por secciones, sin el stepper del lienzo: hay tres
   controles y el pago lo pone la pasarela.
 - 2026-10-04 — Compra como invitado fuera de F3.
+- 2026-10-05 — Fase 1: `getCurrentCart(deliveryKey = "")` y `getSessionCart(deliveryKey = "")`
+  reciben una cadena ordenada sin repetidos (`deliveryKey()` de `features/cart/lib/fulfillment.ts`);
+  sin elección se llama `getSessionCart()` sin argumento para compartir `cache` con el contador.
+  `CartView({ searchParams })` obligatorio; `CartContent` recibe `delivery?: string[]` y arma el
+  enlace con `checkoutPathFor`. `features/checkout/lib/params.ts` reexporta
+  `FULFILLMENT_PARAM_PREFIX` y conserva sus exports.
 
 ## Notas para la próxima sesión
-- Arranca cuando termine el plan F3a.
+- docs-check marca RANCIO `features/purchases/README.md` por `e2e/checkout.spec.ts`: la fase 4
+  toca esa ficha y lo resuelve.
+- F3a terminado y subido (carrito con `fulfillment`, `delivery_fee_*`, `total_*`; `getCart(ctx, deliveryStores)` y `quoteGuestCart(ctx, items, deliveryStores)`).
 
 ## Mejoras propuestas
+- [ ] M-1 — Reflujar el comentario de `features/cart/server/cart.ts:18-21` a ~100 caracteres por
+  línea. Repo posven-ecommerce · complejidad baja · modelo sonnet.

@@ -9,13 +9,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function CartPage() {
+export default function CartPage({ searchParams }: PageProps<"/carrito">) {
   if (!cartEnabled()) notFound();
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Tu carrito</h1>
       <Suspense fallback={<CartViewSkeleton />}>
-        <CartView />
+        <CartView searchParams={searchParams} />
       </Suspense>
     </div>
   );

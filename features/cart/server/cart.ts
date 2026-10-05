@@ -6,6 +6,7 @@ import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/mark
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { Cart } from "@/lib/marketplace/schemas";
 import { accountContext } from "@/features/account/server/session";
+import { deliveryFromKey } from "../lib/fulfillment";
 import { CART_COOKIE, cartCookieOptions, parseCartCookie, readGuestCart } from "./cookie";
 
 // Fuera de "use server" a propósito: `mergeGuestCart` recibe un AccountContext (token e IP) que no
@@ -16,19 +17,21 @@ function isUnauthenticated(error: unknown): boolean {
 }
 
 // El carrito del comprador con sesión, una sola vez por petición: lo usan `/carrito` y el contador
-// de la cabecera. Sin argumentos a propósito: `cache` compara por identidad. Sin sesión, `null`.
-export const getSessionCart = cache(async (): Promise<Cart | null> => {
+// de la cabecera, que la llama sin argumento (con `""` sería otra clave de `cache`). `deliveryKey` es la cadena de `deliveryKey()`, no un
+// arreglo: `cache` compara por identidad. Sin sesión, `null`.
+export const getSessionCart = cache(async (deliveryKey: string = ""): Promise<Cart | null> => {
   const ctx = await accountContext();
-  return ctx.session === null ? null : getCart(ctx);
+  return ctx.session === null ? null : getCart(ctx, deliveryFromKey(deliveryKey));
 });
 
 // El carrito de la petición: con sesión, el del servidor (un 401 sigue como invitado, spec §6); sin
-// sesión, la cotización de `mp_cart`; sin entradas, `null` sin llamar a la API.
-export const getCurrentCart = cache(async (): Promise<Cart | null> => {
+// sesión, la cotización de `mp_cart`; sin entradas, `null` sin llamar a la API. `deliveryKey` lleva
+// las tiendas con entrega elegida.
+export const getCurrentCart = cache(async (deliveryKey: string = ""): Promise<Cart | null> => {
   const ctx = await accountContext();
   if (ctx.session !== null) {
     try {
-      const cart = await getSessionCart();
+      const cart = await (deliveryKey === "" ? getSessionCart() : getSessionCart(deliveryKey));
       if (cart !== null) return cart;
     } catch (error) {
       if (!isUnauthenticated(error)) throw error;
@@ -36,7 +39,7 @@ export const getCurrentCart = cache(async (): Promise<Cart | null> => {
   }
   const items = await readGuestCart();
   if (items.length === 0) return null;
-  return quoteGuestCart({ ...ctx, session: null }, items);
+  return quoteGuestCart({ ...ctx, session: null }, items, deliveryFromKey(deliveryKey));
 });
 
 // Fusión al entrar o registrarse (RN-CART-02): sólo desde una Server Action (borra `mp_cart`). Con la

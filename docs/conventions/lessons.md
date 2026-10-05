@@ -63,3 +63,9 @@ Un test de regresión que pasa con y sin el arreglo no prueba nada: suele llegar
 camino que ya lo limpia (teclear en un input que resetea la marca). Se corre contra el código sin
 el arreglo y se exige que falle.
 aplicada en: `.claude/rules/tests.md`
+
+## L-12
+`cache` de React indexa por la lista de argumentos: `f("")` y `f()` son claves distintas y la
+lectura se repite. Quien comparte un `cache` con otro llamador lo invoca con los mismos argumentos
+(sin el valor por defecto explícito), y una prueba memoizando por argumentos lo fija.
+aplicada en: `features/cart/__tests__/cart.test.ts`

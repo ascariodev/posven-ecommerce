@@ -219,12 +219,20 @@ describe("botón Agregar al carrito en las ofertas (RN-CART-03)", () => {
     expect(addButtons()).toHaveLength(0);
   });
 
-  it.each(["recipe", "controlled"] as const)("no sale con un producto %s", async (restriction) => {
+  it("no sale con un producto recipe", async () => {
     vi.mocked(getProductOffers).mockResolvedValue(page([seller()], []));
 
-    render(await ProductOffers({ product: { ...product, restriction }, searchParams: searchParams({}) }));
+    render(await ProductOffers({ product: { ...product, restriction: "recipe" }, searchParams: searchParams({}) }));
 
     expect(addButtons()).toHaveLength(0);
+  });
+
+  it("sale con un producto controlled, que la API no restringe", async () => {
+    vi.mocked(getProductOffers).mockResolvedValue(page([seller()], []));
+
+    render(await ProductOffers({ product: { ...product, restriction: "controlled" }, searchParams: searchParams({}) }));
+
+    expect(addButtons().length).toBeGreaterThan(0);
   });
 
   it("no sale con el interruptor apagado", async () => {

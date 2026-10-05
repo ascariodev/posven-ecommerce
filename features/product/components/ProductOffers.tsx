@@ -60,7 +60,7 @@ export async function ProductOffers({
   const more = inside.slice(VISIBLE_OFFERS);
 
   const served = [...page.featured, ...inside, ...outside];
-  const withBar = cartEnabled() && product.restriction === "none";
+  const withBar = cartEnabled() && product.restriction !== "recipe";
   const orderable = served.filter((offer) => offer.store.accepts_orders);
   const defaultOffer =
     orderable.find((offer) => offer.is_best_price === true) ??

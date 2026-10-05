@@ -17,8 +17,9 @@ function isUnauthenticated(error: unknown): boolean {
 }
 
 // El carrito del comprador con sesión, una sola vez por petición: lo usan `/carrito` y el contador
-// de la cabecera, que la llama sin argumento (con `""` sería otra clave de `cache`). `deliveryKey` es la cadena de `deliveryKey()`, no un
-// arreglo: `cache` compara por identidad. Sin sesión, `null`.
+// de la cabecera, que la llama sin argumento (con `""` sería otra clave de `cache`). `deliveryKey`
+// es la cadena de `deliveryKey()`, no un arreglo: `cache` compara por identidad. Sin sesión,
+// `null`.
 export const getSessionCart = cache(async (deliveryKey: string = ""): Promise<Cart | null> => {
   const ctx = await accountContext();
   return ctx.session === null ? null : getCart(ctx, deliveryFromKey(deliveryKey));

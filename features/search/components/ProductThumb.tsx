@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/lib/marketplace/schemas";
 import { categoryIcon } from "../lib/categoryIcon";
+import { categoryPhoto } from "../lib/categoryPhoto";
 import { categoryTint } from "../lib/categoryTint";
 
 const thumbSizes = {
@@ -42,6 +43,14 @@ export function ProductThumb({
         </div>
       );
     }
+    const photo = categoryPhoto(category);
+    if (photo !== null) {
+      return (
+        <div className={cn(DETAIL_BOX, "bg-muted", className)}>
+          <Image src={photo} alt="" fill sizes="(min-width: 1024px) 540px, (min-width: 768px) 50vw, 100vw" className="object-cover" />
+        </div>
+      );
+    }
     const tint = categoryTint(category);
     return (
       <div
@@ -64,6 +73,14 @@ export function ProductThumb({
             sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
             className="object-contain p-3"
           />
+        </div>
+      );
+    }
+    const photo = categoryPhoto(category);
+    if (photo !== null) {
+      return (
+        <div className={cn(CARD_BOX, "bg-muted", className)}>
+          <Image src={photo} alt="" fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw" className="object-cover" />
         </div>
       );
     }

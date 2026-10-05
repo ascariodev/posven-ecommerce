@@ -9,15 +9,32 @@ import { HeaderSearchSlot } from "@/features/search/components/HeaderSearchSlot"
 import { SearchPill } from "@/features/search/components/SearchPill";
 import { SITE_NAME } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { CategoryNav } from "./CategoryNav";
 
 export function SiteHeader() {
   return (
+    <>
+    <div className="bg-ink text-xs font-medium text-ink-foreground">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-center gap-4 px-4 py-1.5 sm:justify-between">
+        <p>
+          <span className="text-primary">●</span> Retira hoy en tiendas cerca de ti · Precios en $ y Bs
+        </p>
+        <nav aria-label="Enlaces rápidos" className="hidden items-center gap-4 sm:flex">
+          <Link href="/ayuda" className="opacity-85 hover:opacity-100 hover:underline">
+            Ayuda
+          </Link>
+          <Link href="/vende" className="opacity-85 hover:opacity-100 hover:underline">
+            Vende con posven
+          </Link>
+        </nav>
+      </div>
+    </div>
     <header className="header-elevate sticky top-0 z-40 border-b border-glass-border bg-glass text-foreground backdrop-blur-md shadow-card">
       <div className="mx-auto flex min-h-14 w-full max-w-5xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2 md:gap-x-4">
         <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-foreground">
           <span
             aria-hidden="true"
-            className="flex size-9 items-center justify-center rounded-xl bg-primary text-lg text-primary-foreground"
+            className="flex size-9 items-center justify-center rounded-xl bg-ink font-heading text-lg font-bold text-primary"
           >
             {SITE_NAME.charAt(0).toLowerCase()}
           </span>
@@ -58,6 +75,12 @@ export function SiteHeader() {
           </Suspense>
         </div>
       </div>
+      <div className="hidden border-t border-border md:block">
+        <Suspense fallback={<div className="h-12" />}>
+          <CategoryNav />
+        </Suspense>
+      </div>
     </header>
+    </>
   );
 }

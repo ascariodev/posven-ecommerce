@@ -55,8 +55,8 @@ export function ProductCard({ item }: { item: SearchItem }) {
           </p>
         </div>
 
-        <div className="mt-4 w-full rounded-xl bg-primary/10 py-3 text-center text-sm font-bold text-primary-text transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-active:scale-[0.98]">
-          Ver opciones
+        <div className="mt-4 w-full rounded-lg bg-ink py-3 text-center text-sm font-bold text-ink-foreground transition-all duration-300 group-hover:opacity-90 group-active:scale-[0.98] motion-reduce:transition-none">
+          Ver ofertas
         </div>
       </div>
     </Link>

@@ -10,12 +10,12 @@ import { footerYear } from "../lib/year";
 const MAX_FOOTER_CATEGORIES = 8;
 
 const linkClass =
-  "inline-flex min-h-11 items-center text-muted-foreground hover:text-foreground sm:min-h-0";
+  "inline-flex min-h-11 items-center opacity-75 hover:opacity-100 hover:underline sm:min-h-0";
 
 function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <nav aria-label={title}>
-      <h2 className="mb-2 text-sm font-semibold text-foreground">{title}</h2>
+      <h2 className="mb-3 font-heading text-sm font-semibold text-primary">{title}</h2>
       <ul className="flex flex-col text-sm sm:gap-2">{children}</ul>
     </nav>
   );
@@ -53,12 +53,23 @@ async function rootCategories(): Promise<CategoryNode[]> {
 export async function SiteFooter() {
   const [categories, year] = await Promise.all([rootCategories(), footerYear()]);
   return (
-    <footer className="border-t border-border bg-card">
-      <div className="mx-auto w-full max-w-5xl px-4 py-8">
+    <footer className="border-t-4 border-primary bg-ink text-ink-foreground">
+      <div className="mx-auto w-full max-w-5xl px-4 py-10">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
           <div className="sm:col-span-2 lg:col-span-1">
-            <p className="text-xl font-bold tracking-tight text-foreground">{SITE_NAME}</p>
-            <p className="mt-2 max-w-xs text-sm text-muted-foreground">{SITE_DESCRIPTION}</p>
+            <p className="flex items-center gap-2 font-heading text-xl font-bold tracking-tight">
+              <span
+                aria-hidden="true"
+                className="flex size-9 items-center justify-center rounded-xl bg-card text-lg text-primary-text"
+              >
+                {SITE_NAME.charAt(0).toLowerCase()}
+              </span>
+              {SITE_NAME}
+            </p>
+            <p className="mt-3 max-w-xs text-sm opacity-75">{SITE_DESCRIPTION}</p>
+            <p className="mt-4 flex w-fit items-center gap-2 rounded-full border border-primary/60 px-3 py-1 text-xs font-semibold text-primary">
+              Retira hoy · Precios en $ y Bs
+            </p>
           </div>
           <FooterCategories categories={categories} />
           <FooterColumn title="Ayuda">
@@ -88,7 +99,7 @@ export async function SiteFooter() {
             </li>
           </FooterColumn>
         </div>
-        <p className="mt-8 border-t border-border pt-4 text-sm text-muted-foreground">
+        <p className="mt-10 border-t border-ink-foreground/15 pt-4 text-sm opacity-75">
           © {year} {SITE_NAME}
         </p>
       </div>

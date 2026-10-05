@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProductThumb } from "@/features/search/components/ProductThumb";
 import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { formatRate, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
@@ -20,11 +21,12 @@ function parsePage(value: string | string[] | undefined): number {
 
 function StoreProductCard({ product, store, now }: { product: StoreProduct; store: Store; now: Date }) {
   return (
-    <Card className="h-full">
-      <CardContent className="flex-1 flex flex-col gap-2">
+    <Card className="h-full gap-2 rounded-2xl border border-border p-2 pb-3 shadow-card transition-shadow duration-200 ease-out hover:shadow-raised motion-reduce:transition-none">
+      <ProductThumb imageUrl={product.image_url} category={product.category} size="card" className="aspect-square" />
+      <CardContent className="flex flex-1 flex-col gap-2 px-1">
         <Link
           href={`/p/${product.slug}`}
-          className="font-medium text-foreground underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          className="line-clamp-2 text-sm leading-snug font-semibold text-foreground underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
         >
           {product.name}
         </Link>
@@ -34,10 +36,12 @@ function StoreProductCard({ product, store, now }: { product: StoreProduct; stor
             {product.restriction === "recipe" && <Badge variant="warning">Requiere récipe</Badge>}
           </div>
         )}
-        <div>
-          <p className="text-xl font-bold text-foreground">{formatUsd(product.price_usd)}</p>
-          <p className="text-sm text-foreground">{formatVes(product.price_ves)}</p>
-          <p className="text-sm text-muted-foreground">{formatUpdatedAgo(product.updated_at, now)}</p>
+        <div className="mt-auto">
+          <p className="font-heading text-lg font-semibold text-primary-text tabular-nums">
+            {formatUsd(product.price_usd)}
+          </p>
+          <p className="text-sm text-foreground tabular-nums">{formatVes(product.price_ves)}</p>
+          <p className="text-xs text-muted-foreground">{formatUpdatedAgo(product.updated_at, now)}</p>
         </div>
         {cartEnabled() && store.accepts_orders && product.restriction === "none" && (
           <AddToCartButton
@@ -67,7 +71,7 @@ export async function StoreProducts({
   if (response === null || response.meta.total === 0) {
     return (
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-bold tracking-tight">Productos</h2>
+        <h2 className="font-heading text-xl font-bold tracking-tight">Productos</h2>
         <p className="text-muted-foreground">Esta tienda todavía no publicó productos.</p>
       </section>
     );
@@ -79,10 +83,10 @@ export async function StoreProducts({
 
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-xl font-bold tracking-tight">Productos</h2>
+      <h2 className="font-heading text-xl font-bold tracking-tight">Productos</h2>
       <p className="text-sm text-muted-foreground">{formatRate(response.rate)}</p>
       {response.products.length > 0 && (
-        <ul aria-label="Productos" className="grid gap-4 sm:grid-cols-2">
+        <ul aria-label="Productos" className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
           {response.products.map((product) => (
             <li key={product.slug}>
               <StoreProductCard product={product} store={response.data} now={now} />
@@ -119,7 +123,7 @@ export function StoreProductsSkeleton() {
   return (
     <div className="flex flex-col gap-4">
       <Skeleton className="h-7 w-40" />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
         {Array.from({ length: 4 }, (_, index) => (
           <Skeleton key={index} className="h-32" />
         ))}

@@ -53,10 +53,11 @@ export default async function StorePage({
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(storeJsonLd(store)) }}
       />
       <ViewBeacon event={{ type: "store_view", store_slug: slug, product_slug: null }} />
-      <StoreHeader store={store} />
-      <Suspense fallback={<FavoriteButtonSkeleton />}>
-        <FavoriteButton target={{ kind: "store", slug }} returnTo={`/tienda/${slug}`} />
-      </Suspense>
+      <StoreHeader store={store}>
+        <Suspense fallback={<FavoriteButtonSkeleton />}>
+          <FavoriteButton target={{ kind: "store", slug }} returnTo={`/tienda/${slug}`} />
+        </Suspense>
+      </StoreHeader>
       <Suspense fallback={<StoreProductsSkeleton />}>
         <StoreProducts slug={slug} searchParams={searchParams} />
       </Suspense>

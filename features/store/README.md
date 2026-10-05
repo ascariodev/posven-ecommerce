@@ -3,9 +3,9 @@ module: "store"
 path: "features/store"
 type: "feature"
 exports: ["StoreCard", "NearbyStores", "NearbyStoresSkeleton", "SponsoredStore", "StoreLogo", "StoreOpenBadge", "storeInitials", "formatSchedule", "openingHoursJsonLd", "storeJsonLd", "StoreHeader", "StoreProducts", "StoreProductsSkeleton"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts", "features/search/components/ProductThumb.tsx"]
 tests: "features/store/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/store/components/StoreCard.tsx", "features/store/components/StoreLogo.tsx", "features/store/components/NearbyStores.tsx", "features/store/components/SponsoredStore.tsx", "features/store/lib/initials.ts", "features/store/lib/schedule.ts", "features/store/lib/jsonld.ts", "features/store/components/StoreHeader.tsx", "features/store/components/StoreProducts.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx"]
+verified_against: ["features/store/components/StoreCard.tsx", "features/store/components/StoreLogo.tsx", "features/store/components/NearbyStores.tsx", "features/store/components/SponsoredStore.tsx", "features/store/lib/initials.ts", "features/store/lib/schedule.ts", "features/store/lib/jsonld.ts", "features/store/components/StoreHeader.tsx", "features/store/components/StoreProducts.tsx", "features/search/components/ProductThumb.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx"]
 capabilities:
   - intent: "mostrar la tienda patrocinada y los comercios cercanos en la portada"
     intent_aliases: ["tiendas cercanas", "tiendas cerca de mi", "comercios cercanos", "tiendas destacadas"]
@@ -27,8 +27,8 @@ capabilities:
     intent_aliases: ["pagina de tienda", "datos de la tienda", "horario de tienda", "portada de tienda", "contacto de tienda"]
     entrypoint: "<StoreHeader />"
     file: "features/store/components/StoreHeader.tsx"
-    input: "store: Store"
-    output: "portada y logo si es premium (si no, iniciales), h1 con el nombre, company_name, dirección y ciudad, h2 'Horario' con las líneas de formatSchedule() y ContactButtons sin producto"
+    input: "store: Store; children opcional (la página monta ahí el botón de favorito)"
+    output: "portada si es premium y trae cover_url; tarjeta con logo si es premium (si no, iniciales), h1 con el nombre, company_name, dirección y ciudad, h2 'Horario' con las líneas de formatSchedule(), ContactButtons sin producto y children; no pinta abierto o cerrado porque Store no trae is_open"
     source: "Store de getStore() (cacheado por slug, sin ubicación)"
     rules: ["RN-STORE-01", "RN-STORE-04"]
   - intent: "listar los productos de una tienda con paginación"
@@ -36,7 +36,7 @@ capabilities:
     entrypoint: "<StoreProducts />"
     file: "features/store/components/StoreProducts.tsx"
     input: "slug: string; searchParams con pagina opcional (entero >= 1, si no 1); se monta en <Suspense fallback={<StoreProductsSkeleton />}>"
-    output: "sección 'Productos': tasa, una tarjeta por producto con enlace a /p/{slug}, USD, Bs, 'Pocas unidades', 'Requiere récipe' y antigüedad; 'Anterior' y 'Siguiente' a /tienda/{slug}?pagina={n}; sin productos (meta.total 0), el aviso de tienda sin productos publicados"
+    output: "sección 'Productos': tasa, rejilla de 2 a 4 columnas con una tarjeta por producto (miniatura ProductThumb, enlace a /p/{slug}, USD, Bs, 'Pocas unidades', 'Requiere récipe' y antigüedad); 'Anterior' y 'Siguiente' a /tienda/{slug}?pagina={n}; sin productos (meta.total 0), el aviso de tienda sin productos publicados"
     source: "getStore({ slug, page }) de lib/marketplace"
     rules: []
   - intent: "armar el JSON-LD de una tienda"
@@ -93,7 +93,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 - `formatSchedule(entries: ScheduleEntry[]): string[]`, `features/store/lib/schedule.ts`
 - `openingHoursJsonLd(entries: ScheduleEntry[]): object[]`, `features/store/lib/schedule.ts`
 - `storeJsonLd(store: Store): object`, `features/store/lib/jsonld.ts`
-- `StoreHeader({ store }: { store: Store })`, `features/store/components/StoreHeader.tsx`
+- `StoreHeader({ store, children }: { store: Store; children?: ReactNode })`, `features/store/components/StoreHeader.tsx`
 - `StoreProducts({ slug, searchParams }: { slug: string; searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/store/components/StoreProducts.tsx`
 - `StoreProductsSkeleton()`, fallback de `StoreProducts`, `features/store/components/StoreProducts.tsx`
 
@@ -109,9 +109,9 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 | Patrocinada | `components/SponsoredStore.tsx` | tarjeta enlace con `PATROCINADO`, `StoreLogo` (`size-14`) y `Ver tienda` por `buttonVariants` sobre un `<span>` (no hay botón anidado) |
 | Horario | `lib/schedule.ts` | `Lun`...`Dom`; tres o más días seguidos como `Lun a Sáb`, el resto separados por `, `; sin tramos, "Horario no informado"; días en inglés para `OpeningHoursSpecification` |
 | JSON-LD | `lib/jsonld.ts` | `Store` con URL absoluta por `SITE_URL`, `PostalAddress` con `addressCountry: "VE"` y `GeoCoordinates` |
-| Cabecera | `components/StoreHeader.tsx` | portada y logo sólo para premium, `h1`, razón social, dirección, `h2` "Horario" y `ContactButtons` con `product: null` |
-| Productos | `components/StoreProducts.tsx` | `pagina` a entero, `getStore({ slug, page })`, tasa, tarjetas (con `AddToCartButton` si el carrito está encendido, la tienda tiene `accepts_orders` y el producto no tiene restricción, `RN-CART-03`), "Anterior" y "Siguiente" |
-| Página | `app/tienda/[slug]/page.tsx` | `generateStaticParams` (20 slugs de `listSitemap` o `__vacio`), `generateMetadata`, JSON-LD, `StoreHeader`, `ViewBeacon` con `store_view` y `StoreProducts` en `<Suspense>` |
+| Cabecera | `components/StoreHeader.tsx` | portada sobre una tarjeta con logo (sólo premium), `h1`, razón social, dirección, `h2` "Horario", `ContactButtons` con `product: null` y `children` (el favorito de la página) |
+| Productos | `components/StoreProducts.tsx` | `pagina` a entero, `getStore({ slug, page })`, tasa, tarjetas con `ProductThumb` (con `AddToCartButton` si el carrito está encendido, la tienda tiene `accepts_orders` y el producto no tiene restricción, `RN-CART-03`), "Anterior" y "Siguiente" |
+| Página | `app/tienda/[slug]/page.tsx` | `generateStaticParams` (20 slugs de `listSitemap` o `__vacio`), `generateMetadata`, JSON-LD, `StoreHeader` (con `FavoriteButton` de `features/account` como hijo), `ViewBeacon` con `store_view` y `StoreProducts` en `<Suspense>` |
 
 ## 6. Dependencias
 
@@ -121,7 +121,8 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 - `features/events/components/ContactButtons.tsx` en `StoreHeader.tsx` y `features/events/components/ViewBeacon.tsx` en la página.
 - `lib/format.ts` (`formatDistance`, `formatRate`, `formatUsd`, `formatVes`, `formatUpdatedAgo`), `lib/jsonld.ts` (`serializeJsonLd`, en la página) y `lib/site.ts` (`SITE_NAME`, `SITE_URL`).
 - `components/ui/badge.tsx`, `components/ui/button.tsx`, `components/ui/card.tsx` y `components/ui/skeleton.tsx`; `lib/utils.ts` (`cn`) en `StoreLogo`.
-- `next/link`, `next/image` (en `StoreLogo`) y `next/navigation`.
+- `features/search/components/ProductThumb.tsx` en `StoreProducts.tsx`; `FavoriteButton` de `features/account` lo monta la página.
+- `next/link`, `next/image` (en `StoreLogo` y `StoreHeader`) y `next/navigation`.
 
 ## 7. Ejemplo de uso
 
@@ -147,6 +148,7 @@ if (response === null) notFound();
 - Logo y portada van por `next/image`: su dominio tiene que estar en `images.remotePatterns` de `next.config.ts` (spec §4.5).
 - La página hace `await params` y `getStore({ slug, page: 1 })` fuera de `<Suspense>` para que `notFound()` dé 404 antes del primer byte; `app/tienda/` no lleva `loading.tsx`. `generateStaticParams` devuelve al menos un slug porque con Cache Components un arreglo vacío rompe el build.
 - Metadatos, cabecera y JSON-LD no dependen de la cookie ni de `pagina`: la canónica es `/tienda/{slug}` también en `?pagina=2`.
+- `Store` (`getStore`) no trae `is_open` ni `closes_at`: la cabecera muestra sólo el horario formateado y no calcula el estado en el frontend.
 - `new Date()` en `StoreProducts` va después de leer `searchParams`; si no, el prerender falla.
 
 ## 9. Pruebas

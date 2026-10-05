@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F2 del lienzo "E · PosVen": ficha de producto con la lista de
 tiendas para elegir, barra de compra fija y detalles plegables; página de tienda con portada; y
 directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el contrato de F2a.
-**Estado:** en curso: fase 5 de 7
+**Estado:** en curso: fase 6 de 7
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2, §4 (`ui.md`), §5 (ficha `P15`/`P06`,
@@ -72,7 +72,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - **Alcance:** descripción, presentación, restricciones y datos del producto en secciones
   plegables según `P15`/`P06`, sin perder el JSON-LD ni la canónica.
 
-### [ ] Fase 5 — Página de tienda según el lienzo
+### [x] Fase 5 — Página de tienda según el lienzo
 - **Repo:** posven-ecommerce
 - **Alcance:** `StoreHeader` con portada, estado abierto/cierra, contacto y favorito según
   `W07`/`P07`; `StoreProducts` con los tokens y la tarjeta de F1b.
@@ -104,7 +104,10 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 
 - 2026-10-04 — Fase 4: `ProductDetails` (Server Component) con dos `<details>`: "Detalles del producto" abierto (marca, categoría, EAN, venta) y "Descripción y presentación" plegado con `attributes` (el contrato no trae descripción propia); títulos en `h2`; las filas van con borde, no `bg-muted`, por AA — implementación y revisión.
 
+- 2026-10-04 — Fase 5: `StoreHeader` pasa a `{ store, children? }` (la página mete `FavoriteButton` en Suspense y `ContactButtons`); "Abierto · cierra" queda fuera de F2b porque `GET /stores/{slug}` no trae `is_open`/`closes_at` (M-9); las pestañas de categoría de W07 también, porque `Store` no trae conteos — implementación.
+
 ## Notas para la próxima sesión
+- Fase 5 hecha: e2e product, cart, search y checkout en verde (26 y 1 skipped previo).
 - Fase 4 hecha: P15 usa pestañas ("Detalles" y "Retiro y entrega") y P06 una fila a `#detalles`; aquí son plegables como pidió el alcance (comparar en la fase 7).
 - Fase 3 hecha: barra fija en móvil sobre `MobileNav` (`bottom-(--toast-bottom)`) y pegada en la columna desde `md`; e2e product, cart y checkout en verde. La fase 7 compara la barra con P15/P06 en claro y oscuro.
 - Fase 2 hecha: e2e product, cart y checkout en verde (18 y 1 `fixme` previo). `npx next build` no termina por la ruta sin trackear `app/preview/rediseno/[pantalla]` (de F0, sin commitear): la puerta de la fase 7 debe resolverlo. En dev sale el aviso "runtime data during prerendering" por `await params` fuera de Suspense: es intencional (regla seo 7) y `generateStaticParams` existe. P06 pliega "Fuera de tu zona" en móvil; aquí sigue desplegado (ver fase 7).
@@ -127,4 +130,12 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - [ ] M-7 — Prueba de `ProductOffers` async: sin carrito o con restricción no hay barra, e `is_best_price` define la elegida.
   posven-ecommerce · baja · sonnet
 - [ ] M-8 — Tiendas sin `accepts_orders` muestran "Elegir" y la barra sólo dice que no reciben pedidos: confirmar el estado con el lienzo.
+  posven-ecommerce · baja · sonnet
+- [ ] M-9 — `is_open` y `closes_at` en `GET /stores/{slug}` (posveapi, spec §3 primero) para que la cabecera de tienda muestre "Abierto · cierra HH:MM"; puede ir junto a la M-23 de F1b (`open_now` en `/products/nearby`).
+  posveapi + posven-ecommerce · alta · plan nuevo
+- [ ] M-10 — `StoreProductsSkeleton` usa `h-32`, más bajo que la tarjeta nueva: salto de layout al cargar.
+  posven-ecommerce · baja · sonnet
+- [ ] M-11 — `sizes` de `ProductThumb` acordes a la rejilla de 2 a 4 columnas de `StoreProducts`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-12 — Tests de `StoreHeader` (portada sólo premium, hijos) pendientes desde RN-STORE-04.
   posven-ecommerce · baja · sonnet

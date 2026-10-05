@@ -55,11 +55,25 @@ async function verifyEmail(page: Page): Promise<void> {
 async function emptyCart(page: Page): Promise<void> {
   await page.goto("/carrito");
   const remove = page.getByRole("button", { name: /^Quitar: / });
+  // El carrito llega en streaming: sin esta espera el conteo ve el esqueleto, da 0 y no vacía nada.
+  await expect(remove.first().or(page.getByText("Tu carrito está vacío."))).toBeVisible();
   while ((await remove.count()) > 0) {
     const before = await remove.count();
     await remove.first().click();
     await expect(remove).toHaveCount(before - 1);
   }
+}
+
+// React marca con __reactProps$ cada nodo del DOM que ya hidrató. Con el servidor recién arrancado
+// un clic en "Pagar" antes de eso no dispara la acción; se espera la marca y recién se hace el clic
+// (uno solo: no se reintenta, para no pagar dos veces).
+async function clickPay(page: Page): Promise<void> {
+  const pay = page.getByRole("button", { name: /^Pagar Bs / });
+  await expect(pay).toBeEnabled();
+  await expect
+    .poll(() => pay.evaluate((node) => Object.keys(node).some((key) => key.startsWith("__reactProps$"))), { timeout: 15_000 })
+    .toBe(true);
+  await pay.click();
 }
 
 function cartLink(page: Page, name: string) {
@@ -87,7 +101,7 @@ test.describe("checkout y compras", () => {
     const overflows = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     expect(overflows).toBe(false);
 
-    await page.getByRole("button", { name: /^Pagar Bs / }).click();
+    await clickPay(page);
     await expect(page).toHaveURL(/\/checkout\/resultado\?compra=[A-HJKMNP-Z2-9]{8}$/, { timeout: 15_000 });
     await expect(page.getByRole("heading", { level: 1, name: "¡Pago confirmado!" })).toBeVisible({ timeout: 15_000 });
 
@@ -208,7 +222,7 @@ test.describe("checkout y compras", () => {
     ).toBeChecked();
     await expect(page.getByText("Envío")).toBeVisible();
 
-    await page.getByRole("button", { name: /^Pagar Bs / }).click();
+    await clickPay(page);
     await expect(page).toHaveURL(/\/checkout\/resultado\?compra=[A-HJKMNP-Z2-9]{8}$/, { timeout: 15_000 });
     await expect(page.getByRole("heading", { level: 1, name: "¡Pago confirmado!" })).toBeVisible({ timeout: 15_000 });
     const steps = page.getByRole("list", { name: "Estado del pedido" });
@@ -229,7 +243,7 @@ test.describe("checkout y compras", () => {
     const quantity = await page.getByRole("group", { name: /^Cantidad de Acetaminofén/ }).textContent();
 
     await page.goto("/checkout");
-    await page.getByRole("button", { name: /^Pagar Bs / }).click();
+    await clickPay(page);
     await expect(page.getByRole("heading", { level: 1, name: "El pago no se completó" })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText("Tu carrito sigue igual.")).toBeVisible();
 

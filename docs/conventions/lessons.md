@@ -69,3 +69,9 @@ aplicada en: `.claude/rules/tests.md`
 lectura se repite. Quien comparte un `cache` con otro llamador lo invoca con los mismos argumentos
 (sin el valor por defecto explícito), y una prueba memoizando por argumentos lo fija.
 aplicada en: `features/cart/__tests__/cart.test.ts`
+
+## L-13
+En el e2e, `locator.count()` devuelve lo que hay en ese instante: con una página en streaming
+cuenta el esqueleto y un bucle que vacía o recorre termina sin hacer nada. Se espera antes el
+elemento o su estado vacío (`expect(a.or(b)).toBeVisible()`).
+aplicada en: `.claude/rules/tests.md`

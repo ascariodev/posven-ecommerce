@@ -40,6 +40,8 @@ paths:
    en el servidor, y registran un comprador nuevo en cada corrida para ser repetibles.
    `checkout.spec.ts` usa además sus cuentas sembradas propias (`entrega@posven.test` y
    `pago-fallido@posven.test`) y les vacía el carrito al terminar.
+   `locator.count()` no espera: antes de contar algo que llega en streaming se espera una señal
+   de que ya pintó (el elemento o su estado vacío), o se cuenta el esqueleto.
 8. Vitest corre sin `globals`, así que Testing Library no desmonta sola: toda prueba `.tsx` llama
    `cleanup()` en `afterEach`. Un Server Component async se prueba con `render(await Comp(props))`,
    como en `features/store/__tests__/NearbyStores.test.tsx`.

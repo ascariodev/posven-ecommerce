@@ -177,10 +177,11 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [x] M-10 — `chargeText` está copiado en `CheckoutForm`, `PurchaseDetail` y `CheckoutResult`:
   moverlo a `features/purchases/lib/labels.ts`. Repo posven-ecommerce · complejidad baja · modelo
   sonnet.
-- [ ] M-11 — El e2e de compra puede fallar con el servidor recién arrancado (probable clic en
+- [x] M-11 — El e2e de compra puede fallar con el servidor recién arrancado (probable clic en
   "Pagar" antes de hidratar): esperar una señal de hidratación antes del clic en
   `e2e/checkout.spec.ts`, sin riesgo de pagar dos veces. Repo posven-ecommerce · complejidad media
-  · modelo sonnet.
+  · modelo sonnet. Además `emptyCart` esperaba al carrito en streaming:
+  contaba el esqueleto, no vaciaba y la prueba de entrega pagaba la línea de Abasto que dejaba la anterior.
 - [x] M-12 — En el resultado a 375 px "pagaste Bs …" se parte en dos renglones
   (`CheckoutResult.tsx`). Repo posven-ecommerce · complejidad baja · modelo sonnet.
 - [ ] M-13 — Diferencias con el lienzo del carrito: cabecera de tienda con distancia y estado
@@ -194,3 +195,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   posven-ecommerce · complejidad baja · modelo sonnet. Aplicada del lado de la UI: la API real nunca
   pone `ready_at` en una entrega (sólo `dispatched_at`) y el simulado ya la imita, así que
   `orderSteps` deja Preparando sin fecha en la entrega.
+- [ ] M-16 — Con el servidor recién compilado y 6 workers, otros clics del e2e (`add` en
+  `checkout.spec.ts`, el formulario de `signIn` en `account.spec.ts`) llegan antes de hidratar y
+  fallan en la primera corrida; las siguientes pasan (48/48). Llevar la espera de `clickPay` a un
+  helper común en `e2e/`. Repo posven-ecommerce · complejidad media · modelo sonnet.

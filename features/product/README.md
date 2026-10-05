@@ -28,7 +28,7 @@ capabilities:
     entrypoint: "<ProductOffers />"
     file: "features/product/components/ProductOffers.tsx"
     input: "product: { slug, name, restriction }; searchParams con orden=cerca opcional; lee la cookie loc; se monta en <Suspense fallback={<ProductOffersSkeleton />}>"
-    output: "sección 'Dónde comprarlo': tasa, SortLinks con ubicación, destacadas y ofertas del radio en un OfferCard cada una (con orden por precio y sin destacadas, la primera oferta lleva 'Mejor precio'), las de outside_radius bajo 'Fuera de tu zona'; sin ofertas, 'No hay ofertas cerca. Prueba con otra ciudad.'"
+    output: "sección 'Dónde comprarlo': tasa, SortLinks con ubicación, destacadas y ofertas del radio en un OfferCard cada una (cada una lleva 'Mejor precio' sólo si la API manda is_best_price), las de outside_radius bajo 'Fuera de tu zona'; sin ofertas, 'No hay ofertas cerca. Prueba con otra ciudad.'"
     source: "getProductOffers() de lib/marketplace con geo de getEffectiveLocation() y DEFAULT_RADIUS_KM"
     rules: ["RN-PRODUCT-03", "RN-PRODUCT-04", "RN-PRODUCT-05"]
 ---
@@ -49,7 +49,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 | `RN-PRODUCT-02` | Un producto sin ofertas en el país muestra "Sin disponibilidad ahora." y lleva `noindex`. | `features/product/__tests__/metadata.test.ts` ("sin ofertas lleva noindex y la descripción de sin disponibilidad"); `e2e/product.spec.ts` ("un producto sin ofertas muestra sin disponibilidad y lleva noindex") |
 | `RN-PRODUCT-03` | Las ofertas destacadas, dos como máximo, van primero y no se repiten; las de fuera del radio van bajo "Fuera de tu zona". | `features/product/__tests__/ProductOffers.test.tsx` ("las destacadas van primero con Destacado y las de fuera del radio bajo Fuera de tu zona") |
 | `RN-PRODUCT-04` | "Más cerca" sólo se ofrece con ubicación; sin ella el orden es por precio. | `features/product/__tests__/ProductOffers.test.tsx` ("sin ubicación no ofrece Más cerca y pide sort price aunque venga orden=cerca", "con coordenadas y orden=cerca pide sort distance y radiusKm 10") |
-| `RN-PRODUCT-05` | "Mejor precio" va sólo en la primera oferta normal (la primera de `offers` dentro del radio), con orden por precio y sin destacadas. Ni las destacadas, ni "Fuera de tu zona", ni la vista "Más cerca" la llevan. | `features/product/__tests__/ProductOffers.test.tsx` ("con orden por precio y sin destacadas marca Mejor precio una sola vez, en la primera oferta", "con destacadas no marca Mejor precio, porque una destacada puede ser más barata", "con orden=cerca y ubicación no marca Mejor precio", "en Fuera de tu zona no marca Mejor precio") |
+| `RN-PRODUCT-05` | "Mejor precio" sale de `is_best_price` de la oferta, que la API calcula; sin el campo no se marca. No depende de la posición, del orden ni de la lista. | `features/product/__tests__/OfferCard.test.tsx` ("Mejor precio sale de is_best_price y no de la posición"); `features/product/__tests__/ProductOffers.test.tsx` ("marca Mejor precio sólo donde la API manda is_best_price, sea cual sea la posición", "una destacada con is_best_price lleva Mejor precio y sin el campo nadie lo lleva", "sin is_best_price en la respuesta no marca Mejor precio, ni en el orden Más cerca") |
 
 ## 3. Dónde hacer cambios
 
@@ -58,7 +58,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 | Título, descripción, canónica o `noindex` del producto | `productMetadata` en `lib/metadata.ts` | `__tests__/metadata.test.ts`; la regla `seo` de `.claude/rules/seo.md` |
 | Campos del JSON-LD de producto | `productJsonLd` en `lib/jsonld.ts` | `__tests__/jsonld.test.ts`; se serializa sólo con `serializeJsonLd` de `lib/jsonld.ts` |
 | Qué se pide a la API para las ofertas u orden por defecto | la llamada a `getProductOffers` y `sort` en `components/ProductOffers.tsx` | `__tests__/ProductOffers.test.tsx`; las claves las fija `productQuery` de `lib/marketplace/params.ts` |
-| Datos o aspecto de una oferta | `components/OfferCard.tsx` | montos sólo por `formatUsd`/`formatVes`, distancia por `formatDistance`, fecha por `formatUpdatedAgo` |
+| Datos o aspecto de una oferta | `components/OfferCard.tsx` | `__tests__/OfferCard.test.tsx`; montos sólo por `formatUsd`/`formatVes`, distancia por `formatDistance`, fecha por `formatUpdatedAgo`; mejor precio y horario vienen de la API |
 | Opciones de orden | `components/SortLinks.tsx` | el valor `orden=cerca` que lee `components/ProductOffers.tsx` |
 | Rango de precio del panel | `components/PriceSummary.tsx` | `__tests__/PriceSummary.test.tsx`; sólo dólares y de `offers_summary`, sin cálculo |
 | Migas de pan | `app/p/[slug]/page.tsx` | el `BreadcrumbList` lleva sólo Inicio y el producto; las categorías son texto (`/categoria/<slug>` no existe) |
@@ -71,7 +71,7 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 - `productJsonLd(product: ProductDetail): object`, `features/product/lib/jsonld.ts`
 - `PriceSummary({ summary }: { summary: OffersSummary }): React.JSX.Element | null`, Server Component puro, `features/product/components/PriceSummary.tsx`
 - `SortLinks({ slug, sort }: { slug: string; sort: OfferSort })`, `features/product/components/SortLinks.tsx`
-- `OfferCard({ offer, product, featured, best, now }: { offer: ProductOffer; product: { slug: string; name: string; restriction: Restriction }; featured: boolean; best: boolean; now: Date })`, `features/product/components/OfferCard.tsx`
+- `OfferCard({ offer, product, featured, now }: { offer: ProductOffer; product: { slug: string; name: string; restriction: Restriction }; featured: boolean; now: Date })`, `features/product/components/OfferCard.tsx`
 - `ProductOffers({ product, searchParams }: { product: Pick<ProductDetail, "slug" | "name" | "restriction">; searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/product/components/ProductOffers.tsx`
 - `ProductOffersSkeleton()`, fallback de `ProductOffers`, `features/product/components/ProductOffers.tsx`
 
@@ -84,8 +84,8 @@ calcula precios (la API entrega el orden, los destacados y `offers_summary`).
 | JSON-LD | `lib/jsonld.ts` | `Product` con URL absoluta por `SITE_URL`, `Brand`, `gtin`, categoría y `AggregateOffer` |
 | Resumen de precio | `components/PriceSummary.tsx` | "Desde $X", "hasta $Y" si la cadena del máximo difiere de la del mínimo, "en N tiendas" y "Precio en todo el país"; nada si `low_price_usd` es `null` |
 | Orden | `components/SortLinks.tsx` | enlaces "Menor precio" y "Más cerca" con `toggleVariants` (`data-state`) y `aria-current="true"` en el activo |
-| Oferta | `components/OfferCard.tsx` | fila con enlace a `/tienda/{slug}`, ciudad, distancia, precios, "Mejor precio" (`best`), "Destacado", "Pocas unidades", antigüedad, `AddToCartButton` (con el carrito encendido, tienda con `accepts_orders` y producto sin restricción, `RN-CART-03`) y `ContactButtons` |
-| Ofertas | `components/ProductOffers.tsx` | ubicación efectiva, `sort` y radio, la llamada a `getProductOffers`, el reparto en destacadas, radio y "Fuera de tu zona"; `best` sólo en la primera del radio con orden por precio |
+| Oferta | `components/OfferCard.tsx` | fila con enlace a `/tienda/{slug}`, ciudad, distancia, precios, "Mejor precio" (`offer.is_best_price`), "Destacado", "Abierto · cierra HH:MM", "Abierto" o "Cerrado" (`is_open` y `closes_at`; nada si `is_open` falta), "Pocas unidades", antigüedad, `AddToCartButton` (con el carrito encendido, tienda con `accepts_orders` y producto sin restricción, `RN-CART-03`) y `ContactButtons` |
+| Ofertas | `components/ProductOffers.tsx` | ubicación efectiva, `sort` y radio, la llamada a `getProductOffers`, el reparto en destacadas, radio y "Fuera de tu zona"; sin marcas propias: `OfferCard` lee `is_best_price` |
 | Página | `app/p/[slug]/page.tsx` | `generateStaticParams` (20 slugs o `__vacio`), `generateMetadata`, migas (sólo "Inicio" es enlace; `BreadcrumbList` Inicio y producto), ficha en dos columnas (imagen y panel con `PriceSummary`, sin `sticky`), `ViewBeacon` y `ProductOffers` en `<Suspense>` |
 
 ## 6. Dependencias
@@ -114,9 +114,9 @@ const { data: product } = await loadProduct(slug);
 
 ## 8. Restricciones
 
-- "Mejor precio" (`RN-PRODUCT-05`) no va con destacadas porque la API las saca de `offers` y una
-  puede ser más barata que la primera normal. El frontend no compara precios: la marca sale del
-  orden de la API.
+- "Mejor precio" (`RN-PRODUCT-05`) es el mínimo entre las ofertas servidas y lo decide la API
+  (`is_best_price`): el frontend no compara precios ni infiere la marca por posición. Tampoco
+  calcula horarios: `is_open` y `closes_at` se muestran tal cual.
 
 - "Agregar al carrito" sale en las tres listas de ofertas (destacadas, del radio y "Fuera de tu zona") sólo si `cartEnabled()`, `store.accepts_orders` y `restriction: "none"`; con el carrito encendido, el panel de la ficha muestra "Requiere récipe, consúltalo en la tienda." o "Venta controlada, consúltalo en la tienda." en lugar de la insignia "Requiere récipe" (`RN-CART-03`, enmienda E de cuentas-y-compras).
 
@@ -133,5 +133,6 @@ const { data: product } = await loadProduct(slug);
 - Comando: `npx vitest run features/product`; los códigos 404 y 308, con `next build` y `next start`.
 - `features/product/__tests__/metadata.test.ts`: canónica, descripción en plural y singular, `noindex` sin ofertas.
 - `features/product/__tests__/jsonld.test.ts`: `AggregateOffer` desde `offers_summary`, sin `offers` ni `gtin` cuando faltan.
-- `features/product/__tests__/ProductOffers.test.tsx`: destacadas primero, "Fuera de tu zona", orden y radio según ubicación, respuesta `null` y "Mejor precio" (cuatro casos de RN-PRODUCT-05).
+- `features/product/__tests__/ProductOffers.test.tsx`: destacadas primero, "Fuera de tu zona", orden y radio según ubicación, respuesta `null` y "Mejor precio" (tres casos de RN-PRODUCT-05).
+- `features/product/__tests__/OfferCard.test.tsx`: tienda con enlace y nombre en el botón, contacto, "Mejor precio" por `is_best_price` y estados de horario.
 - `features/product/__tests__/PriceSummary.test.tsx`: rango con y sin máximo distinto, "en 1 tienda" y "en N tiendas", sin precio mínimo no pinta nada.

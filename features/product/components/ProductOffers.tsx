@@ -49,12 +49,12 @@ export async function ProductOffers({
         <ul aria-label="Ofertas" className="flex flex-col gap-3">
           {page.featured.map((offer) => (
             <li key={`destacada:${offer.store.slug}`}>
-              <OfferCard offer={offer} product={product} featured best={false} now={now} />
+              <OfferCard offer={offer} product={product} featured now={now} />
             </li>
           ))}
-          {inside.map((offer, index) => (
+          {inside.map((offer) => (
             <li key={offer.store.slug}>
-              <OfferCard offer={offer} product={product} featured={false} best={sort === "price" && page.featured.length === 0 && index === 0} now={now} />
+              <OfferCard offer={offer} product={product} featured={false} now={now} />
             </li>
           ))}
         </ul>
@@ -65,7 +65,7 @@ export async function ProductOffers({
           <ul aria-label="Fuera de tu zona" className="flex flex-col gap-3">
             {outside.map((offer) => (
               <li key={offer.store.slug}>
-                <OfferCard offer={offer} product={product} featured={false} best={false} now={now} />
+                <OfferCard offer={offer} product={product} featured={false} now={now} />
               </li>
             ))}
           </ul>

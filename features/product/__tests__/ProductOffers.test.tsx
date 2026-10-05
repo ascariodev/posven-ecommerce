@@ -125,31 +125,32 @@ describe("ProductOffers", () => {
     expect(screen.getByRole("link", { name: "Más cerca" }).getAttribute("aria-current")).toBe("true");
   });
 
-  it("con orden por precio y sin destacadas marca Mejor precio una sola vez, en la primera oferta", async () => {
-    const first = offer("abasto-la-esquina", "Abasto La Esquina", { price_usd: "2.50" });
-    const second = offer("farmacia-altamira", "Farmacia Altamira", { price_usd: "2.70" });
+  it("marca Mejor precio sólo donde la API manda is_best_price, sea cual sea la posición", async () => {
+    const first = offer("abasto-la-esquina", "Abasto La Esquina", { price_usd: "2.70", is_best_price: false });
+    const second = offer("farmacia-altamira", "Farmacia Altamira", { price_usd: "2.50", is_best_price: true });
     vi.mocked(getProductOffers).mockResolvedValue(page([first, second], []));
 
     render(await ProductOffers({ product, searchParams: searchParams({}) }));
 
     expect(screen.getAllByText("Mejor precio")).toHaveLength(1);
     const items = within(screen.getByRole("list", { name: "Ofertas" })).getAllByRole("listitem");
-    expect(within(items[0]).getByText("$ 2,50")).toBeTruthy();
-    expect(within(items[0]).getByText("Mejor precio")).toBeTruthy();
-    expect(within(items[1]).queryByText("Mejor precio")).toBeNull();
+    expect(within(items[0]).queryByText("Mejor precio")).toBeNull();
+    expect(within(items[1]).getByText("Mejor precio")).toBeTruthy();
   });
 
-  it("con destacadas no marca Mejor precio, porque una destacada puede ser más barata", async () => {
-    const premium = offer("farmacia-central-valencia", "Farmacia Central", { price_usd: "1.60" });
+  it("una destacada con is_best_price lleva Mejor precio y sin el campo nadie lo lleva", async () => {
+    const premium = offer("farmacia-central-valencia", "Farmacia Central", { price_usd: "1.60", is_best_price: true });
     const first = offer("abasto-la-esquina", "Abasto La Esquina", { price_usd: "1.75" });
     vi.mocked(getProductOffers).mockResolvedValue(page([first], [premium]));
 
     render(await ProductOffers({ product, searchParams: searchParams({}) }));
 
-    expect(screen.queryByText("Mejor precio")).toBeNull();
+    const items = within(screen.getByRole("list", { name: "Ofertas" })).getAllByRole("listitem");
+    expect(within(items[0]).getByText("Mejor precio")).toBeTruthy();
+    expect(within(items[1]).queryByText("Mejor precio")).toBeNull();
   });
 
-  it("con orden=cerca y ubicación no marca Mejor precio", async () => {
+  it("sin is_best_price en la respuesta no marca Mejor precio, ni en el orden Más cerca", async () => {
     vi.mocked(getEffectiveLocation).mockResolvedValueOnce({
       location: { kind: "coords", lat: 10.18, lng: -68.0 },
       name: "Tu ubicación actual",
@@ -158,16 +159,6 @@ describe("ProductOffers", () => {
 
     render(await ProductOffers({ product, searchParams: searchParams({ orden: "cerca" }) }));
 
-    expect(screen.queryByText("Mejor precio")).toBeNull();
-  });
-
-  it("en Fuera de tu zona no marca Mejor precio", async () => {
-    const far = offer("farmacia-altamira", "Farmacia Altamira", { outside_radius: true });
-    vi.mocked(getProductOffers).mockResolvedValue(page([far], []));
-
-    render(await ProductOffers({ product, searchParams: searchParams({}) }));
-
-    expect(screen.getByRole("list", { name: "Fuera de tu zona" })).toBeTruthy();
     expect(screen.queryByText("Mejor precio")).toBeNull();
   });
 

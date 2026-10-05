@@ -3,7 +3,7 @@
 **Objetivo:** las pantallas de F2 del lienzo "E · PosVen": ficha de producto con la lista de
 tiendas para elegir, barra de compra fija y detalles plegables; página de tienda con portada; y
 directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el contrato de F2a.
-**Estado:** pendiente: espera F1b y el plan F2a (`posven/.claude/docs/plans/rediseno-posven-f2a-contrato.md`)
+**Estado:** en curso: fase 2 de 7
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2, §4 (`ui.md`), §5 (ficha `P15`/`P06`,
@@ -41,7 +41,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 
 ## Fases
 
-### [ ] Fase 1 — `OfferCard` con tienda, contacto, mejor precio y horario
+### [x] Fase 1 — `OfferCard` con tienda, contacto, mejor precio y horario
 - **Repo:** posven-ecommerce
 - **Alcance:** `OfferCard` según `P15`/`P06`: nombre de la tienda con enlace a `/tienda/<slug>`,
   `ContactButtons` (WhatsApp y llamada), pill "Mejor precio" desde `is_best_price` (deja de ser
@@ -96,7 +96,14 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - 2026-10-04 — Ruta del directorio: `/tiendas` (`/comercios` sigue siendo la captación) — propuesta
   de quien planifica, aprobada por el usuario.
 
+- 2026-10-04 — Fase 1: `OfferCard` queda `{ offer, product, featured, now }` (sin `best`); `now` sólo alimenta `formatUpdatedAgo` — implementación.
+
 ## Notas para la próxima sesión
-- Antes de la fase 1, confirmar que F1b y F2a están terminados.
+- Fase 1 hecha: `OfferCard` con enlace a la tienda, `ContactButtons`, pill desde `is_best_price` y horario desde `is_open`/`closes_at`; `ProductOffers` ya no marca por posición. En la fase 2, comprobar contra `P15` si `ContactButtons` debe llevar "Ver ruta" (hoy trae WhatsApp, llamada y ruta).
+- F1b y F2a terminados el 2026-10-04 (F2a en `posven/.claude/docs/plans/terminados/`); `is_best_price` es el mínimo entre las ofertas servidas y las ofertas a precio 0 no se publican (F2a M-5 y M-6).
 
 ## Mejoras propuestas
+- [ ] M-1 — Enlace del nombre de tienda en `OfferCard` con `inline-flex min-h-11 items-center` (zona táctil de 44 px).
+  posven-ecommerce · baja · sonnet
+- [ ] M-2 — `OfferCard.test.tsx`: caso sin "Agregar al carrito" con restricción distinta de `none` o sin `accepts_orders`.
+  posven-ecommerce · baja · sonnet

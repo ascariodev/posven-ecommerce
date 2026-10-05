@@ -1,9 +1,9 @@
 import Image from "next/image";
-import type { NearbyStore } from "@/lib/marketplace/schemas";
+import type { StoreSummary } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
 import { storeInitials } from "../lib/initials";
 
-export function StoreLogo({ store, className }: { store: NearbyStore; className: string }) {
+export function StoreLogo({ store, className }: { store: Pick<StoreSummary, "name" | "is_premium" | "logo_url">; className: string }) {
   if (store.is_premium && store.logo_url !== null) {
     return (
       <Image

@@ -95,7 +95,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 - `StoreCard({ store, featured }: { store: NearbyStore; featured?: boolean })`, `features/store/components/StoreCard.tsx`
 - `NearbyStores(): Promise<React.JSX.Element | null>`, Server Component sin props, `features/store/components/NearbyStores.tsx`; `null` ante `MarketplaceUnavailableError`
 - `SponsoredStore({ store }: { store: NearbyStore })`, `features/store/components/SponsoredStore.tsx`: enlace a `/tienda/{slug}` con "PATROCINADO", logo, nombre, ciudad y distancia, etiqueta de abierto y "Ver tienda"
-- `StoreLogo({ store, className }: { store: NearbyStore; className: string })`, `features/store/components/StoreLogo.tsx`
+- `StoreLogo({ store, className }: { store: Pick<StoreSummary, "name" | "is_premium" | "logo_url">; className: string })`, `features/store/components/StoreLogo.tsx`
 - `StoreOpenBadge({ store }: { store: NearbyStore })`, `features/store/components/StoreCard.tsx`
 - `NearbyStoresSkeleton()`, fallback de `NearbyStores`, `features/store/components/NearbyStores.tsx`
 - `StoresDirectory({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/store/components/StoresDirectory.tsx`

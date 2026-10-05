@@ -55,18 +55,13 @@ export function AccountNav({
                     <span
                       className={cn(
                         "flex size-8 items-center justify-center rounded-md",
-                        active
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted",
+                        active ? "bg-primary text-primary-foreground" : "bg-muted"
                       )}
                     >
                       <Icon aria-hidden="true" className="size-4" />
                     </span>
                     <span className="flex-1">{label}</span>
-                    <ChevronRight
-                      aria-hidden="true"
-                      className="size-4 text-muted-foreground"
-                    />
+                    <ChevronRight aria-hidden="true" className="size-4 text-muted-foreground" />
                   </Link>
                 </li>
               );
@@ -98,9 +93,7 @@ export function AccountNav({
                     aria-current={active ? "page" : undefined}
                     className={cn(
                       "flex min-h-11 items-center border-b-2 px-3 text-sm font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-foreground",
-                      active
-                        ? "border-primary text-foreground"
-                        : "border-transparent text-muted-foreground",
+                      active ? "border-primary text-foreground" : "border-transparent text-muted-foreground"
                     )}
                   >
                     {label}

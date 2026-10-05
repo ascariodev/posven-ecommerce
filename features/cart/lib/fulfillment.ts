@@ -1,6 +1,8 @@
 // Entrega elegida por tienda en la URL (`f-<tienda>=delivery`; retiro por defecto). La leen el
 // carrito y el checkout, y la usa también el formulario del cliente: sin `server-only`.
 
+import type { CartStore } from "@/lib/marketplace/schemas";
+
 export type SearchParams = Record<string, string | string[] | undefined>;
 
 export const FULFILLMENT_PARAM_PREFIX = "f-";
@@ -38,4 +40,13 @@ export function checkoutPathFor(delivery: string[]): string {
   setDeliveryParams(query, delivery);
   const search = query.toString();
   return search === "" ? "/checkout" : `/checkout?${search}`;
+}
+
+type DeliveryFee = Pick<CartStore, "delivery_fee_usd" | "delivery_fee_ves">;
+
+// La tienda cotiza entrega sólo si la API manda la tarifa en las dos monedas.
+export function hasDeliveryFee<T extends DeliveryFee>(
+  entry: T,
+): entry is T & { delivery_fee_usd: string; delivery_fee_ves: string } {
+  return entry.delivery_fee_usd != null && entry.delivery_fee_ves != null;
 }

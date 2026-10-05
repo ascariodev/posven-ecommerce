@@ -150,7 +150,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
 ## Mejoras propuestas
 - [x] M-1 — Reflujar el comentario de `features/cart/server/cart.ts:18-21` a ~100 caracteres por
   línea. Repo posven-ecommerce · complejidad baja · modelo sonnet.
-- [ ] M-2 — Unificar en un helper la condición de "tienda con tarifa" (hoy `FulfillmentSwitch`
+- [x] M-2 — Unificar en un helper la condición de "tienda con tarifa" (hoy `FulfillmentSwitch`
   mira `delivery_fee_usd` y `CartStoreGroup` además `delivery_fee_ves`). Repo posven-ecommerce ·
   complejidad baja · modelo sonnet.
 - [ ] M-3 — `features/cart/__tests__/CartView.test.tsx`: afirmar el total del resumen dentro de su

@@ -4,6 +4,7 @@ import {
   checkoutPathFor,
   deliveryFromKey,
   deliveryKey,
+  hasDeliveryFee,
   readDeliveryStores,
 } from "@/features/cart/lib/fulfillment";
 
@@ -51,5 +52,16 @@ describe("cartPathWith", () => {
     expect(cartPathWith(["a", "b"], "a", false)).toBe("/carrito?f-b=delivery");
     expect(cartPathWith(["a"], "a", false)).toBe("/carrito");
     expect(cartPathWith(["a"], "a", true)).toBe("/carrito?f-a=delivery");
+  });
+});
+
+describe("hasDeliveryFee", () => {
+  it.each([
+    ["las dos monedas", { delivery_fee_usd: "1.50", delivery_fee_ves: "54.75" }, true],
+    ["sólo dólares", { delivery_fee_usd: "1.50", delivery_fee_ves: null }, false],
+    ["sólo bolívares", { delivery_fee_usd: null, delivery_fee_ves: "54.75" }, false],
+    ["sin campos", {}, false],
+  ])("con %s", (_name, fee, expected) => {
+    expect(hasDeliveryFee(fee)).toBe(expected);
   });
 });

@@ -5,6 +5,7 @@ import { formatUsd, formatVes } from "@/lib/format";
 import type { CartStore } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
 import { CartLine } from "./CartLine";
+import { hasDeliveryFee } from "../lib/fulfillment";
 import { FulfillmentSwitch } from "./FulfillmentSwitch";
 
 function Row({ label, value, strong, ok }: { label: string; value: string; strong?: boolean; ok?: boolean }) {
@@ -18,9 +19,7 @@ function Row({ label, value, strong, ok }: { label: string; value: string; stron
 
 export function CartStoreGroup({ entry, delivery }: { entry: CartStore; delivery: string[] }) {
   const { store } = entry;
-  const feeUsd = entry.delivery_fee_usd;
-  const feeVes = entry.delivery_fee_ves;
-  const delivering = entry.fulfillment === "delivery" && feeUsd != null && feeVes != null;
+  const delivering = entry.fulfillment === "delivery" && hasDeliveryFee(entry);
   const totalUsd = entry.total_usd ?? entry.subtotal_usd;
   const totalVes = entry.total_ves ?? entry.subtotal_ves;
   return (
@@ -49,7 +48,7 @@ export function CartStoreGroup({ entry, delivery }: { entry: CartStore; delivery
         <div className="flex flex-col gap-1.5 border-t border-border pt-3">
           <Row label="Productos" value={`${formatUsd(entry.subtotal_usd)} · ${formatVes(entry.subtotal_ves)}`} />
           {delivering ? (
-            <Row label="Entrega a domicilio" value={`${formatUsd(feeUsd)} · ${formatVes(feeVes)}`} />
+            <Row label="Entrega a domicilio" value={`${formatUsd(entry.delivery_fee_usd)} · ${formatVes(entry.delivery_fee_ves)}`} />
           ) : (
             <Row label="Retiro en tienda" value="Sin costo" ok />
           )}

@@ -180,10 +180,10 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
 - [x] M-5 (media, sonnet) — El héroe de `/ayuda` queda dentro del `max-w-5xl` del `<main>` del
   layout y no a ancho completo como en W12/P12 (`max-width: 1200px`). Decidir un patrón de sección a
   sangre para el sitio. `app/layout.tsx`, `features/help/components/HelpCenter.tsx`.
-- [ ] M-6 (baja, sonnet) — `.claude/rules/seo.md` ítem 3 podría listar `/ayuda` entre las indexables.
+- [x] M-6 (baja, sonnet) — `.claude/rules/seo.md` ítem 3 podría listar `/ayuda` entre las indexables.
 - [ ] M-7 (baja, sonnet) — `features/merchants/README.md`: `depends_on` omite `lib/utils.ts` y
   `lib/marketplace/schemas.ts` (tipo `Money`).
-- [ ] M-8 (baja, sonnet) — `.claude/rules/seo.md` pasa el tope orientativo (67 líneas): condensar.
+- [x] M-8 (baja, sonnet) — `.claude/rules/seo.md` pasa el tope orientativo (67 líneas): condensar.
 - [ ] M-9 (baja, sonnet) — `e2e/site.spec.ts`: la aserción de pasos de `/vende` es débil; comprobar
   los tres `h3` de los pasos.
 - [ ] M-10 (baja, sonnet) — Retirar la rama `merchant` del render de `MerchantContact` (sin llamadores

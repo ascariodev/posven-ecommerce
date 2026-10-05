@@ -8,10 +8,25 @@ import { order, purchase } from "@/features/purchases/__tests__/fixtures/testPur
 
 vi.mock("@/lib/marketplace/client", () => ({ listPurchases: vi.fn() }));
 
+const memos = vi.hoisted(() => [] as Map<string, unknown>[]);
+vi.mock("react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react")>()),
+  cache: <A extends unknown[], R>(fn: (...args: A) => R) => {
+    const memo = new Map<string, unknown>();
+    memos.push(memo);
+    return (...args: A): R => {
+      const key = JSON.stringify(args);
+      if (!memo.has(key)) memo.set(key, fn(...args));
+      return memo.get(key) as R;
+    };
+  },
+}));
+
 const ctx = { session: "7|token", clientIp: null };
 
 afterEach(() => {
   cleanup();
+  for (const memo of memos) memo.clear();
   vi.mocked(listPurchases).mockReset();
 });
 
@@ -144,5 +159,26 @@ describe("LastPurchase", () => {
 
     expect(screen.queryByRole("region", { name: "Para retirar" })).toBeNull();
     expect(screen.getByRole("region", { name: "Tu última compra" })).toBeTruthy();
+  });
+});
+
+describe("lectura compartida de listPurchases (L-12)", () => {
+  const page = { data: [purchase()], meta: { page: 1, per_page: 10, total: 1 } };
+
+  it("LastPurchase y RecentPurchases con el mismo ctx leen una sola vez", async () => {
+    vi.mocked(listPurchases).mockResolvedValue(page);
+
+    await Promise.all([LastPurchase({ ctx }), RecentPurchases({ ctx })]);
+
+    expect(listPurchases).toHaveBeenCalledTimes(1);
+    expect(listPurchases).toHaveBeenCalledWith(ctx, 1);
+  });
+
+  it("con un ctx distinto leen dos veces", async () => {
+    vi.mocked(listPurchases).mockResolvedValue(page);
+
+    await Promise.all([LastPurchase({ ctx }), RecentPurchases({ ctx: { session: "8|otro", clientIp: null } })]);
+
+    expect(listPurchases).toHaveBeenCalledTimes(2);
   });
 });

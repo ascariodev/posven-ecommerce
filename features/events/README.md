@@ -6,6 +6,7 @@ exports: ["EVENT_DEDUP_WINDOW_MS", "isBot", "createDeduper", "handleEvent", "sen
 depends_on: ["lib/marketplace/client.ts", "features/account/server/session.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "components/ui/button.tsx"]
 tests: "features/events/__tests__/*.test.{ts,tsx}"
 verified_against: ["features/events/lib/handle.ts", "features/events/lib/beacon.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "app/api/events/route.ts", "features/account/server/session.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "components/ui/button.tsx"]
+verified_at: "953bc45"
 capabilities:
   - intent: "registrar una vista, un clic de contacto, una búsqueda o un agregado al carrito de quien busca"
     intent_aliases: ["registrar evento", "contar visitas", "analitica de tienda", "clics de whatsapp", "vistas de producto", "busquedas", "agregar al carrito"]

@@ -74,10 +74,10 @@ describe("EmptyState", () => {
     expect(screen.queryByRole("link", { name: "Buscar en todo el país" })).toBeNull();
   });
 
-  it("siempre enlaza a /comercios", () => {
+  it("siempre enlaza a /vende", () => {
     renderEmpty(null, null);
     expect(screen.getByRole("link", { name: "¿Tienes un comercio? Aparece en posven" }).getAttribute("href")).toBe(
-      "/comercios",
+      "/vende",
     );
   });
 

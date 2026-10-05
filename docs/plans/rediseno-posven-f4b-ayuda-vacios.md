@@ -98,7 +98,7 @@ un estado vacío compartido.
 - **Terminado cuando:** `next build` sin errores y un e2e de `/vende` (canónica, secciones, CTA)
   pasa.
 
-### [ ] Fase 7 — `/comercios` redirige a `/vende`
+### [x] Fase 7 — `/comercios` redirige a `/vende`
 - **Repo:** posven-ecommerce
 - **Alcance:** redirección permanente (308) de `/comercios` a `/vende` según la guía de Next,
   retiro de `app/comercios/page.tsx`, enlaces del pie y de la búsqueda vacía a `/vende`, sitemap sin
@@ -149,6 +149,10 @@ un estado vacío compartido.
   quitó (mismo destino) y el héroe lleva "Cómo funciona" (`#como`). Pasos y beneficios reescritos a
   la spec; se quitaron "¿Cuánto cuesta aparecer?" y "¿Cómo recibo el dinero...?". La tarjeta de
   ejemplo usa `lib/format.ts` (distancia "a 800 m" en vez de "0,8 km" del lienzo).
+- 2026-10-05 — `/comercios` redirige con `redirects` de `next.config.ts` (`permanent: true`, 308);
+  `app/comercios/page.tsx` retirado. Los textos "Para comercios" del pie y de la búsqueda vacía se
+  conservan, cambia sólo el destino. `MerchantContact` en modo `merchant` queda sin llamadores en
+  páginas (se deja; ver M-10).
 
 ## Identificadores que estrena
 
@@ -185,3 +189,7 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
 - [ ] M-8 (baja, sonnet) — `.claude/rules/seo.md` pasa el tope orientativo (67 líneas): condensar.
 - [ ] M-9 (baja, sonnet) — `e2e/site.spec.ts`: la aserción de pasos de `/vende` es débil; comprobar
   los tres `h3` de los pasos.
+- [ ] M-10 (baja, sonnet) — Retirar la rama `merchant` del render de `MerchantContact` (sin llamadores
+  tras retirar `/comercios`), conservando el mensaje que usa `merchantContactHref`, y ajustar los
+  `intent_aliases` de `features/site/README.md`. `features/site/components/MerchantContact.tsx`, su
+  test, `features/site/README.md`, `docs/CAPABILITIES.md`.

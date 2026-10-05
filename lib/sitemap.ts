@@ -37,7 +37,7 @@ export async function sitemapEntries(id: string): Promise<MetadataRoute.Sitemap>
   if (id === STATIC_ID) {
     return [
       { url: SITE_URL },
-      ...["/tiendas", "/comercios", "/ayuda", "/vende", ...legalSitemapPaths()].map((path) => ({
+      ...["/tiendas", "/ayuda", "/vende", ...legalSitemapPaths()].map((path) => ({
         url: new URL(path, SITE_URL).href,
       })),
     ];

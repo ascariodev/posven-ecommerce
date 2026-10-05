@@ -33,7 +33,7 @@ describe("SiteFooter", () => {
       "href",
       expect.stringContaining("/buscar?categoria=salud"),
     );
-    expect(screen.getByRole("link", { name: "Para comercios" }).getAttribute("href")).toBe("/comercios");
+    expect(screen.getByRole("link", { name: "Para comercios" }).getAttribute("href")).toBe("/vende");
     expect(screen.getByRole("link", { name: "Centro de ayuda" }).getAttribute("href")).toBe("/ayuda");
     expect(screen.getByRole("link", { name: "Términos" }).getAttribute("href")).toBe("/terminos");
     expect(screen.getByRole("link", { name: "Privacidad" }).getAttribute("href")).toBe("/privacidad");

@@ -70,7 +70,7 @@ export async function SiteFooter() {
           </FooterColumn>
           <FooterColumn title="Comercios">
             <li>
-              <Link href="/comercios" className={linkClass}>
+              <Link href="/vende" className={linkClass}>
                 Para comercios
               </Link>
             </li>

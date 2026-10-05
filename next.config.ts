@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   output: "standalone",
   cacheComponents: true,
   poweredByHeader: false,
+  async redirects() {
+    return [{ source: "/comercios", destination: "/vende", permanent: true }];
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "media.posven.io" },

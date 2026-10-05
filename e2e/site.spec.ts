@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const FOOTER_LINKS = [
-  { name: "Para comercios", path: "/comercios" },
+  { name: "Para comercios", path: "/vende" },
   { name: "Términos", path: "/terminos" },
   { name: "Privacidad", path: "/privacidad" },
 ];
@@ -17,14 +17,10 @@ for (const { name, path } of FOOTER_LINKS) {
   });
 }
 
-test("/comercios tiene canónica propia y es indexable", async ({ page }) => {
-  await page.goto("/comercios");
-
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "http://localhost:3000/comercios",
-  );
-  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+test("/comercios redirige de forma permanente a /vende", async ({ request }) => {
+  const response = await request.get("/comercios", { maxRedirects: 0 });
+  expect(response.status()).toBe(308);
+  expect(new URL(response.headers().location, "http://localhost:3000").pathname).toBe("/vende");
 });
 
 test("/tiendas lista las tiendas, tiene canónica propia, es indexable y se llega desde el inicio", async ({
@@ -51,14 +47,14 @@ for (const path of ["/terminos", "/privacidad"]) {
   });
 }
 
-test("el sitemap static incluye /tiendas, /comercios, /ayuda, /vende y no las legales mientras son borrador", async ({
+test("el sitemap static incluye /tiendas, /ayuda, /vende y no las legales mientras son borrador", async ({
   request,
 }) => {
   const response = await request.get("/sitemap/static.xml");
   expect(response.status()).toBe(200);
   const sitemap = await response.text();
   expect(sitemap).toContain("http://localhost:3000/tiendas");
-  expect(sitemap).toContain("http://localhost:3000/comercios");
+  expect(sitemap).not.toContain("/comercios");
   expect(sitemap).toContain("http://localhost:3000/ayuda");
   expect(sitemap).toContain("http://localhost:3000/vende");
   expect(sitemap).not.toContain("/terminos");
@@ -89,7 +85,7 @@ test.describe("barra inferior en móvil", () => {
   test("la cabecera no envuelve el logo y la ubicación en 360 px ni 320 px", async ({ page }) => {
     for (const width of [360, 320]) {
       await page.setViewportSize({ width, height: 740 });
-      await page.goto("/comercios");
+      await page.goto("/vende");
       const logo = await page.locator("header").getByRole("link", { name: /\S/ }).first().boundingBox();
       const location = await page.locator("header").getByRole("button", { name: /^Buscar cerca de/ }).boundingBox();
       expect(logo).not.toBeNull();

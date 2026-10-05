@@ -46,11 +46,10 @@ describe("sitemapEntries", () => {
     expect(listSitemap).toHaveBeenCalledWith({ type: "products", page: 1 });
   });
 
-  it("static da la portada, /tiendas, /comercios, /ayuda y /vende sin llamar a la API", async () => {
+  it("static da la portada, /tiendas, /ayuda y /vende sin llamar a la API", async () => {
     expect(await sitemapEntries("static")).toEqual([
       { url: SITE_URL },
       { url: `${SITE_URL}/tiendas` },
-      { url: `${SITE_URL}/comercios` },
       { url: `${SITE_URL}/ayuda` },
       { url: `${SITE_URL}/vende` },
     ]);

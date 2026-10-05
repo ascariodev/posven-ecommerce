@@ -5,7 +5,7 @@ type: "feature"
 exports: ["SiteHeader", "MobileNav", "MobileNavSkeleton", "MobileNavLinks", "SiteFooter", "FooterCategories", "footerYear", "MerchantContact", "merchantContactHref", "LegalDocument", "LEGAL_DRAFT", "LEGAL_MARKERS", "LEGAL_PATHS", "legalMetadata", "legalSitemapPaths", "legalText", "termsDocument", "privacyDocument"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "features/search/lib/query.ts", "features/account/components/AccountMenu.tsx", "features/account/lib/returnPath.ts", "features/account/server/session.ts", "features/cart/components/CartLink.tsx", "features/cart/lib/flag.ts", "features/location/components/LocationBar.tsx", "features/search/components/HeaderSearchSlot.tsx", "features/search/components/SearchPill.tsx", "components/ui/button.tsx", "lib/utils.ts"]
 tests: "features/site/__tests__/*.test.tsx"
-verified_against: ["features/site/components/SiteHeader.tsx", "features/site/components/MobileNav.tsx", "features/site/components/MobileNavLinks.tsx", "e2e/site.spec.ts", "features/site/components/SiteFooter.tsx", "features/site/lib/year.ts", "features/site/__tests__/SiteFooter.test.tsx", "features/site/components/MerchantContact.tsx", "features/site/__tests__/MerchantContact.test.tsx", "app/comercios/page.tsx", "app/ayuda/page.tsx", "app/vende/page.tsx", "features/merchants/components/MerchantsLanding.tsx", "features/help/components/HelpCenter.tsx", "lib/sitemap.ts", "app/layout.tsx", "lib/site.ts", "features/search/lib/query.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "features/site/lib/legal.ts", "features/site/__tests__/legal.test.tsx", "features/site/components/LegalDocument.tsx", "features/site/lib/terms.ts", "app/terminos/page.tsx", "features/site/lib/privacy.ts", "app/privacidad/page.tsx", "features/account/server/session.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/location/lib/cookie.ts", "features/location/server/actions.ts", "app/api/events/route.ts", "features/events/lib/handle.ts", "app/globals.css", "components/ui/sonner.tsx"]
+verified_against: ["features/site/components/SiteHeader.tsx", "features/site/components/MobileNav.tsx", "features/site/components/MobileNavLinks.tsx", "e2e/site.spec.ts", "features/site/components/SiteFooter.tsx", "features/site/lib/year.ts", "features/site/__tests__/SiteFooter.test.tsx", "features/site/components/MerchantContact.tsx", "features/site/__tests__/MerchantContact.test.tsx", "app/ayuda/page.tsx", "app/vende/page.tsx", "features/merchants/components/MerchantsLanding.tsx", "features/help/components/HelpCenter.tsx", "lib/sitemap.ts", "next.config.ts", "app/layout.tsx", "lib/site.ts", "features/search/lib/query.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "features/site/lib/legal.ts", "features/site/__tests__/legal.test.tsx", "features/site/components/LegalDocument.tsx", "features/site/lib/terms.ts", "app/terminos/page.tsx", "features/site/lib/privacy.ts", "app/privacidad/page.tsx", "features/account/server/session.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/location/lib/cookie.ts", "features/location/server/actions.ts", "app/api/events/route.ts", "features/events/lib/handle.ts", "app/globals.css", "components/ui/sonner.tsx"]
 capabilities:
   - intent: "mostrar la cabecera del sitio con la ubicación visible"
     intent_aliases: ["cabecera", "header", "barra superior", "ubicacion visible", "buscar cerca de"]
@@ -28,7 +28,7 @@ capabilities:
     entrypoint: "<SiteFooter />"
     file: "features/site/components/SiteFooter.tsx"
     input: "sin props; se monta en app/layout.tsx después de <main>"
-    output: "footer con columnas Marca (SITE_NAME y SITE_DESCRIPTION), Categorías (hasta 8 raíces de listCategories() hacia /buscar?categoria=<slug>), Ayuda (/ayuda), Comercios (/comercios), Legal (/terminos y /privacidad) y la línea '© <año> SITE_NAME'; sin API o sin raíces no pinta la columna de categorías"
+    output: "footer con columnas Marca (SITE_NAME y SITE_DESCRIPTION), Categorías (hasta 8 raíces de listCategories() hacia /buscar?categoria=<slug>), Ayuda (/ayuda), Comercios (/vende), Legal (/terminos y /privacidad) y la línea '© <año> SITE_NAME'; sin API o sin raíces no pinta la columna de categorías"
     source: "listCategories() de lib/marketplace/client.ts y footerYear()"
     rules: ["RN-SITE-01", "RN-SITE-02"]
   - intent: "ofrecer contacto a un comercio que quiere aparecer en el buscador"
@@ -62,7 +62,7 @@ capabilities:
 ## 1. Propósito
 
 Piezas del sitio que no pertenecen a una página: la cabecera y el pie en columnas que monta
-`app/layout.tsx` y el contacto de `/comercios` (`app/comercios/page.tsx`) y la banda de contacto de `/ayuda` (`app/ayuda/page.tsx`). No lee la ubicación ni la sesión, y no decide el contenido de las páginas a las
+`app/layout.tsx` y el contacto de `/vende` (`features/merchants`) y la banda de contacto de `/ayuda` (`app/ayuda/page.tsx`). No lee la ubicación ni la sesión, y no decide el contenido de las páginas a las
 que enlaza.
 
 ## 2. Reglas de negocio
@@ -85,9 +85,9 @@ que enlaza.
 | Destinos, orden o contador de la barra inferior | `tabs` en `MobileNavLinks.tsx` y `MobileNav` en `MobileNav.tsx` | `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` buscan el carrito por nombre accesible dentro de la barra; `e2e/account.spec.ts` la cuenta |
 | Columnas o enlaces del pie | `SiteFooter` en `SiteFooter.tsx` | los enlaces que busca `SiteFooter.test.tsx` |
 | Cuántas categorías se muestran | `MAX_FOOTER_CATEGORIES` en `SiteFooter.tsx` | RN-SITE-01 y su prueba |
-| Botones o textos de contacto de `/comercios` y de la banda de `/ayuda` | `MerchantContact` y su `COPY` por `purpose` en `MerchantContact.tsx` | RN-SITE-03 y su prueba |
+| Botones o textos de contacto de `/vende` y de la banda de `/ayuda` | `MerchantContact` y su `COPY` por `purpose` en `MerchantContact.tsx` | RN-SITE-03 y su prueba |
 | Metadatos de `/ayuda` o su banda | `app/ayuda/page.tsx` | la canónica sigue en `/ayuda`; el contenido vive en `features/help` |
-| Texto, pasos o metadatos de `/comercios` | `app/comercios/page.tsx` | la canónica sigue en `/comercios` |
+| Redirección de `/comercios` a `/vende` | `redirects` de `next.config.ts` | permanente (308); `e2e/site.spec.ts` la comprueba |
 | Aprobar el texto legal | `LEGAL_DRAFT` en `legal.ts`, tras reemplazar los marcadores en `terms.ts` | RN-SITE-04 y RN-SITE-05; ya no hay aviso ni `noindex` |
 | Texto de los términos | `termsDocument` en `terms.ts` | sólo marcadores de `LEGAL_MARKERS` |
 | Texto de privacidad, o una cookie o dato nuevo del sitio | `privacyDocument` en `privacy.ts` | comprobarlo contra el código que lo guarda y RN-SITE-06 |
@@ -120,7 +120,6 @@ que enlaza.
 | `rootCategories` | `features/site/components/SiteFooter.tsx` | lee `listCategories()`, recorta a 8 y devuelve `[]` ante `MarketplaceUnavailableError` |
 | `COPY` | `features/site/components/MerchantContact.tsx` | textos, mensaje de WhatsApp y estilo de cada `purpose` |
 | `merchantContactHref` | `features/site/components/MerchantContact.tsx` | arma el destino de contacto (WhatsApp, correo o `null`) para los CTA de `features/merchants` |
-| `steps` | `app/comercios/page.tsx` | los tres pasos de la página |
 | `termsDocument` | `features/site/lib/terms.ts` | secciones de los términos con `SITE_NAME` y los marcadores |
 | `privacyDocument` | `features/site/lib/privacy.ts` | ocho secciones de privacidad con `SITE_NAME` y los marcadores |
 | `FooterColumn` | `features/site/components/SiteFooter.tsx` | título `h2` y lista dentro de un `<nav aria-label>` propio |
@@ -160,16 +159,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 - La barra inferior es `fixed` y sólo bajo `md`: `app/layout.tsx` da al `body` un relleno inferior (`3.5rem` más el área segura) para que no tape el pie. En móvil "Salir" vive en las pestañas de `/cuenta` (`AccountNav`).
 - El `Toaster` (`app/layout.tsx`, primitiva `components/ui/sonner.tsx`) toma `offset.bottom` y `mobileOffset.bottom` de `--toast-bottom` (`app/globals.css`): sobre la barra inferior (`4rem` más el área segura) bajo `md` y `24px`, el de defecto de sonner, desde `md`. Sonner sólo usa `mobileOffset` bajo 600 px, así que entre 600 y 767 px manda `offset`; por eso ambos leen la misma variable, sin medir en JS.
 - Las variables de contacto se leen al construir la página (prerender): cambiarlas exige un build nuevo. Los clics de contacto no se registran: `POST /api/events` exige `store_slug`.
-- `/comercios` es indexable, con canónica propia y entrada en el grupo `static` de `lib/sitemap.ts`, igual que `/tiendas` (`features/store`); la marca del punto de venta sale de `POS_NAME`.
+- `/comercios` redirige de forma permanente (308) a `/vende` desde `next.config.ts` y no figura en el sitemap.
 - `/terminos` y `/privacidad` son borradores: aviso visible, `noindex, follow` y fuera del sitemap hasta que el área legal apruebe el texto y se ponga `LEGAL_DRAFT` en `false`. Sus textos no afirman nada que el sitio no haga: las cookies y los datos de `/privacidad` salen de `features/account/server/session.ts`, `features/cart/server/cookie.ts`, `features/location/server/actions.ts` y `app/api/events/route.ts`.
 - `/vende` (`app/vende/page.tsx`, contenido en `features/merchants`) es indexable, con canónica propia y entrada en el grupo `static`.
 - `/ayuda` (`app/ayuda/page.tsx`) es indexable, con canónica propia y entrada en el grupo `static`; monta `HelpCenter` de `features/help` y la banda de soporte, que no promete horarios de atención.
-- Los enlaces a `/ayuda`, `/comercios`, `/terminos` y `/privacidad` son rutas fijas; la marca sale sólo de `SITE_NAME`.
+- Los enlaces a `/ayuda`, `/vende`, `/terminos` y `/privacidad` son rutas fijas; la marca sale sólo de `SITE_NAME`.
 
 ## 9. Pruebas
 
 - Comando: `npx vitest run features/site lib/__tests__/sitemap.test.ts`
 - `e2e/site.spec.ts` ("barra inferior en móvil"): los cinco destinos (sin Tiendas), el activo, Favoritos y Cuenta hacia `/entrar` sin sesión, carrito y cuenta ocultos en la cabecera, y que logo y ubicación no envuelvan en 360 y 320 px.
-- `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, y cada botón sólo con su dato. `lib/__tests__/sitemap.test.ts` cubre las entradas `/tiendas`, `/comercios`, `/ayuda` y `/vende` del grupo `static`. `e2e/site.spec.ts` comprueba `/ayuda` (canónica, filtro de preguntas, enlace del pie) y `/vende` (canónica, secciones y CTA con destino).
+- `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, y cada botón sólo con su dato. `lib/__tests__/sitemap.test.ts` cubre las entradas `/tiendas`, `/ayuda` y `/vende` del grupo `static`. `e2e/site.spec.ts` comprueba `/ayuda` (canónica, filtro de preguntas, enlace del pie) y `/vende` (canónica, secciones y CTA con destino), y el 308 de `/comercios`.
 - `features/site/__tests__/legal.test.tsx`: marcadores permitidos, guarda sin borrador, metadatos y sitemap según el interruptor, el aviso de `LegalDocument` y las cuatro cookies de privacidad.
 - `features/site/__tests__/SiteFooter.test.tsx`: categorías y enlaces, corte en 8, columna omitida con API caída o sin raíces, error ajeno relanzado; simula `@/lib/marketplace/client` y `@/features/site/lib/year` (`cacheLife` no corre en vitest).

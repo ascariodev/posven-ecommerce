@@ -84,7 +84,7 @@ export function EmptyState({
           <CategoryLinks categories={related} />
         </div>
       )}
-      <Link href="/comercios" className="text-sm text-foreground underline underline-offset-4">
+      <Link href="/vende" className="text-sm text-foreground underline underline-offset-4">
         ¿Tienes un comercio? Aparece en {SITE_NAME}
       </Link>
     </section>

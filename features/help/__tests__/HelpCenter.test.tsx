@@ -24,6 +24,19 @@ describe("HelpCenter", () => {
     expect(screen.queryByText("¿Cómo retiro mi pedido?")).toBeNull();
   });
 
+  it("sin canal de contacto, sin coincidencias no invita a escribir", () => {
+    render(<HelpCenter canContact={false} />);
+    type("zzzzzz");
+    expect(screen.getByText(/Prueba con otras\.$/)).toBeTruthy();
+    expect(screen.queryByText(/escríbenos/i)).toBeNull();
+  });
+
+  it("con canal de contacto, sin coincidencias invita a escribir", () => {
+    render(<HelpCenter canContact />);
+    type("zzzzzz");
+    expect(screen.getByText(/escríbenos/i)).toBeTruthy();
+  });
+
   it("sin coincidencias muestra el estado vacío (RN-HELP-04)", () => {
     render(<HelpCenter />);
     type("zzzzzz");

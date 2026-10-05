@@ -55,12 +55,19 @@ export async function SiteFooter() {
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto w-full max-w-5xl px-4 py-8">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
           <div className="sm:col-span-2 lg:col-span-1">
             <p className="text-xl font-bold tracking-tight text-foreground">{SITE_NAME}</p>
             <p className="mt-2 max-w-xs text-sm text-muted-foreground">{SITE_DESCRIPTION}</p>
           </div>
           <FooterCategories categories={categories} />
+          <FooterColumn title="Ayuda">
+            <li>
+              <Link href="/ayuda" className={linkClass}>
+                Centro de ayuda
+              </Link>
+            </li>
+          </FooterColumn>
           <FooterColumn title="Comercios">
             <li>
               <Link href="/comercios" className={linkClass}>

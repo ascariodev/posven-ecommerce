@@ -5,14 +5,14 @@ type: "feature"
 exports: ["HelpCenter", "HELP_TOPICS", "HELP_QUESTIONS", "filterQuestions", "HelpTopic", "HelpQuestion", "HelpTopicIcon"]
 depends_on: ["components/EmptyState.tsx", "components/ui/card.tsx", "components/ui/input.tsx"]
 tests: "features/help/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/help/lib/content.ts", "features/help/lib/filter.ts", "features/help/components/HelpCenter.tsx", "features/help/__tests__/content.test.ts", "features/help/__tests__/filter.test.ts", "features/help/__tests__/HelpCenter.test.tsx", "components/EmptyState.tsx", "features/product/components/OfferCard.tsx", "features/purchases/lib/labels.ts", "features/purchases/components/PurchaseDetail.tsx", "features/checkout/components/CheckoutStoreSection.tsx", "features/cart/components/CartStoreGroup.tsx", "features/product/components/ProductDetails.tsx", "lib/format.ts"]
+verified_against: ["features/help/lib/content.ts", "features/help/lib/filter.ts", "features/help/components/HelpCenter.tsx", "features/help/__tests__/content.test.ts", "features/help/__tests__/filter.test.ts", "features/help/__tests__/HelpCenter.test.tsx", "app/ayuda/page.tsx", "components/EmptyState.tsx", "features/product/components/OfferCard.tsx", "features/purchases/lib/labels.ts", "features/purchases/components/PurchaseDetail.tsx", "features/checkout/components/CheckoutStoreSection.tsx", "features/cart/components/CartStoreGroup.tsx", "features/product/components/ProductDetails.tsx", "lib/format.ts"]
 capabilities:
   - intent: "buscar una respuesta en el centro de ayuda de compradores"
     intent_aliases: ["ayuda", "preguntas frecuentes", "faq", "buscar en la ayuda", "centro de ayuda", "soporte comprador"]
     entrypoint: "<HelpCenter />"
     file: "features/help/components/HelpCenter.tsx"
-    input: "topics y questions opcionales (HelpTopic[] y HelpQuestion[]); por defecto HELP_TOPICS y HELP_QUESTIONS"
-    output: "héroe con el buscador, temas con enlace a su primera pregunta, preguntas plegables en <details> y, si el texto no coincide con ninguna, el estado vacío 'Sin coincidencias'"
+    input: "topics y questions opcionales (HelpTopic[] y HelpQuestion[]), por defecto HELP_TOPICS y HELP_QUESTIONS; canContact (por defecto true)"
+    output: "héroe con el buscador, temas con enlace a su primera pregunta, preguntas plegables en <details> y, si el texto no coincide con ninguna, el estado vacío 'Sin coincidencias' (invita a escribir sólo con canContact)"
     source: "datos estáticos de features/help/lib/content.ts; el filtro corre en el navegador, sin API"
     rules: ["RN-HELP-01", "RN-HELP-02", "RN-HELP-03", "RN-HELP-04"]
 ---
@@ -22,8 +22,8 @@ capabilities:
 ## 1. Propósito
 
 Contenido y buscador del centro de ayuda para compradores: temas y preguntas frecuentes como datos
-y un Client Component que filtra las preguntas por texto en el navegador. No llama a la API, no
-monta la ruta ni la banda de contacto, y no trae la ayuda de comercios.
+y un Client Component que filtra las preguntas por texto en el navegador. No llama a la API y no trae
+la ayuda de comercios. `app/ayuda/page.tsx` lo monta y le suma la banda de contacto de `features/site`.
 
 ## 2. Reglas de negocio
 
@@ -64,7 +64,7 @@ reembolso de faltantes).
 
 ## 4. API pública
 
-- `HelpCenter({ topics?: HelpTopic[]; questions?: HelpQuestion[] }): React.JSX.Element`, `features/help/components/HelpCenter.tsx`: Client Component; héroe con `<h1>` y buscador, temas, preguntas en `<details>` y estado vacío.
+- `HelpCenter({ topics?: HelpTopic[]; questions?: HelpQuestion[]; canContact?: boolean }): React.JSX.Element`, `features/help/components/HelpCenter.tsx`: Client Component; héroe con `<h1>` y buscador, temas, preguntas en `<details>` y estado vacío; sin `canContact` (la ruta lo calcula de `merchantWhatsapp()` y `merchantEmail()`) el texto no invita a escribir.
 - `HELP_TOPICS: HelpTopic[]` y `HELP_QUESTIONS: HelpQuestion[]`, `features/help/lib/content.ts`: los datos.
 - `filterQuestions(questions: HelpQuestion[], query: string): HelpQuestion[]`, `features/help/lib/filter.ts`.
 - `HelpTopic = { id: string; title: string; summary: string; icon: HelpTopicIcon }`, `HelpQuestion = { id: string; topic: string; question: string; answer: string; source: string }` y `HelpTopicIcon = "how" | "payments" | "pickup" | "account" | "recipes"`, `features/help/lib/content.ts`.
@@ -104,4 +104,4 @@ export default function Page() {
 - Comando: `npx --prefix <repo> vitest run --root <repo> features/help`
 - `features/help/__tests__/content.test.ts`: cita de fuente, tema existente, temas con pregunta e ids únicos.
 - `features/help/__tests__/filter.test.ts`: acentos, mayúsculas y términos múltiples.
-- `features/help/__tests__/HelpCenter.test.tsx`: lista completa, filtro y "Sin coincidencias".
+- `features/help/__tests__/HelpCenter.test.tsx`: lista completa, filtro, "Sin coincidencias" y su texto con y sin canal de contacto.

@@ -34,9 +34,14 @@ const TOPIC_ICONS: Record<HelpTopicIcon, LucideIcon> = {
 type HelpCenterProps = {
   topics?: HelpTopic[];
   questions?: HelpQuestion[];
+  canContact?: boolean;
 };
 
-export function HelpCenter({ topics = HELP_TOPICS, questions = HELP_QUESTIONS }: HelpCenterProps) {
+export function HelpCenter({
+  topics = HELP_TOPICS,
+  questions = HELP_QUESTIONS,
+  canContact = true,
+}: HelpCenterProps) {
   const [query, setQuery] = useState("");
   const filtering = query.trim() !== "";
   const visible = filterQuestions(questions, query);
@@ -100,7 +105,11 @@ export function HelpCenter({ topics = HELP_TOPICS, questions = HELP_QUESTIONS }:
             <EmptyState
               icon={CircleHelp}
               title="Sin coincidencias"
-              description="No encontramos preguntas con esas palabras. Prueba con otras o escríbenos."
+              description={
+                canContact
+                  ? "No encontramos preguntas con esas palabras. Prueba con otras o escríbenos."
+                  : "No encontramos preguntas con esas palabras. Prueba con otras."
+              }
             />
           ) : (
             <Card className="gap-0 py-0" key={filtering ? "filtrando" : "completo"}>

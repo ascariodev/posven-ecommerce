@@ -3,7 +3,7 @@
 **Objetivo:** que `/ayuda` y `/vende` existan con el diseño del lienzo (W12, P12, P13), que
 `/comercios` redirija a `/vende`, y que los estados vacíos, el error y el 404 sigan el estilo E con
 un estado vacío compartido.
-**Estado:** en curso · Fase actual: 5
+**Estado:** en curso · Fase actual: 6
 
 ## Contexto mínimo
 - Spec: `posven-ecommerce/docs/specs/2026-10-03-rediseno-posven-design.md` §5 (W12, P12, P13),
@@ -79,7 +79,7 @@ un estado vacío compartido.
 - **Terminado cuando:** vitest del módulo (datos y filtro) en verde, tsc limpio y
   `generate-index --check` al día.
 
-### [ ] Fase 5 — Ruta `/ayuda`
+### [x] Fase 5 — Ruta `/ayuda`
 - **Repo:** posven-ecommerce
 - **Alcance:** `app/ayuda/page.tsx` con la skill `new-page` (metadatos, canónica, sitemap `static`,
   `paths:` de `seo.md`): héroe con el buscador, temas, preguntas y banda de contacto sobre `bg-ink`.
@@ -136,6 +136,12 @@ un estado vacío compartido.
   "Devoluciones" (no hay política; el reembolso de faltantes va en "¿Qué pasa si la tienda no tiene
   el producto?"). Se agregaron, con fuente comprobable: costo de entrega, varias tiendas, pago
   pendiente (con pago tardío), cuenta, factura y récipe. La banda de contacto no promete horarios.
+- 2026-10-05 — `/ayuda`: `MerchantContact` recibe `purpose?: "merchant" | "support"` (por defecto
+  `merchant`; `support` pinta la banda `bg-ink` "¿No encontraste la respuesta?"). `HelpCenter` recibe
+  `canContact` (por defecto `true`, la página lo calcula con `merchantWhatsapp()`/`merchantEmail()`):
+  sin contacto, "Sin coincidencias" no invita a escribir. Metadatos estáticos; `/ayuda` en el grupo
+  `static` del sitemap; el pie suma la columna "Ayuda" (5 columnas en `lg`). El héroe queda dentro
+  del `max-w-5xl` del layout, como el resto del sitio (ver M-5).
 
 ## Identificadores que estrena
 
@@ -145,7 +151,8 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   enunciado de cada una vive en `features/help/README.md`, una afirmación por regla.
 
 ## Notas para la próxima sesión
-- Fases 1 a 4 hechas. Sigue la fase 5 (ruta `/ayuda`, banda de contacto, sitemap, pie; README de site).
+- Fases 1 a 5 hechas. Sigue la fase 6 (`/vende`). En la fase 7, `features/site/README.md` y
+  `.claude/rules/seo.md` (ítems 5 y 8) citan `/comercios` y pasan a `/vende`.
 - El usuario revisa los textos de `features/help/lib/content.ts`, en especial las preguntas agregadas
   fuera del lienzo.
 
@@ -159,3 +166,7 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   `StoreProducts`, `NearbyStores`): admitir `headingLevel: "h3"` en `components/EmptyState.tsx` y usarlo ahí.
 - [ ] M-4 (baja, sonnet) — La tarjeta con ícono grande puede verse desproporcionada en secciones de
   la home (`NearbyStores`); validar en `/preview` y, si hace falta, variante compacta en `components/EmptyState.tsx`.
+- [ ] M-5 (media, sonnet) — El héroe de `/ayuda` queda dentro del `max-w-5xl` del `<main>` del
+  layout y no a ancho completo como en W12/P12 (`max-width: 1200px`). Decidir un patrón de sección a
+  sangre para el sitio. `app/layout.tsx`, `features/help/components/HelpCenter.tsx`.
+- [ ] M-6 (baja, sonnet) — `.claude/rules/seo.md` ítem 3 podría listar `/ayuda` entre las indexables.

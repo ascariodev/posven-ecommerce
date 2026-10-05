@@ -51,7 +51,7 @@ for (const path of ["/terminos", "/privacidad"]) {
   });
 }
 
-test("el sitemap static incluye /tiendas, /comercios y no las legales mientras son borrador", async ({
+test("el sitemap static incluye /tiendas, /comercios, /ayuda y no las legales mientras son borrador", async ({
   request,
 }) => {
   const response = await request.get("/sitemap/static.xml");
@@ -59,6 +59,7 @@ test("el sitemap static incluye /tiendas, /comercios y no las legales mientras s
   const sitemap = await response.text();
   expect(sitemap).toContain("http://localhost:3000/tiendas");
   expect(sitemap).toContain("http://localhost:3000/comercios");
+  expect(sitemap).toContain("http://localhost:3000/ayuda");
   expect(sitemap).not.toContain("/terminos");
   expect(sitemap).not.toContain("/privacidad");
 });
@@ -105,4 +106,28 @@ test("una ruta inexistente responde 404 con el estado vacío del sitio", async (
   await expect(page.getByRole("heading", { level: 1, name: "No encontramos esta página" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Ir al inicio" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Buscar productos" })).toHaveAttribute("href", "/buscar");
+});
+
+test("/ayuda tiene canónica propia, filtra las preguntas y se llega desde el pie", async ({ page }) => {
+  await page.goto("/");
+  const link = page.locator("footer").getByRole("link", { name: "Centro de ayuda", exact: true });
+  await expect(link).toHaveAttribute("href", "/ayuda");
+  await link.click();
+  await expect(page).toHaveURL(/\/ayuda$/);
+
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/ayuda");
+  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+
+  const questions = page.locator("details");
+  await expect(questions.first()).toBeVisible();
+  const total = await questions.count();
+  expect(total).toBeGreaterThan(1);
+
+  const search = page.getByRole("searchbox", { name: "Buscar en la ayuda" });
+  await search.fill("récipe");
+  await expect(questions).not.toHaveCount(total);
+  await expect(questions.first()).toBeVisible();
+
+  await search.fill("zzzzqqq");
+  await expect(page.getByRole("heading", { name: "Sin coincidencias" })).toBeVisible();
 });

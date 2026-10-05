@@ -46,3 +46,13 @@ export function formatDateTime(iso: string): string {
 export function storeCountText(count: number): string {
   return count === 1 ? "1 tienda" : `${count} tiendas`;
 }
+
+export const ORDER_STEP_TEXT: Record<Fulfillment, readonly [string, string, string, string]> = {
+  pickup: ["Pagado", "Preparado", "Listo para retirar", "Entregado"],
+  delivery: ["Pagado", "Preparando", "En camino", "Entregado"],
+};
+
+export const ORDER_STEP_HINT: Record<Fulfillment, readonly [string, string, string]> = {
+  pickup: ["Esperando la confirmación del pago", "La tienda está reuniendo tus productos", "Muestra tu código de retiro en caja"],
+  delivery: ["Esperando la confirmación del pago", "La tienda está reuniendo tus productos", "Tu pedido va hacia tu dirección"],
+};

@@ -3,19 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatRate, formatUsd, formatVes } from "@/lib/format";
 import type { Charge, Purchase, StoreOrder } from "@/lib/marketplace/schemas";
+import { OrderTracker } from "./OrderTracker";
 import { formatDateTime, FULFILLMENT_TEXT, ORDER_STATUS_TEXT, purchaseStatusText } from "../lib/labels";
 
 // Los montos son las cadenas de la API formateadas: el reembolso y el envío no se restan ni se suman.
 
 const ZERO = "0.00";
-
-const TIMELINE_TEXT: Record<keyof StoreOrder["timeline"], string> = {
-  paid_at: "Pagado",
-  ready_at: "Listo para retirar",
-  dispatched_at: "En camino",
-  delivered_at: "Entregado",
-  cancelled_at: "Cancelado",
-};
 
 function chargeText(charge: Charge): string {
   return charge.currency === "VES" ? formatVes(charge.amount) : formatUsd(charge.amount);
@@ -32,10 +25,6 @@ function Row({ label, value, strong = false }: { label: string; value: string; s
 
 function OrderCard({ order, paid }: { order: StoreOrder; paid: boolean }) {
   const { store } = order;
-  const timeline = (Object.keys(TIMELINE_TEXT) as (keyof StoreOrder["timeline"])[]).flatMap((key) => {
-    const value = order.timeline[key];
-    return value === null ? [] : [{ key, label: TIMELINE_TEXT[key], value }];
-  });
   return (
     <Card>
       <CardContent className="flex flex-col gap-4">
@@ -101,16 +90,7 @@ function OrderCard({ order, paid }: { order: StoreOrder; paid: boolean }) {
           )}
         </dl>
 
-        {timeline.length > 0 && (
-          <dl className="flex flex-col gap-1 text-sm">
-            {timeline.map((entry) => (
-              <div key={entry.key} className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">{entry.label}</dt>
-                <dd className="text-foreground">{formatDateTime(entry.value)}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
+        {paid && <OrderTracker order={order} />}
       </CardContent>
     </Card>
   );

@@ -34,6 +34,7 @@ describe("PurchaseDetail", () => {
     expect(screen.getByText("Bs 244,60")).toBeTruthy();
     expect(screen.getByText("Listo para retirar", { selector: "[data-slot=badge]" })).toBeTruthy();
     expect(screen.getByText("30/09/2026 14:20")).toBeTruthy();
+    expect(within(screen.getByRole("list", { name: "Estado del pedido" })).getAllByRole("listitem")).toHaveLength(4);
   });
 
   it("una entrega muestra la dirección y el envío, sin código de retiro", () => {
@@ -77,5 +78,6 @@ describe("PurchaseDetail", () => {
 
     expect(screen.getByText("Pago pendiente")).toBeTruthy();
     expect(screen.queryByText("Aceptado")).toBeNull();
+    expect(screen.queryByRole("list", { name: "Estado del pedido" })).toBeNull();
   });
 });

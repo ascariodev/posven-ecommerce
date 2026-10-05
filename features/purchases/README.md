@@ -2,10 +2,10 @@
 module: "purchases"
 path: "features/purchases"
 type: "feature"
-exports: ["PURCHASE_STATUS_TEXT", "ORDER_STATUS_TEXT", "FULFILLMENT_TEXT", "formatDateTime", "storeCountText", "readPurchasesPage", "isPageOutOfRange", "PurchaseList", "PurchaseRow", "PurchaseRows", "purchaseHref", "PurchaseDetail", "RecentPurchases"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx"]
+exports: ["PURCHASE_STATUS_TEXT", "ORDER_STATUS_TEXT", "FULFILLMENT_TEXT", "ORDER_STEP_TEXT", "ORDER_STEP_HINT", "orderSteps", "OrderTracker", "formatDateTime", "storeCountText", "readPurchasesPage", "isPageOutOfRange", "PurchaseList", "PurchaseRow", "PurchaseRows", "purchaseHref", "PurchaseDetail", "RecentPurchases"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts"]
 tests: "features/purchases/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/purchases/lib/labels.ts", "features/purchases/lib/pagination.ts", "features/purchases/__tests__/pagination.test.ts", "features/purchases/components/PurchaseList.tsx", "features/purchases/components/PurchaseDetail.tsx", "features/purchases/components/RecentPurchases.tsx", "features/purchases/__tests__/PurchaseList.test.tsx", "features/purchases/__tests__/PurchaseDetail.test.tsx", "features/purchases/__tests__/RecentPurchases.test.tsx", "app/cuenta/compras/page.tsx", "app/cuenta/compras/[codigo]/page.tsx", "app/cuenta/page.tsx", "app/cuenta/layout.tsx", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
+verified_against: ["features/purchases/lib/labels.ts", "features/purchases/lib/pagination.ts", "features/purchases/lib/orderSteps.ts", "features/purchases/components/OrderTracker.tsx", "features/purchases/__tests__/OrderTracker.test.tsx", "features/purchases/__tests__/pagination.test.ts", "features/purchases/components/PurchaseList.tsx", "features/purchases/components/PurchaseDetail.tsx", "features/purchases/components/RecentPurchases.tsx", "features/purchases/__tests__/PurchaseList.test.tsx", "features/purchases/__tests__/PurchaseDetail.test.tsx", "features/purchases/__tests__/RecentPurchases.test.tsx", "app/cuenta/compras/page.tsx", "app/cuenta/compras/[codigo]/page.tsx", "app/cuenta/page.tsx", "app/cuenta/layout.tsx", "e2e/checkout.spec.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts"]
 capabilities:
   - intent: "listar las compras del comprador, paginadas"
     intent_aliases: ["mis compras", "historial de compras", "pedidos", "compras anteriores"]
@@ -20,9 +20,17 @@ capabilities:
     entrypoint: "<PurchaseDetail />"
     file: "features/purchases/components/PurchaseDetail.tsx"
     input: "purchase: Purchase (de getPurchase en app/cuenta/compras/[codigo]/page.tsx)"
-    output: "estado, total y cobro; una tarjeta por pedido con entrega, estado (sólo pagada), código de retiro, dirección, líneas con 'Faltante · reembolsado', subtotal, envío, reembolsado y fechas"
+    output: "estado, total y cobro; una tarjeta por pedido con entrega, estado y línea de estados (sólo pagada), código de retiro, dirección, líneas con 'Faltante · reembolsado', subtotal, envío y reembolsado"
     source: "GET /me/purchases/{code} de posveapi vía BFF"
     rules: ["RN-PURCHASES-02", "RN-PURCHASES-03"]
+  - intent: "mostrar la línea de estados de un pedido"
+    intent_aliases: ["seguimiento del pedido", "estado del pedido", "tracker", "linea de estados"]
+    entrypoint: "<OrderTracker />"
+    file: "features/purchases/components/OrderTracker.tsx"
+    input: "order: Pick<StoreOrder, 'status' | 'fulfillment' | 'timeline'>; className opcional"
+    output: "lista de 4 pasos (retiro: Pagado, Preparado, Listo para retirar, Entregado; entrega: Pagado, Preparando, En camino, Entregado) con fecha y pista del actual; un aviso aparte si está cancelado"
+    source: "status, fulfillment y timeline de un StoreOrder (GET /me/purchases/{code})"
+    rules: ["RN-PURCHASES-05"]
   - intent: "mostrar las últimas compras en el resumen de la cuenta"
     intent_aliases: ["ultimas compras", "resumen de compras"]
     entrypoint: "<RecentPurchases />"
@@ -48,7 +56,8 @@ API. El pago y su resultado viven en `features/checkout`.
 |---|---|---|
 | `RN-PURCHASES-01` | Las compras llegan de 10 en 10, más recientes primero, paginadas con `?pagina=N` (la 1 sin parámetro); una página vacía tras la 1 es 404. "Últimas compras" muestra las 3 primeras de la página 1 y no se pinta si la API falla, salvo un 401. | `features/purchases/__tests__/pagination.test.ts`; `features/purchases/__tests__/PurchaseList.test.tsx`; `features/purchases/__tests__/RecentPurchases.test.tsx`; `lib/marketplace/mock/__tests__/checkout.test.ts` ("el listado va de 10 en 10...") |
 | `RN-PURCHASES-02` | El detalle destaca el `pickup_code` ("Código de retiro") cuando no es nulo y marca cada línea `missing` con "Faltante · reembolsado"; el reembolsado del pedido sale sólo si no es cero. | `features/purchases/__tests__/PurchaseDetail.test.tsx`; `e2e/checkout.spec.ts` ("compra completa...") |
-| `RN-PURCHASES-03` | El estado de cada pedido sólo se muestra con la compra `paid`: el contrato no tiene un estado de pedido para una compra sin pagar (hueco a acordar con posveapi). | `features/purchases/__tests__/PurchaseDetail.test.tsx` ("con la compra sin pagar no muestra el estado del pedido") |
+| `RN-PURCHASES-03` | El estado de cada pedido y su línea de estados sólo se muestran con la compra `paid`: el contrato no tiene un estado de pedido para una compra sin pagar (hueco a acordar con posveapi). | `features/purchases/__tests__/PurchaseDetail.test.tsx` ("con la compra sin pagar no muestra el estado del pedido") |
+| `RN-PURCHASES-05` | La línea de estados sale de `status` y `fulfillment`; `accepted` es el paso 2 (la API no distingue preparado de aceptado) y `delivered` deja todos hechos. Un `cancelled` no tiene pasos: se pinta aparte. | `features/purchases/__tests__/OrderTracker.test.tsx` |
 | `RN-PURCHASES-04` | El resumen destaca en "Para retirar" el código del primer pedido `ready_for_pickup` con `pickup_code` no nulo de la página 1; los demás pedidos siguen en la lista. Sin ninguno no se pinta. | `features/purchases/__tests__/RecentPurchases.test.tsx` |
 
 ## 3. Dónde hacer cambios
@@ -56,6 +65,7 @@ API. El pago y su resultado viven en `features/checkout`.
 | Tipo de cambio | Dónde va | Además hay que |
 |---|---|---|
 | Textos de estados o entrega | `lib/labels.ts` | las pruebas de lista y detalle (`__tests__/`) y `e2e/checkout.spec.ts` |
+| Pasos, textos o pistas de la línea de estados | `lib/orderSteps.ts` (`CURRENT_STEP`), `lib/labels.ts` (`ORDER_STEP_TEXT`, `ORDER_STEP_HINT`) | `__tests__/OrderTracker.test.tsx`; un estado nuevo en `storeOrderStatusSchema` rompe el tipo de `CURRENT_STEP` |
 | Un dato nuevo del pedido | `components/PurchaseDetail.tsx` | el esquema en `lib/marketplace/schemas.ts` primero (spec §4.1) |
 | Qué pedido destaca "Para retirar" | `firstReadyForPickup` en `components/RecentPurchases.tsx` | `__tests__/RecentPurchases.test.tsx` |
 | Tamaño de "Últimas compras" | `RECENT_COUNT` en `components/RecentPurchases.tsx` | `__tests__/RecentPurchases.test.tsx` |
@@ -64,6 +74,9 @@ API. El pago y su resultado viven en `features/checkout`.
 
 - `PURCHASE_STATUS_TEXT`, `ORDER_STATUS_TEXT`, `FULFILLMENT_TEXT`, `formatDateTime(iso: string): string` ("30/09/2026 14:00" en hora de Caracas) y `storeCountText(count: number): string`, `features/purchases/lib/labels.ts`.
 - `PurchaseList({ page }: { page: PurchasePage })`, `PurchaseRow({ purchase })`, `PurchaseRows({ purchases, label })` (lista en una sola tarjeta con separadores) y `purchaseHref(code: string): string`, `features/purchases/components/PurchaseList.tsx`.
+- `ORDER_STEP_TEXT` y `ORDER_STEP_HINT` (por `Fulfillment`: los 4 pasos y las pistas de los 3 primeros), `features/purchases/lib/labels.ts`.
+- `orderSteps(order: TrackedOrder): OrderStep[] | null` (`null` si está cancelado; `OrderStep = { label, state: "done" | "now" | "next", at, hint }`), `features/purchases/lib/orderSteps.ts`.
+- `OrderTracker({ order, className }: { order: TrackedOrder; className?: string })` (`TrackedOrder = Pick<StoreOrder, "status" | "fulfillment" | "timeline">`; vertical en móvil, horizontal desde `md`), `features/purchases/components/OrderTracker.tsx`. Se usa desde otros módulos con ese import.
 - `PurchaseDetail({ purchase }: { purchase: Purchase })`, `features/purchases/components/PurchaseDetail.tsx`.
 - `readPurchasesPage(raw: string | string[] | undefined): number` (inválida es 1) e `isPageOutOfRange(page: PurchasePage): boolean`, `features/purchases/lib/pagination.ts`.
 - `RecentPurchases({ ctx }: { ctx: AccountContext })`, `features/purchases/components/RecentPurchases.tsx` (Server Component async): con la API caída o un error de cuenta que no sea 401 devuelve `null`.
@@ -74,15 +87,16 @@ API. El pago y su resultado viven en `features/checkout`.
 |---|---|---|
 | Textos y fechas | `lib/labels.ts` | estados en español y fecha armada por partes de `Intl.DateTimeFormat` |
 | Lista | `components/PurchaseList.tsx` | filas enlazadas en una tarjeta (USD y Bs debajo) y paginación desde `meta` (cuenta páginas, no montos) |
-| Detalle | `components/PurchaseDetail.tsx` | una tarjeta por pedido; fechas no nulas de `timeline` |
+| Detalle | `components/PurchaseDetail.tsx` | una tarjeta por pedido; con la compra pagada pinta `OrderTracker` |
+| Línea de estados | `components/OrderTracker.tsx`, `lib/orderSteps.ts` | pasos y estado de cada uno desde `status`, `fulfillment` y `timeline`; fechas con `formatDateTime`; es un Server Component sin estado |
 | Paginación | `lib/pagination.ts` | lectura de `?pagina` y la decisión del 404, fuera de la ruta para probarlas |
 | Resumen | `components/RecentPurchases.tsx` | reutiliza `PurchaseRow`; degrada a nada si la API falla, para no tumbar `/cuenta` (excepción de `app-router.md` 7) |
 | Rutas | `app/cuenta/compras/page.tsx`, `app/cuenta/compras/[codigo]/page.tsx` | `noindex`, `requireCustomer`, 404 con el carrito apagado, código inválido o `not_found`; título fijo "Detalle de compra" (el código es de la petición) |
 
 ## 6. Dependencias
 
-- `lib/marketplace/client.ts` (`listPurchases`), `schemas.ts`, `params.ts`; `lib/format.ts`.
-- `components/ui/` (`Badge`, `buttonVariants`, `Card`).
+- `lib/marketplace/client.ts` (`listPurchases`), `schemas.ts`, `params.ts`; `lib/format.ts`, `lib/utils.ts` (`cn`).
+- `components/ui/` (`Badge`, `buttonVariants`, `Card`); `lucide-react` (`Check`).
 - Las rutas usan `features/account/server/session.ts`, `features/cart/lib/flag.ts` y `PURCHASE_CODE_PATTERN` de `features/checkout/components/CheckoutResult.tsx`.
 
 ## 7. Ejemplo de uso
@@ -108,7 +122,8 @@ async function Purchases({ ctx }: { ctx: AccountContext }) {
 
 - Comando: el de la sección Verificación de `posven-ecommerce/CLAUDE.md` (`npx vitest run features/purchases`).
 - `features/purchases/__tests__/PurchaseList.test.tsx`: fecha de Caracas, fila completa, vacío y paginación en la primera y la última página.
-- `features/purchases/__tests__/PurchaseDetail.test.tsx`: código de retiro, faltante reembolsado y montos sin calcular; entrega con dirección y envío; estado del pedido oculto sin pagar.
+- `features/purchases/__tests__/PurchaseDetail.test.tsx`: código de retiro, faltante reembolsado y montos sin calcular; entrega con dirección y envío; estado y línea de estados ocultos sin pagar.
+- `features/purchases/__tests__/OrderTracker.test.tsx`: pasos de retiro y entrega, pedido entregado sin paso actual y cancelado aparte.
 - `features/purchases/__tests__/pagination.test.ts`: `?pagina` válida e inválida; fuera de rango, vacía en la 1 y en rango.
 - `features/purchases/__tests__/RecentPurchases.test.tsx`: las 3 primeras y "Ver todas"; la tarjeta "Para retirar" con el primer pedido listo, y sin ella si ninguno tiene código; nada sin compras, con la API caída o con un 429; un 401 sube.
 - `e2e/checkout.spec.ts`: el detalle con el código de retiro y el reembolso, y "Últimas compras" en `/cuenta`.

@@ -3,7 +3,7 @@
 **Objetivo:** carrito agrupado por tienda con retiro o entrega y su costo antes de pagar, checkout
 de una página con el estilo del lienzo, y resultado del pago con la línea de estados de cada
 pedido; puerta: pago de prueba completo en modo simulado.
-**Estado:** en curso · Fase actual: 4
+**Estado:** en curso · Fase actual: 5
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §5 (`W08`/`P08`, `W09`/`P09`,
@@ -81,7 +81,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - **Terminado cuando:** vitest de `features/checkout` en verde y `e2e/checkout.spec.ts` sin
   regresiones.
 
-### [ ] Fase 4 — Línea de estados del pedido
+### [x] Fase 4 — Línea de estados del pedido
 - **Repo:** posven-ecommerce
 - **Alcance:** `OrderTracker` (vertical en móvil, horizontal desde `md`) a partir de `status`,
   `fulfillment` y `timeline` del pedido: retiro (Pagado, Preparado, Listo para retirar,
@@ -126,10 +126,14 @@ pedido; puerta: pago de prueba completo en modo simulado.
   de pago, fijo en móvil (`data-testid="checkout-pay-bar"`) y en el resumen desde `md`. No se
   reusa `FulfillmentSwitch` (enlaces a `/carrito`; el checkout usa radios). La tarifa se ve en la
   fila "Envío", no en la opción de entrega. Acción, campos ocultos, errores y URL sin cambios.
+- 2026-10-05 — Fase 4: `OrderTracker({ order, className? })` con `order: Pick<StoreOrder,
+  "status"|"fulfillment"|"timeline">`, Server Component en
+  `@/features/purchases/components/OrderTracker`; pasos en `features/purchases/lib/orderSteps.ts`.
+  `accepted` es el paso 2 (la API no distingue preparado de preparando, sin fecha propia);
+  `pending_payment` el 1; `cancelled` sin pasos, aparte. En `PurchaseDetail` reemplaza la lista de
+  fechas y sólo sale con la compra pagada (RN-PURCHASES-05).
 
 ## Notas para la próxima sesión
-- docs-check marca RANCIO `features/purchases/README.md` por `e2e/checkout.spec.ts`: la fase 4
-  toca esa ficha y lo resuelve.
 - docs-check marca RANCIO `features/site/README.md` por `features/cart/server/cart.ts` (fase 1).
 - F3a terminado y subido (carrito con `fulfillment`, `delivery_fee_*`, `total_*`; `getCart(ctx, deliveryStores)` y `quoteGuestCart(ctx, items, deliveryStores)`).
 
@@ -149,3 +153,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [ ] M-6 — Mostrar la tarifa como pista en la opción "Entrega a domicilio" de
   `CheckoutStoreSection.tsx` si la Quote la trae en retiro, con test. Repo posven-ecommerce ·
   complejidad baja · modelo sonnet.
+- [ ] M-7 — `OrderTracker`: mostrar `paid_at` en el cancelado y `ready_at` en la entrega (antes
+  los mostraba la lista de fechas). Repo posven-ecommerce · complejidad baja · modelo sonnet.
+- [ ] M-8 — `OrderTracker`: texto `sr-only` ("completado", "pendiente") por paso, y test de
+  `pending_payment`. Repo posven-ecommerce · complejidad baja · modelo sonnet.

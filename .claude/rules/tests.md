@@ -21,9 +21,11 @@ paths:
    `lib/marketplace/__tests__/http.test.ts`. `useRouter` y las acciones de servidor se simulan con
    `vi.mock('next/navigation')` y `vi.mock('<ruta de actions>')`, como en
    `features/location/__tests__/LocationPicker.test.tsx`.
-5. `lib/marketplace/client.ts` no se prueba en vitest: sus funciones con `'use cache'` llaman a
-   `cacheLife()`, que fuera de Next lanza "only available with the `cacheComponents` config". Se
-   prueban `mock/adapter.ts` y `http.ts`; `client.ts` lo cubren `next build` y el e2e.
+5. `lib/marketplace/client.ts` se prueba sólo en funciones sin `'use cache'`: las que llaman a
+   `cacheLife()` fallan fuera de Next ("only available with the `cacheComponents` config"), así
+   que se simula `next/cache` y no se invocan, como en `lib/marketplace/__tests__/client.test.ts`.
+   Las funciones con caché las cubren `next build` y el e2e; `mock/adapter.ts` y `http.ts` se
+   prueban directo.
 6. No se agregan pruebas que no se pidieron, salvo la que reproduce un bug que se corrige, y
    ésa se corre una vez contra el código sin el arreglo para ver que falla.
 7. El e2e (`e2e/*.spec.ts`, `playwright.config.ts`) corre en modo simulado con

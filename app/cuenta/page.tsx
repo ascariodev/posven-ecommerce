@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/server/session";
+import { AccountMenuList, AccountQuickLinks } from "@/features/account/components/AccountOverviewMenu";
 import { ResendVerificationForm } from "@/features/account/components/VerifyEmailForm";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { BuyAgain } from "@/features/purchases/components/BuyAgain";
@@ -38,6 +39,7 @@ async function AccountSummary() {
           </CardContent>
         </Card>
       )}
+      <AccountQuickLinks showPurchases={withPurchases} />
       {withPurchases && (
         <Suspense fallback={<Skeleton className="h-28 w-full" />}>
           <LastPurchase ctx={ctx} />
@@ -53,6 +55,7 @@ async function AccountSummary() {
           <RecentPurchases ctx={ctx} />
         </Suspense>
       )}
+      <AccountMenuList />
     </div>
   );
 }

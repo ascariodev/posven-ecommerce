@@ -58,7 +58,7 @@ export function CheckoutStoreSection({
                 <span className="text-foreground">
                   {line.product.name} <span className="text-muted-foreground">× {line.quantity}</span>
                 </span>
-                {line.line_usd !== null && <span className="tabular-nums text-foreground">{formatUsd(line.line_usd)}</span>}
+                {line.line_usd !== null && <span className="shrink-0 whitespace-nowrap tabular-nums text-foreground">{formatUsd(line.line_usd)}</span>}
               </li>
             ))}
         </ul>

@@ -88,7 +88,7 @@ test.describe("checkout y compras", () => {
     expect(overflows).toBe(false);
 
     await page.getByRole("button", { name: /^Pagar Bs / }).click();
-    await expect(page).toHaveURL(/\/checkout\/resultado\?compra=[A-HJKMNP-Z2-9]{8}$/);
+    await expect(page).toHaveURL(/\/checkout\/resultado\?compra=[A-HJKMNP-Z2-9]{8}$/, { timeout: 15_000 });
     await expect(page.getByRole("heading", { level: 1, name: "¡Pago confirmado!" })).toBeVisible({ timeout: 15_000 });
 
     await expect(page.getByRole("list", { name: "Estado del pedido" })).toBeVisible();
@@ -186,6 +186,37 @@ test.describe("checkout y compras", () => {
     await expect(page.getByText("Envío")).toBeVisible();
     await expect(page.getByText("$ 1,50 · Bs 54,75")).toBeVisible();
 
+    await emptyCart(page);
+  });
+
+  test("entrega elegida en el carrito: viaja al checkout, se paga y el seguimiento sale con los pasos de entrega", async ({ page }) => {
+    await signIn(page, "entrega@posven.test", SEEDED_PASSWORD);
+    await emptyCart(page);
+    await add(page, ACETAMINOFEN_PATH, "Farmacia Central");
+
+    await page.goto("/carrito");
+    await page.getByRole("navigation", { name: "Cómo recibir lo de Farmacia Central" }).getByRole("link", { name: /^Entrega/ }).click();
+    await expect(page).toHaveURL(/\/carrito\?f-farmacia-central-valencia=delivery/);
+    await expect(page.getByRole("navigation", { name: "Cómo recibir lo de Farmacia Central" }).getByRole("link", { name: /^Entrega/ })).toHaveAttribute("aria-current", "true");
+
+    await page.getByRole("link", { name: "Ir a pagar" }).click();
+    await expect(page).toHaveURL(/\/checkout\?.*f-farmacia-central-valencia=delivery/);
+    await expect(
+      page.getByRole("radiogroup", { name: "Entrega en Farmacia Central" }).getByRole("radio", { name: "Entrega a domicilio" }),
+    ).toBeChecked();
+    await expect(page.getByText("Envío")).toBeVisible();
+
+    await page.getByRole("button", { name: /^Pagar Bs / }).click();
+    await expect(page).toHaveURL(/\/checkout\/resultado\?compra=[A-HJKMNP-Z2-9]{8}$/, { timeout: 15_000 });
+    await expect(page.getByRole("heading", { level: 1, name: "¡Pago confirmado!" })).toBeVisible({ timeout: 15_000 });
+    const steps = page.getByRole("list", { name: "Estado del pedido" });
+    await expect(steps).toHaveCount(1);
+    await expect(steps).toContainText("Preparando");
+    await expect(steps).toContainText("En camino");
+    await expect(steps).not.toContainText("Listo para retirar");
+
+    await page.getByRole("link", { name: "Seguir comprando" }).click();
+    await expect(page).toHaveURL("/");
     await emptyCart(page);
   });
 

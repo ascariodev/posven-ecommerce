@@ -143,5 +143,5 @@ async function Purchases({ ctx }: { ctx: AccountContext }) {
 - `features/purchases/__tests__/labels.test.ts`: `chargeText` en VES y en USD; `purchaseProgress` por estado de pedido y de pago.
 - `features/purchases/__tests__/pagination.test.ts`: `?pagina` válida e inválida; fuera de rango, vacía en la 1 y en rango.
 - `features/purchases/__tests__/RecentPurchases.test.tsx`: las 3 primeras en filas y en tabla y "Ver todas"; "Tu última compra" con estado, tiendas, total y "Ver seguimiento"; la tarjeta "Para retirar" con el primer pedido listo, y sin ella si ninguno tiene código; nada sin compras, con la API caída o con un 429; un 401 sube.
-- `features/purchases/__tests__/BuyAgain.test.tsx`: tarjeta con tienda, precio y "Agregar"; el `unavailable` sin botón y con motivo; nada sin ítems, con la API caída o con un 429; un 401 sube.
+- `features/purchases/__tests__/BuyAgain.test.tsx`: tarjeta con tienda, precio y "Agregar"; el orden recibido y el mismo producto en dos tiendas sin keys duplicadas; el `unavailable` sin botón y con motivo; nada sin ítems, con la API caída o con un 429; un 401 sube.
 - `e2e/checkout.spec.ts`: el detalle con el código de retiro y el reembolso, y "Compras recientes" y "Volver a comprar" (con "Agregar") en `/cuenta`.

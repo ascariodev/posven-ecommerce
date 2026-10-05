@@ -64,6 +64,28 @@ describe("BuyAgain", () => {
     expect(screen.queryByText(/\$ 2,50/)).toBeNull();
   });
 
+  it("respeta el orden recibido y pinta el mismo producto de dos tiendas sin keys duplicadas", async () => {
+    const otherStore = { ...order().store, slug: "farmacia-norte-valencia", name: "Farmacia Norte" };
+    const ibuprofeno = { slug: "ibuprofeno-400-mg", name: "Ibuprofeno 400 mg", image_url: null, category: null };
+    vi.mocked(getBuyAgain).mockResolvedValue({
+      data: [item({ product: ibuprofeno }), item({ store: otherStore }), item()],
+      rate,
+    });
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    render((await BuyAgain({ ctx }))!);
+
+    const rows = within(screen.getByRole("list", { name: "Volver a comprar" })).getAllByRole("listitem");
+    expect(rows).toHaveLength(3);
+    expect(within(rows[0]).getByRole("link", { name: "Ibuprofeno 400 mg" })).toBeTruthy();
+    expect(within(rows[1]).getByRole("link", { name: "Farmacia Norte" })).toBeTruthy();
+    expect(within(rows[2]).getByRole("link", { name: "Farmacia Central" })).toBeTruthy();
+    expect(screen.getAllByRole("link", { name: "Acetaminofén 500 mg" })).toHaveLength(2);
+    const keyWarnings = consoleError.mock.calls.filter((call) => String(call[0]).includes("same key"));
+    consoleError.mockRestore();
+    expect(keyWarnings).toHaveLength(0);
+  });
+
   it("no pinta nada sin ítems", async () => {
     vi.mocked(getBuyAgain).mockResolvedValue({ data: [], rate });
     expect(await BuyAgain({ ctx })).toBeNull();

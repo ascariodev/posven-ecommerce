@@ -12,11 +12,12 @@ import type { Address, CartStore, Charge, Quote, QuoteStore } from "@/lib/market
 import { cn } from "@/lib/utils";
 import { ResendVerificationForm } from "@/features/account/components/VerifyEmailForm";
 import { payCheckout } from "../server/actions";
-import { CheckoutAddressPicker, LINK_CLASSES, SECTION_LABEL_CLASSES } from "./CheckoutAddressPicker";
+import { CheckoutAddressPicker } from "./CheckoutAddressPicker";
 import { CheckoutEmpty } from "./CheckoutEmpty";
 import { CheckoutStoreSection, DELIVERY_UNAVAILABLE_TEXT } from "./CheckoutStoreSection";
 import { INITIAL_CHECKOUT_STATE } from "../lib/checkoutState";
 import { checkoutHref, FULFILLMENT_PARAM_PREFIX } from "../lib/params";
+import { LINK_CLASSES, SECTION_LABEL_CLASSES } from "../lib/styles";
 
 // Los montos son las cadenas de la Quote y del carrito formateadas: aquí no se suma nada. "Cambió"
 // compara cadenas de la Quote vieja y la nueva, sin calcular.

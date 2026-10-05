@@ -5,10 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { Address } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
+import { LINK_CLASSES, SECTION_LABEL_CLASSES } from "../lib/styles";
 
 const ADD_ADDRESS_HREF = "/cuenta/direcciones?volver=/checkout";
-export const SECTION_LABEL_CLASSES = "text-xs font-semibold tracking-wide text-muted-foreground uppercase md:text-sm";
-export const LINK_CLASSES = "text-sm font-medium text-foreground underline underline-offset-4";
 
 export function CheckoutAddressPicker({
   addresses,

@@ -52,8 +52,8 @@ describe("generateMetadata de la tienda", () => {
     expect(metadata.openGraph?.images).toEqual(["https://cdn.example.com/logo.png"]);
   });
 
-  it("sin logo no trae Open Graph", async () => {
-    const metadata = await metadataFor({ logo_url: null });
+  it("sin logo no trae Open Graph aunque tenga portada", async () => {
+    const metadata = await metadataFor({ logo_url: null, cover_url: "https://cdn.example.com/cover.png" });
     expect(metadata.openGraph).toBeUndefined();
   });
 });

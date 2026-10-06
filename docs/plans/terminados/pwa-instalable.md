@@ -91,7 +91,7 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
 - [x] M-6 — Prueba de vitest que falle si `brandIcon` deja de encontrar el `.ttf` (un cambio a
   `import.meta.url` o a una ruta con variables rompe el trazado del standalone).
   posven-ecommerce · baja · sonnet
-- [ ] M-7 — `.claude/rules/tests.md` punto 1: un archivo puede usar `// @vitest-environment node`
+- [x] M-7 — `.claude/rules/tests.md` punto 1: un archivo puede usar `// @vitest-environment node`
   cuando necesita `node:fs` o un `Response` real (ejemplo `brand-icon.test.tsx`), y las pruebas que
   leen archivos desde `process.cwd()` se corren desde la raíz del repo.
   posven-ecommerce · baja · sonnet

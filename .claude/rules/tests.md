@@ -11,7 +11,10 @@ paths:
 
 1. Vitest con entorno `jsdom` (`vitest.config.mts`): alias `@/` a la raíz y `server-only` al
    módulo vacío de Next, así que `http.ts` y `client.ts` se importan sin error. Corre
-   `**/*.test.{ts,tsx}` fuera de `node_modules`, `.next` y `e2e`.
+   `**/*.test.{ts,tsx}` fuera de `node_modules`, `.next` y `e2e`. Un archivo que necesita
+   `node:fs` o un `Response` real abre con `// @vitest-environment node`, como
+   `features/site/__tests__/brand-icon.test.tsx`; las pruebas que leen archivos desde
+   `process.cwd()` (`features/site/lib/brand-icon.tsx`) se corren desde la raíz del repo.
 2. Las pruebas viven en el `__tests__/` de su módulo, planas: `features/cart/lib/flag.ts` se
    prueba en `features/cart/__tests__/flag.test.ts`.
 3. Se corre dirigido: `npx vitest run <ruta>` (p. ej. `npx vitest run lib/marketplace`).

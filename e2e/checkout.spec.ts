@@ -14,7 +14,13 @@ const SEEDED_PASSWORD = "clave-segura-3";
 
 async function add(page: Page, path: string, store: string): Promise<void> {
   await page.goto(path);
-  await page.getByRole("button", { name: new RegExp(`^Agregar (al carrito|otro): .* de ${store}$`) }).click();
+  await expect(page.locator("[data-purchase-bar]")).toBeVisible();
+  const pick = page.getByRole("button", { name: new RegExp(`^Elegir tienda: ${store},`) });
+  if ((await pick.count()) > 0) await pick.click();
+  await page
+    .locator("[data-purchase-bar]")
+    .getByRole("button", { name: new RegExp(`^Agregar (al carrito|otro) de la tienda elegida: .* de ${store}$`) })
+    .click();
   await expect(page.getByText("Agregado").first()).toBeVisible();
 }
 

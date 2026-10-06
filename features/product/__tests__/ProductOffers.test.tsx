@@ -204,12 +204,15 @@ describe("ProductOffers", () => {
   });
 });
 
-describe("botón Agregar al carrito en las ofertas (RN-CART-03)", () => {
+describe("elección de oferta y botón Agregar de la barra (RN-CART-03)", () => {
   const seller = (overrides: Partial<ProductOffer> = {}) => {
     const base = offer("farmacia-central-valencia", "Farmacia Central", overrides);
     return { ...base, store: { ...base.store, accepts_orders: true } };
   };
-  const addButtons = () => screen.queryAllByRole("button", { name: /^Agregar al carrito:/ });
+  const addButtons = () => [
+    ...screen.queryAllByRole("button", { name: /^(Elegir tienda|Tienda elegida):/ }),
+    ...screen.queryAllByRole("button", { name: /^Agregar al carrito/ }),
+  ];
 
   beforeEach(() => {
     vi.stubEnv("MARKETPLACE_MODE", "mock");
@@ -224,7 +227,7 @@ describe("botón Agregar al carrito en las ofertas (RN-CART-03)", () => {
 
     render(await ProductOffers({ product, searchParams: searchParams({}) }));
 
-    expect(addButtons()).toHaveLength(3);
+    expect(addButtons()).toHaveLength(4);
   });
 
   it("no sale en una tienda sin venta en línea", async () => {

@@ -151,7 +151,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [x] M-15 — Casos de `parsePage` (`abc`, `0`, repetido) y de destacados sin repetir en `StoresDirectory.test.tsx`, si faltan.
   posven-ecommerce · baja · sonnet
-- [ ] M-16 — P06: ofertas en filas compactas con el precio a la derecha y un solo "Agregar" en la barra (hoy cada oferta es tarjeta alta con "Elegir" y "Agregar al carrito"). Rediseño de `OfferCard`.
+- [x] M-16 — P06: ofertas en filas compactas con el precio a la derecha y un solo "Agregar" en la barra (hoy cada oferta es tarjeta alta con "Elegir" y "Agregar al carrito"). Rediseño de `OfferCard`.
   posven-ecommerce · media · sonnet
 - [ ] M-17 — P06: "Fuera de tu zona" plegado en móvil ("Ver N tiendas fuera de tu zona").
   posven-ecommerce · baja · sonnet
@@ -172,4 +172,8 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - [ ] M-25 — `sizes` propios para `ProductThumb` en las rejillas de `NearbyProducts`, `FeaturedCard`, `SearchResults` y favoritos, como el de `StoreProducts`.
   posven-ecommerce · baja · sonnet
 - [ ] M-26 — `StoreHeader.test.tsx`: la prueba de hijos no comprueba que queden junto a `ContactButtons` (el README lo afirma); afirmar el contenedor común o ajustar el README.
+  posven-ecommerce · baja · sonnet
+- [ ] M-27 — Si ninguna tienda acepta pedidos, la fila de la tienda por defecto de la barra no se resalta porque no tiene control de elección; resaltarla sin control desde `OfferSelection`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-28 — Comprobar a 320 px que el `-ml-2` de `OfferSelectButton` alinea el círculo con el borde de la fila sin recortarlo.
   posven-ecommerce · baja · sonnet

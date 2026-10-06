@@ -1,6 +1,8 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { OfferCard } from "@/features/product/components/OfferCard";
+import { OfferSelectionProvider } from "@/features/product/components/OfferSelection";
 import type { ProductOffer } from "@/lib/marketplace/schemas";
 
 vi.mock("@/features/cart/server/actions", () => ({ addToCart: vi.fn() }));
@@ -46,29 +48,50 @@ afterEach(() => {
 });
 
 describe("OfferCard", () => {
-  it("muestra el nombre real de la tienda con enlace a su página y el botón con ese nombre", () => {
+  it("muestra el nombre real de la tienda con enlace a su página y sin botón propio de agregar", () => {
     render(<OfferCard offer={offer()} product={product} featured={false} now={now} />);
 
     expect(screen.getByRole("link", { name: "Farmacia Central" }).getAttribute("href")).toBe(
       "/tienda/farmacia-central-valencia",
     );
-    expect(screen.getByRole("button", { name: /^Agregar al carrito:/ })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Agregar al carrito/ })).toBeNull();
     expect(screen.queryByText("Comercio Aliado")).toBeNull();
   });
 
-  it("no ofrece Agregar al carrito con receta ni en una tienda que no recibe pedidos, pero sí con controlado", () => {
+  it("se elige con un control que nombra tienda y precio, y la barra sigue a la elección", () => {
+    render(
+      <OfferSelectionProvider
+        offers={[{ storeSlug: "farmacia-central-valencia", storeName: "Farmacia Central", priceUsd: "2.50", priceVes: "91.25", canOrder: true }]}
+        defaultSlug="otra"
+      >
+        <OfferCard offer={offer()} product={product} featured={false} now={now} />
+      </OfferSelectionProvider>,
+    );
+    const pick = screen.getByRole("button", { name: "Elegir tienda: Farmacia Central, $ 2,50" });
+    expect(pick.getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(pick);
+    expect(
+      screen.getByRole("button", { name: "Tienda elegida: Farmacia Central, $ 2,50" }).getAttribute("aria-pressed"),
+    ).toBe("true");
+  });
+
+  it("no se puede elegir con receta ni en una tienda que no recibe pedidos, pero sí con controlado", () => {
+    const wrap = (card: ReactNode) => (
+      <OfferSelectionProvider offers={[]} defaultSlug="x">
+        {card}
+      </OfferSelectionProvider>
+    );
+    const pick = () => screen.queryByRole("button", { name: /^(Elegir|Tienda elegida)/ });
     const { rerender } = render(
-      <OfferCard offer={offer()} product={{ ...product, restriction: "recipe" }} featured={false} now={now} />,
+      wrap(<OfferCard offer={offer()} product={{ ...product, restriction: "recipe" }} featured={false} now={now} />),
     );
-    expect(screen.queryByRole("button", { name: /^Agregar al carrito:/ })).toBeNull();
+    expect(pick()).toBeNull();
 
-    rerender(<OfferCard offer={offer({}, { accepts_orders: false })} product={product} featured={false} now={now} />);
-    expect(screen.queryByRole("button", { name: /^Agregar al carrito:/ })).toBeNull();
+    rerender(wrap(<OfferCard offer={offer({}, { accepts_orders: false })} product={product} featured={false} now={now} />));
+    expect(pick()).toBeNull();
 
-    rerender(
-      <OfferCard offer={offer()} product={{ ...product, restriction: "controlled" }} featured={false} now={now} />,
-    );
-    expect(screen.getByRole("button", { name: /^Agregar al carrito:/ })).toBeTruthy();
+    rerender(wrap(<OfferCard offer={offer()} product={{ ...product, restriction: "controlled" }} featured={false} now={now} />));
+    expect(pick()).toBeTruthy();
   });
 
   it("trae WhatsApp y llamada de la tienda", () => {

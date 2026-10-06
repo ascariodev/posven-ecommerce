@@ -4,7 +4,7 @@ import { fillRegistration } from "./registration";
 // Slugs y nombres del simulado: farmacia-central-valencia y abasto-la-esquina venden en línea;
 // farmacia-naguanagua no. Amoxicilina es "recipe" y clonazepam "controlled" (la API no lo restringe).
 const ACETAMINOFEN_PATH = "/p/acetaminofen-500-mg-20-tabletas";
-const ADD_ACETAMINOFEN = "Agregar al carrito: Acetaminofén 500 mg x 20 tabletas de Farmacia Central";
+const ADD_ACETAMINOFEN = "Agregar al carrito de la tienda elegida: Acetaminofén 500 mg x 20 tabletas de Farmacia Central";
 const ADD_HARINA = "Agregar al carrito: Harina de maíz precocida 1 kg de Abasto La Esquina";
 
 async function addAcetaminofen(page: Page): Promise<void> {
@@ -61,7 +61,7 @@ test.describe("carrito", () => {
         response.request().method() === "POST" &&
         (response.request().postData() ?? "").includes('"add_to_cart"'),
     );
-    await page.getByRole("button", { name: /^Agregar al carrito: Acetaminofén 500 mg x 20 tabletas de / }).first().click();
+    await page.locator("[data-purchase-bar]").getByRole("button", { name: /^Agregar al carrito de la tienda elegida: Acetaminofén 500 mg x 20 tabletas de / }).click();
 
     const response = await eventResponse;
     expect(response.status()).toBe(202);
@@ -75,17 +75,17 @@ test.describe("carrito", () => {
   test("sin botón en una tienda que no vende ni en un producto de récipe", async ({ page }) => {
     await page.goto("/tienda/farmacia-naguanagua");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByRole("button", { name: /^Agregar al carrito:/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /^Agregar al carrito/ })).toHaveCount(0);
 
     await page.goto("/p/amoxicilina-500-mg-21-capsulas");
     await expect(page.getByText("Requiere récipe, consúltalo en la tienda.")).toBeVisible();
-    await expect(page.getByRole("button", { name: /^Agregar al carrito:/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /^Agregar al carrito/ })).toHaveCount(0);
   });
 
   test("un controlado se agrega: la API sólo restringe récipe", async ({ page }) => {
     await page.goto("/p/clonazepam-0-5-mg-30-tabletas");
     await expect(page.getByText("Venta controlada, consúltalo en la tienda.")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /^Agregar al carrito:/ }).first()).toBeVisible();
+    await expect(page.locator("[data-purchase-bar]").getByRole("button", { name: /^Agregar al carrito/ })).toBeVisible();
   });
 
   test("el carrito de invitado se fusiona al registrarse y al entrar", async ({ page }) => {

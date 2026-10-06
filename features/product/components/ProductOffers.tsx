@@ -134,7 +134,7 @@ export function ProductOffersSkeleton() {
       <Skeleton className="h-7 w-48" />
       <div className="flex flex-col gap-3">
         {Array.from({ length: 4 }, (_, index) => (
-          <Skeleton key={index} className="h-44" />
+          <Skeleton key={index} className="h-32" />
         ))}
       </div>
     </div>

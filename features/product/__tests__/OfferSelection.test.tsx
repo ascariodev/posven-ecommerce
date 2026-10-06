@@ -17,8 +17,8 @@ const PRODUCT = { slug: "acetaminofen", name: "Acetaminofén" };
 function renderBar() {
   return render(
     <OfferSelectionProvider offers={OFFERS} defaultSlug="central">
-      <OfferSelectButton storeSlug="central" storeName="Farmacia Central" />
-      <OfferSelectButton storeSlug="esquina" storeName="Abasto La Esquina" />
+      <OfferSelectButton storeSlug="central" storeName="Farmacia Central" priceUsd="2.50" />
+      <OfferSelectButton storeSlug="esquina" storeName="Abasto La Esquina" priceUsd="3.00" />
       <PurchaseBar product={PRODUCT} />
     </OfferSelectionProvider>,
   );
@@ -31,12 +31,12 @@ describe("selección de tienda y barra de compra", () => {
     expect(bar.textContent).toContain("Farmacia Central");
     expect(bar.textContent).toContain("$ 2,50");
     expect(screen.getByRole("button", { name: "Agregar al carrito de la tienda elegida: Acetaminofén de Farmacia Central" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Tienda elegida: Farmacia Central" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Tienda elegida: Farmacia Central, $ 2,50" }).getAttribute("aria-pressed")).toBe("true");
   });
 
   it("elegir otra tienda cambia la barra y, sin accepts_orders, quita el botón", () => {
     renderBar();
-    fireEvent.click(screen.getByRole("button", { name: "Elegir tienda: Abasto La Esquina" }));
+    fireEvent.click(screen.getByRole("button", { name: "Elegir tienda: Abasto La Esquina, $ 3,00" }));
     const bar = screen.getByRole("region", { name: "Compra" });
     expect(bar.textContent).toContain("Abasto La Esquina");
     expect(bar.textContent).toContain("$ 3,00");
@@ -45,7 +45,7 @@ describe("selección de tienda y barra de compra", () => {
   });
 
   it("sin proveedor no pinta nada", () => {
-    const { container } = render(<OfferSelectButton storeSlug="central" storeName="Farmacia Central" />);
+    const { container } = render(<OfferSelectButton storeSlug="central" storeName="Farmacia Central" priceUsd="2.50" />);
     expect(container.innerHTML).toBe("");
   });
 });

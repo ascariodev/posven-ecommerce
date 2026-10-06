@@ -2,7 +2,6 @@
 
 import { Check } from "lucide-react";
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { Button } from "@/components/ui/button";
 import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
 import { formatUsd, formatVes } from "@/lib/format";
 import type { Money } from "@/lib/marketplace/schemas";
@@ -37,23 +36,28 @@ export function OfferSelectionProvider({
   return <SelectionContext value={{ offers, selectedSlug, select }}>{children}</SelectionContext>;
 }
 
-export function OfferSelectButton({ storeSlug, storeName }: { storeSlug: string; storeName: string }) {
+export function OfferSelectButton({ storeSlug, storeName, priceUsd }: { storeSlug: string; storeName: string; priceUsd: Money }) {
   const selection = useContext(SelectionContext);
   if (selection === null) return null;
   const selected = selection.selectedSlug === storeSlug;
   return (
-    <Button
+    <button
       type="button"
-      variant={selected ? "secondary" : "outline"}
-      size="sm"
       aria-pressed={selected}
-      aria-label={`${selected ? "Tienda elegida" : "Elegir tienda"}: ${storeName}`}
+      aria-label={`${selected ? "Tienda elegida" : "Elegir tienda"}: ${storeName}, ${formatUsd(priceUsd)}`}
       onClick={() => selection.select(storeSlug)}
-      className="w-full font-bold sm:w-auto"
+      className="-ml-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
     >
-      {selected && <Check aria-hidden="true" className="size-4" />}
-      {selected ? "Elegida" : "Elegir"}
-    </Button>
+      <span
+        aria-hidden="true"
+        className={cn(
+          "flex size-6 items-center justify-center rounded-full border-2",
+          selected ? "border-foreground bg-foreground text-background" : "border-input-border bg-card",
+        )}
+      >
+        {selected && <Check className="size-4" strokeWidth={3} />}
+      </span>
+    </button>
   );
 }
 

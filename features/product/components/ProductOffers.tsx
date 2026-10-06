@@ -89,8 +89,11 @@ export async function ProductOffers({
       )}
       {more.length > 0 && (
         <details className="group">
-          <summary className="flex h-11 cursor-pointer list-none items-center justify-center rounded-lg border border-input-border text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground group-open:hidden md:h-9 [&::-webkit-details-marker]:hidden">
-            {more.length === 1 ? "Ver 1 tienda más" : `Ver ${more.length} tiendas más`}
+          <summary className="flex h-11 cursor-pointer list-none items-center justify-center rounded-lg border border-input-border text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground md:h-9 [&::-webkit-details-marker]:hidden">
+            <span className="group-open:hidden">
+              {more.length === 1 ? "Ver 1 tienda más" : `Ver ${more.length} tiendas más`}
+            </span>
+            <span className="hidden group-open:inline">Ver menos</span>
           </summary>
           <ul aria-label="Más ofertas" className="flex flex-col gap-3">
             {more.map((offer) => (

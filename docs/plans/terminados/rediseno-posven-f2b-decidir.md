@@ -125,7 +125,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [x] M-2 — `OfferCard.test.tsx`: caso sin "Agregar al carrito" con restricción distinta de `none` o sin `accepts_orders`.
   posven-ecommerce · baja · sonnet
-- [ ] M-3 — `ProductOffers`: al abrir "Ver N tiendas más" el `summary` se oculta (`group-open:hidden`) y el foco cae al `body`; mover el foco a la primera oferta o dejar un "Ver menos".
+- [x] M-3 — `ProductOffers`: al abrir "Ver N tiendas más" el `summary` se oculta (`group-open:hidden`) y el foco cae al `body`; mover el foco a la primera oferta o dejar un "Ver menos".
   posven-ecommerce · baja · sonnet
 - [ ] M-4 — La galería de la ficha repite `product.image_url` tres veces ("Mocks temporales" de la capa de Jose).
   posven-ecommerce · baja · sonnet

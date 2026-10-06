@@ -105,9 +105,25 @@ describe("ProductOffers", () => {
       "Tienda b",
       "Tienda c",
     ]);
-    expect(screen.getByText("Ver 2 tiendas más").tagName).toBe("SUMMARY");
+    expect(screen.getByText("Ver 2 tiendas más").closest("summary")).not.toBeNull();
     const more = within(screen.getByRole("list", { name: "Más ofertas" })).getAllByRole("listitem");
     expect(more).toHaveLength(2);
+  });
+
+  it("el resumen de Ver N tiendas más no se oculta al abrir y cambia a Ver menos", async () => {
+    const inside = ["a", "b", "c", "d"].map((slug) => offer(`tienda-${slug}`, `Tienda ${slug}`));
+    vi.mocked(getProductOffers).mockResolvedValue(page(inside, []));
+
+    const { container } = render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+    const summary = screen.getByText("Ver 1 tienda más").closest("summary") as HTMLElement;
+    const details = container.querySelector("details") as HTMLDetailsElement;
+    summary.click();
+
+    expect(details.open).toBe(true);
+    expect(summary.className).not.toContain("group-open:hidden");
+    expect(within(summary).getByText("Ver menos").className).toContain("group-open:inline");
+    expect(within(summary).getByText("Ver 1 tienda más").className).toContain("group-open:hidden");
   });
 
   it("sin ubicación no ofrece Más cerca y pide sort price aunque venga orden=cerca", async () => {

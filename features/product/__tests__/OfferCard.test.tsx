@@ -129,4 +129,11 @@ describe("OfferCard", () => {
     rerender(<OfferCard offer={offer()} product={product} featured={false} now={now} />);
     expect(screen.queryByText(/Abierto|Cerrado/)).toBeNull();
   });
+
+  it("el sello Aliado PosVen sale sólo si la tienda de la oferta es premium", () => {
+    const { rerender } = render(<OfferCard offer={offer()} product={product} featured={false} now={now} />);
+    expect(screen.queryByText("Aliado PosVen")).toBeNull();
+    rerender(<OfferCard offer={offer({}, { is_premium: true })} product={product} featured={false} now={now} />);
+    expect(screen.getByText("Aliado PosVen")).toBeTruthy();
+  });
 });

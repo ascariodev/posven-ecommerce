@@ -6,6 +6,7 @@ import { ContactButtons } from "@/features/events/components/ContactButtons";
 import type { Store } from "@/lib/marketplace/schemas";
 import { storeInitials } from "../lib/initials";
 import { formatSchedule } from "../lib/schedule";
+import { PremiumSeal } from "./PremiumSeal";
 
 function StoreHeaderStatus({ store }: { store: Store }) {
   if (store.is_open === undefined) return null;
@@ -54,6 +55,7 @@ export function StoreHeader({ store, children }: { store: Store; children?: Reac
             <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               {store.name}
             </h1>
+            {store.is_premium && <PremiumSeal />}
             <p className="text-sm text-muted-foreground">{store.company_name}</p>
             <StoreHeaderStatus store={store} />
           </div>

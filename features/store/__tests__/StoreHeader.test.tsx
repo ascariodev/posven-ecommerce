@@ -81,4 +81,11 @@ describe("StoreHeader", () => {
     );
     expect(screen.getByRole("button", { name: "Guardar favorito" })).toBeTruthy();
   });
+
+  it("el sello Aliado PosVen sale sólo si la tienda es premium", () => {
+    const { rerender } = render(<StoreHeader store={store({ is_premium: false })} />);
+    expect(screen.queryByText("Aliado PosVen")).toBeNull();
+    rerender(<StoreHeader store={store({ is_premium: true })} />);
+    expect(screen.getByText("Aliado PosVen")).toBeTruthy();
+  });
 });

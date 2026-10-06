@@ -80,4 +80,12 @@ describe("StoreCard", () => {
     expect(screen.queryByText("Cerrado")).toBeNull();
     expect(screen.queryByText(/Abierto/)).toBeNull();
   });
+
+  it("el sello Aliado PosVen sale sólo si la tienda es premium, también con Destacado", () => {
+    const { rerender } = render(<StoreCard store={store({ is_premium: false })} featured />);
+    expect(screen.queryByText("Aliado PosVen")).toBeNull();
+    rerender(<StoreCard store={store({ is_premium: true })} featured />);
+    expect(screen.getByText("Aliado PosVen")).toBeTruthy();
+    expect(screen.getByText("Destacado")).toBeTruthy();
+  });
 });

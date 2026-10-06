@@ -4,6 +4,7 @@ import { cartEnabled } from "@/features/cart/lib/flag";
 import { ContactButtons } from "@/features/events/components/ContactButtons";
 import { formatDistance, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
 import type { ProductOffer, Restriction } from "@/lib/marketplace/schemas";
+import { PremiumSeal } from "@/features/store/components/PremiumSeal";
 import { OfferSelectButton } from "./OfferSelection";
 
 export function OfferCard({
@@ -31,6 +32,7 @@ export function OfferCard({
           >
             {store.name}
           </Link>
+          {store.is_premium && <PremiumSeal />}
           <p className="text-sm font-medium text-muted-foreground">
             {store.city.name}
             {offer.distance_km !== null && ` · ${formatDistance(offer.distance_km)}`}

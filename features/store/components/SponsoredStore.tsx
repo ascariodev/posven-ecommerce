@@ -3,6 +3,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { formatDistance } from "@/lib/format";
 import type { NearbyStore } from "@/lib/marketplace/schemas";
 import { StoreOpenBadge } from "./StoreCard";
+import { PremiumSeal } from "./PremiumSeal";
 import { StoreLogo } from "./StoreLogo";
 
 export function SponsoredStore({ store }: { store: NearbyStore }) {
@@ -15,6 +16,7 @@ export function SponsoredStore({ store }: { store: NearbyStore }) {
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="text-xs font-semibold tracking-wide text-muted-foreground">PATROCINADO</span>
         <span className="truncate font-semibold text-foreground">{store.name}</span>
+        {store.is_premium && <PremiumSeal className="my-0.5" />}
         <span className="truncate text-sm text-muted-foreground">
           {store.city.name}
           {store.distance_km !== null && ` · ${formatDistance(store.distance_km)}`}

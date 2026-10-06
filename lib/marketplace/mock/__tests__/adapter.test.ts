@@ -178,7 +178,7 @@ describe("horario y orden simulados", () => {
     expect(open.meta.total).toBeGreaterThan(0);
   });
 
-  it("open_now con todas las tiendas cerradas no devuelve nada", async () => {
+  it("open_now con todas las tiendas cerradas no devuelve nada en productos cercanos", async () => {
     vi.useFakeTimers({ now: MONDAY_6_CARACAS });
     const open = await listNearbyProducts({ geo: null, radiusKm: null, page: 1, openNow: true });
     expect(open.meta.total).toBe(0);

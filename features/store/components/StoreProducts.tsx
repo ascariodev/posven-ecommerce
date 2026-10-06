@@ -127,7 +127,14 @@ export function StoreProductsSkeleton() {
       <Skeleton className="h-7 w-40" />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
         {Array.from({ length: 4 }, (_, index) => (
-          <Skeleton key={index} className="h-32" />
+          <Card key={index} className="h-full gap-2 rounded-2xl border border-border p-2 pb-3 shadow-card">
+            <Skeleton className="aspect-square" />
+            <CardContent className="flex flex-1 flex-col gap-2 px-1">
+              <Skeleton className="h-10" />
+              <Skeleton className="h-16" />
+              <Skeleton className="h-11 md:h-9" />
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>

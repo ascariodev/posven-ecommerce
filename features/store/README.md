@@ -106,7 +106,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 - `storeJsonLd(store: Store): object`, `features/store/lib/jsonld.ts`
 - `StoreHeader({ store, children }: { store: Store; children?: ReactNode })`, `features/store/components/StoreHeader.tsx`
 - `StoreProducts({ slug, searchParams }: { slug: string; searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/store/components/StoreProducts.tsx`
-- `StoreProductsSkeleton()`, fallback de `StoreProducts`, `features/store/components/StoreProducts.tsx`
+- `StoreProductsSkeleton()`, fallback de `StoreProducts` (cuatro `Card` con la misma estructura y grilla que la tarjeta de producto), `features/store/components/StoreProducts.tsx`
 
 ## 5. Estructura interna
 

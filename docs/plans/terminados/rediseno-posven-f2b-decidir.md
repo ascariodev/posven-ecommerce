@@ -139,7 +139,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [ ] M-9 — `is_open` y `closes_at` en `GET /stores/{slug}` (posveapi, spec §3 primero) para que la cabecera de tienda muestre "Abierto · cierra HH:MM"; puede ir junto a la M-23 de F1b (`open_now` en `/products/nearby`).
   posveapi + posven-ecommerce · alta · plan nuevo
-- [ ] M-10 — `StoreProductsSkeleton` usa `h-32`, más bajo que la tarjeta nueva: salto de layout al cargar.
+- [x] M-10 — `StoreProductsSkeleton` usa `h-32`, más bajo que la tarjeta nueva: salto de layout al cargar.
   posven-ecommerce · baja · sonnet
 - [ ] M-11 — `sizes` de `ProductThumb` acordes a la rejilla de 2 a 4 columnas de `StoreProducts`.
   posven-ecommerce · baja · sonnet

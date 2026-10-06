@@ -56,6 +56,21 @@ describe("OfferCard", () => {
     expect(screen.queryByText("Comercio Aliado")).toBeNull();
   });
 
+  it("no ofrece Agregar al carrito con receta ni en una tienda que no recibe pedidos, pero sí con controlado", () => {
+    const { rerender } = render(
+      <OfferCard offer={offer()} product={{ ...product, restriction: "recipe" }} featured={false} now={now} />,
+    );
+    expect(screen.queryByRole("button", { name: /^Agregar al carrito:/ })).toBeNull();
+
+    rerender(<OfferCard offer={offer({}, { accepts_orders: false })} product={product} featured={false} now={now} />);
+    expect(screen.queryByRole("button", { name: /^Agregar al carrito:/ })).toBeNull();
+
+    rerender(
+      <OfferCard offer={offer()} product={{ ...product, restriction: "controlled" }} featured={false} now={now} />,
+    );
+    expect(screen.getByRole("button", { name: /^Agregar al carrito:/ })).toBeTruthy();
+  });
+
   it("trae WhatsApp y llamada de la tienda", () => {
     render(<OfferCard offer={offer()} product={product} featured={false} now={now} />);
 

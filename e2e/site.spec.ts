@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { MANIFEST_BACKGROUND_COLOR, MANIFEST_THEME_COLOR } from "../lib/site";
 
 const FOOTER_LINKS = [
   { name: "Para comercios", path: "/vende" },
@@ -177,6 +178,41 @@ test("/vende tiene canónica propia, sus secciones y el contacto sólo con desti
       expect(href).toMatch(/^(https:\/\/wa\.me\/\d+\?text=|mailto:)/);
     }
   }
+});
+
+test("el manifest declara la instalación con sus íconos y el head enlaza el manifest y el ícono de iOS", async ({
+  page,
+  request,
+}) => {
+  const response = await request.get("/manifest.webmanifest");
+  expect(response.status()).toBe(200);
+  const manifest = await response.json();
+  expect(manifest).toMatchObject({
+    name: "posven",
+    short_name: "posven",
+    start_url: "/",
+    display: "standalone",
+    lang: "es",
+    background_color: MANIFEST_BACKGROUND_COLOR,
+    theme_color: MANIFEST_THEME_COLOR,
+  });
+  expect(manifest.description).toBeTruthy();
+  expect(manifest.icons.map((icon: { src: string; purpose: string }) => [icon.src, icon.purpose])).toEqual([
+    ["/icon/192", "any"],
+    ["/icon/512", "any"],
+    ["/icon/maskable", "maskable"],
+  ]);
+  for (const icon of manifest.icons as { src: string; type: string }[]) {
+    const iconResponse = await request.get(icon.src);
+    expect(iconResponse.status()).toBe(200);
+    expect(iconResponse.headers()["content-type"]).toBe(icon.type);
+  }
+
+  await page.goto("/");
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute("href", "/manifest.webmanifest");
+  await expect(page.locator('meta[name="mobile-web-app-capable"]')).toHaveAttribute("content", "yes");
+  await expect(page.locator('meta[name="apple-mobile-web-app-title"]')).toHaveAttribute("content", "posven");
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveCount(1);
 });
 
 test.describe("modo oscuro", () => {

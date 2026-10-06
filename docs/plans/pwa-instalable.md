@@ -2,7 +2,7 @@
 
 **Objetivo:** el ecommerce se puede instalar en el teléfono y el escritorio (manifest e íconos
 propios con la marca), sin service worker ni funcionamiento sin conexión.
-**Estado:** en curso · Fase actual: 1
+**Estado:** en curso · Fase actual: 2
 
 ## Contexto mínimo
 - Spec: sin spec (no toca el contrato con posveapi). Guías de Next en `node_modules/next/dist/docs/`:
@@ -20,7 +20,7 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
 
 ## Fases
 
-### [ ] Fase 1 — Íconos de la marca generados
+### [x] Fase 1 — Íconos de la marca generados
 - **Repo:** posven-ecommerce
 - **Alcance:** íconos con `ImageResponse` de `next/og`, sin binarios en el repo, que reproducen
   la marca de la cabecera (la inicial de `SITE_NAME` en naranja sobre tinta). `app/icon.tsx` con
@@ -52,8 +52,22 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
   (pedido del usuario).
 - 2026-10-06 — Aprobado: ícono con la marca de la cabecera generado por código, tipografía por
   defecto de `ImageResponse` (Poppins queda como mejora), y `app/favicon.ico` de Next se reemplaza.
+- 2026-10-06 — Fase 1: el dibujo es `brandIcon(size, variant)` en `features/site/lib/brand-icon.tsx`.
+  Ids de `app/icon.tsx`: `32`, `192`, `512` y `maskable`, servidos en `/icon/<id>`; `/apple-icon`
+  de 180 px con variante `bleed`. `generateImageMetadata` no admite `purpose`: `any` y `maskable`
+  se declaran en el manifest (fase 2). Next enlaza también el maskable como `<link rel="icon">`
+  (inevitable, anotado en el README). En el maskable la letra ocupa la mitad del lado.
 
 ## Notas para la próxima sesión
-- Plan aprobado 2026-10-06; rama `feat/pwa-instalable` creada desde `main`. Sigue la fase 1.
+- Fase 1 cerrada. Sigue la fase 2: el manifest usa `/icon/192`, `/icon/512` (`purpose: any`) y
+  `/icon/maskable` (`purpose: maskable`).
+- `docs-check` marca RANCIO `features/site/README.md` desde antes de este plan (`verified_at` en
+  `b1bcd59`); la fase 2, que toca ese README, lo re-verifica y sube `verified_at`.
 
 ## Mejoras propuestas
+- [ ] M-1 — `app/icon.tsx`: `ICONS[String(await id)]` revienta con un id desconocido; Next sólo
+  pide los declarados, pero un `notFound()` defensivo lo cierra.
+  posven-ecommerce · baja · sonnet
+- [ ] M-2 — Cargar Poppins en negrita en `brandIcon` para igualar la marca de la cabecera (la
+  tipografía por defecto de `ImageResponse` sale sin negrita).
+  posven-ecommerce · baja · sonnet

@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { brandIcon, type BrandIconVariant } from "@/features/site/lib/brand-icon";
 import { SITE_NAME } from "@/lib/site";
 
@@ -18,6 +19,8 @@ export function generateImageMetadata() {
 }
 
 export default async function Icon({ id }: { id: Promise<string | number> }) {
-  const { size, variant } = ICONS[String(await id)];
+  const icon = ICONS[String(await id)];
+  if (!icon) notFound();
+  const { size, variant } = icon;
   return brandIcon(size, variant);
 }

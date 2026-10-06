@@ -65,7 +65,7 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
 - Plan terminado 2026-10-06 en `feat/pwa-instalable` (b0bed8d, ee4a7c6), sin merge ni push.
 
 ## Mejoras propuestas
-- [ ] M-1 — `app/icon.tsx`: `ICONS[String(await id)]` revienta con un id desconocido; Next sólo
+- [x] M-1 — `app/icon.tsx`: `ICONS[String(await id)]` revienta con un id desconocido; Next sólo
   pide los declarados, pero un `notFound()` defensivo lo cierra.
   posven-ecommerce · baja · sonnet
 - [ ] M-2 — Cargar Poppins en negrita en `brandIcon` para igualar la marca de la cabecera (la

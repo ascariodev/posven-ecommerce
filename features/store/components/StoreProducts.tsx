@@ -13,6 +13,7 @@ import { getStore } from "@/lib/marketplace/client";
 import type { Store, StoreProduct } from "@/lib/marketplace/schemas";
 
 const POSITIVE_INTEGER = /^\d+$/;
+const GRID_THUMB_SIZES = "(min-width: 1024px) 240px, (min-width: 768px) calc((100vw - 56px) / 3), calc((100vw - 44px) / 2)";
 
 function parsePage(value: string | string[] | undefined): number {
   const raw = Array.isArray(value) ? value[0] : value;
@@ -24,7 +25,13 @@ function parsePage(value: string | string[] | undefined): number {
 function StoreProductCard({ product, store, now }: { product: StoreProduct; store: Store; now: Date }) {
   return (
     <Card className="h-full gap-2 rounded-2xl border border-border p-2 pb-3 shadow-card transition-shadow duration-200 ease-out hover:shadow-raised motion-reduce:transition-none">
-      <ProductThumb imageUrl={product.image_url} category={product.category} size="card" className="aspect-square" />
+      <ProductThumb
+        imageUrl={product.image_url}
+        category={product.category}
+        size="card"
+        className="aspect-square"
+        sizes={GRID_THUMB_SIZES}
+      />
       <CardContent className="flex flex-1 flex-col gap-2 px-1">
         <Link
           href={`/p/${product.slug}`}

@@ -11,6 +11,7 @@ const thumbSizes = {
 } as const;
 
 const CARD_BOX = "relative aspect-[4/3] w-full overflow-hidden rounded-lg";
+const CARD_SIZES = "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw";
 const DETAIL_BOX = "relative aspect-square w-full overflow-hidden rounded-lg";
 
 export function ProductThumb({
@@ -18,6 +19,7 @@ export function ProductThumb({
   category,
   size,
   alt = "",
+  sizes,
   preload = false,
   className,
 }: {
@@ -25,6 +27,7 @@ export function ProductThumb({
   category: Category | null;
   size: "md" | "card" | "detail";
   alt?: string;
+  sizes?: string;
   preload?: boolean;
   className?: string;
 }) {
@@ -70,7 +73,7 @@ export function ProductThumb({
             alt={alt}
             fill
             preload={preload}
-            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+            sizes={sizes ?? CARD_SIZES}
             className="object-contain p-3"
           />
         </div>
@@ -80,7 +83,7 @@ export function ProductThumb({
     if (photo !== null) {
       return (
         <div className={cn(CARD_BOX, "bg-muted", className)}>
-          <Image src={photo} alt="" fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw" className="object-cover" />
+          <Image src={photo} alt="" fill sizes={sizes ?? CARD_SIZES} className="object-cover" />
         </div>
       );
     }

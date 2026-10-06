@@ -141,7 +141,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posveapi + posven-ecommerce · alta · plan nuevo
 - [x] M-10 — `StoreProductsSkeleton` usa `h-32`, más bajo que la tarjeta nueva: salto de layout al cargar.
   posven-ecommerce · baja · sonnet
-- [ ] M-11 — `sizes` de `ProductThumb` acordes a la rejilla de 2 a 4 columnas de `StoreProducts`.
+- [x] M-11 — `sizes` de `ProductThumb` acordes a la rejilla de 2 a 4 columnas de `StoreProducts`.
   posven-ecommerce · baja · sonnet
 - [ ] M-12 — Tests de `StoreHeader` (portada sólo premium, hijos) pendientes desde RN-STORE-04.
   posven-ecommerce · baja · sonnet
@@ -168,4 +168,6 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - [ ] M-23 — Variable `--purchase-bar-height` en `app/globals.css` que usen `--toast-offset` (hoy +6rem) y `scroll-padding-bottom` (hoy 9rem), en vez de valores sueltos.
   posven-ecommerce · baja · sonnet
 - [ ] M-24 — `ProductOffers.test.tsx`: gemela positiva explícita de la prueba `recipe`, fusionar la del interruptor apagado con la de `addButtons` (sin el `is_best_price` sobrante) y una sola fila de esa prueba en el README de product.
+  posven-ecommerce · baja · sonnet
+- [ ] M-25 — `sizes` propios para `ProductThumb` en las rejillas de `NearbyProducts`, `FeaturedCard`, `SearchResults` y favoritos, como el de `StoreProducts`.
   posven-ecommerce · baja · sonnet

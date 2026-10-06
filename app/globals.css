@@ -185,3 +185,10 @@ body::before {
   scroll-padding-top: 8rem;
   scroll-padding-bottom: calc(var(--toast-bottom) + 9rem);
 }
+
+.cn-toast {
+  --normal-bg: var(--popover);
+  --normal-text: var(--popover-foreground);
+  --normal-border: var(--input-border);
+  --border-radius: var(--radius);
+}

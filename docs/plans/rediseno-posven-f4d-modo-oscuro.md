@@ -3,7 +3,7 @@
 **Objetivo:** que el usuario pueda pasar a modo oscuro con un interruptor en el menú de cuenta y en
 el pie, que sin preferencia guardada el sitio siga al sistema sin parpadeo, que el `Toaster` siga
 el tema (M-4 de F0) y que `/preview` deje de existir.
-**Estado:** en curso · Fase actual: 1
+**Estado:** en curso · Fase actual: 2
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (fila "Modo oscuro" y "Prueba
@@ -36,7 +36,7 @@ el tema (M-4 de F0) y que `/preview` deje de existir.
 
 ## Fases
 
-### [ ] Fase 1 — Proveedor de tema y Toaster
+### [x] Fase 1 — Proveedor de tema y Toaster
 - **Repo:** posven-ecommerce
 - **Alcance:** rama desde `main`. Instalar `next-themes` (versión verificada contra React 19 y Next
   16 antes de instalar). `ThemeProvider` cliente en `features/site/components/` con
@@ -88,6 +88,6 @@ el tema (M-4 de F0) y que `/preview` deje de existir.
   no inició sesión. Elegido por el usuario.
 
 ## Notas para la próxima sesión
-- Plan aprobado 2026-10-05. Sigue la fase 1 (crear la rama desde `main`).
+- Fase 1 cerrada. Sigue la fase 2; `ui.md` todavía no lista `Switch`.
 
 ## Mejoras propuestas

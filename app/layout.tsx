@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { MobileNav, MobileNavSkeleton } from "@/features/site/components/MobileNav";
 import { SiteFooter } from "@/features/site/components/SiteFooter";
 import { SiteHeader } from "@/features/site/components/SiteHeader";
+import { ThemeProvider } from "@/features/site/components/ThemeProvider";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -29,22 +30,31 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#28292d" },
+  ],
 };
 
 const toastBottom = "var(--toast-bottom)";
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${fontSans.variable} ${fontHeading.variable} h-full antialiased`}>
+    <html
+      lang="es"
+      suppressHydrationWarning
+      className={`${fontSans.variable} ${fontHeading.variable} h-full antialiased`}
+    >
       <body className="flex min-h-full flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0">
-        <SiteHeader />
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
-        <SiteFooter />
-        <Suspense fallback={<MobileNavSkeleton />}>
-          <MobileNav />
-        </Suspense>
-        <Toaster offset={{ bottom: toastBottom }} mobileOffset={{ bottom: toastBottom }} />
+        <ThemeProvider>
+          <SiteHeader />
+          <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
+          <SiteFooter />
+          <Suspense fallback={<MobileNavSkeleton />}>
+            <MobileNav />
+          </Suspense>
+          <Toaster offset={{ bottom: toastBottom }} mobileOffset={{ bottom: toastBottom }} />
+        </ThemeProvider>
       </body>
     </html>
   );

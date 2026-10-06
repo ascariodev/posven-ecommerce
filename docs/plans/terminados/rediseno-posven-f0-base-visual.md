@@ -227,7 +227,7 @@ tokens aprobados en `/preview`.
 - [x] M-1 — Errata del `aria-label` "Opciónes de ejemplo" en `app/preview/page.tsx:180` (posven-ecommerce · baja · haiku)
 - [x] M-2 — Quitar el `pb-4` sobrante del `CardFooter` en `app/preview/page.tsx:139` (posven-ecommerce · baja · haiku)
 - [x] M-3 — (revisado, sin cambios: nada queda apretado; el relleno vertical suma 44-48 px y compactarlo es decisión visual de F2) Revisar en móvil la ficha (`app/p/[slug]/page.tsx:297,336`) y `OfferCard` con el relleno de 24 px de `Card` (posven-ecommerce · baja · sonnet)
-- [ ] M-4 — `Toaster` luma con `next-themes` y la clase `cn-toast` definida, junto al selector de tema de F4 (posven-ecommerce · media · sonnet)
+- [x] M-4 — `Toaster` luma con `next-themes` y la clase `cn-toast` definida, junto al selector de tema de F4 (posven-ecommerce · media · sonnet)
 - [x] M-5 — Fijar un estilo de `;` y comas finales en `components/ui/` (Prettier o regla de ESLint): el CLI de shadcn los quita (posven-ecommerce · baja · haiku)
 - [x] M-6 — (descartada: `cn` se usa, `lib/utils.ts` construye nuestro helper con `createCn` de `cn/config`; quitarla rompe tsc. El import erróneo se corrige a mano tras cada `shadcn add`, ya anotado en `ui.md`) Revisar la dependencia `cn` ^0.4.0 de `package.json`, que hace que `shadcn add` escriba `import { cn } from "cn"` (posven-ecommerce · baja · sonnet)
 - [x] M-7 — Quitar el `className="bg-warning/10 text-warning"` redundante del badge "Pocas unidades" en `OfferCard.tsx:37`, junto al contenido de F2 (posven-ecommerce · baja · haiku)

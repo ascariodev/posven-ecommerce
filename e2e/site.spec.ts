@@ -170,3 +170,23 @@ test("/vende tiene canónica propia, sus secciones y el contacto sólo con desti
     }
   }
 });
+
+test.describe("modo oscuro", () => {
+  for (const [colorScheme, dark] of [
+    ["dark", true],
+    ["light", false],
+  ] as const) {
+    test(`con el sistema en ${colorScheme}, <html> ${dark ? "lleva" : "no lleva"} la clase dark`, async ({ page }) => {
+      const warnings: string[] = [];
+      page.on("console", (message) => {
+        if (/hydrat/i.test(message.text())) warnings.push(message.text());
+      });
+      await page.emulateMedia({ colorScheme });
+      await page.goto("/");
+      const html = page.locator("html");
+      if (dark) await expect(html).toHaveClass(/\bdark\b/);
+      else await expect(html).not.toHaveClass(/\bdark\b/);
+      expect(warnings).toEqual([]);
+    });
+  }
+});

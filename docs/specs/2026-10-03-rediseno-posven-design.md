@@ -32,7 +32,7 @@ totales por tienda y total general vienen de la API) y todo campo del contrato n
 | Librería | shadcn/ui estilo `radix-luma` en lugar de `radix-nova` (mismo Radix, misma API). Las 12 primitivas de `components/ui/` se reinstalan con `shadcn add --overwrite` y se les reaplican las reglas de `.claude/rules/ui.md` (§4) |
 | Paleta | La de posveapi con ajustes AA (§3), en las variables CSS de `app/globals.css`; ningún componente lleva un color literal |
 | Tipografía | Poppins (títulos y precios) y Public Sans (interfaz y texto) por `next/font/google`; reemplazan a Outfit e Inter |
-| Modo oscuro | Por clase `.dark` en `<html>`. F0 define todos los tokens en claro y oscuro y los muestra en `/preview`; el selector para el usuario llega en F4 |
+| Modo oscuro | Por clase `.dark` en `<html>`. F0 define todos los tokens en claro y oscuro y los muestra en `/preview`; F4d lo maneja con `next-themes` (`ThemeProvider` en `app/layout.tsx`, `attribute="class"`, `defaultTheme="system"`): sin preferencia guardada sigue al sistema, el interruptor es de dos estados (claro u oscuro) y vive en el pie y en el menú de cuenta |
 | Íconos | `lucide-react` por nombre, como hoy |
 | Móvil | Barra inferior de navegación (Inicio, Buscar, Favoritos, Carrito, Cuenta), en F1; los destinos quedan por confirmar (§8) |
 | Limpieza | F0 quita de `app/page.tsx` la capa Farmatodo (héroe amarillo con imagen, tarjetas de valor, banner promocional) y sus imágenes de `public/`, y todos los literales de color (`bg-white`, `slate-*`, `black/*`, `--brand-navy`, `themeColor` índigo) |
@@ -97,8 +97,8 @@ lienzo: `rounded-lg` 12 px (controles), `rounded-xl` 14 px (imágenes y filas), 
 Poppins no es variable: se cargan los pesos 500, 600 y 700. Public Sans es variable. Texto de
 campos a 16 px en móvil (iOS no hace zoom). Títulos en tipo oración.
 
-`themeColor` del `viewport` pasa a `#ffffff` (el `--card` claro, color de la cabecera); F4 le suma
-la variante oscura por `media` al activar el selector. Es el único hex fuera de `globals.css`.
+`themeColor` del `viewport` pasa a `#ffffff` (el `--card` claro, color de la cabecera); F4d lo vuelve la pareja por `media`:
+`prefers-color-scheme: light` con `#ffffff` y `dark` con `#28292d` (el `--card` oscuro). Son los únicos hex fuera de `globals.css`.
 
 ## 4. Cambios a `.claude/rules/ui.md`
 
@@ -207,4 +207,4 @@ contra el contrato actual:
 `app/preview/page.tsx` muestra, sin leer la API, los tokens de §3 en claro y en oscuro lado a lado
 (un contenedor con `.dark`), la escala tipográfica y las 12 primitivas en sus variantes y
 tamaños. Exporta `robots: { index: false, follow: false }`, no entra al sitemap, `app/robots.ts`
-la excluye y nada la enlaza. F4 la retira al activar el selector de modo oscuro.
+la excluye y nada la enlaza. F4d la retira en su fase 4, una vez activo el modo oscuro; el `Toaster` ya sigue el tema (`resolvedTheme`).

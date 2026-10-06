@@ -259,10 +259,13 @@ export async function listNearbyProducts(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  openNow?: boolean;
 }): Promise<NearbyProductsResponse> {
   const query = nearbyProductsQuery(p);
   const scope = readScope(query);
-  const inScope = MOCK_PRODUCTS.filter((item) => productInScope(item, scope));
+  const scoped = MOCK_PRODUCTS.filter((item) => productInScope(item, scope));
+  const inScope =
+    query.get("open_now") === "true" ? scoped.flatMap((item) => withOpenOffers(item) ?? []) : scoped;
   const ordered = [...inScope].sort((a, b) =>
     scope.kind === "none"
       ? compareNumbers(Number(a.min_price_usd), Number(b.min_price_usd))

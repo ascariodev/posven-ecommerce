@@ -142,6 +142,12 @@ describe("nearbyProductsQuery", () => {
     const query = nearbyProductsQuery({ geo: { city: "valencia" }, radiusKm: null, page: 1 });
     expect(keysOf(query)).toEqual(["page"]);
   });
+
+  it("envía open_now=true sólo cuando se pide", () => {
+    expect(nearbyProductsQuery({ geo: null, radiusKm: null, page: 1 }).has("open_now")).toBe(false);
+    expect(nearbyProductsQuery({ geo: null, radiusKm: null, page: 1, openNow: false }).has("open_now")).toBe(false);
+    expect(nearbyProductsQuery({ geo: null, radiusKm: null, page: 1, openNow: true }).get("open_now")).toBe("true");
+  });
 });
 
 describe("elección de entrega del carrito", () => {

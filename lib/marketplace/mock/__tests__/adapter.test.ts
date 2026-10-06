@@ -170,6 +170,21 @@ describe("horario y orden simulados", () => {
     for (const entry of open.featured) expect(entry.offer.is_open).toBe(true);
   });
 
+  it("open_now deja sólo productos con una tienda abierta y sus ofertas abiertas", async () => {
+    vi.useFakeTimers({ now: SUNDAY_10_CARACAS });
+    const all = await listNearbyProducts({ geo: null, radiusKm: null, page: 1 });
+    const open = await listNearbyProducts({ geo: null, radiusKm: null, page: 1, openNow: true });
+    expect(open.meta.total).toBeLessThan(all.meta.total);
+    expect(open.meta.total).toBeGreaterThan(0);
+  });
+
+  it("open_now con todas las tiendas cerradas no devuelve nada", async () => {
+    vi.useFakeTimers({ now: MONDAY_6_CARACAS });
+    const open = await listNearbyProducts({ geo: null, radiusKm: null, page: 1, openNow: true });
+    expect(open.meta.total).toBe(0);
+    expect(open.data).toEqual([]);
+  });
+
   it("open_now con todas las tiendas cerradas no devuelve nada", async () => {
     vi.useFakeTimers({ now: MONDAY_6_CARACAS });
     const open = await searchProducts({ ...base, openNow: true });

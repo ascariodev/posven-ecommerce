@@ -63,9 +63,11 @@ export function nearbyProductsQuery(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  openNow?: boolean;
 }): URLSearchParams {
   const query = new URLSearchParams();
   appendLocation(query, p.geo, p.radiusKm);
+  if (p.openNow === true) query.set("open_now", "true");
   query.set("page", String(p.page));
   return query;
 }

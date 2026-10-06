@@ -108,6 +108,7 @@ export async function listNearbyProducts(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  openNow?: boolean;
 }): Promise<NearbyProductsResponse> {
   "use cache";
   cacheLife("minutes");

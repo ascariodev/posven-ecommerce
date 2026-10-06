@@ -3,7 +3,7 @@
 **Objetivo:** que el usuario pueda pasar a modo oscuro con un interruptor en el menú de cuenta y en
 el pie, que sin preferencia guardada el sitio siga al sistema sin parpadeo, que el `Toaster` siga
 el tema (M-4 de F0) y que `/preview` deje de existir.
-**Estado:** en curso · Fase actual: 4
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (fila "Modo oscuro" y "Prueba
@@ -71,7 +71,7 @@ el tema (M-4 de F0) y que `/preview` deje de existir.
   y "Cerrar sesión", como P11) y en el aside de escritorio (`AccountNav`). README de account.
 - **Terminado cuando:** tsc, vitest de account y e2e de cuenta en verde (incluido el interruptor).
 
-### [ ] Fase 4 — Retiro de /preview
+### [x] Fase 4 — Retiro de /preview
 - **Repo:** posven-ecommerce
 - **Alcance:** borrar `app/preview/`; quitar `/preview` de `app/robots.ts`, del e2e de robots
   (`e2e/product.spec.ts:94`) y de `.claude/rules/seo.md` (ítems 3 y 8); spec §9 marcada como
@@ -88,10 +88,8 @@ el tema (M-4 de F0) y que `/preview` deje de existir.
   no inició sesión. Elegido por el usuario.
 
 ## Notas para la próxima sesión
-- Fase 4 commiteada pero sin marcar: la suite e2e completa (`--workers=1`) da 58 en verde y
-  falla `e2e/search.spec.ts:24`, previo en `main` (el `.first()` de `a[href="/vende"]` toma el
-  enlace de cabecera, oculto en móvil; M-7). Falta decidir si se arregla aquí antes de cerrar.
-  Antes de la fase 4: fases 1 a 3 cerradas. Los e2e `account.spec.ts` y `account-desktop.spec.ts`
+- Plan terminado 2026-10-05: suite e2e completa con `--workers=1` en verde (59 pasan, 1 omitida
+  previa). Sin push. Quedan M-1..M-6. Los e2e `account.spec.ts` y `account-desktop.spec.ts`
   comparten el simulado en memoria y fallan con más de un worker (previo al plan, ver M-5): la
   suite completa se corre con `--workers=1` si aparece ese fallo.
 
@@ -102,4 +100,4 @@ el tema (M-4 de F0) y que `/preview` deje de existir.
 - [ ] M-4 — Refrescar `features/merchants/README.md` y `features/search/README.md`, RANCIO por `e2e/site.spec.ts`, `MerchantContact.tsx` y `SiteHeader.tsx` (posven-ecommerce · baja · haiku)
 - [ ] M-5 — Fijar `workers: 1` (o aislar el simulado) en `playwright.config.ts`: `account.spec.ts` y `account-desktop.spec.ts` interfieren con más de un worker (`.claude/rules/tests.md` ítem 7) (posven-ecommerce · media · sonnet)
 - [ ] M-6 — Track por defecto de `components/ui/switch.tsx` bajo 3:1 sobre `bg-card` en claro: corregir la primitiva si aparece un tercer uso, en vez de clases por contexto (posven-ecommerce · media · sonnet)
-- [ ] M-7 — `e2e/search.spec.ts:24`: apuntar al enlace visible de `EmptyState` (no `.first()` de `a[href="/vende"]`, que toma el de cabecera oculto en móvil); falla en `main` desde F4b (posven-ecommerce · baja · haiku)
+- [x] M-7 — (aplicada en 6182c84) `e2e/search.spec.ts:24`: apuntar al enlace visible de `EmptyState` (no `.first()` de `a[href="/vende"]`, que toma el de cabecera oculto en móvil); falla en `main` desde F4b (posven-ecommerce · baja · haiku)

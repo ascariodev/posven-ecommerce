@@ -37,7 +37,8 @@ paths:
    los sitemaps que se comprueban. El e2e de cierre son `e2e/search.spec.ts`,
    `e2e/product.spec.ts`, `e2e/site.spec.ts`, `e2e/account.spec.ts`, `e2e/cart.spec.ts` y
    `e2e/checkout.spec.ts`; `e2e/account-desktop.spec.ts` también cierra y fuerza viewport de
-   escritorio dentro del proyecto Pixel 7. Los tres de cuentas, carrito y compras corren en serie porque los simulados de cuentas, carrito y compras guardan estado
+   escritorio dentro del proyecto Pixel 7. `workers: 1` en `playwright.config.ts` serializa los archivos porque los
+   simulados de cuentas, carrito y compras guardan estado
    en el servidor, y registran un comprador nuevo en cada corrida para ser repetibles.
    `checkout.spec.ts` usa además sus cuentas sembradas propias (`entrega@posven.test` y
    `pago-fallido@posven.test`) y les vacía el carrito al terminar.

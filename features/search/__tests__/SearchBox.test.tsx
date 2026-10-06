@@ -149,6 +149,12 @@ describe("SearchBox", () => {
     expect(input.getAttribute("aria-activedescendant")).toBeNull();
   });
 
+  it("enviar el formulario guarda lo escrito como reciente", () => {
+    render(<SearchBox defaultQuery="leche en polvo" />);
+    fireEvent.submit(screen.getByRole("search"));
+    expect(JSON.parse(window.localStorage.getItem("recent-searches") ?? "[]")).toEqual(["leche en polvo"]);
+  });
+
   it("Borrar recientes vacía el panel sin ser opción, conserva el foco del input y limpia el almacenamiento", () => {
     window.localStorage.setItem("recent-searches", JSON.stringify(["leche en polvo", "harina"]));
     render(<SearchBox />);

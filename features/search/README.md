@@ -219,7 +219,7 @@ export default function SearchPage({
 - `features/search/__tests__/CategoryTiles.test.tsx`: título y un enlace por raíz con foto armado con `searchHref`, categorías sin foto fuera y `null` si ninguna la tiene.
 - `features/search/__tests__/categoryPhoto.test.ts`: las cuatro raíces, hija por su raíz (`parent_slug ?? slug`), `null` y raíz sin foto.
 - `features/search/__tests__/categoryIcon.test.ts`: hija por su raíz, raíz propia, `null` y raíz sin mapeo.
-- `features/search/__tests__/SearchBox.test.tsx`: pide con 2 o más letras y muestra el precio, no llama con una, flechas, Enter y Escape, recientes sin texto, borrar recientes (fuera del listbox, foco en el input) y API caída.
+- `features/search/__tests__/SearchBox.test.tsx`: pide con 2 o más letras y muestra el precio, no llama con una, flechas, Enter y Escape, recientes sin texto, borrar recientes (fuera del listbox, foco en el input), el envío del formulario que guarda el reciente y API caída.
 - `features/search/__tests__/panelItems.test.ts`: orden de secciones, enlaces con radio y recientes sin término.
 - `features/search/__tests__/recents.test.ts`: orden, tope de cinco, valor corrupto, almacenamiento bloqueado o lleno y borrado.
 - `features/search/__tests__/HeaderSearchSlot.test.tsx`: oculto en `/` y `/buscar`, visible en la ficha de un producto.

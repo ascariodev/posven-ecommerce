@@ -225,6 +225,6 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [ ] M-23 — `open_now` en `/products/nearby` (posveapi) y `listNearbyProducts`, para que "Quizás te
   sirve" filtre de verdad con "Abierto ahora" (hoy sólo lo rotula). Cruza el contrato.
   posveapi + posven-ecommerce · alta · plan nuevo
-- [ ] M-24 — `SearchBox.test.tsx`: un caso con `fireEvent.submit` del `Form` que compruebe que el
+- [x] M-24 — `SearchBox.test.tsx`: un caso con `fireEvent.submit` del `Form` que compruebe que el
   envío guarda el reciente (`readRecents`); hoy no hay prueba de ese camino.
   posven-ecommerce · baja · sonnet

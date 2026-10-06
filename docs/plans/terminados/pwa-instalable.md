@@ -85,7 +85,7 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
 - [x] M-4 — `e2e/site.spec.ts`: los colores del manifest se comparan en hexadecimal fijo; leerlos
   de una constante compartida con `app/manifest.ts`.
   posven-ecommerce · baja · sonnet
-- [ ] M-5 — `features/site/assets/`: agregar `OFL.txt` junto a `Poppins-Bold.ttf` para cumplir la
+- [x] M-5 — `features/site/assets/`: agregar `OFL.txt` junto a `Poppins-Bold.ttf` para cumplir la
   atribución de la licencia.
   posven-ecommerce · baja · sonnet
 - [ ] M-6 — Prueba de vitest que falle si `brandIcon` deja de encontrar el `.ttf` (un cambio a

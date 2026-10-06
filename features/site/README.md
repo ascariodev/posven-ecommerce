@@ -131,7 +131,7 @@ que enlaza.
 | `privacyDocument` | `features/site/lib/privacy.ts` | ocho secciones de privacidad con `SITE_NAME` y los marcadores |
 | `ThemeProvider` | `features/site/components/ThemeProvider.tsx` | pone la clase `dark` en `<html>` según la preferencia guardada o, sin ella, `prefers-color-scheme` |
 | `ThemeSwitch` | `features/site/components/ThemeSwitch.tsx` | interruptor de dos estados sobre `useTheme()`; pintado tras hidratar (`useSyncExternalStore`, L-10) para no desajustar con el HTML prerenderizado; la prueba de L-10 renderiza con `renderToString` y exige `aria-checked="false"` aunque el tema resuelto sea `dark` |
-| `brandIcon` | `features/site/lib/brand-icon.tsx` | único dibujo de la marca para íconos; los colores son los de `app/globals.css` escritos como literales porque `ImageResponse` no lee variables CSS; la tipografía es Poppins 700 como la marca de la cabecera, leída con `readFile` de `features/site/assets/Poppins-Bold.ttf` (ruta desde `process.cwd()`; `fetch` de una URL de archivo falla en el servidor compilado) porque `ImageResponse` no admite woff2 ni `next/font`; la fuente va bajo licencia SIL OFL 1.1 |
+| `brandIcon` | `features/site/lib/brand-icon.tsx` | único dibujo de la marca para íconos; los colores son los de `app/globals.css` escritos como literales porque `ImageResponse` no lee variables CSS; la tipografía es Poppins 700 como la marca de la cabecera, leída con `readFile` de `features/site/assets/Poppins-Bold.ttf` (ruta desde `process.cwd()`; `fetch` de una URL de archivo falla en el servidor compilado) porque `ImageResponse` no admite woff2 ni `next/font`; la fuente va bajo licencia SIL OFL 1.1 (texto en `features/site/assets/OFL.txt`) |
 | `FooterColumn` | `features/site/components/SiteFooter.tsx` | título `h2` y lista dentro de un `<nav aria-label>` propio |
 
 ## 6. Dependencias
@@ -142,7 +142,7 @@ que enlaza.
 - `features/account/lib/returnPath.ts` (`loginHref`), `features/account/server/session.ts` (`accountContext`), `features/cart/components/CartLink.tsx` (`cartCount`) y `features/cart/lib/flag.ts` (`cartEnabled`) en `MobileNav`. `cartCount` lee `getSessionCart()` de `features/cart/server/cart.ts` sin argumento (`deliveryKey` vacío, la clave de `cache` sin entrega elegida; la ubicación de la cookie `loc` se lee dentro) y sólo usa `line_count`; `lucide-react` y `next/navigation` (`usePathname`) en `MobileNavLinks`.
 - `features/location/components/LocationBar.tsx`, `features/search/components/HeaderSearchSlot.tsx` y `SearchPill.tsx`, `features/cart/components/CartLink.tsx` y `features/account/components/AccountMenu.tsx` en `SiteHeader`.
 - `components/ui/button.tsx` (`buttonVariants`), `components/ui/switch.tsx` (`Switch`) y `lib/utils.ts` (`cn`).
-- `next/og` (`ImageResponse`), `node:fs/promises` y `features/site/assets/Poppins-Bold.ttf` (Poppins, licencia SIL OFL 1.1) en `brand-icon.tsx`.
+- `next/og` (`ImageResponse`), `node:fs/promises` y `features/site/assets/Poppins-Bold.ttf` (Poppins, licencia SIL OFL 1.1 en `features/site/assets/OFL.txt`) en `brand-icon.tsx`.
 - `next` (tipo `MetadataRoute.Manifest`) y `lib/site.ts` (`SITE_NAME`, `SITE_DESCRIPTION`, `MANIFEST_BACKGROUND_COLOR`, `MANIFEST_THEME_COLOR`) en `app/manifest.ts`, que `e2e/site.spec.ts` importa también.
 - `next/link` y `next/cache` (`cacheLife`). `app/ayuda/page.tsx` usa `features/help/components/HelpCenter.tsx`.  `app/vende/page.tsx` usa `features/merchants/components/MerchantsLanding.tsx`, que importa `merchantContactHref` de este módulo.
 

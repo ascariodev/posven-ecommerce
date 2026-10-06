@@ -30,8 +30,8 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
 3. **Lo que no se indexa lleva `noindex`.** Se indexan `/`, `/tiendas`, `/ayuda`, `/vende`, el producto y la tienda.
    `/buscar` exporta `robots: { index: false, follow: true }`; `app/error.tsx` pinta `<meta name="robots" content="noindex" />` porque es Client Component y `metadata` sólo se exporta desde Server Components (guía
    `generate-metadata`). Las rutas de acceso (`/entrar`, `/registro`, `/recuperar`, `/restablecer/[token]`,
-   `/verificar/[token]`), `/cuenta/*` (compras incluidas), `/carrito`, `/checkout`, `/checkout/resultado` y `/preview`
-   (ruta de prueba sin datos) exportan `robots: { index: false, follow: false }` y no entran al sitemap. `/terminos` y
+   `/verificar/[token]`), `/cuenta/*` (compras incluidas), `/carrito`, `/checkout` y `/checkout/resultado`
+   exportan `robots: { index: false, follow: false }` y no entran al sitemap. `/terminos` y
    `/privacidad` exportan `robots: { index: false, follow: true }` por `legalMetadata` mientras `LEGAL_DRAFT`
    (`features/site/lib/legal.ts`) sea `true`, y tampoco entran.
 4. **Metadatos estáticos (`export const metadata`) por defecto.** `generateMetadata` sólo cuando la ruta los saca de
@@ -51,6 +51,6 @@ Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec 
 8. **Una ruta indexable nueva entra al sitemap por `lib/sitemap.ts`**: `sitemapIds` parte cada `SitemapType` en
    `{tipo}-{n}` según `meta.total` y `meta.per_page` de `listSitemap`, y `sitemapEntries` arma las URLs absolutas con
    `SITE_URL`; `app/sitemap.ts` sirve `/sitemap/{id}.xml`. `app/robots.ts` excluye `/buscar`, `/api/`, `/cuenta`,
-   `/carrito`, `/checkout`, `/restablecer/`, `/verificar/` y `/preview`, y lista cada sitemap. El grupo `static`
+   `/carrito`, `/checkout`, `/restablecer/` y `/verificar/`, y lista cada sitemap. El grupo `static`
    (`/sitemap/static.xml`) trae `/`, `/tiendas`, `/ayuda` y `/vende`, y las legales sólo con `LEGAL_DRAFT` en `false`
    (`legalSitemapPaths`).

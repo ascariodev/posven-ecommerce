@@ -32,12 +32,12 @@ totales por tienda y total general vienen de la API) y todo campo del contrato n
 | Librería | shadcn/ui estilo `radix-luma` en lugar de `radix-nova` (mismo Radix, misma API). Las 12 primitivas de `components/ui/` se reinstalan con `shadcn add --overwrite` y se les reaplican las reglas de `.claude/rules/ui.md` (§4) |
 | Paleta | La de posveapi con ajustes AA (§3), en las variables CSS de `app/globals.css`; ningún componente lleva un color literal |
 | Tipografía | Poppins (títulos y precios) y Public Sans (interfaz y texto) por `next/font/google`; reemplazan a Outfit e Inter |
-| Modo oscuro | Por clase `.dark` en `<html>`. F0 define todos los tokens en claro y oscuro y los muestra en `/preview`; F4d lo maneja con `next-themes` (`ThemeProvider` en `app/layout.tsx`, `attribute="class"`, `defaultTheme="system"`): sin preferencia guardada sigue al sistema, el interruptor es de dos estados (claro u oscuro) y vive en el pie y en el menú de cuenta |
+| Modo oscuro | Por clase `.dark` en `<html>`. F0 definió todos los tokens en claro y oscuro y los mostró en `/preview` (retirada); F4d lo maneja con `next-themes` (`ThemeProvider` en `app/layout.tsx`, `attribute="class"`, `defaultTheme="system"`): sin preferencia guardada sigue al sistema, el interruptor es de dos estados (claro u oscuro) y vive en el pie y en el menú de cuenta |
 | Íconos | `lucide-react` por nombre, como hoy |
 | Móvil | Barra inferior de navegación (Inicio, Buscar, Favoritos, Carrito, Cuenta), en F1; los destinos quedan por confirmar (§8) |
 | Limpieza | F0 quita de `app/page.tsx` la capa Farmatodo (héroe amarillo con imagen, tarjetas de valor, banner promocional) y sus imágenes de `public/`, y todos los literales de color (`bg-white`, `slate-*`, `black/*`, `--brand-navy`, `themeColor` índigo) |
 | Eventos | Los eventos de búsqueda y agregado al carrito van en un plan propio entre F0 y F1 (cambian el contrato, §7) |
-| Prueba previa | `/preview` desechable con tokens, tipografía y primitivas, puerta de cierre de F0; se retira al cerrar F4 (§9) |
+| Prueba previa | `/preview` fue una ruta desechable con tokens, tipografía y primitivas, puerta de cierre de F0; se retiró en F4d (§9) |
 
 ## 3. Tokens
 
@@ -202,7 +202,9 @@ contra el contrato actual:
   activa y mide su tienda desde su panel (F4).
 - Logo y nombre de la marca: siguen por `SITE_NAME`; no los fija esta spec.
 
-## 9. Ruta de prueba desechable
+## 9. Ruta de prueba desechable (retirada)
+
+Retirada en F4d fase 4: `app/preview/` se borró y `/preview` salió de `app/robots.ts`. Lo que sigue describe lo que fue.
 
 `app/preview/page.tsx` muestra, sin leer la API, los tokens de §3 en claro y en oscuro lado a lado
 (un contenedor con `.dark`), la escala tipográfica y las 12 primitivas en sus variantes y

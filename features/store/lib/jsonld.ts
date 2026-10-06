@@ -17,6 +17,6 @@ export function storeJsonLd(store: Store): object {
     geo: { "@type": "GeoCoordinates", latitude: store.latitude, longitude: store.longitude },
     ...(store.phone !== null && { telephone: store.phone }),
     ...(store.schedule.length > 0 && { openingHoursSpecification: openingHoursJsonLd(store.schedule) }),
-    ...(store.is_premium && store.logo_url !== null && { image: store.logo_url }),
+    ...(store.logo_url !== null && { image: store.logo_url }),
   };
 }

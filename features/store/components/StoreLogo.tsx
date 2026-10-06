@@ -3,8 +3,8 @@ import type { StoreSummary } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
 import { storeInitials } from "../lib/initials";
 
-export function StoreLogo({ store, className }: { store: Pick<StoreSummary, "name" | "is_premium" | "logo_url">; className: string }) {
-  if (store.is_premium && store.logo_url !== null) {
+export function StoreLogo({ store, className }: { store: Pick<StoreSummary, "name" | "logo_url">; className: string }) {
+  if (store.logo_url !== null) {
     return (
       <Image
         src={store.logo_url}

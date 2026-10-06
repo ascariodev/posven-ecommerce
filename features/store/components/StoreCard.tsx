@@ -17,7 +17,7 @@ export function StoreOpenBadge({ store }: { store: NearbyStore }) {
 }
 
 export function StoreCard({ store, featured }: { store: NearbyStore; featured?: boolean }) {
-  const coverUrl = store.is_premium ? (store.cover_url ?? null) : null;
+  const coverUrl = store.cover_url ?? null;
   return (
     <Link
       href={`/tienda/${store.slug}`}

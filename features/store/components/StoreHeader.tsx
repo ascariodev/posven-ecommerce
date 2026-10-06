@@ -18,8 +18,8 @@ function StoreHeaderStatus({ store }: { store: Store }) {
 }
 
 export function StoreHeader({ store, children }: { store: Store; children?: ReactNode }) {
-  const coverUrl = store.is_premium ? store.cover_url : null;
-  const logoUrl = store.is_premium ? store.logo_url : null;
+  const coverUrl = store.cover_url;
+  const logoUrl = store.logo_url;
   return (
     <header className="flex flex-col gap-4">
       {coverUrl !== null && (

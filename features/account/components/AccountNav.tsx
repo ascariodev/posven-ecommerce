@@ -6,7 +6,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ThemeSwitch } from "@/features/site/components/ThemeSwitch";
 import { accountLinks, isActiveLink } from "../lib/accountLinks";
+import { ACCOUNT_SWITCH_CLASS } from "../lib/themeSwitchClass";
 import { logout } from "../server/actions";
 
 export function AccountNavSkeleton() {
@@ -66,6 +68,12 @@ export function AccountNav({
                 </li>
               );
             })}
+            <li>
+              <ThemeSwitch
+                className="rounded-md px-2 py-1.5 font-medium [&>svg]:size-8 [&>svg]:rounded-md [&>svg]:bg-muted [&>svg]:p-2"
+                switchClassName={ACCOUNT_SWITCH_CLASS}
+              />
+            </li>
           </ul>
           <form action={logout} className="mt-2 border-t border-border pt-2">
             <button

@@ -52,6 +52,16 @@ describe("AccountMenuList", () => {
     expect(screen.getByRole("link", { name: "Ayuda" }).getAttribute("href")).toBe("/ayuda");
   });
 
+  it("ofrece el interruptor de modo oscuro entre los enlaces y Cerrar sesión", () => {
+    render(<AccountMenuList />);
+
+    const items = screen.getAllByRole("listitem");
+    const names = items.map((item) => item.textContent);
+    expect(screen.getByRole("switch", { name: "Modo oscuro" })).not.toBeNull();
+    expect(names.indexOf("Modo oscuro")).toBe(names.indexOf("Ayuda") + 1);
+    expect(names.indexOf("Cerrar sesión")).toBe(names.indexOf("Modo oscuro") + 1);
+  });
+
   it("Cerrar sesión es un formulario cuya acción es logout", async () => {
     render(<AccountMenuList />);
 

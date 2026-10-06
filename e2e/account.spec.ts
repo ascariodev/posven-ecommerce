@@ -92,6 +92,21 @@ test.describe("cuenta del comprador", () => {
     );
   });
 
+  test("el interruptor de la lista de cuenta activa dark y la elección sobrevive a la recarga", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await signIn(page, email, password);
+    await expect(page).toHaveURL("/cuenta");
+    const html = page.locator("html");
+    const toggle = page.getByRole("main").getByRole("switch", { name: "Modo oscuro" });
+    await expect(toggle).toHaveAttribute("aria-checked", "false");
+    await toggle.click();
+    await expect(html).toHaveClass(/\bdark\b/);
+    await expect(toggle).toHaveAttribute("aria-checked", "true");
+    await page.reload();
+    await expect(html).toHaveClass(/\bdark\b/);
+    await expect(page.getByRole("main").getByRole("switch", { name: "Modo oscuro" })).toHaveAttribute("aria-checked", "true");
+  });
+
   test("Cerrar sesión deja Entrar en la barra inferior y entrar de nuevo vuelve a volver", async ({ page }) => {
     await signIn(page, email, password);
     await expect(page).toHaveURL("/cuenta");

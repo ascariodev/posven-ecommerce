@@ -1,8 +1,10 @@
 import { ChevronRight, LogOut } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { ThemeSwitch } from "@/features/site/components/ThemeSwitch";
 import { accountListLinks, accountQuickLinks } from "../lib/accountLinks";
 import { logout } from "../server/actions";
+import { ACCOUNT_SWITCH_CLASS } from "../lib/themeSwitchClass";
 
 export function AccountQuickLinks({ showPurchases }: { showPurchases: boolean }) {
   return (
@@ -40,6 +42,12 @@ export function AccountMenuList() {
             </Link>
           </li>
         ))}
+        <li className="border-b border-border">
+          <ThemeSwitch
+            className="min-h-13 px-3.5 font-semibold [&>svg]:size-5 [&>svg]:text-muted-foreground"
+            switchClassName={ACCOUNT_SWITCH_CLASS}
+          />
+        </li>
         <li>
           <form action={logout}>
             <button type="submit" className={`${rowClass} text-destructive-text`}>

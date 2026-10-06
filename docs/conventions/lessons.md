@@ -37,14 +37,14 @@ aplicada en: `features/account/components/AddressActionButton.tsx`, `features/ac
 Una validación nueva del simulado (`lib/marketplace/mock/`) lleva su prueba en la misma fase: sin
 ella, una regex que perdió el escape (`d{7}` por `\d{7}`) rechaza todo lo válido y la suite sigue
 en verde. Tras escribir una regex, se relee el archivo para confirmar las barras invertidas.
-aplicada en: pendiente: el usuario decide promoverla a `posven-ecommerce/.claude/rules/contract.md` (punto 5), propuesto al cerrar el plan del registro del comprador
+aplicada en: `posven-ecommerce/.claude/rules/contract.md` (punto 5)
 
 ## L-09
 Una fase que cambia el comportamiento de un componente o una ruta de un módulo actualiza su README
 en el mismo cambio: la ficha del símbolo, la fila de tests, las dependencias y `verified_against`,
 y también el README de otro módulo que liste el archivo cambiado (`docs-check` lo marca RANCIO).
 Quien revisa lo rechaza si falta, y cuesta una ronda entera.
-aplicada en: pendiente: el usuario decide promoverla a una casilla de `posven/.claude/agents/implementador-fase.md`, propuesto al cerrar el plan de eventos de búsqueda y carrito
+aplicada en: `posven/.claude/agents/implementador-fase.md` (punto 5)
 
 ## L-10
 Un componente del layout raíz que marca la ruta activa con `usePathname()` desajusta la
@@ -62,10 +62,10 @@ aplicada en: `features/cart/__tests__/cart.test.ts`
 En el frontmatter de un README de módulo, un escalar entre comillas dobles (`output: "..."`) no
 lleva comillas dobles dentro (`"Ver menos"`, `name="robots"`): el YAML queda inválido y
 `generate-index.mjs` no lo detecta. Dentro se usan comillas simples o se reescribe sin comillas.
-aplicada en: pendiente: el usuario decide promoverla a una comprobación de `posven/.claude/scripts/docs-check.mjs`, propuesto en las mejoras sueltas del rediseño
+aplicada en: `posven/.claude/scripts/docs-check.mjs`
 
 ## L-16
 Un campo nuevo de la API en un esquema de `lib/marketplace/schemas.ts` va `.optional()` (más
 `.nullable()` si la API lo manda nulo): el push a `main` despliega solo y puede llegar antes que
 posveapi, y un campo requerido ausente hace fallar el `safeParse` del recurso entero.
-aplicada en: pendiente: el usuario decide promoverla a `posven-ecommerce/.claude/rules/contract.md`, propuesto al cerrar el plan de abierto y distancia
+aplicada en: `posven-ecommerce/.claude/rules/contract.md` (punto 4)

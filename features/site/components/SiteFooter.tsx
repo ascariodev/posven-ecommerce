@@ -14,7 +14,7 @@ const onInkSwitchClass =
   "focus-visible:border-ink-foreground focus-visible:outline-ink-foreground data-checked:border-ink-foreground data-checked:bg-ink-foreground data-unchecked:border-ink-foreground data-unchecked:bg-transparent data-checked:[&>span]:bg-ink! data-unchecked:[&>span]:bg-ink-foreground!";
 
 const linkClass =
-  "inline-flex min-h-11 items-center opacity-75 hover:opacity-100 hover:underline sm:min-h-0";
+  "inline-flex min-h-11 items-center rounded-sm opacity-75 hover:opacity-100 hover:underline focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-foreground sm:min-h-0";
 
 function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
   return (

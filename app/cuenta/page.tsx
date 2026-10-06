@@ -3,9 +3,11 @@ import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireCustomer } from "@/features/account/server/session";
+import { AccountMenuList, AccountQuickLinks } from "@/features/account/components/AccountOverviewMenu";
 import { ResendVerificationForm } from "@/features/account/components/VerifyEmailForm";
 import { cartEnabled } from "@/features/cart/lib/flag";
-import { RecentPurchases } from "@/features/purchases/components/RecentPurchases";
+import { BuyAgain } from "@/features/purchases/components/BuyAgain";
+import { LastPurchase, RecentPurchases } from "@/features/purchases/components/RecentPurchases";
 
 export const metadata: Metadata = {
   title: "Mi cuenta",
@@ -37,11 +39,23 @@ async function AccountSummary() {
           </CardContent>
         </Card>
       )}
+      <AccountQuickLinks showPurchases={withPurchases} />
+      {withPurchases && (
+        <Suspense fallback={<Skeleton className="h-28 w-full" />}>
+          <LastPurchase ctx={ctx} />
+        </Suspense>
+      )}
+      {withPurchases && (
+        <Suspense fallback={<Skeleton className="h-32 w-full" />}>
+          <BuyAgain ctx={ctx} />
+        </Suspense>
+      )}
       {withPurchases && (
         <Suspense fallback={<Skeleton className="h-40 w-full" />}>
           <RecentPurchases ctx={ctx} />
         </Suspense>
       )}
+      <AccountMenuList />
     </div>
   );
 }

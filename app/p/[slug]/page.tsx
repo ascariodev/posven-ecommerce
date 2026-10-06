@@ -22,10 +22,7 @@ import { getEffectiveLocation } from "@/features/location/server/location";
 import { toGeoFilter } from "@/features/location/lib/cookie";
 import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
 
-const RESTRICTED_NOTE = {
-  recipe: "Requiere récipe, consúltalo en la tienda.",
-  controlled: "Venta controlada, consúltalo en la tienda.",
-} as const;
+const RECIPE_NOTE = "Requiere récipe, consúltalo en la tienda.";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -176,8 +173,8 @@ export default async function ProductPage({
               </div>
               
               {product.restriction === "recipe" && <Badge variant="warning" className="w-fit">Requiere récipe</Badge>}
-              {cartEnabled() && product.restriction !== "none" && (
-                <p className="text-sm font-medium text-warning">{RESTRICTED_NOTE[product.restriction]}</p>
+              {cartEnabled() && product.restriction === "recipe" && (
+                <p className="text-sm font-medium text-warning">{RECIPE_NOTE}</p>
               )}
 
               <PriceSummary summary={product.offers_summary} />

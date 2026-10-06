@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { clickPay, verifyEmail } from "./helpers";
 import { fillRegistration } from "./registration";
 
 // Spec cuentas-y-compras §7: registrar, verificar, carrito de invitado, entrar, fusionar, pagar,
@@ -32,24 +33,6 @@ async function register(page: Page, email: string, password: string): Promise<vo
   await expect(page).toHaveURL("/cuenta");
 }
 
-// El simulado guarda una sola verificación pendiente para todo el servidor y otros archivos del e2e
-// registran compradores en paralelo: se pide de nuevo justo antes de verificar, hasta que quede.
-async function verifyEmail(page: Page): Promise<void> {
-  await expect(async () => {
-    await page.goto("/cuenta");
-    const notice = page.getByText("no está verificado");
-    if ((await notice.count()) > 0) {
-      await page.getByRole("button", { name: "Reenviar verificación" }).first().click();
-      await expect(page.getByRole("button", { name: "Reenviar verificación" }).first()).toBeEnabled();
-      await page.goto("/verificar/verificacion-simulada");
-      await page.getByRole("button", { name: "Verificar mi correo" }).click();
-      await expect(page.getByText("Tu correo quedó verificado.")).toBeVisible();
-      await page.goto("/cuenta");
-    }
-    await expect(page.getByText("no está verificado")).toHaveCount(0);
-  }).toPass({ timeout: 30_000 });
-}
-
 // Las cuentas sembradas conservan su carrito entre corridas: se vacía al terminar para que el e2e
 // sea repetible (el stock simulado topa las cantidades).
 async function emptyCart(page: Page): Promise<void> {
@@ -62,18 +45,6 @@ async function emptyCart(page: Page): Promise<void> {
     await remove.first().click();
     await expect(remove).toHaveCount(before - 1);
   }
-}
-
-// React marca con __reactProps$ cada nodo del DOM que ya hidrató. Con el servidor recién arrancado
-// un clic en "Pagar" antes de eso no dispara la acción; se espera la marca y recién se hace el clic
-// (uno solo: no se reintenta, para no pagar dos veces).
-async function clickPay(page: Page): Promise<void> {
-  const pay = page.getByRole("button", { name: /^Pagar Bs / });
-  await expect(pay).toBeEnabled();
-  await expect
-    .poll(() => pay.evaluate((node) => Object.keys(node).some((key) => key.startsWith("__reactProps$"))), { timeout: 15_000 })
-    .toBe(true);
-  await pay.click();
 }
 
 function cartLink(page: Page, name: string) {
@@ -124,8 +95,13 @@ test.describe("checkout y compras", () => {
     await expect(page.getByText("Reembolsado", { exact: true })).toBeVisible();
 
     await page.goto("/cuenta");
-    await expect(page.getByRole("list", { name: "Últimas compras" }).getByRole("link")).toHaveCount(1);
-    await expect(cartLink(page, "Carrito")).toBeVisible();
+    await expect(page.getByRole("list", { name: "Compras recientes" }).getByRole("link")).toHaveCount(1);
+    const buyAgain = page.getByRole("list", { name: "Volver a comprar" });
+    await expect(buyAgain.getByRole("link", { name: /^Acetaminofén/ })).toBeVisible();
+    await expect(buyAgain.getByRole("link", { name: /Alcohol/ })).toHaveCount(0);
+    await buyAgain.getByRole("button", { name: /^Agregar al carrito: Acetaminofén/ }).click();
+    await expect(buyAgain.getByText("Agregado")).toBeVisible();
+    await expect(cartLink(page, "Carrito, 1 producto")).toBeVisible();
 
     await page.goto("/cuenta/configuracion");
     const deleteForm = page.locator("form").filter({ has: page.getByRole("button", { name: "Eliminar mi cuenta" }) });

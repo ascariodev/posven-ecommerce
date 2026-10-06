@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { fillRegistration } from "./registration";
 
 // Slugs y nombres del simulado: farmacia-central-valencia y abasto-la-esquina venden en línea;
-// farmacia-naguanagua no. Amoxicilina es "recipe" y clonazepam "controlled".
+// farmacia-naguanagua no. Amoxicilina es "recipe" y clonazepam "controlled" (la API no lo restringe).
 const ACETAMINOFEN_PATH = "/p/acetaminofen-500-mg-20-tabletas";
 const ADD_ACETAMINOFEN = "Agregar al carrito: Acetaminofén 500 mg x 20 tabletas de Farmacia Central";
 const ADD_HARINA = "Agregar al carrito: Harina de maíz precocida 1 kg de Abasto La Esquina";
@@ -72,7 +72,7 @@ test.describe("carrito", () => {
     });
   });
 
-  test("sin botón en una tienda que no vende ni en productos restringidos", async ({ page }) => {
+  test("sin botón en una tienda que no vende ni en un producto de récipe", async ({ page }) => {
     await page.goto("/tienda/farmacia-naguanagua");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.getByRole("button", { name: /^Agregar al carrito:/ })).toHaveCount(0);
@@ -80,10 +80,12 @@ test.describe("carrito", () => {
     await page.goto("/p/amoxicilina-500-mg-21-capsulas");
     await expect(page.getByText("Requiere récipe, consúltalo en la tienda.")).toBeVisible();
     await expect(page.getByRole("button", { name: /^Agregar al carrito:/ })).toHaveCount(0);
+  });
 
+  test("un controlado se agrega: la API sólo restringe récipe", async ({ page }) => {
     await page.goto("/p/clonazepam-0-5-mg-30-tabletas");
-    await expect(page.getByText("Venta controlada, consúltalo en la tienda.")).toBeVisible();
-    await expect(page.getByRole("button", { name: /^Agregar al carrito:/ })).toHaveCount(0);
+    await expect(page.getByText("Venta controlada, consúltalo en la tienda.")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /^Agregar al carrito:/ }).first()).toBeVisible();
   });
 
   test("el carrito de invitado se fusiona al registrarse y al entrar", async ({ page }) => {
@@ -97,7 +99,7 @@ test.describe("carrito", () => {
     await expect(page).toHaveURL("/cuenta");
     await expect(cartLink(page, "Carrito, 1 producto")).toBeVisible();
 
-    await page.getByRole("button", { name: "Salir" }).click();
+    await page.getByRole("button", { name: "Cerrar sesión" }).click();
     await expect(cartLink(page, "Carrito")).toBeVisible();
 
     await addAcetaminofen(page);

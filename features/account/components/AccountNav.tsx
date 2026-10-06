@@ -34,7 +34,7 @@ export function AccountNav({
 
   useEffect(() => {
     activeTab.current?.scrollIntoView({ block: "nearest", inline: "center" });
-  }, []);
+  }, [pathname]);
 
   return (
     <>
@@ -70,49 +70,51 @@ export function AccountNav({
           <form action={logout} className="mt-2 border-t border-border pt-2">
             <button
               type="submit"
-              className="flex min-h-11 w-full items-center gap-3 rounded-md px-2 py-1.5 text-sm font-medium text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              className="flex min-h-11 w-full items-center gap-3 rounded-md px-2 py-1.5 text-sm font-medium text-destructive-text hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
             >
               <span className="flex size-8 items-center justify-center rounded-md bg-muted">
                 <LogOut aria-hidden="true" className="size-4" />
               </span>
-              Salir
+              Cerrar sesión
             </button>
           </form>
         </div>
       </nav>
-      <nav aria-label="Mi cuenta" className="lg:hidden">
-        <ul className="flex gap-1 overflow-x-auto border-b border-border">
-          {links.map(({ href, label }) => {
-            const active = isActiveLink(href, pathname);
-            return (
-              <li key={href} className="shrink-0">
-                <Link
-                  ref={active ? activeTab : undefined}
-                  href={href}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "flex min-h-11 items-center border-b-2 px-3 text-sm font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-foreground",
-                    active ? "border-primary text-foreground" : "border-transparent text-muted-foreground"
-                  )}
+      {pathname !== "/cuenta" && (
+        <nav aria-label="Mi cuenta" className="lg:hidden">
+          <ul className="flex gap-1 overflow-x-auto border-b border-border">
+            {links.map(({ href, label }) => {
+              const active = isActiveLink(href, pathname);
+              return (
+                <li key={href} className="shrink-0">
+                  <Link
+                    ref={active ? activeTab : undefined}
+                    href={href}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "flex min-h-11 items-center border-b-2 px-3 text-sm font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-foreground",
+                      active ? "border-primary text-foreground" : "border-transparent text-muted-foreground"
+                    )}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
+            <li className="shrink-0">
+              <form action={logout}>
+                <button
+                  type="submit"
+                  className="flex min-h-11 items-center gap-1.5 border-b-2 border-transparent px-3 text-sm font-medium whitespace-nowrap text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-foreground"
                 >
-                  {label}
-                </Link>
-              </li>
-            );
-          })}
-          <li className="shrink-0">
-            <form action={logout}>
-              <button
-                type="submit"
-                className="flex min-h-11 items-center gap-1.5 border-b-2 border-transparent px-3 text-sm font-medium whitespace-nowrap text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-foreground"
-              >
-                <LogOut aria-hidden="true" className="size-4" />
-                Salir
-              </button>
-            </form>
-          </li>
-        </ul>
-      </nav>
+                  <LogOut aria-hidden="true" className="size-4" />
+                  Cerrar sesión
+                </button>
+              </form>
+            </li>
+          </ul>
+        </nav>
+      )}
     </>
   );
 }

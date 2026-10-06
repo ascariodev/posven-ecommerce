@@ -6,6 +6,8 @@ import {
   checkoutQuoteInputSchema,
   type Address,
   type CartItem,
+  type BuyAgainItem,
+  type BuyAgainResponse,
   type CartStore,
   type CheckoutInput,
   type CheckoutQuoteInput,
@@ -344,6 +346,44 @@ export async function listPurchases(ctx: AccountContext, page: number): Promise<
     data: mine.slice(start, start + PER_PAGE).map((record) => structuredClone(record.purchase)),
     meta: { page: safePage, per_page: PER_PAGE, total: mine.length },
   };
+}
+
+const BUY_AGAIN_LIMIT = 8;
+
+// "Volver a comprar" (spec §4.2): un ítem por par tienda y producto de las compras pagadas, la más
+// reciente primero, cotizado a una unidad con el precio y la disponibilidad de hoy. El récipe no
+// entra y lo faltante de un pedido tampoco.
+export async function getBuyAgain(ctx: AccountContext): Promise<BuyAgainResponse> {
+  const id = customerIdFor(ctx);
+  const paid = [...state().purchases.values()]
+    .filter((record) => record.customerId === id && record.purchase.status === "paid")
+    .sort((a, b) => (b.purchase.paid_at ?? "").localeCompare(a.purchase.paid_at ?? "") || b.sequence - a.sequence);
+  const seen = new Set<string>();
+  const data: BuyAgainItem[] = [];
+  for (const record of paid) {
+    for (const order of record.purchase.orders) {
+      for (const line of order.lines) {
+        const key = `${order.store.slug}:${line.product.slug}`;
+        if (line.missing || seen.has(key)) continue;
+        seen.add(key);
+        const store = quoteItems([{ store_slug: order.store.slug, product_slug: line.product.slug, quantity: 1 }]).stores[0];
+        const quoted = store?.lines[0];
+        if (store === undefined || quoted === undefined || quoted.unavailable_reason === "restricted") continue;
+        if (data.length >= BUY_AGAIN_LIMIT) continue;
+        data.push({
+          product: quoted.product,
+          store: store.store,
+          price_usd: quoted.price_usd,
+          price_ves: quoted.price_ves,
+          availability: quoted.availability,
+          status: quoted.status,
+          unavailable_reason: quoted.unavailable_reason,
+          last_purchased_at: record.purchase.paid_at ?? record.purchase.created_at,
+        });
+      }
+    }
+  }
+  return { data, rate: MOCK_RATE };
 }
 
 const OPEN_ORDER_STATUSES = new Set<StoreOrder["status"]>(["accepted", "ready_for_pickup", "out_for_delivery"]);

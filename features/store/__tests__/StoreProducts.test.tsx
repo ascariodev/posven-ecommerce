@@ -131,13 +131,14 @@ describe("botón Agregar al carrito en la tienda (RN-CART-03)", () => {
     vi.unstubAllEnvs();
   });
 
-  it("sale sólo en los productos sin restricción de una tienda que vende", async () => {
+  it("sale en todos menos en los de récipe de una tienda que vende", async () => {
     vi.mocked(getStore).mockResolvedValue(response(products, meta, true));
 
     render(await StoreProducts({ slug: SLUG, searchParams: searchParams({}) }));
 
     expect(addButtons().map((button) => button.getAttribute("aria-label"))).toEqual([
       "Agregar al carrito: Acetaminofén 500 mg x 20 tabletas de Farmacia Central",
+      "Agregar al carrito: Clonazepam 0,5 mg de Farmacia Central",
     ]);
   });
 

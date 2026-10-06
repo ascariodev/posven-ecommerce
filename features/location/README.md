@@ -6,6 +6,7 @@ exports: ["LOCATION_COOKIE", "UserLocation", "isValidCoords", "parseLocationCook
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/select.tsx", "components/ui/sheet.tsx", "components/ui/skeleton.tsx"]
 tests: "features/location/__tests__/*.test.{ts,tsx}"
 verified_against: ["features/location/lib/cookie.ts", "features/location/server/location.ts", "features/location/server/actions.ts", "features/location/components/LocationPicker.tsx", "features/location/components/LocationBar.tsx", "features/location/components/LocationSheet.tsx", "features/site/components/SiteHeader.tsx", "features/location/__tests__/server.test.ts", "features/location/__tests__/LocationBar.test.tsx", "features/location/__tests__/LocationSheet.test.tsx", "app/layout.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
+verified_at: "953bc45"
 capabilities:
   - intent: "leer la ubicación efectiva del usuario para filtrar por cercanía"
     intent_aliases: ["ubicacion del usuario", "ubicacion efectiva", "cookie de ubicacion", "donde esta el usuario", "filtro geo"]

@@ -3,6 +3,8 @@ import { fillRegistration } from "./registration";
 
 const PRODUCT_SLUG = "acetaminofen-500-mg-20-tabletas";
 const PRODUCT_PATH = `/p/${PRODUCT_SLUG}`;
+const STORE_NAME = "Farmacia Central";
+const STORE_PATH = "/tienda/farmacia-central-valencia";
 const SEEDED_EMAIL = "comprador@posven.test";
 const SEEDED_PASSWORD = "clave-segura-1";
 const RATE_LIMITED_EMAIL = "limite@posven.test";
@@ -73,11 +75,28 @@ test.describe("cuenta del comprador", () => {
     await expect(page.getByRole("button", { name: "Borrar mis datos de facturación" })).toBeEnabled();
   });
 
-  test("Salir deja Entrar en la barra inferior y entrar de nuevo vuelve a volver", async ({ page }) => {
+  test("en móvil, el resumen trae accesos rápidos y la lista con Ayuda, y las pestañas sólo en las subpáginas", async ({ page }) => {
     await signIn(page, email, password);
     await expect(page).toHaveURL("/cuenta");
 
-    await page.getByRole("button", { name: "Salir" }).click();
+    const quick = page.getByRole("navigation", { name: "Accesos" });
+    await expect(quick.getByRole("link")).toHaveText(["Compras", "Favoritos", "Direcciones"]);
+    await expect(page.getByRole("link", { name: "Ayuda", exact: true }).first()).toHaveAttribute("href", "/ayuda");
+    await expect(page.getByRole("navigation", { name: "Mi cuenta" })).toHaveCount(0);
+
+    await quick.getByRole("link", { name: "Favoritos" }).click();
+    await expect(page).toHaveURL("/cuenta/favoritos");
+    await expect(page.getByRole("navigation", { name: "Mi cuenta" }).getByRole("link", { name: "Favoritos" })).toHaveAttribute(
+      "aria-current",
+      "page"
+    );
+  });
+
+  test("Cerrar sesión deja Entrar en la barra inferior y entrar de nuevo vuelve a volver", async ({ page }) => {
+    await signIn(page, email, password);
+    await expect(page).toHaveURL("/cuenta");
+
+    await page.getByRole("button", { name: "Cerrar sesión" }).click();
     await expect(mainNav(page).getByRole("link", { name: "Cuenta", exact: true })).toHaveAttribute("href", /^\/entrar/);
 
     await signIn(page, email, password, "/cuenta/favoritos");
@@ -144,12 +163,22 @@ test.describe("cuenta del comprador", () => {
     await expect(page.getByText("Guardamos el favorito.")).toBeVisible();
     await expect(page.getByRole("button", { name: "Quitar de favoritos" })).toBeVisible();
 
+    await page.goto(STORE_PATH);
+    await page.getByRole("button", { name: "Guardar en favoritos" }).click();
+    await expect(page.getByText("Guardamos el favorito.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Quitar de favoritos" })).toBeVisible();
+
     await page.goto("/cuenta/favoritos");
     await expect(page.getByRole("link", { name: /Acetaminofén 500 mg x 20 tabletas/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: STORE_NAME })).toHaveAttribute("href", STORE_PATH);
 
     await page.getByRole("button", { name: /^Quitar Acetaminofén 500 mg x 20 tabletas de favoritos$/ }).click();
     await expect(page.getByText("Quitamos el favorito.")).toBeVisible();
     await expect(page.getByRole("link", { name: /Acetaminofén 500 mg x 20 tabletas/ })).toHaveCount(0);
+
+    await page.getByRole("button", { name: `Quitar ${STORE_NAME} de favoritos` }).click();
+    await expect(page.getByText("Quitamos el favorito.")).toBeVisible();
+    await expect(page.getByRole("link", { name: STORE_NAME })).toHaveCount(0);
   });
 
   test("las rutas de acceso y de cuenta van con noindex y fuera de robots y sitemap", async ({ page, request }) => {

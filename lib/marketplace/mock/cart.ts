@@ -49,7 +49,7 @@ function findProduct(slug: string): CatalogProduct | undefined {
   const { name, image_url, category, restriction } = product;
   return {
     product: { slug: product.slug, name, image_url, category },
-    restricted: restriction !== "none",
+    restricted: restriction === "recipe",
     offers: listed?.offers ?? [],
   };
 }

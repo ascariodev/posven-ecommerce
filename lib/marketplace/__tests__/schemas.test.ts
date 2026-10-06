@@ -20,7 +20,7 @@ import {
   updateMe,
 } from "@/lib/marketplace/mock/adapter";
 import { getCart, mergeCart, quoteGuestCart, resetMockCarts, setCartItem } from "@/lib/marketplace/mock/cart";
-import { getPurchase, listPurchases, quoteCheckout, resetMockPurchases, startCheckout } from "@/lib/marketplace/mock/checkout";
+import { getBuyAgain, getPurchase, listPurchases, quoteCheckout, resetMockPurchases, startCheckout } from "@/lib/marketplace/mock/checkout";
 import { MOCK_STORES } from "@/lib/marketplace/mock/fixtures";
 import {
   accountErrorBodySchema,
@@ -33,6 +33,7 @@ import {
   checkoutInputSchema,
   checkoutStartSchema,
   customerSchema,
+  buyAgainResponseSchema,
   eventInputSchema,
   favoritesResponseSchema,
   locationsResponseSchema,
@@ -558,6 +559,47 @@ describe("el simulado de checkout y compras pasa los esquemas del contrato", () 
       expect(purchaseSchema.safeParse(purchase).success).toBe(true);
     }
     expect(purchasePageSchema.safeParse(await listPurchases(ctx, 1)).success).toBe(true);
+    expect(buyAgainResponseSchema.safeParse(await getBuyAgain(ctx)).success).toBe(true);
+  });
+});
+
+describe("buyAgainResponseSchema", () => {
+  const store = {
+    slug: "farmacia-central-valencia",
+    name: "Farmacia Central",
+    logo_url: null,
+    address: "Av. Bolívar 10",
+    city: { slug: "valencia", name: "Valencia" },
+    latitude: 10.18,
+    longitude: -68,
+    phone: null,
+    whatsapp: null,
+    is_premium: false,
+    accepts_orders: true,
+  };
+  const rate = { usd_ves: "36.50", valid_on: "2026-09-26" };
+  const item = {
+    product: { slug: "acetaminofen-500-mg-20-tabletas", name: "Acetaminofén", image_url: null, category: null },
+    store,
+    price_usd: "2.50",
+    price_ves: "91.25",
+    availability: "available",
+    status: "ok",
+    unavailable_reason: null,
+    last_purchased_at: "2026-10-05T14:00:00-04:00",
+  };
+
+  it("acepta un ítem disponible y uno agotado con precio y sin disponibilidad", () => {
+    const soldOut = { ...item, availability: null, status: "unavailable", unavailable_reason: "out_of_stock" };
+    expect(buyAgainResponseSchema.safeParse({ data: [item, soldOut], rate }).success).toBe(true);
+    expect(buyAgainResponseSchema.safeParse({ data: [], rate }).success).toBe(true);
+  });
+
+  it("rechaza un estado ajeno, un monto mal formado, una fecha sin zona y más de 8 ítems", () => {
+    expect(buyAgainResponseSchema.safeParse({ data: [{ ...item, status: "price_changed" }], rate }).success).toBe(false);
+    expect(buyAgainResponseSchema.safeParse({ data: [{ ...item, price_usd: "2.5" }], rate }).success).toBe(false);
+    expect(buyAgainResponseSchema.safeParse({ data: [{ ...item, last_purchased_at: "2026-10-05T14:00:00" }], rate }).success).toBe(false);
+    expect(buyAgainResponseSchema.safeParse({ data: Array.from({ length: 9 }, () => item), rate }).success).toBe(false);
   });
 });
 

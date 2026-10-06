@@ -45,7 +45,7 @@ function StoreProductCard({ product, store, now }: { product: StoreProduct; stor
           <p className="text-sm text-foreground tabular-nums">{formatVes(product.price_ves)}</p>
           <p className="text-xs text-muted-foreground">{formatUpdatedAgo(product.updated_at, now)}</p>
         </div>
-        {cartEnabled() && store.accepts_orders && product.restriction === "none" && (
+        {cartEnabled() && store.accepts_orders && product.restriction !== "recipe" && (
           <AddToCartButton
             storeSlug={store.slug}
             storeName={store.name}

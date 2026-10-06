@@ -170,13 +170,19 @@ describe("carrito del comprador simulado", () => {
     expect((error as MarketplaceAccountError).fields).toEqual({ store_slug: "Elige una tienda válida." });
   });
 
-  it.each(["amoxicilina-500-mg-21-capsulas", "clonazepam-0-5-mg-30-tabletas"])(
-    "PUT de un producto restringido (%s) responde product_restricted",
-    async (product) => {
-      const ctx = await session();
-      expect(await errorCode(setCartItem(ctx, item(CENTRAL, product)))).toBe("product_restricted");
-    },
-  );
+  it("PUT de un producto con récipe responde product_restricted", async () => {
+    const ctx = await session();
+    expect(await errorCode(setCartItem(ctx, item(CENTRAL, "amoxicilina-500-mg-21-capsulas")))).toBe("product_restricted");
+  });
+
+  it("un producto controlado (no récipe) se cotiza y se agrega como cualquier otro; `controlled` está en el esquema pero la API de hoy no lo emite (ProductResource emite recipe o none)", async () => {
+    const ctx = await session();
+    const controlled = "clonazepam-0-5-mg-30-tabletas";
+    const cart = await quoteGuestCart(ctx, [item(CENTRAL, controlled)]);
+    expect(cart.stores[0].lines[0].unavailable_reason).not.toBe("restricted");
+    const added = await setCartItem(ctx, item(CENTRAL, controlled));
+    expect(added.stores[0].lines[0].product.slug).toBe(controlled);
+  });
 
   it("PUT en una tienda que no vende responde not_orderable", async () => {
     const ctx = await session();

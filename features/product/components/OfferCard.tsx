@@ -60,10 +60,10 @@ export function OfferCard({
         <div className="flex flex-col gap-3 border-t border-border pt-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs font-medium text-muted-foreground">{formatUpdatedAgo(offer.updated_at, now)}</p>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-start">
-            {cartEnabled() && product.restriction === "none" && (
+            {cartEnabled() && product.restriction !== "recipe" && (
               <OfferSelectButton storeSlug={store.slug} storeName={store.name} />
             )}
-            {cartEnabled() && store.accepts_orders && product.restriction === "none" && (
+            {cartEnabled() && store.accepts_orders && product.restriction !== "recipe" && (
               <div className="w-full sm:w-auto">
                 <AddToCartButton
                   storeSlug={store.slug}

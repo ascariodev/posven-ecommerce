@@ -143,7 +143,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [x] M-11 — `sizes` de `ProductThumb` acordes a la rejilla de 2 a 4 columnas de `StoreProducts`.
   posven-ecommerce · baja · sonnet
-- [ ] M-12 — Tests de `StoreHeader` (portada sólo premium, hijos) pendientes desde RN-STORE-04.
+- [x] M-12 — Tests de `StoreHeader` (portada sólo premium, hijos) pendientes desde RN-STORE-04.
   posven-ecommerce · baja · sonnet
 - [ ] M-13 — Fila de `/tiendas` (indexable, canónica sin `pagina`) en la spec hiperlocal §4.1 (`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`), que `seo.md` cita como fuente de qué se indexa.
   posven/.claude · baja · sonnet
@@ -170,4 +170,6 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - [ ] M-24 — `ProductOffers.test.tsx`: gemela positiva explícita de la prueba `recipe`, fusionar la del interruptor apagado con la de `addButtons` (sin el `is_best_price` sobrante) y una sola fila de esa prueba en el README de product.
   posven-ecommerce · baja · sonnet
 - [ ] M-25 — `sizes` propios para `ProductThumb` en las rejillas de `NearbyProducts`, `FeaturedCard`, `SearchResults` y favoritos, como el de `StoreProducts`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-26 — `StoreHeader.test.tsx`: la prueba de hijos no comprueba que queden junto a `ContactButtons` (el README lo afirma); afirmar el contenedor común o ajustar el README.
   posven-ecommerce · baja · sonnet

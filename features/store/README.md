@@ -74,7 +74,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 | `RN-STORE-02` | El primer destacado va en el bloque patrocinado, el segundo abre la lista con "Destacado" y ninguno se repite si también viene en `data`. | `features/store/__tests__/NearbyStores.test.tsx` ("el primer destacado va en el bloque patrocinado y no se repite en la lista", "el segundo destacado abre la lista con la etiqueta Destacado") |
 | `RN-STORE-05` | El estado abierto o cerrado y la hora de cierre se muestran tal como los entrega la API; sin `is_open` no hay etiqueta. | `features/store/__tests__/StoreCard.test.tsx` ("muestra Abierto con la hora de cierre que entrega la API", "muestra Cerrado si la API dice que no está abierta y nada si no informa") |
 | `RN-STORE-03` | Una tienda fuera del radio lleva la etiqueta "Fuera de tu zona". | `features/store/__tests__/StoreCard.test.tsx` ("una tienda con outside_radius muestra Fuera de tu zona") |
-| `RN-STORE-04` | La portada (en la tarjeta y en la cabecera), la imagen Open Graph y la imagen del JSON-LD de una tienda salen sólo si es premium. | `features/store/__tests__/StoreCard.test.tsx` ("muestra la portada sólo si la tienda es premium y la trae"), `features/store/__tests__/jsonld.test.ts` ("una tienda premium con logo trae image", "una tienda sin premium no trae image aunque tenga logo_url"); la portada de `StoreHeader.tsx` y la imagen Open Graph de `app/tienda/[slug]/page.tsx`, pendiente: sin prueba |
+| `RN-STORE-04` | La portada (en la tarjeta y en la cabecera), la imagen Open Graph y la imagen del JSON-LD de una tienda salen sólo si es premium. | `features/store/__tests__/StoreCard.test.tsx` ("muestra la portada sólo si la tienda es premium y la trae"), `features/store/__tests__/jsonld.test.ts` ("una tienda premium con logo trae image", "una tienda sin premium no trae image aunque tenga logo_url"), `features/store/__tests__/StoreHeader.test.tsx` ("muestra la portada si la tienda es premium y la trae", "no muestra la portada si la tienda no es premium aunque la traiga", "no muestra la portada si la tienda es premium y no la trae"); la imagen Open Graph de `app/tienda/[slug]/page.tsx`, pendiente: sin prueba |
 
 ## 3. Dónde hacer cambios
 
@@ -173,6 +173,7 @@ if (response === null) notFound();
 - `features/store/__tests__/NearbyStores.test.tsx`: patrocinado sin repetirse, segundo destacado en la lista, sin patrocinado, API caída sin pintar nada y otros errores relanzados.
 - `features/store/__tests__/schedule.test.ts`: `Lun a Sáb`, `Sáb, Dom`, "Horario no informado" y los días en inglés.
 - `features/store/__tests__/jsonld.test.ts`: `image` sólo premium con logo, sin `telephone` cuando falta.
+- `features/store/__tests__/StoreHeader.test.tsx`: portada sólo si la tienda es premium y la trae, y los hijos pintados junto al contacto.
 - `features/store/__tests__/StoreProducts.test.tsx`: productos con sus precios, "Siguiente" sin "Anterior" en la página 1 de 2, `pagina=abc` pide la página 1.
 - `e2e/site.spec.ts`: `/tiendas` llega desde "Ver todos" del inicio, lista tiendas y tiene canónica e indexable.
 - `e2e/search.spec.ts` (`npx playwright test`): la portada muestra los productos, el patrocinado y el bloque de comercios.

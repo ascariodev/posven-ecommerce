@@ -44,11 +44,14 @@ export async function StoresDirectory({
 
   if (stores.length === 0) {
     return (
-      <EmptyState
-        icon={MapPinOff}
-        title={page > 1 ? "No hay más comercios." : "Todavía no hay comercios cerca."}
-        description={page > 1 ? undefined : "Prueba con otra ciudad."}
-      />
+      <>
+        {page > 1 && <meta name="robots" content="noindex" />}
+        <EmptyState
+          icon={MapPinOff}
+          title={page > 1 ? "No hay más comercios." : "Todavía no hay comercios cerca."}
+          description={page > 1 ? undefined : "Prueba con otra ciudad."}
+        />
+      </>
     );
   }
 

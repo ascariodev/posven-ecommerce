@@ -28,7 +28,7 @@ capabilities:
     entrypoint: "<StoresDirectory />"
     file: "features/store/components/StoresDirectory.tsx"
     input: "searchParams con pagina opcional (entero >= 1, si no 1); lee la cookie loc; se monta en <Suspense fallback={<StoresDirectorySkeleton />}>"
-    output: "total de comercios, rejilla de StoreCard (destacados primero sin repetirse) y Pagination hacia /tiendas?pagina={n}; sin comercios, un EmptyState (components/EmptyState.tsx) con 'No hay más comercios.' desde la página 2; un error de la API sube a app/error.tsx"
+    output: "total de comercios, rejilla de StoreCard (destacados primero sin repetirse) y Pagination hacia /tiendas?pagina={n}; sin comercios, un EmptyState (components/EmptyState.tsx) con 'No hay más comercios.' y una meta robots noindex desde la página 2; un error de la API sube a app/error.tsx"
     source: "listNearbyStores() de lib/marketplace con geo de getEffectiveLocation() (cookie loc) y la página de la URL"
     rules: ["RN-STORE-02", "RN-STORE-04", "RN-STORE-05"]
   - intent: "mostrar la cabecera de la página de una tienda con su horario y contacto"
@@ -123,7 +123,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 | Cabecera | `components/StoreHeader.tsx` | portada sobre una tarjeta con logo (sólo premium), `h1`, razón social, dirección, `h2` "Horario", `ContactButtons` con `product: null` y `children` (el favorito de la página) |
 | Productos | `components/StoreProducts.tsx` | `pagina` a entero, `getStore({ slug, page })`, tasa, tarjetas con `ProductThumb` (con `sizes` de la rejilla: 240 px desde 1024 px, un tercio del ancho útil desde 768 px y la mitad debajo; con `AddToCartButton` si el carrito está encendido, la tienda tiene `accepts_orders` y el producto no es `recipe`, `RN-CART-03`), "Anterior" y "Siguiente" |
 | Directorio | `components/StoresDirectory.tsx` | `pagina` a entero, `listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page })`, destacados primero y sin repetirse, total y `Pagination` de `features/search` con `hrefForPage` a `/tiendas` (la página 1 sin parámetro) |
-| Página del directorio | `app/tiendas/page.tsx` | `h1` "Tiendas", canónica `/tiendas` sin parámetros, indexable, y `StoresDirectory` en `<Suspense>`; sin `loading.tsx` |
+| Página del directorio | `app/tiendas/page.tsx` | `h1` "Tiendas", canónica `/tiendas` sin parámetros, indexable (la página fuera de rango pone `noindex` desde `StoresDirectory`: `notFound()` tras el streaming no cambia el 200), y `StoresDirectory` en `<Suspense>`; sin `loading.tsx` |
 | Página | `app/tienda/[slug]/page.tsx` | `generateStaticParams` (20 slugs de `listSitemap` o `__vacio`), `generateMetadata`, JSON-LD, `StoreHeader` (con `FavoriteButton` de `features/account` como hijo), `ViewBeacon` con `store_view` y `StoreProducts` en `<Suspense>` |
 
 ## 6. Dependencias
@@ -169,11 +169,12 @@ if (response === null) notFound();
 - Comando: `npx vitest run features/store`; el 404, con `next build` y `next start`.
 - `features/store/__tests__/StoreCard.test.tsx`: iniciales "FS", premium sin logo y no premium con `logo_url` muestran iniciales, "Destacado" con `featured`, "Fuera de tu zona" con `outside_radius` y "Abierto" o "Cerrado" según `is_open`.
 - `features/store/__tests__/SponsoredStore.test.tsx`: enlace a la tienda con "PATROCINADO" y "Ver tienda" sin botón anidado, sin `is_open` no hay estado y `outside_radius` no pinta "Fuera de tu zona".
-- `features/store/__tests__/StoresDirectory.test.tsx`: destacados primero sin repetirse, "Siguiente" y "Anterior" a `/tiendas`, `pagina` de la URL (inválida cae a 1) y aviso sin comercios.
+- `features/store/__tests__/StoresDirectory.test.tsx`: destacados primero sin repetirse, "Siguiente" y "Anterior" a `/tiendas`, `pagina` de la URL (inválida cae a 1), aviso sin comercios y `noindex` sólo fuera de rango.
 - `features/store/__tests__/NearbyStores.test.tsx`: patrocinado sin repetirse, segundo destacado en la lista, sin patrocinado, API caída sin pintar nada y otros errores relanzados.
 - `features/store/__tests__/schedule.test.ts`: `Lun a Sáb`, `Sáb, Dom`, "Horario no informado" y los días en inglés.
 - `features/store/__tests__/jsonld.test.ts`: `image` sólo premium con logo, sin `telephone` cuando falta.
 - `features/store/__tests__/StoreHeader.test.tsx`: portada sólo si la tienda es premium y la trae, y los hijos pintados junto al contacto.
 - `features/store/__tests__/StoreProducts.test.tsx`: productos con sus precios, "Siguiente" sin "Anterior" en la página 1 de 2, `pagina=abc` pide la página 1.
 - `e2e/site.spec.ts`: `/tiendas` llega desde "Ver todos" del inicio, lista tiendas y tiene canónica e indexable.
+- `e2e/site.spec.ts`: `/tiendas?pagina=999` avisa "No hay más comercios." con `noindex` y la misma canónica.
 - `e2e/search.spec.ts` (`npx playwright test`): la portada muestra los productos, el patrocinado y el bloque de comercios.

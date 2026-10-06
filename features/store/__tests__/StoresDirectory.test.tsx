@@ -78,4 +78,17 @@ describe("StoresDirectory", () => {
     expect(screen.getByText(/Todavía no hay comercios/)).toBeTruthy();
     expect(screen.queryByRole("list")).toBeNull();
   });
+
+  it("una página fuera de rango avisa y pide noindex; la primera vacía no", async () => {
+    vi.mocked(listNearbyStores).mockResolvedValue(response([], [], 9, 3));
+
+    render(await StoresDirectory({ searchParams: Promise.resolve({ pagina: "9" }) }));
+    expect(screen.getByText("No hay más comercios.")).toBeTruthy();
+    expect(document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe("noindex");
+
+    cleanup();
+    vi.mocked(listNearbyStores).mockResolvedValue(response([], [], 1, 0));
+    render(await StoresDirectory({ searchParams: Promise.resolve({}) }));
+    expect(document.querySelector('meta[name="robots"]')).toBeNull();
+  });
 });

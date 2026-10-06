@@ -39,6 +39,14 @@ test("/tiendas lista las tiendas, tiene canónica propia, es indexable y se lleg
   await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
 });
 
+test("/tiendas fuera de rango avisa y lleva noindex", async ({ page }) => {
+  await page.goto("/tiendas?pagina=999");
+
+  await expect(page.getByText("No hay más comercios.")).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/tiendas");
+});
+
 for (const path of ["/terminos", "/privacidad"]) {
   test(`${path} lleva noindex mientras es borrador`, async ({ page }) => {
     await page.goto(path);

@@ -63,3 +63,9 @@ Una primitiva sobre `bg-ink` (pie) no contrasta con sus colores por defecto: `ou
 y `bg-primary` quedan por debajo de 3:1 en algún modo. Se le pasan por `className` clases `ink`
 (foco, borde y relleno), con `!` donde el `dark:` de shadcn gana, y se mide en claro y oscuro.
 aplicada en: `.claude/rules/ui.md` ítem 5
+
+## L-15
+En el frontmatter de un README de módulo, un escalar entre comillas dobles (`output: "..."`) no
+lleva comillas dobles dentro (`"Ver menos"`, `name="robots"`): el YAML queda inválido y
+`generate-index.mjs` no lo detecta. Dentro se usan comillas simples o se reescribe sin comillas.
+aplicada en: pendiente: el usuario decide promoverla a una comprobación de `posven/.claude/scripts/docs-check.mjs`, propuesto en las mejoras sueltas del rediseño

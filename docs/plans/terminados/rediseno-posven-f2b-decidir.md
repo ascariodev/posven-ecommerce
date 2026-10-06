@@ -147,7 +147,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [ ] M-13 — Fila de `/tiendas` (indexable, canónica sin `pagina`) en la spec hiperlocal §4.1 (`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`), que `seo.md` cita como fuente de qué se indexa.
   posven/.claude · baja · sonnet
-- [ ] M-14 — `/tiendas?pagina=N` fuera de rango responde 200 con "No hay más comercios": `noindex` o `notFound()`.
+- [x] M-14 — `/tiendas?pagina=N` fuera de rango responde 200 con "No hay más comercios": `noindex` o `notFound()`.
   posven-ecommerce · baja · sonnet
 - [ ] M-15 — Casos de `parsePage` (`abc`, `0`, repetido) y de destacados sin repetir en `StoresDirectory.test.tsx`, si faltan.
   posven-ecommerce · baja · sonnet

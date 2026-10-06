@@ -65,6 +65,9 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
   `features/site/assets/Poppins-Bold.ttf` con `readFile` desde `process.cwd()`; `import.meta.url`
   daba 500 en el servidor compilado. El standalone traza la fuente sola.
 
+- 2026-10-06 — M-3: el manifest mantiene `theme_color` `#28292d` aunque el viewport use blanco en
+  claro (decisión del usuario); anotado en `features/site/README.md`.
+
 ## Notas para la próxima sesión
 - Plan terminado 2026-10-06 en `feat/pwa-instalable` (b0bed8d, ee4a7c6), sin merge ni push.
 
@@ -75,7 +78,7 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
 - [x] M-2 — Cargar Poppins en negrita en `brandIcon` para igualar la marca de la cabecera (la
   tipografía por defecto de `ImageResponse` sale sin negrita).
   posven-ecommerce · baja · sonnet
-- [ ] M-3 — `theme_color` del manifest es la tinta fija, pero `viewport.themeColor` usa `#ffffff`
+- [x] M-3 — `theme_color` del manifest es la tinta fija, pero `viewport.themeColor` usa `#ffffff`
   en claro: en Android la barra de la app instalada sale oscura con el sistema en claro. Alinear o
   dejar la decisión escrita.
   posven-ecommerce · baja · sonnet

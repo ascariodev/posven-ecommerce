@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { submitSignIn, verifyEmail, waitRegistrationHydrated } from "./helpers";
 import { fillRegistration } from "./registration";
 
 const PRODUCT_SLUG = "acetaminofen-500-mg-20-tabletas";
@@ -11,9 +12,7 @@ const RATE_LIMITED_EMAIL = "limite@posven.test";
 
 async function signIn(page: Page, email: string, password: string, volver?: string): Promise<void> {
   await page.goto(volver === undefined ? "/entrar" : `/entrar?volver=${encodeURIComponent(volver)}`);
-  await page.getByLabel("Correo").fill(email);
-  await page.getByLabel("Contraseña").fill(password);
-  await page.getByRole("button", { name: "Entrar", exact: true }).click();
+  await submitSignIn(page, email, password);
 }
 
 function mainNav(page: Page) {
@@ -44,6 +43,7 @@ test.describe("cuenta del comprador", () => {
 
   test("registrar un comprador lo lleva a su cuenta y verificar el correo quita el aviso", async ({ page }) => {
     await page.goto("/registro");
+    await waitRegistrationHydrated(page);
     await fillRegistration(page, { name, email, phone, password });
     await page.getByRole("button", { name: "Crear cuenta", exact: true }).click();
 
@@ -51,18 +51,14 @@ test.describe("cuenta del comprador", () => {
     await expect(page.getByRole("heading", { level: 1, name: `Hola, ${name}` })).toBeVisible();
     await expect(page.getByText("no está verificado")).toBeVisible();
 
-    await page.goto("/verificar/verificacion-simulada");
-    await page.getByRole("button", { name: "Verificar mi correo" }).click();
-    await expect(page.getByText("Tu correo quedó verificado.")).toBeVisible();
-
-    await page.goto("/cuenta");
+    await verifyEmail(page);
     await expect(page.getByRole("heading", { level: 1, name: `Hola, ${name}` })).toBeVisible();
-    await expect(page.getByText("no está verificado")).toHaveCount(0);
   });
 
   test("tras registrarse, el perfil muestra los datos de facturación", async ({ page }) => {
     const owner = `e2e-perfil-${Date.now()}@posven.test`;
     await page.goto("/registro");
+    await waitRegistrationHydrated(page);
     await fillRegistration(page, { name, email: owner, phone, password });
     await page.getByRole("button", { name: "Crear cuenta", exact: true }).click();
     await expect(page).toHaveURL("/cuenta");
@@ -167,10 +163,7 @@ test.describe("cuenta del comprador", () => {
     await page.getByRole("link", { name: "Guardar en favoritos" }).click();
     await expect(page).toHaveURL(`/entrar?volver=${encodeURIComponent(PRODUCT_PATH)}`);
 
-    await page.getByLabel("Correo").fill(email);
-    await page.getByLabel("Contraseña").fill(password);
-    await page.getByRole("button", { name: "Entrar", exact: true }).click();
-
+    await submitSignIn(page, email, password);
     await expect(page).toHaveURL(PRODUCT_PATH);
     const favorite = page.getByRole("button", { name: "Guardar en favoritos" });
     await expect(favorite).toBeVisible();

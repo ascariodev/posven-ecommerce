@@ -195,7 +195,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   posven-ecommerce · complejidad baja · modelo sonnet. Aplicada del lado de la UI: la API real nunca
   pone `ready_at` en una entrega (sólo `dispatched_at`) y el simulado ya la imita, así que
   `orderSteps` deja Preparando sin fecha en la entrega.
-- [ ] M-16 — Con el servidor recién compilado y 6 workers, otros clics del e2e (`add` en
+- [x] M-16 — Con el servidor recién compilado y 6 workers, otros clics del e2e (`add` en
   `checkout.spec.ts`, el formulario de `signIn` en `account.spec.ts`) llegan antes de hidratar y
   fallan en la primera corrida; las siguientes pasan (48/48). Llevar la espera de `clickPay` a un
   helper común en `e2e/`. Repo posven-ecommerce · complejidad media · modelo sonnet.
@@ -205,3 +205,9 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [ ] M-18 — En `CartStoreGroup.tsx` la insignia de abierto queda dentro del `<span>` de la ciudad
   (`text-muted-foreground`); pasarla a hermana para que la estructura sea clara. Repo
   posven-ecommerce · complejidad baja · modelo sonnet.
+- [ ] M-19 — `playwright.config.ts` no fija `timeout` ni `expect.timeout`: el de prueba (30 s) iguala al
+  poll de `waitHydrated`, así que un fallo de hidratación sale como "Test timeout" y no con su error.
+  Repo posven-ecommerce · complejidad baja · modelo sonnet.
+- [ ] M-20 — Una corrida caliente del e2e imprimió `[WebServer] SyntaxError: Unexpected end of JSON
+  input` sin fallar ninguna prueba; averiguar qué ruta lo produce. Repo posven-ecommerce ·
+  complejidad media · modelo sonnet.

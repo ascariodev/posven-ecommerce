@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { clickPay, verifyEmail } from "./helpers";
+import { clickHydrated, clickPay, submitSignIn, verifyEmail, waitRegistrationHydrated } from "./helpers";
 import { fillRegistration } from "./registration";
 
 // Spec cuentas-y-compras §7: registrar, verificar, carrito de invitado, entrar, fusionar, pagar,
@@ -16,24 +16,24 @@ async function add(page: Page, path: string, store: string): Promise<void> {
   await page.goto(path);
   await expect(page.locator("[data-purchase-bar]")).toBeVisible();
   const pick = page.getByRole("button", { name: new RegExp(`^Elegir tienda: ${store},`) });
-  if ((await pick.count()) > 0) await pick.click();
-  await page
-    .locator("[data-purchase-bar]")
-    .getByRole("button", { name: new RegExp(`^Agregar (al carrito|otro) de la tienda elegida: .* de ${store}$`) })
-    .click();
+  if ((await pick.count()) > 0) await clickHydrated(pick);
+  await clickHydrated(
+    page
+      .locator("[data-purchase-bar]")
+      .getByRole("button", { name: new RegExp(`^Agregar (al carrito|otro) de la tienda elegida: .* de ${store}$`) }),
+  );
   await expect(page.getByText("Agregado").first()).toBeVisible();
 }
 
 async function signIn(page: Page, email: string, password: string): Promise<void> {
   await page.goto("/entrar");
-  await page.getByLabel("Correo").fill(email);
-  await page.getByLabel("Contraseña").fill(password);
-  await page.getByRole("button", { name: "Entrar", exact: true }).click();
+  await submitSignIn(page, email, password);
   await expect(page).toHaveURL("/cuenta");
 }
 
 async function register(page: Page, email: string, password: string): Promise<void> {
   await page.goto("/registro");
+  await waitRegistrationHydrated(page);
   await fillRegistration(page, { name: "Compra E2E", email, phone: "04141112255", password });
   await page.getByRole("button", { name: "Crear cuenta", exact: true }).click();
   await expect(page).toHaveURL("/cuenta");
@@ -105,7 +105,7 @@ test.describe("checkout y compras", () => {
     const buyAgain = page.getByRole("list", { name: "Volver a comprar" });
     await expect(buyAgain.getByRole("link", { name: /^Acetaminofén/ })).toBeVisible();
     await expect(buyAgain.getByRole("link", { name: /Alcohol/ })).toHaveCount(0);
-    await buyAgain.getByRole("button", { name: /^Agregar al carrito: Acetaminofén/ }).click();
+    await clickHydrated(buyAgain.getByRole("button", { name: /^Agregar al carrito: Acetaminofén/ }));
     await expect(buyAgain.getByText("Agregado")).toBeVisible();
     await expect(cartLink(page, "Carrito, 1 producto")).toBeVisible();
 

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { clickHydrated } from "./helpers";
 
 const PRODUCT_SLUG = "acetaminofen-500-mg-20-tabletas";
 const PRODUCT_PATH = `/p/${PRODUCT_SLUG}`;
@@ -37,7 +38,7 @@ test("el toast de agregar no se solapa con la barra de compra", async ({ page, c
   await context.addCookies([{ name: "mp_cart", value: encodeURIComponent(JSON.stringify(full)), url: "http://localhost:3000" }]);
   await page.goto(PRODUCT_PATH);
   const bar = page.locator("[data-purchase-bar]");
-  await bar.getByRole("button", { name: /Agregar al carrito/ }).click();
+  await clickHydrated(bar.getByRole("button", { name: /Agregar al carrito/ }));
   const toast = page.locator("[data-sonner-toast]").first();
   await expect(toast).toBeVisible();
   await expect

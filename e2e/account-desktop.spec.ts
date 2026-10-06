@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { clickPay, verifyEmail } from "./helpers";
+import { clickHydrated, clickPay, verifyEmail, waitRegistrationHydrated } from "./helpers";
 import { fillRegistration } from "./registration";
 
 // El proyecto "Pixel 7" corre en móvil, donde "Compras recientes" son filas; la tabla sólo existe
@@ -10,10 +10,11 @@ const ACETAMINOFEN_PATH = "/p/acetaminofen-500-mg-20-tabletas";
 
 test("en escritorio, Compras recientes es una tabla con la compra y Tu última compra enlaza al seguimiento", async ({ page }) => {
   await page.goto(ACETAMINOFEN_PATH);
-  await page.getByRole("button", { name: /^Agregar (al carrito|otro): .* de Farmacia Central$/ }).click();
+  await clickHydrated(page.getByRole("button", { name: /^Agregar (al carrito|otro): .* de Farmacia Central$/ }));
   await expect(page.getByText("Agregado").first()).toBeVisible();
 
   await page.goto("/registro");
+  await waitRegistrationHydrated(page);
   await fillRegistration(page, {
     name: "Escritorio E2E",
     email: `e2e-escritorio-${Date.now()}@posven.test`,

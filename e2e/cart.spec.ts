@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { clickHydrated, submitSignIn, waitRegistrationHydrated } from "./helpers";
 import { fillRegistration } from "./registration";
 
 // Slugs y nombres del simulado: farmacia-central-valencia y abasto-la-esquina venden en línea;
@@ -9,7 +10,7 @@ const ADD_HARINA = "Agregar al carrito: Harina de maíz precocida 1 kg de Abasto
 
 async function addAcetaminofen(page: Page): Promise<void> {
   await page.goto(ACETAMINOFEN_PATH);
-  await page.getByRole("button", { name: ADD_ACETAMINOFEN }).click();
+  await clickHydrated(page.getByRole("button", { name: ADD_ACETAMINOFEN }));
   await expect(page.getByText("Agregado").first()).toBeVisible();
 }
 
@@ -32,7 +33,7 @@ test.describe("carrito", () => {
     await expect(cartLink(page, "Carrito, 1 producto")).toBeVisible();
 
     await page.goto("/tienda/abasto-la-esquina");
-    await page.getByRole("button", { name: ADD_HARINA }).click();
+    await clickHydrated(page.getByRole("button", { name: ADD_HARINA }));
     await expect(cartLink(page, "Carrito, 2 productos")).toBeVisible();
 
     await page.goto("/carrito");
@@ -40,7 +41,7 @@ test.describe("carrito", () => {
     await expect(page.getByRole("list", { name: "Productos de Farmacia Central" })).toBeVisible();
     await expect(page.getByRole("list", { name: "Productos de Abasto La Esquina" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Agregar uno: Acetaminofén 500 mg x 20 tabletas" }).click();
+    await clickHydrated(page.getByRole("button", { name: "Agregar uno: Acetaminofén 500 mg x 20 tabletas" }));
     await expect(page.getByText("Cantidad: 2")).toBeAttached();
 
     await page.getByRole("button", { name: "Quitar: Harina de maíz precocida 1 kg" }).click();
@@ -61,7 +62,9 @@ test.describe("carrito", () => {
         response.request().method() === "POST" &&
         (response.request().postData() ?? "").includes('"add_to_cart"'),
     );
-    await page.locator("[data-purchase-bar]").getByRole("button", { name: /^Agregar al carrito de la tienda elegida: Acetaminofén 500 mg x 20 tabletas de / }).click();
+    await clickHydrated(
+      page.locator("[data-purchase-bar]").getByRole("button", { name: /^Agregar al carrito de la tienda elegida: Acetaminofén 500 mg x 20 tabletas de / }),
+    );
 
     const response = await eventResponse;
     expect(response.status()).toBe(202);
@@ -94,6 +97,7 @@ test.describe("carrito", () => {
 
     await addAcetaminofen(page);
     await page.goto("/registro");
+    await waitRegistrationHydrated(page);
     await fillRegistration(page, { name: "Carrito E2E", email, phone: "04141112244", password });
     await page.getByRole("button", { name: "Crear cuenta", exact: true }).click();
     await expect(page).toHaveURL("/cuenta");
@@ -104,9 +108,7 @@ test.describe("carrito", () => {
 
     await addAcetaminofen(page);
     await page.goto("/entrar");
-    await page.getByLabel("Correo").fill(email);
-    await page.getByLabel("Contraseña").fill(password);
-    await page.getByRole("button", { name: "Entrar", exact: true }).click();
+    await submitSignIn(page, email, password);
     await expect(page).toHaveURL("/cuenta");
 
     await page.goto("/carrito");
@@ -138,7 +140,7 @@ test.describe("carrito sin JavaScript", () => {
 
   test.fixme("Agregar suma y el contador sube tras la recarga", async ({ page }) => {
     await page.goto(ACETAMINOFEN_PATH);
-    await page.getByRole("button", { name: ADD_ACETAMINOFEN }).click();
+    await clickHydrated(page.getByRole("button", { name: ADD_ACETAMINOFEN }));
     await expect(cartLink(page, "Carrito, 1 producto")).toBeVisible();
   });
 });

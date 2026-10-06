@@ -2,7 +2,7 @@
 
 **Objetivo:** el ecommerce se puede instalar en el teléfono y el escritorio (manifest e íconos
 propios con la marca), sin service worker ni funcionamiento sin conexión.
-**Estado:** en curso · Fase actual: 2
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: sin spec (no toca el contrato con posveapi). Guías de Next en `node_modules/next/dist/docs/`:
@@ -62,10 +62,7 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
   y `statusBarStyle: "default"`. `features/site/README.md` re-verificado (`verified_at` `b0bed8d`).
 
 ## Notas para la próxima sesión
-- Fase 1 cerrada. Sigue la fase 2: el manifest usa `/icon/192`, `/icon/512` (`purpose: any`) y
-  `/icon/maskable` (`purpose: maskable`).
-- `docs-check` marca RANCIO `features/site/README.md` desde antes de este plan (`verified_at` en
-  `b1bcd59`); la fase 2, que toca ese README, lo re-verifica y sube `verified_at`.
+- Plan terminado 2026-10-06 en `feat/pwa-instalable` (b0bed8d, ee4a7c6), sin merge ni push.
 
 ## Mejoras propuestas
 - [ ] M-1 — `app/icon.tsx`: `ICONS[String(await id)]` revienta con un id desconocido; Next sólo

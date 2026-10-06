@@ -21,7 +21,7 @@ capabilities:
     entrypoint: "<StoreCard />"
     file: "features/store/components/StoreCard.tsx"
     input: "store: NearbyStore; featured?: boolean"
-    output: "Card como enlace a /tienda/{slug}: portada (cover_url) arriba si la tienda la trae, y en fila logo o iniciales, nombre, sello 'Aliado PosVen' si is_premium, city.name, distancia si no es null, 'Destacado' si featured, 'Fuera de tu zona' si outside_radius y, si la API informa is_open, 'Abierto' (con 'hasta {closes_at}') o 'Cerrado'"
+    output: "Card como enlace a /tienda/{slug}: franja de portada siempre (cover_url o relleno bg-muted) con las insignias encima, y en fila logo o iniciales, nombre, sello 'Aliado PosVen' si is_premium, city.name, distancia si no es null, 'Destacado' si featured, 'Fuera de tu zona' si outside_radius y, si la API informa is_open, 'Abierto' (con 'hasta {closes_at}') o 'Cerrado'"
     source: "props"
     rules: ["RN-STORE-01", "RN-STORE-03", "RN-STORE-06"]
   - intent: "listar todas las tiendas cercanas con paginación"
@@ -87,7 +87,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 | Cuándo se muestra el logo o cómo salen las iniciales | `StoreLogo` en `components/StoreLogo.tsx`, `logoUrl` en `components/StoreHeader.tsx`; `storeInitials` en `lib/initials.ts` | los casos de RN-STORE-01 en `__tests__/StoreCard.test.tsx` |
 | Qué se pide a la API, cuántos comercios salen o el bloque patrocinado | la llamada a `listNearbyStores`, `MAX_STORES` en `components/NearbyStores.tsx` y `components/SponsoredStore.tsx` | `__tests__/NearbyStores.test.tsx`; las claves de la consulta las fija `storesQuery` de `lib/marketplace/params.ts` |
 | Títulos, "Ver todos" o aviso sin comercios | `components/NearbyStores.tsx` | el `getByRole("heading")` de `e2e/search.spec.ts` |
-| Directorio `/tiendas`: página, orden de pintado, enlaces de paginación o aviso | `components/StoresDirectory.tsx`; metadatos en `app/tiendas/page.tsx` | `__tests__/StoresDirectory.test.tsx` y el caso de `/tiendas` de `e2e/site.spec.ts`; las rejillas de `NearbyStores` y `StoresDirectory` fijan `grid-cols-[minmax(0,1fr)]` en móvil (L-08) y `items-start`, para que una tarjeta sin portada no se estire a la altura de una con portada |
+| Directorio `/tiendas`: página, orden de pintado, enlaces de paginación o aviso | `components/StoresDirectory.tsx`; metadatos en `app/tiendas/page.tsx` | `__tests__/StoresDirectory.test.tsx` y el caso de `/tiendas` de `e2e/site.spec.ts`; las rejillas de `NearbyStores` y `StoresDirectory` fijan `grid-cols-[minmax(0,1fr)]` en móvil (L-08) y estiran las tarjetas a la altura de su fila |
 | Texto del horario o días en el JSON-LD | `formatSchedule` y `openingHoursJsonLd` en `lib/schedule.ts` | `__tests__/schedule.test.ts` |
 | Campos del JSON-LD de tienda | `storeJsonLd` en `lib/jsonld.ts` | `__tests__/jsonld.test.ts`; se serializa sólo con `serializeJsonLd` de `lib/jsonld.ts` |
 | Tarjeta de producto, paginación o `pagina` | `components/StoreProducts.tsx` | `__tests__/StoreProducts.test.tsx`; montos sólo por `formatUsd`/`formatVes` |
@@ -116,7 +116,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| Tarjeta | `components/StoreCard.tsx` | `Card` sin relleno dentro de un `<Link>` (foco en `--foreground`, `hover:shadow-raised`): portada `h-20` si trae `cover_url` y, debajo, una fila con `StoreLogo` (`size-12`), textos truncados y `StoreOpenBadge` a la derecha |
+| Tarjeta | `components/StoreCard.tsx` | `Card` sin relleno dentro de un `<Link>` (foco en `--foreground`, `hover:shadow-raised`): franja `h-20` siempre (`cover_url` o relleno `bg-muted`) con las insignias encima (`StoreOpenBadge`, "Destacado", "Fuera de tu zona", `PremiumSeal`; las `secondary` sobre `bg-card` para no fundirse con el relleno) y, debajo, `StoreLogo` (`size-12`) con nombre y ubicación truncados: todas las tarjetas miden lo mismo |
 | Sello | `components/PremiumSeal.tsx` | `span` con `Handshake` de `lucide-react` y "Aliado PosVen", en `bg-primary-soft`; lo montan `StoreCard`, `SponsoredStore`, `StoreHeader` y `OfferCard` si `store.is_premium` |
 | Logo | `components/StoreLogo.tsx` | `next/image` si la tienda trae `logo_url`; si no, un bloque con las iniciales de `storeInitials` |
 | Iniciales | `lib/initials.ts` | primeras letras de las dos primeras palabras del nombre, en mayúscula |

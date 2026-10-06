@@ -135,13 +135,8 @@ export default async function ProductPage({
       
       <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <div className="md:sticky md:top-20">
-          <ProductGallery 
-            images={[
-              product.image_url,
-              // Mocks temporales para demostrar la funcionalidad de 1 a 5 imágenes solicitada:
-              product.image_url, 
-              product.image_url
-            ].filter((url): url is string => url !== null)}
+          <ProductGallery
+            images={product.image_url === null ? [] : [product.image_url]}
             alt={product.name}
           />
         </div>

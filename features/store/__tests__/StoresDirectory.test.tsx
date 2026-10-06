@@ -70,6 +70,18 @@ describe("StoresDirectory", () => {
     expect(vi.mocked(listNearbyStores).mock.calls[1][0].page).toBe(1);
   });
 
+  it.each([
+    ["0", 1],
+    [["3", "5"], 3],
+    [["abc", "5"], 1],
+  ])("parsePage con pagina %j pide la página %i", async (pagina, esperada) => {
+    vi.mocked(listNearbyStores).mockResolvedValue(response([store("a", "A")], [], esperada, 3));
+
+    await StoresDirectory({ searchParams: Promise.resolve({ pagina }) });
+
+    expect(vi.mocked(listNearbyStores).mock.calls[0][0].page).toBe(esperada);
+  });
+
   it("sin comercios avisa y no pinta la lista", async () => {
     vi.mocked(listNearbyStores).mockResolvedValue(response([], [], 1, 0));
 

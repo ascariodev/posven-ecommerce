@@ -149,7 +149,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven/.claude · baja · sonnet
 - [x] M-14 — `/tiendas?pagina=N` fuera de rango responde 200 con "No hay más comercios": `noindex` o `notFound()`.
   posven-ecommerce · baja · sonnet
-- [ ] M-15 — Casos de `parsePage` (`abc`, `0`, repetido) y de destacados sin repetir en `StoresDirectory.test.tsx`, si faltan.
+- [x] M-15 — Casos de `parsePage` (`abc`, `0`, repetido) y de destacados sin repetir en `StoresDirectory.test.tsx`, si faltan.
   posven-ecommerce · baja · sonnet
 - [ ] M-16 — P06: ofertas en filas compactas con el precio a la derecha y un solo "Agregar" en la barra (hoy cada oferta es tarjeta alta con "Elegir" y "Agregar al carrito"). Rediseño de `OfferCard`.
   posven-ecommerce · media · sonnet

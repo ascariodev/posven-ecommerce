@@ -169,7 +169,7 @@ if (response === null) notFound();
 - Comando: `npx vitest run features/store`; el 404, con `next build` y `next start`.
 - `features/store/__tests__/StoreCard.test.tsx`: iniciales "FS", premium sin logo y no premium con `logo_url` muestran iniciales, "Destacado" con `featured`, "Fuera de tu zona" con `outside_radius` y "Abierto" o "Cerrado" según `is_open`.
 - `features/store/__tests__/SponsoredStore.test.tsx`: enlace a la tienda con "PATROCINADO" y "Ver tienda" sin botón anidado, sin `is_open` no hay estado y `outside_radius` no pinta "Fuera de tu zona".
-- `features/store/__tests__/StoresDirectory.test.tsx`: destacados primero sin repetirse, "Siguiente" y "Anterior" a `/tiendas`, `pagina` de la URL (inválida cae a 1), aviso sin comercios y `noindex` sólo fuera de rango.
+- `features/store/__tests__/StoresDirectory.test.tsx`: destacados primero sin repetirse, "Siguiente" y "Anterior" a `/tiendas`, `pagina` de la URL (inválida, `abc`, `0` o repetida con el primero inválido cae a 1; repetida válida toma la primera), aviso sin comercios y `noindex` sólo fuera de rango.
 - `features/store/__tests__/NearbyStores.test.tsx`: patrocinado sin repetirse, segundo destacado en la lista, sin patrocinado, API caída sin pintar nada y otros errores relanzados.
 - `features/store/__tests__/schedule.test.ts`: `Lun a Sáb`, `Sáb, Dom`, "Horario no informado" y los días en inglés.
 - `features/store/__tests__/jsonld.test.ts`: `image` sólo premium con logo, sin `telephone` cuando falta.

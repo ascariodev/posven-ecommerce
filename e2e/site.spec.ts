@@ -203,4 +203,32 @@ test.describe("modo oscuro", () => {
     await expect(html).toHaveClass(/\bdark\b/);
     await expect(page.getByRole("switch", { name: "Modo oscuro" })).toHaveAttribute("aria-checked", "true");
   });
+
+  test("el interruptor del pie se alcanza con Tab, muestra el contorno de foco y Espacio cambia el tema", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto("/");
+    const html = page.locator("html");
+    const toggle = page.getByRole("contentinfo").getByRole("switch", { name: "Modo oscuro" });
+    await expect(toggle).toHaveAttribute("aria-checked", "false");
+    for (let presses = 0; presses < 120 && !(await toggle.evaluate((el) => el === document.activeElement)); presses++) {
+      await page.keyboard.press("Tab");
+    }
+    await expect(toggle).toBeFocused();
+    const outlineStyle = await toggle.evaluate((el) => getComputedStyle(el).outlineStyle);
+    expect(outlineStyle).not.toBe("none");
+    const { outlineColor, inkForeground } = await toggle.evaluate((el) => {
+      const probe = document.createElement("span");
+      probe.style.color = "var(--ink-foreground)";
+      document.body.appendChild(probe);
+      const inkForeground = getComputedStyle(probe).color;
+      probe.remove();
+      return { outlineColor: getComputedStyle(el).outlineColor, inkForeground };
+    });
+    expect(outlineColor).toBe(inkForeground);
+    await page.keyboard.press("Space");
+    await expect(html).toHaveClass(/\bdark\b/);
+    await expect(toggle).toHaveAttribute("aria-checked", "true");
+  });
 });

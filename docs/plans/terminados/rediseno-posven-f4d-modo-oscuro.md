@@ -96,7 +96,7 @@ el tema (M-4 de F0) y que `/preview` deje de existir.
 ## Mejoras propuestas
 - [x] M-1 — Foco visible en los enlaces del pie: `linkClass` de `features/site/components/SiteFooter.tsx` con `outline-ink-foreground` (posven-ecommerce · baja · haiku)
 - [x] M-2 — Regla en `.claude/rules/ui.md` (ítem 5) sobre pintar una primitiva sobre `bg-ink`: clases `ink` por `className` y `!` para pisar el `dark:` de shadcn; promueve L-14 (posven-ecommerce · baja · sonnet)
-- [ ] M-3 — e2e de foco con teclado sobre el interruptor del pie (Tab y contorno visible) en `e2e/site.spec.ts` (posven-ecommerce · baja · sonnet)
+- [x] M-3 — e2e de foco con teclado sobre el interruptor del pie (Tab y contorno visible) en `e2e/site.spec.ts` (posven-ecommerce · baja · sonnet)
 - [ ] M-4 — Refrescar `features/merchants/README.md` y `features/search/README.md`, RANCIO por `e2e/site.spec.ts`, `MerchantContact.tsx` y `SiteHeader.tsx` (posven-ecommerce · baja · haiku)
 - [ ] M-5 — Fijar `workers: 1` (o aislar el simulado) en `playwright.config.ts`: `account.spec.ts` y `account-desktop.spec.ts` interfieren con más de un worker (`.claude/rules/tests.md` ítem 7) (posven-ecommerce · media · sonnet)
 - [ ] M-6 — Track por defecto de `components/ui/switch.tsx` bajo 3:1 sobre `bg-card` en claro: corregir la primitiva si aparece un tercer uso, en vez de clases por contexto (posven-ecommerce · media · sonnet)

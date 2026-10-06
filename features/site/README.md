@@ -174,7 +174,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 ## 9. Pruebas
 
 - Comando: `npx vitest run features/site lib/__tests__/sitemap.test.ts`
-- `e2e/site.spec.ts` ("modo oscuro"): con `colorScheme: "dark"` emulado `<html>` lleva `dark`, con `light` no, y la consola no avisa de hidratación; el interruptor del pie lo activa y la elección sobrevive a la recarga.
+- `e2e/site.spec.ts` ("modo oscuro"): con `colorScheme: "dark"` emulado `<html>` lleva `dark`, con `light` no, y la consola no avisa de hidratación; el interruptor del pie lo activa y la elección sobrevive a la recarga; con Tab se alcanza el interruptor del pie, su contorno de foco es visible (color `--ink-foreground`) y Espacio cambia el tema.
 - `features/site/__tests__/ThemeSwitch.test.tsx`: `aria-checked` según el tema resuelto y `setTheme` con `dark` o `light`, y (L-10) con `renderToString` el HTML previo a hidratar trae `aria-checked="false"` aunque el tema resuelto sea `dark`; simula `next-themes`.
 - `e2e/site.spec.ts` ("barra inferior en móvil"): los cinco destinos (sin Tiendas), el activo, Favoritos y Cuenta hacia `/entrar` sin sesión, carrito y cuenta ocultos en la cabecera, y que logo y ubicación no envuelvan en 360 y 320 px.
 - `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, cada botón sólo con su dato, y el título, el mensaje y la banda de soporte. `lib/__tests__/sitemap.test.ts` cubre las entradas `/tiendas`, `/ayuda` y `/vende` del grupo `static`. `e2e/site.spec.ts` comprueba `/ayuda` (canónica, filtro de preguntas, enlace del pie) y `/vende` (canónica, secciones y CTA con destino), y el 308 de `/comercios`.

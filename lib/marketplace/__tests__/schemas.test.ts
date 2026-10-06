@@ -46,6 +46,7 @@ import {
   searchResponseSchema,
   sitemapResponseSchema,
   storeResponseSchema,
+  storeSchema,
   storesResponseSchema,
   storeSummarySchema,
   nearbyProductsResponseSchema,
@@ -666,11 +667,22 @@ describe("is_open y closes_at", () => {
     expect(offerSchema.safeParse({ ...offer, is_open: "1" }).success).toBe(false);
   });
 
+  it("son opcionales en la tienda y se rechaza una hora mal formada", async () => {
+    const response = await getStore({ slug: "farmacia-central-valencia", page: 1 });
+    const data = storeResponseSchema.parse(response).data;
+    const bare = { ...data, is_open: undefined, closes_at: undefined };
+    expect(storeSchema.safeParse(bare).success).toBe(true);
+    expect(storeSchema.safeParse({ ...bare, is_open: true, closes_at: "20:00" }).success).toBe(true);
+    expect(storeSchema.safeParse({ ...bare, closes_at: "8pm" }).success).toBe(false);
+  });
+
   it("el simulado los trae en búsqueda, ficha y tiendas", async () => {
     const search = await searchProducts({ ...noFilters, q: "acetaminofen" });
     expect(typeof search.featured[0].offer.is_open).toBe("boolean");
     const stores = await listNearbyStores({ geo: null, radiusKm: null, page: 1 });
     expect(stores.data.every((store) => typeof store.is_open === "boolean")).toBe(true);
+    const store = await getStore({ slug: "farmacia-central-valencia", page: 1 });
+    expect(typeof store?.data.is_open).toBe("boolean");
     const page = productResponseSchema.parse(await getProduct("acetaminofen-500-mg-20-tabletas"));
     expect("offers" in page && page.offers.every((entry) => typeof entry.is_open === "boolean")).toBe(true);
   });

@@ -436,7 +436,7 @@ export async function getStore(p: { slug: string; page: number }): Promise<Store
   });
 
   return {
-    data: { ...store.summary, ...MOCK_STORE_DETAILS[p.slug] },
+    data: { ...store.summary, ...MOCK_STORE_DETAILS[p.slug], ...storeStatus(store) },
     products: pageOf(products, p.page, STORE_PRODUCTS_PER_PAGE),
     meta: { page: p.page, per_page: STORE_PRODUCTS_PER_PAGE, total: products.length },
     rate: MOCK_RATE,

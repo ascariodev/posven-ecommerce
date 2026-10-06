@@ -176,6 +176,7 @@ export const storeSchema = storeSummarySchema.extend({
   company_name: z.string(),
   cover_url: z.url().nullable(),
   schedule: z.array(scheduleEntrySchema),
+  ...openStatusShape,
 });
 export type Store = z.infer<typeof storeSchema>;
 

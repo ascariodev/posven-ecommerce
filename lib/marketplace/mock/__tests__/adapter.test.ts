@@ -145,6 +145,14 @@ describe("horario y orden simulados", () => {
     expect(shop).toMatchObject({ is_open: false, closes_at: null });
   });
 
+  it("la tienda lleva is_open y closes_at calculados del horario", async () => {
+    vi.useFakeTimers({ now: SUNDAY_10_CARACAS });
+    const open = await getStore({ slug: "farmacia-central-valencia", page: 1 });
+    expect(open?.data).toMatchObject({ is_open: true, closes_at: "13:00" });
+    const closed = await getStore({ slug: "ferreteria-el-tornillo", page: 1 });
+    expect(closed?.data).toMatchObject({ is_open: false, closes_at: null });
+  });
+
   it("las ofertas de la ficha llevan is_open y closes_at", async () => {
     vi.useFakeTimers({ now: MONDAY_6_CARACAS });
     const response = await getProduct("acetaminofen-500-mg-20-tabletas");

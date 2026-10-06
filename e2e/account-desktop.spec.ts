@@ -10,7 +10,11 @@ const ACETAMINOFEN_PATH = "/p/acetaminofen-500-mg-20-tabletas";
 
 test("en escritorio, Compras recientes es una tabla con la compra y Tu última compra enlaza al seguimiento", async ({ page }) => {
   await page.goto(ACETAMINOFEN_PATH);
-  await clickHydrated(page.getByRole("button", { name: /^Agregar (al carrito|otro): .* de Farmacia Central$/ }));
+  await clickHydrated(
+    page
+      .locator("[data-purchase-bar]")
+      .getByRole("button", { name: /^Agregar (al carrito|otro) de la tienda elegida: .* de Farmacia Central$/ }),
+  );
   await expect(page.getByText("Agregado").first()).toBeVisible();
 
   await page.goto("/registro");

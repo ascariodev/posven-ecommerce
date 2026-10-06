@@ -27,7 +27,7 @@ test("una búsqueda sin resultados ofrece el enlace a /vende", async ({ page }) 
   await page.getByRole("button", { name: "Buscar", exact: true }).click();
 
   await expect(page.getByRole("heading", { name: "No encontramos resultados para «zzzz»." })).toBeVisible();
-  await expect(page.locator('a[href="/vende"]').first()).toBeVisible();
+  await expect(page.getByRole("main").getByRole("link", { name: "¿Tienes un comercio? Aparece en posven" })).toBeVisible();
 });
 
 test("elegir ciudad la guarda y la búsqueda ofrece sólo la ciudad o todo el país", async ({ page }) => {

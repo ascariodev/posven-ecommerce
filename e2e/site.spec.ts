@@ -189,4 +189,18 @@ test.describe("modo oscuro", () => {
       expect(warnings).toEqual([]);
     });
   }
+
+  test("el interruptor del pie activa dark y la elección sobrevive a la recarga", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto("/");
+    const html = page.locator("html");
+    const toggle = page.getByRole("switch", { name: "Modo oscuro" });
+    await expect(toggle).toHaveAttribute("aria-checked", "false");
+    await toggle.click();
+    await expect(html).toHaveClass(/\bdark\b/);
+    await expect(toggle).toHaveAttribute("aria-checked", "true");
+    await page.reload();
+    await expect(html).toHaveClass(/\bdark\b/);
+    await expect(page.getByRole("switch", { name: "Modo oscuro" })).toHaveAttribute("aria-checked", "true");
+  });
 });

@@ -2,10 +2,10 @@
 module: "site"
 path: "features/site"
 type: "feature"
-exports: ["SiteHeader", "MobileNav", "MobileNavSkeleton", "MobileNavLinks", "SiteFooter", "FooterCategories", "footerYear", "MerchantContact", "merchantContactHref", "ThemeProvider", "LegalDocument", "LEGAL_DRAFT", "LEGAL_MARKERS", "LEGAL_PATHS", "legalMetadata", "legalSitemapPaths", "legalText", "termsDocument", "privacyDocument"]
-depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "features/search/lib/query.ts", "features/account/components/AccountMenu.tsx", "features/account/lib/returnPath.ts", "features/account/server/session.ts", "features/cart/components/CartLink.tsx", "features/cart/lib/flag.ts", "features/location/components/LocationBar.tsx", "features/search/components/HeaderSearchSlot.tsx", "features/search/components/SearchPill.tsx", "components/ui/button.tsx", "lib/utils.ts", "next-themes"]
+exports: ["SiteHeader", "MobileNav", "MobileNavSkeleton", "MobileNavLinks", "SiteFooter", "FooterCategories", "footerYear", "MerchantContact", "merchantContactHref", "ThemeProvider", "ThemeSwitch", "LegalDocument", "LEGAL_DRAFT", "LEGAL_MARKERS", "LEGAL_PATHS", "legalMetadata", "legalSitemapPaths", "legalText", "termsDocument", "privacyDocument"]
+depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "features/search/lib/query.ts", "features/account/components/AccountMenu.tsx", "features/account/lib/returnPath.ts", "features/account/server/session.ts", "features/cart/components/CartLink.tsx", "features/cart/lib/flag.ts", "features/location/components/LocationBar.tsx", "features/search/components/HeaderSearchSlot.tsx", "features/search/components/SearchPill.tsx", "components/ui/button.tsx", "components/ui/switch.tsx", "lib/utils.ts", "next-themes"]
 tests: "features/site/__tests__/*.test.tsx"
-verified_against: ["features/site/components/SiteHeader.tsx", "features/site/components/MobileNav.tsx", "features/site/components/MobileNavLinks.tsx", "e2e/site.spec.ts", "features/site/components/SiteFooter.tsx", "features/site/lib/year.ts", "features/site/__tests__/SiteFooter.test.tsx", "features/site/components/MerchantContact.tsx", "features/site/__tests__/MerchantContact.test.tsx", "app/ayuda/page.tsx", "app/vende/page.tsx", "features/merchants/components/MerchantsLanding.tsx", "features/help/components/HelpCenter.tsx", "lib/sitemap.ts", "next.config.ts", "app/layout.tsx", "lib/site.ts", "features/search/lib/query.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "features/site/lib/legal.ts", "features/site/__tests__/legal.test.tsx", "features/site/components/LegalDocument.tsx", "features/site/lib/terms.ts", "app/terminos/page.tsx", "features/site/lib/privacy.ts", "app/privacidad/page.tsx", "features/account/server/session.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/location/lib/cookie.ts", "features/location/server/actions.ts", "app/api/events/route.ts", "features/events/lib/handle.ts", "app/globals.css", "components/ui/sonner.tsx", "features/site/components/ThemeProvider.tsx", "docs/specs/2026-10-03-rediseno-posven-design.md"]
+verified_against: ["features/site/components/SiteHeader.tsx", "features/site/components/MobileNav.tsx", "features/site/components/MobileNavLinks.tsx", "e2e/site.spec.ts", "features/site/components/SiteFooter.tsx", "features/site/lib/year.ts", "features/site/__tests__/SiteFooter.test.tsx", "features/site/components/MerchantContact.tsx", "features/site/__tests__/MerchantContact.test.tsx", "app/ayuda/page.tsx", "app/vende/page.tsx", "features/merchants/components/MerchantsLanding.tsx", "features/help/components/HelpCenter.tsx", "lib/sitemap.ts", "next.config.ts", "app/layout.tsx", "lib/site.ts", "features/search/lib/query.ts", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "features/site/lib/legal.ts", "features/site/__tests__/legal.test.tsx", "features/site/components/LegalDocument.tsx", "features/site/lib/terms.ts", "app/terminos/page.tsx", "features/site/lib/privacy.ts", "app/privacidad/page.tsx", "features/account/server/session.ts", "features/cart/server/cookie.ts", "features/cart/server/cart.ts", "features/location/lib/cookie.ts", "features/location/server/actions.ts", "app/api/events/route.ts", "features/events/lib/handle.ts", "app/globals.css", "components/ui/sonner.tsx", "features/site/components/ThemeProvider.tsx", "features/site/components/ThemeSwitch.tsx", "features/site/__tests__/ThemeSwitch.test.tsx", "docs/specs/2026-10-03-rediseno-posven-design.md"]
 capabilities:
   - intent: "mostrar la cabecera del sitio con la ubicación visible"
     intent_aliases: ["cabecera", "header", "barra superior", "ubicacion visible", "buscar cerca de"]
@@ -28,7 +28,7 @@ capabilities:
     entrypoint: "<SiteFooter />"
     file: "features/site/components/SiteFooter.tsx"
     input: "sin props; se monta en app/layout.tsx después de <main>"
-    output: "footer con columnas Marca (SITE_NAME y SITE_DESCRIPTION), Categorías (hasta 8 raíces de listCategories() hacia /buscar?categoria=<slug>), Ayuda (/ayuda), Comercios (/vende), Legal (/terminos y /privacidad) y la línea '© <año> SITE_NAME'; sin API o sin raíces no pinta la columna de categorías"
+    output: "footer con columnas Marca (SITE_NAME y SITE_DESCRIPTION), Categorías (hasta 8 raíces de listCategories() hacia /buscar?categoria=<slug>), Ayuda (/ayuda), Comercios (/vende), Legal (/terminos y /privacidad) la línea '© <año> SITE_NAME' y el interruptor ThemeSwitch; sin API o sin raíces no pinta la columna de categorías"
     source: "listCategories() de lib/marketplace/client.ts y footerYear()"
     rules: ["RN-SITE-01", "RN-SITE-02"]
   - intent: "ofrecer contacto de soporte al comprador en la ayuda"
@@ -84,6 +84,7 @@ que enlaza.
 | Qué muestra la cabecera y cómo se acomoda en móvil | `SiteHeader` en `SiteHeader.tsx` | `e2e/search.spec.ts` y `e2e/cart.spec.ts` buscan el botón de ubicación, "Buscar", el carrito y la cuenta por nombre accesible |
 | Destinos, orden o contador de la barra inferior | `tabs` en `MobileNavLinks.tsx` y `MobileNav` en `MobileNav.tsx` | `e2e/cart.spec.ts` y `e2e/checkout.spec.ts` buscan el carrito por nombre accesible dentro de la barra; `e2e/account.spec.ts` la cuenta |
 | Columnas o enlaces del pie | `SiteFooter` en `SiteFooter.tsx` | los enlaces que busca `SiteFooter.test.tsx` |
+| Interruptor de modo oscuro | `ThemeSwitch` en `ThemeSwitch.tsx` | `ThemeSwitch.test.tsx` y `e2e/site.spec.ts` ("modo oscuro") |
 | Cuántas categorías se muestran | `MAX_FOOTER_CATEGORIES` en `SiteFooter.tsx` | RN-SITE-01 y su prueba |
 | Botones o textos de contacto de `/vende` y de la banda de `/ayuda` | `MerchantContact` y `MESSAGES` en `MerchantContact.tsx` | RN-SITE-03 y su prueba |
 | Metadatos de `/ayuda` o su banda | `app/ayuda/page.tsx` | la canónica sigue en `/ayuda`; el contenido vive en `features/help` |
@@ -105,6 +106,7 @@ que enlaza.
 - `merchantContactHref(whatsapp: string | null, email: string | null, purpose?: "merchant" | "support"): string | null`, `features/site/components/MerchantContact.tsx`: destino de contacto con el mensaje del propósito (`merchant` por defecto, el alta de comercio; `support`, la ayuda al comprador): `https://wa.me/<dígitos>?text=...`, si no `mailto:<correo>`, y `null` sin ninguno; lo usan los CTA de `/vende`.
 - `MerchantContact({ whatsapp, email }: { whatsapp: string | null; email: string | null }): React.JSX.Element | null`, `features/site/components/MerchantContact.tsx`: banda de soporte de `/ayuda`; `null` si ambos son `null`.
 - `ThemeProvider({ children }: { children: React.ReactNode }): React.JSX.Element`, `features/site/components/ThemeProvider.tsx` (`"use client"`): `next-themes` con `attribute="class"`, `defaultTheme="system"`, `enableSystem` y `disableTransitionOnChange`; `app/layout.tsx` lo monta alrededor del contenido del `body`.
+- `ThemeSwitch({ className, switchClassName }: { className?: string; switchClassName?: string }): React.JSX.Element`, `features/site/components/ThemeSwitch.tsx` (`"use client"`): fila con ícono `Moon`, "Modo oscuro" y `Switch` (`role="switch"`); `aria-checked` sale de `resolvedTheme === "dark"` sólo tras hidratar y al cambiarlo fija `dark` o `light`. `switchClassName` son las clases del `Switch` para pintarlo sobre un fondo como `bg-ink` (borde, track, thumb y foco con tokens `ink`); `SiteFooter` se las pasa. Lo monta `SiteFooter`.
 - `LegalDocument({ document }: { document: LegalDocumentContent }): React.JSX.Element`, `features/site/components/LegalDocument.tsx`: prosa legal con aviso de borrador.
 - `LEGAL_DRAFT: boolean`, `LEGAL_MARKERS: readonly string[]` y `LEGAL_PATHS: readonly string[]`, `features/site/lib/legal.ts`: interruptor, los cinco marcadores permitidos y las rutas legales registradas.
 - `legalMetadata({ title, description, path }, draft?): Metadata`, `legalSitemapPaths(draft?): readonly string[]` y `legalText(document): string`, `features/site/lib/legal.ts`.
@@ -124,6 +126,7 @@ que enlaza.
 | `termsDocument` | `features/site/lib/terms.ts` | secciones de los términos con `SITE_NAME` y los marcadores |
 | `privacyDocument` | `features/site/lib/privacy.ts` | ocho secciones de privacidad con `SITE_NAME` y los marcadores |
 | `ThemeProvider` | `features/site/components/ThemeProvider.tsx` | pone la clase `dark` en `<html>` según la preferencia guardada o, sin ella, `prefers-color-scheme` |
+| `ThemeSwitch` | `features/site/components/ThemeSwitch.tsx` | interruptor de dos estados sobre `useTheme()`; pintado tras hidratar (`useSyncExternalStore`, L-10) para no desajustar con el HTML prerenderizado; la prueba de L-10 renderiza con `renderToString` y exige `aria-checked="false"` aunque el tema resuelto sea `dark` |
 | `FooterColumn` | `features/site/components/SiteFooter.tsx` | título `h2` y lista dentro de un `<nav aria-label>` propio |
 
 ## 6. Dependencias
@@ -133,7 +136,7 @@ que enlaza.
 - `next` (tipo `Metadata`) en `legal.ts`; `next-themes` en `ThemeProvider`.
 - `features/account/lib/returnPath.ts` (`loginHref`), `features/account/server/session.ts` (`accountContext`), `features/cart/components/CartLink.tsx` (`cartCount`) y `features/cart/lib/flag.ts` (`cartEnabled`) en `MobileNav`. `cartCount` lee `getSessionCart()` de `features/cart/server/cart.ts` sin argumento (`deliveryKey` vacío, la clave de `cache` sin entrega elegida) y sólo usa `line_count`; `lucide-react` y `next/navigation` (`usePathname`) en `MobileNavLinks`.
 - `features/location/components/LocationBar.tsx`, `features/search/components/HeaderSearchSlot.tsx` y `SearchPill.tsx`, `features/cart/components/CartLink.tsx` y `features/account/components/AccountMenu.tsx` en `SiteHeader`.
-- `components/ui/button.tsx` (`buttonVariants`) y `lib/utils.ts` (`cn`).
+- `components/ui/button.tsx` (`buttonVariants`), `components/ui/switch.tsx` (`Switch`) y `lib/utils.ts` (`cn`).
 - `next/link` y `next/cache` (`cacheLife`). `app/ayuda/page.tsx` usa `features/help/components/HelpCenter.tsx`.  `app/vende/page.tsx` usa `features/merchants/components/MerchantsLanding.tsx`, que importa `merchantContactHref` de este módulo.
 
 ## 7. Ejemplo de uso
@@ -171,7 +174,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 ## 9. Pruebas
 
 - Comando: `npx vitest run features/site lib/__tests__/sitemap.test.ts`
-- `e2e/site.spec.ts` ("modo oscuro"): con `colorScheme: "dark"` emulado `<html>` lleva `dark`, con `light` no, y la consola no avisa de hidratación.
+- `e2e/site.spec.ts` ("modo oscuro"): con `colorScheme: "dark"` emulado `<html>` lleva `dark`, con `light` no, y la consola no avisa de hidratación; el interruptor del pie lo activa y la elección sobrevive a la recarga.
+- `features/site/__tests__/ThemeSwitch.test.tsx`: `aria-checked` según el tema resuelto y `setTheme` con `dark` o `light`, y (L-10) con `renderToString` el HTML previo a hidratar trae `aria-checked="false"` aunque el tema resuelto sea `dark`; simula `next-themes`.
 - `e2e/site.spec.ts` ("barra inferior en móvil"): los cinco destinos (sin Tiendas), el activo, Favoritos y Cuenta hacia `/entrar` sin sesión, carrito y cuenta ocultos en la cabecera, y que logo y ubicación no envuelvan en 360 y 320 px.
 - `features/site/__tests__/MerchantContact.test.tsx`: sin variables no pinta, cada botón sólo con su dato, y el título, el mensaje y la banda de soporte. `lib/__tests__/sitemap.test.ts` cubre las entradas `/tiendas`, `/ayuda` y `/vende` del grupo `static`. `e2e/site.spec.ts` comprueba `/ayuda` (canónica, filtro de preguntas, enlace del pie) y `/vende` (canónica, secciones y CTA con destino), y el 308 de `/comercios`.
 - `features/site/__tests__/legal.test.tsx`: marcadores permitidos, guarda sin borrador, metadatos y sitemap según el interruptor, el aviso de `LegalDocument` y las cuatro cookies de privacidad.

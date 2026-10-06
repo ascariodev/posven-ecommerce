@@ -3,7 +3,7 @@
 **Objetivo:** que el usuario pueda pasar a modo oscuro con un interruptor en el menú de cuenta y en
 el pie, que sin preferencia guardada el sitio siga al sistema sin parpadeo, que el `Toaster` siga
 el tema (M-4 de F0) y que `/preview` deje de existir.
-**Estado:** en curso · Fase actual: 2
+**Estado:** en curso · Fase actual: 3
 
 ## Contexto mínimo
 - Spec: `docs/specs/2026-10-03-rediseno-posven-design.md` §2 (fila "Modo oscuro" y "Prueba
@@ -56,7 +56,7 @@ el tema (M-4 de F0) y que `/preview` deje de existir.
   tiene, sin avisos de hidratación en consola, y `e2e/cart.spec.ts` (toasts) en verde.
 - **Commit:** `feat(site): tema claro y oscuro con next-themes`
 
-### [ ] Fase 2 — Interruptor de modo oscuro en el pie
+### [x] Fase 2 — Interruptor de modo oscuro en el pie
 - **Repo:** posven-ecommerce
 - **Alcance:** primitiva `Switch` de shadcn (estilo `radix-luma`, con el ajuste de import de
   `cn` que pide `ui.md`) y su alta en la lista de primitivas de `ui.md`; `ThemeSwitch` cliente
@@ -88,6 +88,12 @@ el tema (M-4 de F0) y que `/preview` deje de existir.
   no inició sesión. Elegido por el usuario.
 
 ## Notas para la próxima sesión
-- Fase 1 cerrada. Sigue la fase 2; `ui.md` todavía no lista `Switch`.
+- Fases 1 y 2 cerradas. Sigue la fase 3: si el fondo de la cuenta no es el de por defecto, pasar
+  su propio `switchClassName` (L-14). `features/account/README.md` está RANCIO por
+  `app/layout.tsx` (fase 1) y otros; refrescarlo en la fase 3.
 
 ## Mejoras propuestas
+- [ ] M-1 — Foco visible en los enlaces del pie: `linkClass` de `features/site/components/SiteFooter.tsx` con `outline-ink-foreground` (posven-ecommerce · baja · haiku)
+- [ ] M-2 — Regla en `.claude/rules/ui.md` (ítem 5) sobre pintar una primitiva sobre `bg-ink`: clases `ink` por `className` y `!` para pisar el `dark:` de shadcn; promueve L-14 (posven-ecommerce · baja · sonnet)
+- [ ] M-3 — e2e de foco con teclado sobre el interruptor del pie (Tab y contorno visible) en `e2e/site.spec.ts` (posven-ecommerce · baja · sonnet)
+- [ ] M-4 — Refrescar `features/merchants/README.md` y `features/search/README.md`, RANCIO por `e2e/site.spec.ts`, `MerchantContact.tsx` y `SiteHeader.tsx` (posven-ecommerce · baja · haiku)

@@ -7,13 +7,13 @@ paths:
 
 Rige al editar `components/`. Las primitivas viven en `components/ui/`, en estilo shadcn
 `radix-luma`: `Badge`, `Button`, `Card`, `DropdownMenu`, `Input`, `RadioGroup`, `Select`, `Sheet`,
-`Skeleton`, `Toaster` (`sonner`), `Toggle` y `ToggleGroup`. Tokens en `app/globals.css`. Una
+`Skeleton`, `Switch`, `Toaster` (`sonner`), `Toggle` y `ToggleGroup`. Tokens en `app/globals.css`. Una
 primitiva nueva se agrega con `shadcn add` y se ajusta a los tokens y a las reglas de abajo; el CLI
 escribe `import { cn } from "cn"`, que se corrige a `@/lib/utils`.
 
 1. **Sin estado, sin `'use client'`.** Las primitivas que no lo necesitan no llevan `'use client'`
    ni hooks, para que las usen por igual Server y Client Components. Las interactivas (`Sheet`,
-   `Select`, `ToggleGroup`, `DropdownMenu`, `RadioGroup` y `Toaster`) traen el suyo y se importan
+   `Select`, `ToggleGroup`, `DropdownMenu`, `RadioGroup`, `Switch` y `Toaster`) traen el suyo y se importan
    desde Server o Client Components. `Toggle` no lo lleva para que `toggleVariants` sirva en el
    servidor (Radix ya marca su primitiva).
 2. **Props nativas más variantes.** Cada primitiva extiende las props de su elemento, reparte

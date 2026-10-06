@@ -6,8 +6,12 @@ import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
 import type { CategoryNode } from "@/lib/marketplace/schemas";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import { footerYear } from "../lib/year";
+import { ThemeSwitch } from "./ThemeSwitch";
 
 const MAX_FOOTER_CATEGORIES = 8;
+
+const onInkSwitchClass =
+  "focus-visible:border-ink-foreground focus-visible:outline-ink-foreground data-checked:border-ink-foreground data-checked:bg-ink-foreground data-unchecked:border-ink-foreground data-unchecked:bg-transparent data-checked:[&>span]:bg-ink! data-unchecked:[&>span]:bg-ink-foreground!";
 
 const linkClass =
   "inline-flex min-h-11 items-center opacity-75 hover:opacity-100 hover:underline sm:min-h-0";
@@ -99,9 +103,12 @@ export async function SiteFooter() {
             </li>
           </FooterColumn>
         </div>
-        <p className="mt-10 border-t border-ink-foreground/15 pt-4 text-sm opacity-75">
-          © {year} {SITE_NAME}
-        </p>
+        <div className="mt-10 flex flex-col gap-2 border-t border-ink-foreground/15 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm opacity-75">
+            © {year} {SITE_NAME}
+          </p>
+          <ThemeSwitch className="sm:w-52" switchClassName={onInkSwitchClass} />
+        </div>
       </div>
     </footer>
   );

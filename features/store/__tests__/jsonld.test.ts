@@ -27,8 +27,12 @@ describe("storeJsonLd", () => {
     expect(storeJsonLd(store())).toMatchObject({ image: "https://cdn.example.com/logo.png" });
   });
 
-  it("una tienda sin premium no trae image aunque tenga logo_url", () => {
-    expect(storeJsonLd(store({ is_premium: false }))).not.toHaveProperty("image");
+  it("una tienda sin premium con logo también trae image", () => {
+    expect(storeJsonLd(store({ is_premium: false }))).toMatchObject({ image: "https://cdn.example.com/logo.png" });
+  });
+
+  it("sin logo no trae image", () => {
+    expect(storeJsonLd(store({ logo_url: null }))).not.toHaveProperty("image");
   });
 
   it("sin teléfono no trae telephone", () => {

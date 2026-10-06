@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { formatDistance } from "@/lib/format";
 import type { NearbyStore } from "@/lib/marketplace/schemas";
+import { PremiumSeal } from "./PremiumSeal";
 import { StoreLogo } from "./StoreLogo";
 
 export function StoreOpenBadge({ store }: { store: NearbyStore }) {
@@ -17,7 +18,7 @@ export function StoreOpenBadge({ store }: { store: NearbyStore }) {
 }
 
 export function StoreCard({ store, featured }: { store: NearbyStore; featured?: boolean }) {
-  const coverUrl = store.is_premium ? (store.cover_url ?? null) : null;
+  const coverUrl = store.cover_url ?? null;
   return (
     <Link
       href={`/tienda/${store.slug}`}
@@ -37,6 +38,7 @@ export function StoreCard({ store, featured }: { store: NearbyStore; featured?: 
               </div>
             )}
             <h3 className="truncate font-semibold text-foreground">{store.name}</h3>
+            {store.is_premium && <PremiumSeal />}
             <p className="truncate text-sm text-muted-foreground">
               {store.city.name}
               {store.distance_km !== null && ` · ${formatDistance(store.distance_km)}`}

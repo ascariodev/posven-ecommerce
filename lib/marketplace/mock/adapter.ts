@@ -293,7 +293,7 @@ export async function listNearbyStores(p: {
     ...store.summary,
     distance_km: scope.kind === "none" ? null : store.distance_km,
     outside_radius: false,
-    cover_url: store.summary.is_premium ? (MOCK_STORE_DETAILS[store.summary.slug]?.cover_url ?? null) : null,
+    cover_url: MOCK_STORE_DETAILS[store.summary.slug]?.cover_url ?? null,
     ...storeStatus(store),
   }));
 

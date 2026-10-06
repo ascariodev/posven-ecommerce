@@ -38,21 +38,23 @@ describe("StoreCard", () => {
     expect(screen.queryByRole("img")).toBeNull();
   });
 
-  it("no premium con logo_url muestra las iniciales y no el logo", () => {
-    const { container } = render(
+  it("con logo_url muestra el logo, premium o no", () => {
+    const { container, rerender } = render(
       <StoreCard store={store({ is_premium: false, logo_url: "https://cdn.example.com/logo.png" })} />,
     );
-    expect(screen.getByText("FS")).toBeTruthy();
-    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("img")?.getAttribute("src")).toContain("logo.png");
+    expect(screen.queryByText("FS")).toBeNull();
+    rerender(<StoreCard store={store({ is_premium: true, logo_url: "https://cdn.example.com/logo.png" })} />);
+    expect(container.querySelector("img")?.getAttribute("src")).toContain("logo.png");
   });
 
-  it("muestra la portada sólo si la tienda es premium y la trae", () => {
+  it("muestra la portada si la tienda la trae, premium o no", () => {
     const cover = "https://cdn.example.com/portada.png";
-    const { container, rerender } = render(<StoreCard store={store({ is_premium: true, cover_url: cover })} />);
+    const { container, rerender } = render(<StoreCard store={store({ is_premium: false, cover_url: cover })} />);
     expect(container.querySelector("img")?.getAttribute("src")).toContain("portada.png");
-    rerender(<StoreCard store={store({ is_premium: false, cover_url: cover })} />);
-    expect(container.querySelector("img")).toBeNull();
-    rerender(<StoreCard store={store({ is_premium: true, cover_url: null })} />);
+    rerender(<StoreCard store={store({ is_premium: true, cover_url: cover })} />);
+    expect(container.querySelector("img")?.getAttribute("src")).toContain("portada.png");
+    rerender(<StoreCard store={store({ is_premium: false, cover_url: null })} />);
     expect(container.querySelector("img")).toBeNull();
   });
 
@@ -77,5 +79,13 @@ describe("StoreCard", () => {
     rerender(<StoreCard store={store()} />);
     expect(screen.queryByText("Cerrado")).toBeNull();
     expect(screen.queryByText(/Abierto/)).toBeNull();
+  });
+
+  it("el sello Aliado PosVen sale sólo si la tienda es premium, también con Destacado", () => {
+    const { rerender } = render(<StoreCard store={store({ is_premium: false })} featured />);
+    expect(screen.queryByText("Aliado PosVen")).toBeNull();
+    rerender(<StoreCard store={store({ is_premium: true })} featured />);
+    expect(screen.getByText("Aliado PosVen")).toBeTruthy();
+    expect(screen.getByText("Destacado")).toBeTruthy();
   });
 });

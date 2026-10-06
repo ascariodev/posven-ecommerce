@@ -48,4 +48,11 @@ describe("SponsoredStore", () => {
     render(<SponsoredStore store={store({ outside_radius: true })} />);
     expect(screen.queryByText("Fuera de tu zona")).toBeNull();
   });
+
+  it("el sello Aliado PosVen sale sólo si la tienda es premium", () => {
+    const { rerender } = render(<SponsoredStore store={store({ is_premium: false })} />);
+    expect(screen.queryByText("Aliado PosVen")).toBeNull();
+    rerender(<SponsoredStore store={store({ is_premium: true })} />);
+    expect(screen.getByText("Aliado PosVen")).toBeTruthy();
+  });
 });

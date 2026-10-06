@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     description: `${store.name} en ${store.city.name}: dirección, horario, contacto y productos.`,
     alternates: { canonical: `/tienda/${store.slug}` },
   };
-  if (store.is_premium && store.logo_url !== null) metadata.openGraph = { images: [store.logo_url] };
+  if (store.logo_url !== null) metadata.openGraph = { images: [store.logo_url] };
   return metadata;
 }
 

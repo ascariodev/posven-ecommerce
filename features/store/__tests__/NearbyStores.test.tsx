@@ -73,6 +73,20 @@ describe("NearbyStores", () => {
     expect(within(screen.getAllByRole("link")[2]).getByText("Destacado")).toBeTruthy();
   });
 
+  it("el segundo destacado premium lleva el sello Aliado PosVen junto a Destacado", async () => {
+    const first = store("a", "Tienda A", { is_premium: true });
+    const second = store("b", "Tienda B", { is_premium: true });
+    const other = store("c", "Tienda C");
+    vi.mocked(listNearbyStores).mockResolvedValue(response([other, second], [first, second]));
+
+    render(await NearbyStores());
+
+    const links = screen.getAllByRole("link");
+    expect(within(links[2]).getByText("Destacado")).toBeTruthy();
+    expect(within(links[2]).getByText("Aliado PosVen")).toBeTruthy();
+    expect(within(links[3]).queryByText("Aliado PosVen")).toBeNull();
+  });
+
   it("sin destacados no pinta el bloque patrocinado", async () => {
     vi.mocked(listNearbyStores).mockResolvedValue(response([store("c", "Tienda C")], []));
 

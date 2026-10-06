@@ -31,7 +31,7 @@ describe("adaptador simulado", () => {
     for (const store of response.data) expect(store.city.slug).toBe("caracas");
   });
 
-  it("cover_url llega sólo en tiendas premium con portada y es nulo en el resto", async () => {
+  it("cover_url llega en toda tienda con portada y es nulo en el resto", async () => {
     const response = await listNearbyStores({ geo: null, radiusKm: null, page: 1 });
     const bySlug = new Map(response.data.map((store) => [store.slug, store]));
 

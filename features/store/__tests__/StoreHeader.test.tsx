@@ -36,18 +36,21 @@ afterEach(() => {
 });
 
 describe("StoreHeader", () => {
-  it("muestra la portada si la tienda es premium y la trae", () => {
-    const { container } = render(<StoreHeader store={store({ is_premium: true, cover_url: COVER })} />);
+  it("muestra la portada si la tienda la trae, premium o no", () => {
+    const { container, rerender } = render(<StoreHeader store={store({ is_premium: true, cover_url: COVER })} />);
+    expect(coverImages(container)).toHaveLength(1);
+    rerender(<StoreHeader store={store({ is_premium: false, cover_url: COVER })} />);
     expect(coverImages(container)).toHaveLength(1);
   });
 
-  it("no muestra la portada si la tienda no es premium aunque la traiga", () => {
-    const { container } = render(<StoreHeader store={store({ is_premium: false, cover_url: COVER })} />);
-    expect(coverImages(container)).toHaveLength(0);
-    expect(container.querySelector("img")).toBeNull();
+  it("muestra el logo si la tienda lo trae aunque no sea premium", () => {
+    const { container } = render(
+      <StoreHeader store={store({ is_premium: false, logo_url: "https://cdn.example.com/logo.png" })} />,
+    );
+    expect(container.querySelector("img")?.getAttribute("src")).toContain("logo.png");
   });
 
-  it("no muestra la portada si la tienda es premium y no la trae", () => {
+  it("no muestra la portada si la tienda no la trae", () => {
     const { container } = render(<StoreHeader store={store({ is_premium: true, cover_url: null })} />);
     expect(container.querySelector("img")).toBeNull();
   });
@@ -77,5 +80,12 @@ describe("StoreHeader", () => {
       </StoreHeader>,
     );
     expect(screen.getByRole("button", { name: "Guardar favorito" })).toBeTruthy();
+  });
+
+  it("el sello Aliado PosVen sale sólo si la tienda es premium", () => {
+    const { rerender } = render(<StoreHeader store={store({ is_premium: false })} />);
+    expect(screen.queryByText("Aliado PosVen")).toBeNull();
+    rerender(<StoreHeader store={store({ is_premium: true })} />);
+    expect(screen.getByText("Aliado PosVen")).toBeTruthy();
   });
 });

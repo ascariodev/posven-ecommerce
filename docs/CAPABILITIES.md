@@ -126,9 +126,9 @@ README: `features/store/README.md`
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
 | mostrar la tienda patrocinada y los comercios cercanos en la portada | `<NearbyStores />` | `features/store/components/NearbyStores.tsx` | RN-STORE-02 |
-| mostrar la tarjeta de una tienda | `<StoreCard />` | `features/store/components/StoreCard.tsx` | RN-STORE-01, RN-STORE-03 |
+| mostrar la tarjeta de una tienda | `<StoreCard />` | `features/store/components/StoreCard.tsx` | RN-STORE-01, RN-STORE-03, RN-STORE-06 |
 | listar todas las tiendas cercanas con paginación | `<StoresDirectory />` | `features/store/components/StoresDirectory.tsx` | RN-STORE-02, RN-STORE-04, RN-STORE-05 |
-| mostrar la cabecera de la página de una tienda con su horario y contacto | `<StoreHeader />` | `features/store/components/StoreHeader.tsx` | RN-STORE-01, RN-STORE-04 |
+| mostrar la cabecera de la página de una tienda con su horario y contacto | `<StoreHeader />` | `features/store/components/StoreHeader.tsx` | RN-STORE-01, RN-STORE-04, RN-STORE-06 |
 | listar los productos de una tienda con paginación | `<StoreProducts />` | `features/store/components/StoreProducts.tsx` |  |
 | armar el JSON-LD de una tienda | `storeJsonLd()` | `features/store/lib/jsonld.ts` | RN-STORE-04 |
 

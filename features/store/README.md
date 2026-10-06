@@ -2,10 +2,10 @@
 module: "store"
 path: "features/store"
 type: "feature"
-exports: ["StoreCard", "NearbyStores", "NearbyStoresSkeleton", "SponsoredStore", "StoreLogo", "StoreOpenBadge", "storeInitials", "formatSchedule", "openingHoursJsonLd", "storeJsonLd", "StoreHeader", "StoreProducts", "StoreProductsSkeleton", "StoresDirectory", "StoresDirectorySkeleton"]
+exports: ["PremiumSeal", "StoreCard", "NearbyStores", "NearbyStoresSkeleton", "SponsoredStore", "StoreLogo", "StoreOpenBadge", "storeInitials", "formatSchedule", "openingHoursJsonLd", "storeJsonLd", "StoreHeader", "StoreProducts", "StoreProductsSkeleton", "StoresDirectory", "StoresDirectorySkeleton"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts", "features/search/components/ProductThumb.tsx", "features/search/components/Pagination.tsx", "components/EmptyState.tsx"]
 tests: "features/store/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/store/components/StoreCard.tsx", "features/store/components/StoreLogo.tsx", "features/store/components/NearbyStores.tsx", "features/store/components/SponsoredStore.tsx", "features/store/lib/initials.ts", "features/store/lib/schedule.ts", "features/store/lib/jsonld.ts", "features/store/components/StoreHeader.tsx", "features/store/components/StoreProducts.tsx", "features/search/components/ProductThumb.tsx", "features/store/components/StoresDirectory.tsx", "features/search/components/Pagination.tsx", "app/tiendas/page.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "components/EmptyState.tsx"]
+verified_against: ["features/store/components/PremiumSeal.tsx", "features/store/components/StoreCard.tsx", "features/store/components/StoreLogo.tsx", "features/store/components/NearbyStores.tsx", "features/store/components/SponsoredStore.tsx", "features/store/lib/initials.ts", "features/store/lib/schedule.ts", "features/store/lib/jsonld.ts", "features/store/components/StoreHeader.tsx", "features/store/components/StoreProducts.tsx", "features/search/components/ProductThumb.tsx", "features/store/components/StoresDirectory.tsx", "features/search/components/Pagination.tsx", "app/tiendas/page.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "components/EmptyState.tsx"]
 verified_at: "b8b8ecf"
 capabilities:
   - intent: "mostrar la tienda patrocinada y los comercios cercanos en la portada"
@@ -21,9 +21,9 @@ capabilities:
     entrypoint: "<StoreCard />"
     file: "features/store/components/StoreCard.tsx"
     input: "store: NearbyStore; featured?: boolean"
-    output: "Card como enlace a /tienda/{slug}: portada (cover_url) arriba si la tienda es premium y la trae, y en fila logo o iniciales, nombre, city.name, distancia si no es null, 'Destacado' si featured, 'Fuera de tu zona' si outside_radius y, si la API informa is_open, 'Abierto' (con 'hasta {closes_at}') o 'Cerrado'"
+    output: "Card como enlace a /tienda/{slug}: portada (cover_url) arriba si la tienda la trae, y en fila logo o iniciales, nombre, sello 'Aliado PosVen' si is_premium, city.name, distancia si no es null, 'Destacado' si featured, 'Fuera de tu zona' si outside_radius y, si la API informa is_open, 'Abierto' (con 'hasta {closes_at}') o 'Cerrado'"
     source: "props"
-    rules: ["RN-STORE-01", "RN-STORE-03"]
+    rules: ["RN-STORE-01", "RN-STORE-03", "RN-STORE-06"]
   - intent: "listar todas las tiendas cercanas con paginación"
     intent_aliases: ["directorio de tiendas", "todas las tiendas", "pagina tiendas", "comercios cercanos paginados"]
     entrypoint: "<StoresDirectory />"
@@ -37,9 +37,9 @@ capabilities:
     entrypoint: "<StoreHeader />"
     file: "features/store/components/StoreHeader.tsx"
     input: "store: Store; children opcional (la página monta ahí el botón de favorito)"
-    output: "portada si es premium y trae cover_url; tarjeta con logo si es premium (si no, iniciales), h1 con el nombre, company_name, dirección y ciudad, h2 'Horario' con las líneas de formatSchedule(), ContactButtons sin producto y children; no pinta abierto o cerrado porque Store no trae is_open"
+    output: "portada si trae cover_url; tarjeta con logo si trae logo_url (si no, iniciales), h1 con el nombre, sello 'Aliado PosVen' si is_premium, company_name, dirección y ciudad, h2 'Horario' con las líneas de formatSchedule(), ContactButtons sin producto y children; no pinta abierto o cerrado porque Store no trae is_open"
     source: "Store de getStore() (cacheado por slug, sin ubicación)"
-    rules: ["RN-STORE-01", "RN-STORE-04"]
+    rules: ["RN-STORE-01", "RN-STORE-04", "RN-STORE-06"]
   - intent: "listar los productos de una tienda con paginación"
     intent_aliases: ["productos de la tienda", "catalogo de tienda", "precios de una tienda"]
     entrypoint: "<StoreProducts />"
@@ -53,7 +53,7 @@ capabilities:
     entrypoint: "storeJsonLd()"
     file: "features/store/lib/jsonld.ts"
     input: "store: Store"
-    output: "Store con name, url absoluta, PostalAddress, GeoCoordinates, telephone si hay, openingHoursSpecification si hay tramos e image con logo_url sólo si es premium"
+    output: "Store con name, url absoluta, PostalAddress, GeoCoordinates, telephone si hay, openingHoursSpecification si hay tramos e image con logo_url si lo trae"
     source: "Store de getStore()"
     rules: ["RN-STORE-04"]
 ---
@@ -71,17 +71,19 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 
 | Regla | Enunciado | Test que la hace cumplir |
 |---|---|---|
-| `RN-STORE-01` | El logo se muestra sólo si la tienda es premium y tiene `logo_url`; si no, un círculo con la inicial en mayúscula de cada una de las dos primeras palabras del nombre. | `features/store/__tests__/StoreCard.test.tsx` ("toma las iniciales de las dos primeras palabras del nombre", "premium sin logo muestra las iniciales", "no premium con logo_url muestra las iniciales y no el logo"); el logo y las iniciales de StoreHeader.tsx aplican la misma regla, pendiente: sin prueba |
+| `RN-STORE-01` | El logo se muestra si la tienda tiene `logo_url`, sea premium o no; si no, un círculo con la inicial en mayúscula de cada una de las dos primeras palabras del nombre. | `features/store/__tests__/StoreCard.test.tsx` ("toma las iniciales de las dos primeras palabras del nombre", "premium sin logo muestra las iniciales", "con logo_url muestra el logo, premium o no"), `features/store/__tests__/StoreHeader.test.tsx` ("muestra el logo si la tienda lo trae aunque no sea premium") |
 | `RN-STORE-02` | El primer destacado va en el bloque patrocinado, el segundo abre la lista con "Destacado" y ninguno se repite si también viene en `data`. | `features/store/__tests__/NearbyStores.test.tsx` ("el primer destacado va en el bloque patrocinado y no se repite en la lista", "el segundo destacado abre la lista con la etiqueta Destacado") |
-| `RN-STORE-05` | El estado y la hora de cierre salen tal como los entrega la API, en la tarjeta ("Abierto · hasta HH:MM", "Cerrado") y en la cabecera ("Abierta · hasta HH:MM", "Cerrada ahora"); sin `is_open` no hay etiqueta. | `features/store/__tests__/StoreCard.test.tsx` ("muestra Abierto con la hora de cierre que entrega la API", "muestra Cerrado si la API dice que no está abierta y nada si no informa"), `features/store/__tests__/StoreHeader.test.tsx` ("muestra Abierta con la hora de cierre que entrega la API", "muestra Abierta sin hora si la API no trae closes_at", "muestra Cerrada ahora si la API dice que no está abierta y nada si no informa") |
 | `RN-STORE-03` | Una tienda fuera del radio lleva la etiqueta "Fuera de tu zona". | `features/store/__tests__/StoreCard.test.tsx` ("una tienda con outside_radius muestra Fuera de tu zona") |
-| `RN-STORE-04` | La portada (en la tarjeta y en la cabecera), la imagen Open Graph y la imagen del JSON-LD de una tienda salen sólo si es premium. | `features/store/__tests__/StoreCard.test.tsx` ("muestra la portada sólo si la tienda es premium y la trae"), `features/store/__tests__/jsonld.test.ts` ("una tienda premium con logo trae image", "una tienda sin premium no trae image aunque tenga logo_url"), `features/store/__tests__/StoreHeader.test.tsx` ("muestra la portada si la tienda es premium y la trae", "no muestra la portada si la tienda no es premium aunque la traiga", "no muestra la portada si la tienda es premium y no la trae"); la imagen Open Graph de `app/tienda/[slug]/page.tsx`, pendiente: sin prueba |
+| `RN-STORE-04` | La portada (tarjeta y cabecera) sale si la tienda trae `cover_url`; la imagen Open Graph y la del JSON-LD, si trae `logo_url` (la portada no las alimenta). Premium no condiciona ninguna. | `features/store/__tests__/StoreCard.test.tsx` ("muestra la portada si la tienda la trae, premium o no"), `features/store/__tests__/jsonld.test.ts` ("una tienda premium con logo trae image", "una tienda sin premium con logo también trae image", "sin logo no trae image"), `features/store/__tests__/StoreHeader.test.tsx` ("muestra la portada si la tienda la trae, premium o no", "no muestra la portada si la tienda no la trae"), `features/store/__tests__/storeMetadata.test.ts` ("una tienda premium con logo trae la imagen Open Graph", "una tienda sin premium con logo también trae la imagen Open Graph", "sin logo no trae Open Graph aunque tenga portada") |
+| `RN-STORE-05` | El estado y la hora de cierre salen tal como los entrega la API, en la tarjeta ("Abierto · hasta HH:MM", "Cerrado") y en la cabecera ("Abierta · hasta HH:MM", "Cerrada ahora"); sin `is_open` no hay etiqueta. | `features/store/__tests__/StoreCard.test.tsx` ("muestra Abierto con la hora de cierre que entrega la API", "muestra Cerrado si la API dice que no está abierta y nada si no informa"), `features/store/__tests__/StoreHeader.test.tsx` ("muestra Abierta con la hora de cierre que entrega la API", "muestra Abierta sin hora si la API no trae closes_at", "muestra Cerrada ahora si la API dice que no está abierta y nada si no informa") |
+| `RN-STORE-06` | El sello "Aliado PosVen" (icono de apretón de manos y texto) sale junto al nombre de una tienda con `is_premium`: en la tarjeta, el bloque patrocinado, la cabecera y la oferta; sin `is_premium` no sale. | `features/store/__tests__/StoreCard.test.tsx`, `features/store/__tests__/SponsoredStore.test.tsx`, `features/store/__tests__/StoreHeader.test.tsx`, `features/store/__tests__/NearbyStores.test.tsx` (segundo destacado premium) y `features/product/__tests__/OfferCard.test.tsx` (los casos "el sello Aliado PosVen sale sólo si la tienda es premium") |
 
 ## 3. Dónde hacer cambios
 
 | Tipo de cambio | Dónde va | Además hay que |
 |---|---|---|
 | Datos o aspecto de la tarjeta, logo o etiqueta de abierto | `components/StoreCard.tsx` (`StoreOpenBadge`), `components/StoreLogo.tsx` | `__tests__/StoreCard.test.tsx`; la distancia sólo por `formatDistance`; los colores de la banda son tokens |
+| Sello "Aliado PosVen" | `components/PremiumSeal.tsx` y su montaje en `StoreCard`, `SponsoredStore`, `StoreHeader` y `features/product/components/OfferCard.tsx` | los casos de RN-STORE-06 en los cinco tests |
 | Cuándo se muestra el logo o cómo salen las iniciales | `StoreLogo` en `components/StoreLogo.tsx`, `logoUrl` en `components/StoreHeader.tsx`; `storeInitials` en `lib/initials.ts` | los casos de RN-STORE-01 en `__tests__/StoreCard.test.tsx` |
 | Qué se pide a la API, cuántos comercios salen o el bloque patrocinado | la llamada a `listNearbyStores`, `MAX_STORES` en `components/NearbyStores.tsx` y `components/SponsoredStore.tsx` | `__tests__/NearbyStores.test.tsx`; las claves de la consulta las fija `storesQuery` de `lib/marketplace/params.ts` |
 | Títulos, "Ver todos" o aviso sin comercios | `components/NearbyStores.tsx` | el `getByRole("heading")` de `e2e/search.spec.ts` |
@@ -93,10 +95,11 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 
 ## 4. API pública
 
+- `PremiumSeal({ className }: { className?: string })`, `features/store/components/PremiumSeal.tsx`: sello "Aliado PosVen" con el icono `Handshake`; quien lo usa decide con `is_premium`
 - `StoreCard({ store, featured }: { store: NearbyStore; featured?: boolean })`, `features/store/components/StoreCard.tsx`
 - `NearbyStores(): Promise<React.JSX.Element | null>`, Server Component sin props, `features/store/components/NearbyStores.tsx`; `null` ante `MarketplaceUnavailableError`
 - `SponsoredStore({ store }: { store: NearbyStore })`, `features/store/components/SponsoredStore.tsx`: enlace a `/tienda/{slug}` con "PATROCINADO", logo, nombre, ciudad y distancia, etiqueta de abierto y "Ver tienda"
-- `StoreLogo({ store, className }: { store: Pick<StoreSummary, "name" | "is_premium" | "logo_url">; className: string })`, `features/store/components/StoreLogo.tsx`
+- `StoreLogo({ store, className }: { store: Pick<StoreSummary, "name" | "logo_url">; className: string })`, `features/store/components/StoreLogo.tsx`
 - `StoreOpenBadge({ store }: { store: NearbyStore })`, `features/store/components/StoreCard.tsx`
 - `NearbyStoresSkeleton()`, fallback de `NearbyStores`, `features/store/components/NearbyStores.tsx`
 - `StoresDirectory({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<React.JSX.Element>`, Server Component, `features/store/components/StoresDirectory.tsx`
@@ -113,15 +116,16 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 
 | Pieza | Archivo | Responsabilidad |
 |---|---|---|
-| Tarjeta | `components/StoreCard.tsx` | `Card` sin relleno dentro de un `<Link>` (foco en `--foreground`, `hover:shadow-raised`): portada `h-20` si es premium y trae `cover_url` y, debajo, una fila con `StoreLogo` (`size-12`), textos truncados y `StoreOpenBadge` a la derecha |
-| Logo | `components/StoreLogo.tsx` | `next/image` si la tienda es premium y trae `logo_url`; si no, un bloque con las iniciales de `storeInitials` |
+| Tarjeta | `components/StoreCard.tsx` | `Card` sin relleno dentro de un `<Link>` (foco en `--foreground`, `hover:shadow-raised`): portada `h-20` si trae `cover_url` y, debajo, una fila con `StoreLogo` (`size-12`), textos truncados y `StoreOpenBadge` a la derecha |
+| Sello | `components/PremiumSeal.tsx` | `span` con `Handshake` de `lucide-react` y "Aliado PosVen", en `bg-primary-soft`; lo montan `StoreCard`, `SponsoredStore`, `StoreHeader` y `OfferCard` si `store.is_premium` |
+| Logo | `components/StoreLogo.tsx` | `next/image` si la tienda trae `logo_url`; si no, un bloque con las iniciales de `storeInitials` |
 | Iniciales | `lib/initials.ts` | primeras letras de las dos primeras palabras del nombre, en mayúscula |
 | Consulta de cercanas | `components/NearbyStores.tsx` | `listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1 })` |
 | Orden de pintado | `components/NearbyStores.tsx` | `featured[0]` en `SponsoredStore`; el resto de `featured` y después `data` sin los slugs destacados, hasta `MAX_STORES` (6) |
 | Patrocinada | `components/SponsoredStore.tsx` | tarjeta enlace con `PATROCINADO`, `StoreLogo` (`size-14`) y `Ver tienda` por `buttonVariants` sobre un `<span>` (no hay botón anidado) |
 | Horario | `lib/schedule.ts` | `Lun`...`Dom`; tres o más días seguidos como `Lun a Sáb`, el resto separados por `, `; sin tramos, "Horario no informado"; días en inglés para `OpeningHoursSpecification` |
 | JSON-LD | `lib/jsonld.ts` | `Store` con URL absoluta por `SITE_URL`, `PostalAddress` con `addressCountry: "VE"` y `GeoCoordinates` |
-| Cabecera | `components/StoreHeader.tsx` | portada sobre una tarjeta con logo (sólo premium), `h1`, razón social, etiqueta de abierta o cerrada (`StoreHeaderStatus`, RN-STORE-05), dirección, `h2` "Horario", `ContactButtons` con `product: null` y `children` (el favorito de la página) |
+| Cabecera | `components/StoreHeader.tsx` | portada sobre una tarjeta con logo (si trae `logo_url`), `h1`, razón social, etiqueta de abierta o cerrada (`StoreHeaderStatus`, RN-STORE-05), dirección, `h2` "Horario", `ContactButtons` con `product: null` y `children` (el favorito de la página) |
 | Productos | `components/StoreProducts.tsx` | `pagina` a entero, `getStore({ slug, page })`, tasa, tarjetas con `ProductThumb` (con `sizes` de la rejilla: 240 px desde 1024 px, un tercio del ancho útil desde 768 px y la mitad debajo; con `AddToCartButton` si el carrito está encendido, la tienda tiene `accepts_orders` y el producto no es `recipe`, `RN-CART-03`), "Anterior" y "Siguiente" |
 | Directorio | `components/StoresDirectory.tsx` | `pagina` a entero, `listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page })`, destacados primero y sin repetirse, total y `Pagination` de `features/search` con `hrefForPage` a `/tiendas` (la página 1 sin parámetro) |
 | Página del directorio | `app/tiendas/page.tsx` | `h1` "Tiendas", canónica `/tiendas` sin parámetros, indexable (la página fuera de rango pone `noindex` desde `StoresDirectory`: `notFound()` tras el streaming no cambia el 200), y `StoresDirectory` en `<Suspense>`; sin `loading.tsx` |
@@ -136,6 +140,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 - `lib/format.ts` (`formatDistance`, `formatRate`, `formatUsd`, `formatVes`, `formatUpdatedAgo`), `lib/jsonld.ts` (`serializeJsonLd`, en la página) y `lib/site.ts` (`SITE_NAME`, `SITE_URL`).
 - `components/ui/badge.tsx`, `components/ui/button.tsx`, `components/ui/card.tsx` y `components/ui/skeleton.tsx`; `lib/utils.ts` (`cn`) en `StoreLogo`.
 - `features/search/components/ProductThumb.tsx` en `StoreProducts.tsx` y `features/search/components/Pagination.tsx` en `StoresDirectory.tsx`; `FavoriteButton` de `features/account` lo monta la página.
+- `lucide-react` (`Handshake`) en `PremiumSeal`.
 - `next/link`, `next/image` (en `StoreLogo` y `StoreHeader`) y `next/navigation`.
 
 ## 7. Ejemplo de uso
@@ -156,9 +161,9 @@ if (response === null) notFound();
 - `NearbyStores` lee la cookie `loc`: va siempre dentro de un `<Suspense>` (`cacheComponents: true`) y nunca dentro de `'use cache'`.
 - La ubicación sale de `getEffectiveLocation`: una ciudad que no reconoce llega como sin ubicación (RN-LOCATION-04), así que se pide sin `geo` ni radio y el título es el nacional.
 - El orden de las tiendas, `distance_km` y `outside_radius` los entrega la API; aquí sólo se quitan los destacados repetidos y se formatea la distancia.
-- `StoreCard` muestra la portada (`cover_url`) sólo de una tienda premium, también en el inicio; `/tiendas` es indexable (canónica sin `pagina`) y entra al grupo `static` del sitemap, y sus errores de API llegan a `app/error.tsx` (regla `app-router` 7), a diferencia de `NearbyStores`.
+- `StoreCard` muestra la portada (`cover_url`) de toda tienda que la trae, también en el inicio; `/tiendas` es indexable (canónica sin `pagina`) y entra al grupo `static` del sitemap, y sus errores de API llegan a `app/error.tsx` (regla `app-router` 7), a diferencia de `NearbyStores`.
 - `NearbyStores` es un bloque secundario del inicio: ante `MarketplaceUnavailableError` no se pinta (regla `app-router` 7). El estado abierto y la hora de cierre llegan de la API y no se calculan aquí.
-- Logo y portada sólo para premium porque es parte de lo que la tienda premium recibe (spec §5.4); `logo_url` y `cover_url` de una tienda sin premium se ignoran.
+- Logo y portada salen para toda tienda publicada que los trae: la API devuelve `logo_url` con vuelta al logo de la empresa y `cover_url` sin condición premium; premium sólo decide lo destacado y el sello.
 - Logo y portada van por `next/image`: su dominio tiene que estar en `images.remotePatterns` de `next.config.ts` (spec §4.5).
 - La página hace `await params` y `getStore({ slug, page: 1 })` fuera de `<Suspense>` para que `notFound()` dé 404 antes del primer byte; `app/tienda/` no lleva `loading.tsx`. `generateStaticParams` devuelve al menos un slug porque con Cache Components un arreglo vacío rompe el build.
 - Metadatos, cabecera y JSON-LD no dependen de la cookie ni de `pagina`: la canónica es `/tienda/{slug}` también en `?pagina=2`.
@@ -168,13 +173,15 @@ if (response === null) notFound();
 ## 9. Pruebas
 
 - Comando: `npx vitest run features/store`; el 404, con `next build` y `next start`.
-- `features/store/__tests__/StoreCard.test.tsx`: iniciales "FS", premium sin logo y no premium con `logo_url` muestran iniciales, "Destacado" con `featured`, "Fuera de tu zona" con `outside_radius` y "Abierto" o "Cerrado" según `is_open`.
+- `features/store/__tests__/StoreCard.test.tsx`: iniciales "FS", premium sin logo muestra iniciales y con `logo_url` (premium o no) muestra el logo, "Destacado" con `featured`, "Fuera de tu zona" con `outside_radius` y "Abierto" o "Cerrado" según `is_open`.
 - `features/store/__tests__/SponsoredStore.test.tsx`: enlace a la tienda con "PATROCINADO" y "Ver tienda" sin botón anidado, sin `is_open` no hay estado y `outside_radius` no pinta "Fuera de tu zona".
 - `features/store/__tests__/StoresDirectory.test.tsx`: destacados primero sin repetirse, "Siguiente" y "Anterior" a `/tiendas`, `pagina` de la URL (inválida, `abc`, `0` o repetida con el primero inválido cae a 1; repetida válida toma la primera), aviso sin comercios y `noindex` sólo fuera de rango.
-- `features/store/__tests__/NearbyStores.test.tsx`: patrocinado sin repetirse, segundo destacado en la lista, sin patrocinado, API caída sin pintar nada y otros errores relanzados.
+- `features/store/__tests__/NearbyStores.test.tsx`: patrocinado sin repetirse, segundo destacado en la lista, segundo destacado premium con sello Aliado PosVen, sin patrocinado, API caída sin pintar nada y otros errores relanzados.
 - `features/store/__tests__/schedule.test.ts`: `Lun a Sáb`, `Sáb, Dom`, "Horario no informado" y los días en inglés.
-- `features/store/__tests__/jsonld.test.ts`: `image` sólo premium con logo, sin `telephone` cuando falta.
-- `features/store/__tests__/StoreHeader.test.tsx`: portada sólo si la tienda es premium y la trae, la etiqueta Abierta (con y sin hora) o Cerrada ahora según `is_open`, y los hijos pintados junto al contacto.
+- Los casos de RN-STORE-06 en `StoreCard.test.tsx`, `SponsoredStore.test.tsx`, `StoreHeader.test.tsx`, `NearbyStores.test.tsx` y `features/product/__tests__/OfferCard.test.tsx`: el sello sólo con `is_premium`.
+- `features/store/__tests__/jsonld.test.ts`: `image` con logo (premium o no), sin `telephone` cuando falta.
+- `features/store/__tests__/storeMetadata.test.ts`: `generateMetadata` de `app/tienda/[slug]/page.tsx` con imagen Open Graph del logo (premium o no) y sin ella cuando falta el logo, aunque haya portada.
+- `features/store/__tests__/StoreHeader.test.tsx`: portada y logo si la tienda los trae (premium o no), la etiqueta Abierta (con y sin hora) o Cerrada ahora según `is_open`, y los hijos pintados junto al contacto.
 - `features/store/__tests__/StoreProducts.test.tsx`: productos con sus precios, "Siguiente" sin "Anterior" en la página 1 de 2, `pagina=abc` pide la página 1.
 - `e2e/site.spec.ts`: `/tiendas` llega desde "Ver todos" del inicio, lista tiendas y tiene canónica e indexable.
 - `e2e/site.spec.ts`: `/tiendas?pagina=999` avisa "No hay más comercios." con `noindex` y la misma canónica.

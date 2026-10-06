@@ -9,7 +9,7 @@ export function SearchPill({ defaultQuery, compact = false }: { defaultQuery?: s
   const controlHeight = compact ? "h-11 md:h-9" : "h-11";
 
   return (
-    <div className="relative flex w-full max-w-2xl items-center gap-1 rounded-full border border-border bg-card p-1.5 shadow-raised">
+    <div className="relative flex w-full max-w-2xl items-center gap-1 rounded-full border border-border bg-card p-1.5 text-foreground shadow-raised">
       <SearchBox
         formId={formId}
         defaultQuery={defaultQuery}

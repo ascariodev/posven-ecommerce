@@ -27,8 +27,8 @@ export default async function Home() {
   const promos = categories.filter((category) => category.slug in PROMO_IMAGES).slice(0, 2);
   return (
     <div className="flex flex-col gap-8 sm:gap-10">
-      <section className="relative flex min-h-[26rem] flex-col justify-center gap-6 overflow-hidden rounded-3xl bg-ink p-6 text-ink-foreground sm:p-10 md:rounded-4xl">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 hidden w-3/5 sm:block">
+      <section className="relative flex min-h-[26rem] flex-col justify-center gap-6 rounded-3xl bg-ink p-6 text-ink-foreground sm:p-10 md:rounded-4xl">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 hidden w-3/5 overflow-hidden rounded-r-3xl sm:block md:rounded-r-4xl">
           <Image
             src="/brand/hero.jpg"
             alt=""

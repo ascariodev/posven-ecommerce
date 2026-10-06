@@ -131,7 +131,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [x] M-5 — El README de product no lista `ProductGallery` ni `ShareButton` entre sus exports (deuda previa).
   posven-ecommerce · baja · sonnet
-- [ ] M-6 — El Toaster comparte `--toast-bottom` con la barra de compra y un toast tapa su precio y botón; subir su offset con `:has([data-purchase-bar])` en `globals.css`.
+- [x] M-6 — El Toaster comparte `--toast-bottom` con la barra de compra y un toast tapa su precio y botón; subir su offset con `:has([data-purchase-bar])` en `globals.css`.
   posven-ecommerce · baja · sonnet
 - [ ] M-7 — Prueba de `ProductOffers` async: sin carrito o con restricción no hay barra, e `is_best_price` define la elegida.
   posven-ecommerce · baja · sonnet
@@ -164,4 +164,6 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - [x] M-21 — `next build` fallaba por `app/preview/rediseno/[pantalla]` (sin trackear, de F0): por decisión del usuario la maqueta pasó a `docs/design/2026-10-03-rediseno/maqueta/`, sin trackear; `next build` y `tsc` pasan.
   posven-ecommerce · media · decide el usuario
 - [ ] M-22 — `ShareButton` sin prueba (Web Share, copia del enlace y "Enlace copiado"); el `catch` deja `error` sin usar y la sección 5 del README de product no dice que la etiqueta se oculta bajo `sm`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-23 — Variable `--purchase-bar-height` en `app/globals.css` que usen `--toast-offset` (hoy +6rem) y `scroll-padding-bottom` (hoy 9rem), en vez de valores sueltos.
   posven-ecommerce · baja · sonnet

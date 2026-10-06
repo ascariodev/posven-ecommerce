@@ -31,6 +31,30 @@ test("la búsqueda lleva al producto con destacadas y ofertas por precio", async
   await expect(regular.nth(1)).toContainText("$ 2,40");
 });
 
+test("el toast de agregar no se solapa con la barra de compra", async ({ page, context }) => {
+  const stores = ["farmacia-central-valencia", "abasto-la-esquina", "farmacia-naguanagua"];
+  const full = stores.map((store_slug) => ({ store_slug, product_slug: PRODUCT_SLUG, quantity: 99 }));
+  await context.addCookies([{ name: "mp_cart", value: encodeURIComponent(JSON.stringify(full)), url: "http://localhost:3000" }]);
+  await page.goto(PRODUCT_PATH);
+  const bar = page.locator("[data-purchase-bar]");
+  await bar.getByRole("button", { name: /Agregar al carrito/ }).click();
+  const toast = page.locator("[data-sonner-toast]").first();
+  await expect(toast).toBeVisible();
+  await expect
+    .poll(async () => {
+      const toastBox = await toast.boundingBox();
+      const barBox = await bar.boundingBox();
+      if (toastBox === null || barBox === null) return true;
+      return (
+        toastBox.x < barBox.x + barBox.width &&
+        toastBox.x + toastBox.width > barBox.x &&
+        toastBox.y < barBox.y + barBox.height &&
+        toastBox.y + toastBox.height > barBox.y
+      );
+    })
+    .toBe(false);
+});
+
 test("el clic en WhatsApp registra click_whatsapp con el producto y la tienda", async ({ page }) => {
   await page.goto(PRODUCT_PATH);
   const firstWhatsapp = page.getByRole("link", { name: /^WhatsApp de / }).first();

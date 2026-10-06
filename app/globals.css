@@ -181,6 +181,16 @@ body::before {
   }
 }
 
+:root {
+  --toast-offset: var(--toast-bottom);
+}
+
+@media (max-width: 767.98px) {
+  :root:has([data-purchase-bar]) {
+    --toast-offset: calc(var(--toast-bottom) + 6rem);
+  }
+}
+
 :root:has([data-purchase-bar]) {
   scroll-padding-top: 8rem;
   scroll-padding-bottom: calc(var(--toast-bottom) + 9rem);

@@ -36,7 +36,7 @@ export const viewport: Viewport = {
   ],
 };
 
-const toastBottom = "var(--toast-bottom)";
+const toastBottom = "var(--toast-offset)";
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

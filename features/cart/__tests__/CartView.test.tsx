@@ -48,6 +48,7 @@ function store(lines: CartLine[], overrides: Partial<CartStore> = {}): CartStore
     is_open: true,
     accepts_orders: true,
     offers_delivery: false,
+    distance_km: null,
     lines,
     subtotal_usd: "6.20",
     subtotal_ves: "226.30",
@@ -71,6 +72,7 @@ function both(href: string): string[] {
 function deliveryStore(overrides: Partial<CartStore> = {}): CartStore {
   return store([line()], {
     offers_delivery: true,
+    distance_km: null,
     fulfillment: "pickup",
     delivery_fee_usd: "1.50",
     delivery_fee_ves: "54.75",

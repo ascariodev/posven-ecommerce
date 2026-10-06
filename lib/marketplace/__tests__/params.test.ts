@@ -163,4 +163,15 @@ describe("elección de entrega del carrito", () => {
     expect(cartFulfillmentBody([])).toEqual({});
     expect(cartFulfillmentBody(["farmacia-central"])).toEqual({ fulfillment: { "farmacia-central": "delivery" } });
   });
+
+  it("la ubicación por coordenadas viaja como lat y lng en la consulta y en el cuerpo; ciudad o nada, no", () => {
+    const geo = { lat: 10.18, lng: -68.0 };
+    const query = cartFulfillmentQuery([], geo);
+    expect(query.get("lat")).toBe("10.18");
+    expect(query.get("lng")).toBe("-68");
+    expect(cartFulfillmentBody(["abasto"], geo)).toEqual({ fulfillment: { abasto: "delivery" }, lat: 10.18, lng: -68 });
+    expect(cartFulfillmentQuery([], { city: "valencia" }).toString()).toBe("");
+    expect(cartFulfillmentBody([], { city: "valencia" })).toEqual({});
+    expect(cartFulfillmentBody([], null)).toEqual({});
+  });
 });

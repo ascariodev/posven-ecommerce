@@ -69,3 +69,9 @@ En el frontmatter de un README de módulo, un escalar entre comillas dobles (`ou
 lleva comillas dobles dentro (`"Ver menos"`, `name="robots"`): el YAML queda inválido y
 `generate-index.mjs` no lo detecta. Dentro se usan comillas simples o se reescribe sin comillas.
 aplicada en: pendiente: el usuario decide promoverla a una comprobación de `posven/.claude/scripts/docs-check.mjs`, propuesto en las mejoras sueltas del rediseño
+
+## L-16
+Un campo nuevo de la API en un esquema de `lib/marketplace/schemas.ts` va `.optional()` (más
+`.nullable()` si la API lo manda nulo): el push a `main` despliega solo y puede llegar antes que
+posveapi, y un campo requerido ausente hace fallar el `safeParse` del recurso entero.
+aplicada en: pendiente: el usuario decide promoverla a `posven-ecommerce/.claude/rules/contract.md`, propuesto al cerrar el plan de abierto y distancia

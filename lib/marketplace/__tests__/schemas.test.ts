@@ -337,6 +337,7 @@ describe("el simulado del carrito pasa los esquemas del contrato", () => {
     const responses = [
       await quoteGuestCart(anonymous, []),
       await quoteGuestCart(anonymous, [line, offerGone]),
+      await quoteGuestCart(anonymous, [line], [], { lat: 10.18, lng: -68.0 }),
       await setCartItem(ctx, line),
       await mergeCart(ctx, [offerGone]),
       await getCart(ctx),
@@ -610,6 +611,7 @@ describe("closes_at en cartStoreSchema", () => {
     is_open: true,
     accepts_orders: true,
     offers_delivery: false,
+    distance_km: null,
     lines: [
       {
         product: { slug: "a", name: "A", image_url: null, category: null },
@@ -635,6 +637,13 @@ describe("closes_at en cartStoreSchema", () => {
 
   it("rechaza una hora mal formada", () => {
     expect(cartStoreSchema.safeParse({ ...store, closes_at: "8pm" }).success).toBe(false);
+  });
+
+  it("distance_km admite ausente, nulo o un número no negativo", () => {
+    expect(cartStoreSchema.safeParse({ ...store, distance_km: undefined }).success).toBe(true);
+    expect(cartStoreSchema.safeParse({ ...store, distance_km: null }).success).toBe(true);
+    expect(cartStoreSchema.safeParse({ ...store, distance_km: 2.3 }).success).toBe(true);
+    expect(cartStoreSchema.safeParse({ ...store, distance_km: -1 }).success).toBe(false);
   });
 
   it("fulfillment, delivery_fee_* y total_* son opcionales y se validan si vienen", () => {

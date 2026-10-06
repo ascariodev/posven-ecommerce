@@ -48,6 +48,18 @@ describe("client: entrega elegida en el carrito", () => {
     });
   });
 
+  it("getCart manda lat y lng en la consulta cuando hay ubicación", async () => {
+    await getCart(ctx, [], { lat: 10.18, lng: -68.0 });
+    const query = lastRequest().query;
+    expect(query?.get("lat")).toBe("10.18");
+    expect(query?.get("lng")).toBe("-68");
+  });
+
+  it("quoteGuestCart manda lat y lng en el cuerpo cuando hay ubicación", async () => {
+    await quoteGuestCart(ctx, items, [], { lat: 10.18, lng: -68.0 });
+    expect(lastRequest().body).toEqual({ items, lat: 10.18, lng: -68 });
+  });
+
   it("quoteGuestCart sin elección manda sólo items", async () => {
     await quoteGuestCart(ctx, items);
     expect(lastRequest().body).toEqual({ items });

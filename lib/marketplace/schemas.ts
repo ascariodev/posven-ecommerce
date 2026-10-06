@@ -473,6 +473,7 @@ export const cartStoreSchema = z.object({
   closes_at: openStatusShape.closes_at,
   accepts_orders: z.boolean(),
   offers_delivery: z.boolean(),
+  distance_km: z.number().nonnegative().nullable().optional(),
   lines: z.array(cartLineSchema).min(1),
   subtotal_usd: moneySchema,
   subtotal_ves: moneySchema,

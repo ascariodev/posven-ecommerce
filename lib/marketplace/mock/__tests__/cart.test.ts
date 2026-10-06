@@ -51,6 +51,29 @@ describe("cotización del carrito simulado", () => {
     expect(monday.stores[0].closes_at).toBe("20:00");
   });
 
+  it("distance_km es nulo sin ubicación o con ciudad, y el haversine a 1 decimal con coordenadas", async () => {
+    const lines = [item(CENTRAL, ACETAMINOFEN), item("farmacia-naguanagua", ACETAMINOFEN)];
+    const none = await quoteGuestCart(anonymous, lines);
+    expect(none.stores.map((entry) => entry.distance_km)).toEqual([null, null]);
+    const city = await quoteGuestCart(anonymous, lines, [], { city: "valencia" });
+    expect(city.stores.map((entry) => entry.distance_km)).toEqual([null, null]);
+    const central = MOCK_STORES.find((store) => store.summary.slug === CENTRAL)!.summary;
+    const here = await quoteGuestCart(anonymous, lines, [], { lat: central.latitude, lng: central.longitude });
+    const [atCentral, atNaguanagua] = here.stores.map((entry) => entry.distance_km);
+    expect(atCentral).toBe(0);
+    expect(atNaguanagua).toBeGreaterThan(0);
+    expect(Number.isInteger(atNaguanagua! * 10)).toBe(true);
+  });
+
+  it("getCart calcula la distancia con la ubicación del comprador", async () => {
+    const ctx = await session();
+    await setCartItem(ctx, item(CENTRAL, ACETAMINOFEN));
+    const central = MOCK_STORES.find((store) => store.summary.slug === CENTRAL)!.summary;
+    const cart = await getCart(ctx, [], { lat: central.latitude, lng: central.longitude });
+    expect(cart.stores[0].distance_km).toBe(0);
+    expect((await getCart(ctx)).stores[0].distance_km).toBeNull();
+  });
+
   it("cada tienda sale en retiro con su tarifa, nula si no ofrece entrega, y el total es el subtotal", async () => {
     const cart = await quoteGuestCart(anonymous, [item(CENTRAL, ACETAMINOFEN, 2), item("farmacia-naguanagua", ACETAMINOFEN)]);
     const [central, naguanagua] = cart.stores;

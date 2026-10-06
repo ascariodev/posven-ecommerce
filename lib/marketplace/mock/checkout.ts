@@ -22,7 +22,7 @@ import {
   type StoreOrderLine,
 } from "../schemas";
 import { accountError, customerIdFor, mockAccountFor } from "./accounts";
-import { cartItemsFor, quoteItems, removeCartLines } from "./cart";
+import { cartItemsFor, distanceKm, quoteItems, removeCartLines } from "./cart";
 import { MOCK_FAILED_PAYMENT_EMAIL, MOCK_MISSING_LINE, MOCK_RATE, MOCK_STORES, type MockStore } from "./fixtures";
 import { sum } from "./money";
 
@@ -69,15 +69,6 @@ export function resetMockPurchases(): void {
 
 function findStore(slug: string): MockStore | undefined {
   return MOCK_STORES.find((store) => store.summary.slug === slug);
-}
-
-// Distancia haversine en km, como la búsqueda de posveapi (spec §5.3 paso 1).
-function distanceKm(from: { lat: number; lng: number }, to: { lat: number; lng: number }): number {
-  const radians = (degrees: number) => (degrees * Math.PI) / 180;
-  const dLat = radians(to.lat - from.lat);
-  const dLng = radians(to.lng - from.lng);
-  const a = Math.sin(dLat / 2) ** 2 + Math.cos(radians(from.lat)) * Math.cos(radians(to.lat)) * Math.sin(dLng / 2) ** 2;
-  return 2 * 6371 * Math.asin(Math.sqrt(a));
 }
 
 function deliveryUnavailableReason(store: MockStore, address: Address | null): DeliveryUnavailableReason | null {

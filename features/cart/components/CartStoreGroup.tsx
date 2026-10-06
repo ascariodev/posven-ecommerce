@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatUsd, formatVes } from "@/lib/format";
+import { formatDistance, formatUsd, formatVes } from "@/lib/format";
 import type { CartStore } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
 import { StoreLogo } from "@/features/store/components/StoreLogo";
@@ -39,6 +39,7 @@ export function CartStoreGroup({ entry, delivery }: { entry: CartStore; delivery
             </h2>
             <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
               {store.city.name}
+              {entry.distance_km != null && ` · ${formatDistance(entry.distance_km)}`}
               {entry.is_open ? (
                 <Badge variant="success">{entry.closes_at ? `Abierta · hasta ${entry.closes_at}` : "Abierta"}</Badge>
               ) : (

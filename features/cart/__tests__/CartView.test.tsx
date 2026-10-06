@@ -174,12 +174,18 @@ describe("CartContent", () => {
     expect(screen.queryByText(/^Abierta/)).toBeNull();
   });
 
-  it("una tienda abierta lo indica con su hora de cierre y no inventa distancia", () => {
+  it("una tienda abierta lo indica con su hora de cierre y sin distancia no pinta nada", () => {
     render(<CartContent signedIn cart={cart([store([line()], { is_open: true, closes_at: "20:00" })])} />);
 
     expect(screen.getByText("Abierta · hasta 20:00")).toBeTruthy();
     expect(screen.queryByText("Cerrada ahora")).toBeNull();
     expect(screen.queryByText(/\bkm\b/)).toBeNull();
+  });
+
+  it("con distancia la muestra junto a la ciudad", () => {
+    render(<CartContent signedIn cart={cart([store([line()], { distance_km: 2.34 })])} />);
+
+    expect(screen.getByText(/Valencia · a 2,3 km/)).toBeTruthy();
   });
 
   it("una tienda abierta sin hora de cierre dice Abierta a secas", () => {

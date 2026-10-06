@@ -169,6 +169,29 @@ describe("CartContent", () => {
     render(<CartContent signedIn cart={cart([store([line()], { is_open: false })])} />);
 
     expect(screen.getByText("Cerrada ahora")).toBeTruthy();
+    expect(screen.queryByText(/^Abierta/)).toBeNull();
+  });
+
+  it("una tienda abierta lo indica con su hora de cierre y no inventa distancia", () => {
+    render(<CartContent signedIn cart={cart([store([line()], { is_open: true, closes_at: "20:00" })])} />);
+
+    expect(screen.getByText("Abierta · hasta 20:00")).toBeTruthy();
+    expect(screen.queryByText("Cerrada ahora")).toBeNull();
+    expect(screen.queryByText(/\bkm\b/)).toBeNull();
+  });
+
+  it("una tienda abierta sin hora de cierre dice Abierta a secas", () => {
+    render(<CartContent signedIn cart={cart([store([line()], { is_open: true, closes_at: null })])} />);
+
+    expect(screen.getByText("Abierta")).toBeTruthy();
+  });
+
+  it("la cabecera de la tienda lleva sus iniciales sin logotipo y el resumen la nota de cada tienda", () => {
+    render(<CartContent signedIn cart={cart([store([line()])])} />);
+
+    expect(screen.getByText("FC")).toBeTruthy();
+    expect(screen.getByText(/1 producto de 1 tienda · cada tienda prepara su parte/)).toBeTruthy();
+    expect(screen.getByText("Pagas todo junto en el siguiente paso.")).toBeTruthy();
   });
 });
 

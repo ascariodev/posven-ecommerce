@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatUsd, formatVes } from "@/lib/format";
 import type { CartStore } from "@/lib/marketplace/schemas";
 import { cn } from "@/lib/utils";
+import { StoreLogo } from "@/features/store/components/StoreLogo";
 import { CartLine } from "./CartLine";
 import { hasDeliveryFee } from "../lib/fulfillment";
 import { FulfillmentSwitch } from "./FulfillmentSwitch";
@@ -26,6 +27,7 @@ export function CartStoreGroup({ entry, delivery }: { entry: CartStore; delivery
     <Card>
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <StoreLogo store={store} className="size-10 shrink-0 rounded-xl text-sm" />
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             <h2 className="text-lg font-bold tracking-tight">
               <Link
@@ -35,9 +37,15 @@ export function CartStoreGroup({ entry, delivery }: { entry: CartStore; delivery
                 {store.name}
               </Link>
             </h2>
-            <span className="text-sm text-muted-foreground">{store.city.name}</span>
+            <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+              {store.city.name}
+              {entry.is_open ? (
+                <Badge variant="success">{entry.closes_at ? `Abierta · hasta ${entry.closes_at}` : "Abierta"}</Badge>
+              ) : (
+                <Badge variant="secondary">Cerrada ahora</Badge>
+              )}
+            </span>
           </div>
-          {!entry.is_open && <Badge variant="secondary">Cerrada ahora</Badge>}
           <FulfillmentSwitch entry={entry} delivery={delivery} />
         </div>
         <ul aria-label={`Productos de ${store.name}`} className="flex flex-col">

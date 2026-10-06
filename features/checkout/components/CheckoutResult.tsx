@@ -106,11 +106,11 @@ export async function CheckoutResult({ code }: { code: string }) {
       );
     case "paid":
       return (
-        <div className="flex flex-col gap-5 md:gap-6">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 md:gap-6">
           <Outcome tone="success">
             <h1 className={headingClasses}>¡Pago confirmado!</h1>
-            <p className="text-foreground tabular-nums">
-              Código <strong>{purchase.code}</strong> ·{" "}
+            <p className="text-muted-foreground tabular-nums">
+              Código <strong className="text-foreground">{purchase.code}</strong> ·{" "}
               <span className="whitespace-nowrap">pagaste {chargeText(purchase.charge)}</span>
             </p>
             <p className="text-sm text-muted-foreground tabular-nums">

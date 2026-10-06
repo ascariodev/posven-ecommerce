@@ -184,7 +184,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   contaba el esqueleto, no vaciaba y la prueba de entrega pagaba la línea de Abasto que dejaba la anterior.
 - [x] M-12 — En el resultado a 375 px "pagaste Bs …" se parte en dos renglones
   (`CheckoutResult.tsx`). Repo posven-ecommerce · complejidad baja · modelo sonnet.
-- [ ] M-13 — Diferencias con el lienzo del carrito: cabecera de tienda con distancia y estado
+- [x] M-13 — Diferencias con el lienzo del carrito: cabecera de tienda con distancia y estado
   abierto, logotipo y la nota "Cada tienda prepara su parte"; el resultado aún no sigue del todo
   el estilo del lienzo. Repo posven-ecommerce · complejidad media · modelo sonnet.
 - [x] M-14 — Contraste: "Pagado el …" en el cancelado de `OrderTracker.tsx` usa
@@ -199,3 +199,9 @@ pedido; puerta: pago de prueba completo en modo simulado.
   `checkout.spec.ts`, el formulario de `signIn` en `account.spec.ts`) llegan antes de hidratar y
   fallan en la primera corrida; las siguientes pasan (48/48). Llevar la espera de `clickPay` a un
   helper común en `e2e/`. Repo posven-ecommerce · complejidad media · modelo sonnet.
+- [ ] M-17 — Distancia en la cabecera de tienda del carrito, como en el lienzo: `cartStoreSchema` no
+  trae `distance_km`; pide cambiar la spec §3 y el contrato en posveapi primero. Repo posveapi y
+  posven-ecommerce · complejidad alta · modelo opus.
+- [ ] M-18 — En `CartStoreGroup.tsx` la insignia de abierto queda dentro del `<span>` de la ciudad
+  (`text-muted-foreground`); pasarla a hermana para que la estructura sea clara. Repo
+  posven-ecommerce · complejidad baja · modelo sonnet.

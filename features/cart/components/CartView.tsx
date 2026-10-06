@@ -1,4 +1,4 @@
-import { ShoppingCart } from "lucide-react";
+import { Info, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { EmptyState, emptyActionClass } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,9 +33,17 @@ export function CartContent({
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-4 pb-28 md:grid-cols-[minmax(0,1fr)_360px] md:gap-6 md:pb-0">
       <div className="flex flex-col gap-4">
+        <p className="text-sm text-muted-foreground">
+          {cart.line_count === 1 ? "1 producto" : `${cart.line_count} productos`} de{" "}
+          {cart.stores.length === 1 ? "1 tienda" : `${cart.stores.length} tiendas`} · cada tienda prepara su parte
+        </p>
         {cart.stores.map((entry) => (
           <CartStoreGroup key={entry.store.slug} entry={entry} delivery={delivery} />
         ))}
+        <p className="flex gap-2 text-sm text-muted-foreground md:hidden">
+          <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+          Pagas todo junto en el siguiente paso.
+        </p>
       </div>
       <div className="hidden md:sticky md:top-24 md:block">
         <CartSummary cart={cart} payHref={payHref} signedIn={signedIn} />

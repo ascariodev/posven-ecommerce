@@ -261,6 +261,29 @@ describe("botón Agregar al carrito en las ofertas (RN-CART-03)", () => {
     expect(addButtons()).toHaveLength(0);
   });
 
+  describe("sin barra de compra", () => {
+    const bar = () => screen.queryByRole("region", { name: "Compra" });
+
+    it("con un producto recipe no pinta la barra, pero sí Mejor precio donde la API lo manda", async () => {
+      vi.mocked(getProductOffers).mockResolvedValue(page([seller({ is_best_price: true })], []));
+
+      render(await ProductOffers({ product: { ...product, restriction: "recipe" }, searchParams: searchParams({}) }));
+
+      expect(bar()).toBeNull();
+      expect(screen.getByText("Mejor precio")).toBeTruthy();
+    });
+
+    it("con el interruptor apagado no pinta la barra", async () => {
+      vi.stubEnv("MARKETPLACE_MODE", "api");
+      vi.stubEnv("MARKETPLACE_CART_ENABLED", undefined);
+      vi.mocked(getProductOffers).mockResolvedValue(page([seller({ is_best_price: true })], []));
+
+      render(await ProductOffers({ product, searchParams: searchParams({}) }));
+
+      expect(bar()).toBeNull();
+    });
+  });
+
   describe("tienda por defecto de la barra de compra", () => {
     const barStore = () => within(screen.getByRole("region", { name: "Compra" }));
     const closed = (slug: string, name: string, overrides: Partial<ProductOffer> = {}) => offer(slug, name, overrides);

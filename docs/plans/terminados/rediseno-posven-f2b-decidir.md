@@ -133,7 +133,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [x] M-6 — El Toaster comparte `--toast-bottom` con la barra de compra y un toast tapa su precio y botón; subir su offset con `:has([data-purchase-bar])` en `globals.css`.
   posven-ecommerce · baja · sonnet
-- [ ] M-7 — Prueba de `ProductOffers` async: sin carrito o con restricción no hay barra, e `is_best_price` define la elegida.
+- [x] M-7 — Prueba de `ProductOffers` async: sin carrito o con restricción no hay barra, e `is_best_price` define la elegida.
   posven-ecommerce · baja · sonnet
 - [x] M-8 — Tiendas sin `accepts_orders` muestran "Elegir" y la barra sólo dice que no reciben pedidos: confirmar el estado con el lienzo.
   posven-ecommerce · baja · sonnet
@@ -166,4 +166,6 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
 - [ ] M-22 — `ShareButton` sin prueba (Web Share, copia del enlace y "Enlace copiado"); el `catch` deja `error` sin usar y la sección 5 del README de product no dice que la etiqueta se oculta bajo `sm`.
   posven-ecommerce · baja · sonnet
 - [ ] M-23 — Variable `--purchase-bar-height` en `app/globals.css` que usen `--toast-offset` (hoy +6rem) y `scroll-padding-bottom` (hoy 9rem), en vez de valores sueltos.
+  posven-ecommerce · baja · sonnet
+- [ ] M-24 — `ProductOffers.test.tsx`: gemela positiva explícita de la prueba `recipe`, fusionar la del interruptor apagado con la de `addButtons` (sin el `is_best_price` sobrante) y una sola fila de esa prueba en el README de product.
   posven-ecommerce · baja · sonnet

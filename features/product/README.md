@@ -144,7 +144,7 @@ const { data: product } = await loadProduct(slug);
 - `features/product/__tests__/jsonld.test.ts`: `AggregateOffer` desde `offers_summary`, sin `offers` ni `gtin` cuando faltan.
 - `features/product/__tests__/ProductOffers.test.tsx`: destacadas primero, tres del radio y "Ver N tiendas más" (al abrir, el summary conserva el foco y dice "Ver menos"), "Fuera de tu zona", orden y radio según ubicación, respuesta `null` y "Mejor precio" (tres casos de RN-PRODUCT-05).
 - `features/product/__tests__/OfferSelection.test.tsx`: tienda por defecto en la barra, cambio de tienda, sin botón si no `accepts_orders` y sin proveedor no pinta.
-- `features/product/__tests__/ProductOffers.test.tsx`: tienda por defecto de la barra (salta la de `is_best_price` sin pedidos, primera que acepta, y sin ninguna que acepte conserva `is_best_price`).
+- `features/product/__tests__/ProductOffers.test.tsx`: tienda por defecto de la barra (salta la de `is_best_price` sin pedidos, primera que acepta, y sin ninguna que acepte conserva `is_best_price`) y sin barra de compra con producto recipe o con el interruptor apagado.
 - `features/product/__tests__/OfferCard.test.tsx`: tienda con enlace y nombre en el botón, contacto, sin "Agregar al carrito" con receta o sin `accepts_orders`, "Mejor precio" por `is_best_price` y estados de horario.
 - `features/product/__tests__/ProductDetails.test.tsx`: sección de datos abierta, atributos plegados y sin atributos ni datos opcionales.
 - `features/product/__tests__/ProductGallery.test.tsx`: una imagen sin miniaturas, varias con una miniatura por imagen y sin imágenes el marcador.

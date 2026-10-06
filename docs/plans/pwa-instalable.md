@@ -37,7 +37,7 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
   `<head>` de `/` trae los `<link rel="icon">` y `apple-touch-icon`.
 - **Commit:** `feat(site): íconos de la marca generados`
 
-### [ ] Fase 2 — Manifest e instalación
+### [x] Fase 2 — Manifest e instalación
 - **Repo:** posven-ecommerce
 - **Alcance:** `app/manifest.ts` (`name`, `short_name` de `SITE_NAME`, `description`,
   `start_url: "/"`, `display: "standalone"`, colores de la marca, `lang: "es"`, íconos de la fase 1
@@ -57,6 +57,9 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
   de 180 px con variante `bleed`. `generateImageMetadata` no admite `purpose`: `any` y `maskable`
   se declaran en el manifest (fase 2). Next enlaza también el maskable como `<link rel="icon">`
   (inevitable, anotado en el README). En el maskable la letra ocupa la mitad del lado.
+- 2026-10-06 — Fase 2: manifest con `theme_color` `#28292d` (tinta) y `background_color` `#fafafb`;
+  el layout conserva `viewport.themeColor` por modo. `appleWebApp` con `capable`, `title: SITE_NAME`
+  y `statusBarStyle: "default"`. `features/site/README.md` re-verificado (`verified_at` `b0bed8d`).
 
 ## Notas para la próxima sesión
 - Fase 1 cerrada. Sigue la fase 2: el manifest usa `/icon/192`, `/icon/512` (`purpose: any`) y
@@ -70,4 +73,11 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
   posven-ecommerce · baja · sonnet
 - [ ] M-2 — Cargar Poppins en negrita en `brandIcon` para igualar la marca de la cabecera (la
   tipografía por defecto de `ImageResponse` sale sin negrita).
+  posven-ecommerce · baja · sonnet
+- [ ] M-3 — `theme_color` del manifest es la tinta fija, pero `viewport.themeColor` usa `#ffffff`
+  en claro: en Android la barra de la app instalada sale oscura con el sistema en claro. Alinear o
+  dejar la decisión escrita.
+  posven-ecommerce · baja · sonnet
+- [ ] M-4 — `e2e/site.spec.ts`: los colores del manifest se comparan en hexadecimal fijo; leerlos
+  de una constante compartida con `app/manifest.ts`.
   posven-ecommerce · baja · sonnet

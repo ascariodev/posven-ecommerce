@@ -1,6 +1,7 @@
 import { MapPinOff } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
+import { OutOfRangeNotice } from "@/features/location/components/OutOfRangeNotice";
 import { toGeoFilter } from "@/features/location/lib/cookie";
 import { getEffectiveLocation } from "@/features/location/server/location";
 import { cartEnabled } from "@/features/cart/lib/flag";
@@ -32,7 +33,7 @@ export async function ProductOffers({
   product: Pick<ProductDetail, "slug" | "name" | "restriction">;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { location } = await getEffectiveLocation();
+  const { location, name: locationName } = await getEffectiveLocation();
   const { orden } = await searchParams;
   const sort: OfferSort = location !== null && orden === "cerca" ? "distance" : "price";
   const geo = toGeoFilter(location);
@@ -54,6 +55,7 @@ export async function ProductOffers({
     );
   }
 
+  const outOfRange = page.meta?.out_of_range === true;
   const inside = page.offers.filter((offer) => !offer.outside_radius);
   const outside = page.offers.filter((offer) => offer.outside_radius);
   const visible = inside.slice(0, VISIBLE_OFFERS);
@@ -72,6 +74,7 @@ export async function ProductOffers({
     <section className={cn("flex flex-col gap-4", withBar && "pb-24 md:pb-0")}>
       <h2 className="text-xl font-bold tracking-tight">Dónde comprarlo</h2>
       <p className="text-sm text-muted-foreground">{formatRate(page.rate)}</p>
+      {outOfRange && <OutOfRangeNotice cityName={locationName} />}
       {location !== null && <SortLinks slug={product.slug} sort={sort} />}
       {page.featured.length + visible.length > 0 && (
         <ul aria-label="Ofertas" className="flex flex-col gap-3">
@@ -105,7 +108,7 @@ export async function ProductOffers({
         </details>
       )}
       {outside.length > 0 && (
-        <details className="group" open={withBar && outside.includes(defaultOffer)}>
+        <details className="group" open={outOfRange || (withBar && outside.includes(defaultOffer))}>
           <summary className="flex h-11 cursor-pointer list-none items-center justify-center rounded-lg border border-input-border text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground md:h-9 [&::-webkit-details-marker]:hidden">
             <span className="group-open:hidden">
               {outside.length === 1 ? "Ver 1 tienda fuera de tu zona" : `Ver ${outside.length} tiendas fuera de tu zona`}

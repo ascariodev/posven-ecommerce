@@ -2,10 +2,10 @@
 module: "location"
 path: "features/location"
 type: "feature"
-exports: ["LOCATION_COOKIE", "UserLocation", "isValidCoords", "parseLocationCookie", "serializeLocation", "toGeoFilter", "describeLocation", "getUserLocation", "getEffectiveLocation", "setLocationFromCoords", "setLocationCity", "loadLocationStates", "clearLocation", "LocationPicker", "LocationSheet", "LocationBar", "LocationBarSkeleton"]
+exports: ["LOCATION_COOKIE", "UserLocation", "isValidCoords", "parseLocationCookie", "serializeLocation", "toGeoFilter", "describeLocation", "getUserLocation", "getEffectiveLocation", "setLocationFromCoords", "setLocationCity", "loadLocationStates", "clearLocation", "LocationPicker", "LocationSheet", "LocationBar", "LocationBarSkeleton", "OutOfRangeNotice"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/select.tsx", "components/ui/sheet.tsx", "components/ui/skeleton.tsx"]
 tests: "features/location/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/location/lib/cookie.ts", "features/location/server/location.ts", "features/location/server/actions.ts", "features/location/components/LocationPicker.tsx", "features/location/components/LocationBar.tsx", "features/location/components/LocationSheet.tsx", "features/site/components/SiteHeader.tsx", "features/location/__tests__/server.test.ts", "features/location/__tests__/LocationBar.test.tsx", "features/location/__tests__/LocationSheet.test.tsx", "app/layout.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
+verified_against: ["features/location/components/OutOfRangeNotice.tsx", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/location/server/actions.ts", "features/location/components/LocationPicker.tsx", "features/location/components/LocationBar.tsx", "features/location/components/LocationSheet.tsx", "features/site/components/SiteHeader.tsx", "features/location/__tests__/server.test.ts", "features/location/__tests__/LocationBar.test.tsx", "features/location/__tests__/LocationSheet.test.tsx", "features/location/__tests__/OutOfRangeNotice.test.tsx", "app/layout.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "components/ui/button.tsx", "components/ui/skeleton.tsx"]
 verified_at: "953bc45"
 capabilities:
   - intent: "leer la ubicación efectiva del usuario para filtrar por cercanía"
@@ -49,6 +49,7 @@ para validar la ciudad con `listLocations()`; sin ubicación la búsqueda es nac
 | `RN-LOCATION-01` | Las coordenadas se guardan en la cookie redondeadas a 3 decimales. | `features/location/__tests__/cookie.test.ts` ("redondea las coordenadas a 3 decimales") |
 | `RN-LOCATION-02` | Una cookie ilegible, o con lat fuera de [-90, 90] o lng fuera de [-180, 180], equivale a no tener ubicación. | `features/location/__tests__/cookie.test.ts` ("devuelve null ante texto basura", "devuelve null con lat fuera de [-90, 90]") |
 | `RN-LOCATION-03` | Sólo se guarda una ciudad que `listLocations()` devuelve; una desconocida responde `{ ok: false }` sin tocar la cookie. | `features/location/__tests__/actions.test.ts` ("rechaza una ciudad desconocida sin tocar la cookie") |
+| `RN-LOCATION-05` | El aviso de fuera de rango nombra la ciudad de la ubicación y se pinta sólo cuando `meta.out_of_range` es `true`; un campo ausente no avisa. | `features/location/__tests__/OutOfRangeNotice.test.tsx` y los casos de `out_of_range` de `SearchResults.test.tsx`, `NearbyStores.test.tsx` y `ProductOffers.test.tsx` |
 | `RN-LOCATION-04` | Una ciudad de la cookie que `describeLocation` no reconoce cuenta como sin ubicación: `getEffectiveLocation` devuelve `{ location: null, name: null }`. | `features/location/__tests__/server.test.ts` ("una ciudad desconocida cuenta como sin ubicación") |
 
 ## 3. Dónde hacer cambios
@@ -92,6 +93,8 @@ Componentes:
 - `LocationSheet({ label, kind }: { label: string | null; kind?: "city" | "coords" })`, `features/location/components/LocationSheet.tsx` (`"use client"`): `Sheet` controlado que pide el árbol con `loadLocationStates()` la primera vez que se abre (reintenta al reabrir si falló), `side="bottom"` en móvil y `"right"` desde `sm`; disparador `Button variant="ghost"` de dos líneas (bajo `md` ocupa el resto de la fila y trunca el texto, para que no envuelva con el logo en 320 px) (`MapPin`, "Buscar cerca de" y `label` o "Elegir ubicación", con `ChevronDown`); con `label` añade " · {n} km" para coordenadas (`radio` de la URL por `useSearchParams`, 10 km por defecto) y " · Todo el país" con `radio=pais`, y nada para una ciudad; contenido "Tu ubicación", "Buscamos tiendas cerca de este lugar." y `LocationPicker` con `onDone` que lo cierra
 - `LocationBar({ degrade }: { degrade?: boolean }): Promise<React.JSX.Element | null>`, Server Component, y `LocationBarSkeleton()` (`h-11 w-40 rounded-xl`), `features/location/components/LocationBar.tsx`: `LocationBar` ya no lee `listLocations()` ni pasa `states`: el árbol no viaja en el payload de la página. Es el botón de ubicación de la cabecera (`SiteHeader`) y pinta `LocationSheet` con el nombre y el tipo (`kind`) de la ubicación efectiva. Con `degrade` (la cabecera), si `getEffectiveLocation()` lanza `MarketplaceUnavailableError` devuelve `null`; sin `degrade`, el error sube a `app/error.tsx`
 
+- `OutOfRangeNotice({ cityName }: { cityName: string | null })`, `features/location/components/OutOfRangeNotice.tsx`, Server Component sin estado: aviso `role="status"` de que las tiendas están fuera del rango de la ciudad y se muestran las de todo el país, de la más cercana a la más lejana; sin `cityName`, texto genérico.
+
 ## 5. Estructura interna
 
 | Pieza | Archivo | Responsabilidad |
@@ -99,6 +102,7 @@ Componentes:
 | `saveLocation` | `features/location/server/actions.ts` | escribe `loc` con `httpOnly`, `sameSite: "lax"`, `path: "/"`, `maxAge` de 30 días y `secure` en producción |
 | Selector en cascada | `features/location/components/LocationPicker.tsx` | tres `Select` de `components/ui/select.tsx` (Estado, Municipio, Ciudad), cada etiqueta asociada por `id`; cambiar uno vacía los de abajo |
 | Hoja de ubicación | `features/location/components/LocationSheet.tsx` | `useSyncExternalStore` sobre `(min-width: 40rem)` elige el lado del `Sheet`; sin JavaScript de medios (servidor) parte en `bottom` |
+| Aviso de fuera de rango | `features/location/components/OutOfRangeNotice.tsx` | `div role="status"` con `MapPinOff` y el texto; lo montan `SearchResults`, `NearbyStores` y `ProductOffers` con `meta.out_of_range === true` |
 | Geolocalización | `requestCurrentPosition` en `features/location/components/LocationPicker.tsx` | `getCurrentPosition` con `timeout: 10000` y `maximumAge: 600000`; si falla, aviso y selector |
 
 ## 6. Dependencias
@@ -109,7 +113,7 @@ Componentes:
 - `next/headers` (`cookies`) y `next/navigation` (`useRouter`, `useSearchParams`).
 - `components/ui/button.tsx`, `components/ui/select.tsx`, `components/ui/sheet.tsx` y `components/ui/skeleton.tsx`.
 - `lib/utils.ts` (`cn`) en `LocationSheet` y `LocationBar`.
-- `lucide-react` (`MapPin` y `ChevronDown` en `LocationSheet`).
+- `lucide-react` (`MapPin` y `ChevronDown` en `LocationSheet`, `MapPinOff` en `OutOfRangeNotice`).
 
 ## 7. Ejemplo de uso
 
@@ -160,3 +164,5 @@ export default function Page() {
 - `features/location/__tests__/LocationBar.test.tsx`: `LocationBar` con `degrade` y ciudad efectiva (nombre accesible "Buscar cerca de Valencia", sin pedir el árbol), el árbol pedido sólo al abrir la hoja, con `degrade` y la API caída (no pinta nada) y sin `degrade` con la API caída (el error se propaga); simula `window.matchMedia` con `vi.stubGlobal`, que `LocationSheet` usa.
 - `features/location/__tests__/LocationSheet.test.tsx`: detalle del radio del botón (coordenadas sin `radio` y con `radio` válido o fuera de las opciones, `radio=pais` y ciudad sin detalle) simulando `useSearchParams` con `vi.mock('next/navigation')` y `window.matchMedia`.
 - `features/location/__tests__/LocationPicker.test.tsx`: botones sin ubicación, "Elegir ciudad" deshabilitado mientras el árbol no llega o falla, aviso y selector ante geolocalización fallida, cascada Estado a Municipio con el `Select` de Radix (jsdom simula `hasPointerCapture`, `releasePointerCapture` y `scrollIntoView` en el propio archivo) y `onDone` tras guardar la ciudad.
+- `features/location/__tests__/OutOfRangeNotice.test.tsx`: aviso con y sin ciudad.
+- `e2e/search.spec.ts`: con la ciudad `maracaibo` del simulado (sin tiendas) el aviso sale en `/buscar`, en el inicio y en `/p/{slug}`.

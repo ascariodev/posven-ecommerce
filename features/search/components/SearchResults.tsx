@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { toggleVariants } from "@/components/ui/toggle";
+import { OutOfRangeNotice } from "@/features/location/components/OutOfRangeNotice";
 import { toGeoFilter } from "@/features/location/lib/cookie";
 import { getEffectiveLocation } from "@/features/location/server/location";
 import { formatRate } from "@/lib/format";
@@ -153,6 +154,7 @@ export async function SearchResults({
         locationName={locationName}
         showTotal={!isEmpty}
       />
+      {meta.out_of_range === true && <OutOfRangeNotice cityName={locationName} />}
       <ActiveFilters query={query} categories={categories} hasLocation={geoKind !== null} />
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         {!isEmpty && <SortLinks query={query} hasLocation={geoKind !== null} />}

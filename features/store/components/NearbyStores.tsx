@@ -2,6 +2,7 @@ import { MapPinOff } from "lucide-react";
 import Link from "next/link";
 import { EmptyState } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
+import { OutOfRangeNotice } from "@/features/location/components/OutOfRangeNotice";
 import { toGeoFilter } from "@/features/location/lib/cookie";
 import { getEffectiveLocation } from "@/features/location/server/location";
 import { listNearbyStores } from "@/lib/marketplace/client";
@@ -15,7 +16,7 @@ import { StoreCard } from "./StoreCard";
 const MAX_STORES = 6;
 
 export async function NearbyStores() {
-  const { location } = await getEffectiveLocation();
+  const { location, name: locationName } = await getEffectiveLocation();
   const geo = toGeoFilter(location);
   let response: StoresResponse;
   try {
@@ -47,6 +48,7 @@ export async function NearbyStores() {
             Ver todos
           </Link>
         </div>
+        {response.meta.out_of_range === true && <OutOfRangeNotice cityName={locationName} />}
         {stores.length === 0 ? (
           <EmptyState icon={MapPinOff} title="Todavía no hay comercios cerca." headingLevel="h3" compact description="Prueba con otra ciudad." />
         ) : (

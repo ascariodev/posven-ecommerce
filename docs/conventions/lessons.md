@@ -58,14 +58,14 @@ lectura se repite. Quien comparte un `cache` con otro llamador lo invoca con los
 (sin el valor por defecto explícito), y una prueba memoizando por argumentos lo fija.
 aplicada en: `features/cart/__tests__/cart.test.ts`
 
-## L-14
-Una primitiva sobre `bg-ink` (pie) no contrasta con sus colores por defecto: `outline-foreground`
-y `bg-primary` quedan por debajo de 3:1 en algún modo. Se le pasan por `className` clases `ink`
-(foco, borde y relleno), con `!` donde el `dark:` de shadcn gana, y se mide en claro y oscuro.
-aplicada en: `.claude/rules/ui.md` ítem 5
-
 ## L-15
 En el frontmatter de un README de módulo, un escalar entre comillas dobles (`output: "..."`) no
 lleva comillas dobles dentro (`"Ver menos"`, `name="robots"`): el YAML queda inválido y
 `generate-index.mjs` no lo detecta. Dentro se usan comillas simples o se reescribe sin comillas.
 aplicada en: pendiente: el usuario decide promoverla a una comprobación de `posven/.claude/scripts/docs-check.mjs`, propuesto en las mejoras sueltas del rediseño
+
+## L-16
+Un campo nuevo de la API en un esquema de `lib/marketplace/schemas.ts` va `.optional()` (más
+`.nullable()` si la API lo manda nulo): el push a `main` despliega solo y puede llegar antes que
+posveapi, y un campo requerido ausente hace fallar el `safeParse` del recurso entero.
+aplicada en: pendiente: el usuario decide promoverla a `posven-ecommerce/.claude/rules/contract.md`, propuesto al cerrar el plan de abierto y distancia

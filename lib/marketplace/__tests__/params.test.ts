@@ -142,6 +142,12 @@ describe("nearbyProductsQuery", () => {
     const query = nearbyProductsQuery({ geo: { city: "valencia" }, radiusKm: null, page: 1 });
     expect(keysOf(query)).toEqual(["page"]);
   });
+
+  it("envía open_now=true sólo cuando se pide", () => {
+    expect(nearbyProductsQuery({ geo: null, radiusKm: null, page: 1 }).has("open_now")).toBe(false);
+    expect(nearbyProductsQuery({ geo: null, radiusKm: null, page: 1, openNow: false }).has("open_now")).toBe(false);
+    expect(nearbyProductsQuery({ geo: null, radiusKm: null, page: 1, openNow: true }).get("open_now")).toBe("true");
+  });
 });
 
 describe("elección de entrega del carrito", () => {
@@ -156,5 +162,16 @@ describe("elección de entrega del carrito", () => {
   it("el cuerpo omite fulfillment sin entrega elegida y mapea cada slug a delivery", () => {
     expect(cartFulfillmentBody([])).toEqual({});
     expect(cartFulfillmentBody(["farmacia-central"])).toEqual({ fulfillment: { "farmacia-central": "delivery" } });
+  });
+
+  it("la ubicación por coordenadas viaja como lat y lng en la consulta y en el cuerpo; ciudad o nada, no", () => {
+    const geo = { lat: 10.18, lng: -68.0 };
+    const query = cartFulfillmentQuery([], geo);
+    expect(query.get("lat")).toBe("10.18");
+    expect(query.get("lng")).toBe("-68");
+    expect(cartFulfillmentBody(["abasto"], geo)).toEqual({ fulfillment: { abasto: "delivery" }, lat: 10.18, lng: -68 });
+    expect(cartFulfillmentQuery([], { city: "valencia" }).toString()).toBe("");
+    expect(cartFulfillmentBody([], { city: "valencia" })).toEqual({});
+    expect(cartFulfillmentBody([], null)).toEqual({});
   });
 });

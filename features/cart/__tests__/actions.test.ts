@@ -68,6 +68,7 @@ function cartWith(quantity: number): Cart {
         is_open: true,
         accepts_orders: true,
         offers_delivery: false,
+        distance_km: null,
         lines: [
           {
             product: { slug: PRODUCT, name: "Acetaminofén", image_url: null, category: null },

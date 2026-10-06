@@ -1,10 +1,21 @@
 import { Clock, MapPin } from "lucide-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { Badge } from "@/components/ui/badge";
 import { ContactButtons } from "@/features/events/components/ContactButtons";
 import type { Store } from "@/lib/marketplace/schemas";
 import { storeInitials } from "../lib/initials";
 import { formatSchedule } from "../lib/schedule";
+
+function StoreHeaderStatus({ store }: { store: Store }) {
+  if (store.is_open === undefined) return null;
+  if (!store.is_open) return <Badge variant="secondary" className="w-fit">Cerrada ahora</Badge>;
+  return (
+    <Badge variant="success" className="w-fit">
+      {store.closes_at ? `Abierta · hasta ${store.closes_at}` : "Abierta"}
+    </Badge>
+  );
+}
 
 export function StoreHeader({ store, children }: { store: Store; children?: ReactNode }) {
   const coverUrl = store.is_premium ? store.cover_url : null;
@@ -44,6 +55,7 @@ export function StoreHeader({ store, children }: { store: Store; children?: Reac
               {store.name}
             </h1>
             <p className="text-sm text-muted-foreground">{store.company_name}</p>
+            <StoreHeaderStatus store={store} />
           </div>
         </div>
         <p className="flex items-start gap-2 text-foreground">

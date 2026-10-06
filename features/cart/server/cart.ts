@@ -6,6 +6,8 @@ import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/mark
 import type { AccountContext } from "@/lib/marketplace/params";
 import type { Cart } from "@/lib/marketplace/schemas";
 import { accountContext } from "@/features/account/server/session";
+import { toGeoFilter } from "@/features/location/lib/cookie";
+import { getUserLocation } from "@/features/location/server/location";
 import { deliveryFromKey } from "../lib/fulfillment";
 import { CART_COOKIE, cartCookieOptions, parseCartCookie, readGuestCart } from "./cookie";
 
@@ -18,11 +20,13 @@ function isUnauthenticated(error: unknown): boolean {
 
 // El carrito del comprador con sesión, una sola vez por petición: lo usan `/carrito` y el contador
 // de la cabecera, que la llama sin argumento (con `""` sería otra clave de `cache`). `deliveryKey`
-// es la cadena de `deliveryKey()`, no un arreglo: `cache` compara por identidad. Sin sesión,
-// `null`.
+// es la cadena de `deliveryKey()`, no un arreglo: `cache` compara por identidad. La ubicación (cookie
+// `loc`) se lee dentro: es la misma en toda la petición, así que no entra en la clave y el contador
+// comparte la lectura. Sin sesión, `null`.
 export const getSessionCart = cache(async (deliveryKey: string = ""): Promise<Cart | null> => {
   const ctx = await accountContext();
-  return ctx.session === null ? null : getCart(ctx, deliveryFromKey(deliveryKey));
+  if (ctx.session === null) return null;
+  return getCart(ctx, deliveryFromKey(deliveryKey), toGeoFilter(await getUserLocation()));
 });
 
 // El carrito de la petición: con sesión, el del servidor (un 401 sigue como invitado, spec §6); sin
@@ -40,7 +44,8 @@ export const getCurrentCart = cache(async (deliveryKey: string = ""): Promise<Ca
   }
   const items = await readGuestCart();
   if (items.length === 0) return null;
-  return quoteGuestCart({ ...ctx, session: null }, items, deliveryFromKey(deliveryKey));
+  const geo = toGeoFilter(await getUserLocation());
+  return quoteGuestCart({ ...ctx, session: null }, items, deliveryFromKey(deliveryKey), geo);
 });
 
 // Fusión al entrar o registrarse (RN-CART-02): sólo desde una Server Action (borra `mp_cart`). Con la

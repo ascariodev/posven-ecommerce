@@ -145,6 +145,14 @@ describe("horario y orden simulados", () => {
     expect(shop).toMatchObject({ is_open: false, closes_at: null });
   });
 
+  it("la tienda lleva is_open y closes_at calculados del horario", async () => {
+    vi.useFakeTimers({ now: SUNDAY_10_CARACAS });
+    const open = await getStore({ slug: "farmacia-central-valencia", page: 1 });
+    expect(open?.data).toMatchObject({ is_open: true, closes_at: "13:00" });
+    const closed = await getStore({ slug: "ferreteria-el-tornillo", page: 1 });
+    expect(closed?.data).toMatchObject({ is_open: false, closes_at: null });
+  });
+
   it("las ofertas de la ficha llevan is_open y closes_at", async () => {
     vi.useFakeTimers({ now: MONDAY_6_CARACAS });
     const response = await getProduct("acetaminofen-500-mg-20-tabletas");
@@ -160,6 +168,21 @@ describe("horario y orden simulados", () => {
     expect(open.meta.total).toBeLessThan(all.meta.total);
     expect(open.meta.total).toBeGreaterThan(0);
     for (const entry of open.featured) expect(entry.offer.is_open).toBe(true);
+  });
+
+  it("open_now deja sólo productos con una tienda abierta y sus ofertas abiertas", async () => {
+    vi.useFakeTimers({ now: SUNDAY_10_CARACAS });
+    const all = await listNearbyProducts({ geo: null, radiusKm: null, page: 1 });
+    const open = await listNearbyProducts({ geo: null, radiusKm: null, page: 1, openNow: true });
+    expect(open.meta.total).toBeLessThan(all.meta.total);
+    expect(open.meta.total).toBeGreaterThan(0);
+  });
+
+  it("open_now con todas las tiendas cerradas no devuelve nada en productos cercanos", async () => {
+    vi.useFakeTimers({ now: MONDAY_6_CARACAS });
+    const open = await listNearbyProducts({ geo: null, radiusKm: null, page: 1, openNow: true });
+    expect(open.meta.total).toBe(0);
+    expect(open.data).toEqual([]);
   });
 
   it("open_now con todas las tiendas cerradas no devuelve nada", async () => {

@@ -52,6 +52,7 @@ export function cartStore(slug: string, name: string): CartStore {
     is_open: true,
     accepts_orders: true,
     offers_delivery: slug === CENTRAL,
+    distance_km: null,
     lines: [
       {
         product: { slug: `producto-${slug}`, name: `Producto de ${name}`, image_url: null, category: null },

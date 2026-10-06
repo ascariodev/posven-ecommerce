@@ -259,10 +259,13 @@ export async function listNearbyProducts(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  openNow?: boolean;
 }): Promise<NearbyProductsResponse> {
   const query = nearbyProductsQuery(p);
   const scope = readScope(query);
-  const inScope = MOCK_PRODUCTS.filter((item) => productInScope(item, scope));
+  const scoped = MOCK_PRODUCTS.filter((item) => productInScope(item, scope));
+  const inScope =
+    query.get("open_now") === "true" ? scoped.flatMap((item) => withOpenOffers(item) ?? []) : scoped;
   const ordered = [...inScope].sort((a, b) =>
     scope.kind === "none"
       ? compareNumbers(Number(a.min_price_usd), Number(b.min_price_usd))
@@ -436,7 +439,7 @@ export async function getStore(p: { slug: string; page: number }): Promise<Store
   });
 
   return {
-    data: { ...store.summary, ...MOCK_STORE_DETAILS[p.slug] },
+    data: { ...store.summary, ...MOCK_STORE_DETAILS[p.slug], ...storeStatus(store) },
     products: pageOf(products, p.page, STORE_PRODUCTS_PER_PAGE),
     meta: { page: p.page, per_page: STORE_PRODUCTS_PER_PAGE, total: products.length },
     rate: MOCK_RATE,

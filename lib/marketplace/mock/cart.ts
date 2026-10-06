@@ -1,4 +1,4 @@
-import type { AccountContext } from "../params";
+import type { AccountContext, GeoFilter } from "../params";
 import {
   CART_MAX_LINES as MAX_LINES,
   CART_MAX_QUANTITY as MAX_QUANTITY,
@@ -37,6 +37,20 @@ export function resetMockCarts(): void {
 type PricedStore = CartStore & Required<Pick<CartStore, "total_usd" | "total_ves">>;
 
 type CatalogProduct = { product: CartLine["product"]; restricted: boolean; offers: MockOffer[] };
+
+// Distancia haversine en km, como la búsqueda de posveapi (spec §5.3 paso 1).
+export function distanceKm(from: { lat: number; lng: number }, to: { lat: number; lng: number }): number {
+  const radians = (degrees: number) => (degrees * Math.PI) / 180;
+  const dLat = radians(to.lat - from.lat);
+  const dLng = radians(to.lng - from.lng);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(radians(from.lat)) * Math.cos(radians(to.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(a));
+}
+
+function storeDistance(store: MockStore, geo: GeoFilter): number | null {
+  if (geo === null || !("lat" in geo)) return null;
+  return Math.round(distanceKm(geo, { lat: store.summary.latitude, lng: store.summary.longitude }) * 10) / 10;
+}
 
 function findStore(slug: string): MockStore | undefined {
   return MOCK_STORES.find((store) => store.summary.slug === slug);
@@ -97,7 +111,7 @@ function okAmounts(lines: CartLine[], field: "line_usd" | "line_ves"): Money[] {
 // Cotiza entradas: agrupa por tienda en el orden de llegada, omite tiendas o productos inexistentes
 // y suma sólo las líneas `ok` (enmienda D). `deliveryStores` son las tiendas con entrega elegida: la
 // toman si tienen radio y tarifa y alguna línea `ok` (RN-MKT-70). La usa también el checkout simulado.
-export function quoteItems(items: CartItem[], deliveryStores: string[] = []): Cart {
+export function quoteItems(items: CartItem[], deliveryStores: string[] = [], geo: GeoFilter = null): Cart {
   const stores: PricedStore[] = [];
   for (const item of items) {
     const store = findStore(item.store_slug);
@@ -111,6 +125,7 @@ export function quoteItems(items: CartItem[], deliveryStores: string[] = []): Ca
         closes_at: openStatus(MOCK_STORE_DETAILS[item.store_slug]?.schedule ?? [], mockNow()).closes_at,
         accepts_orders: store.summary.accepts_orders,
         offers_delivery: store.offers_delivery,
+        distance_km: storeDistance(store, geo),
         lines: [],
         subtotal_usd: "0.00",
         subtotal_ves: "0.00",
@@ -171,12 +186,17 @@ function parseItems(items: unknown): CartItem[] {
   return parsed.data;
 }
 
-export async function quoteGuestCart(_ctx: AccountContext, items: CartItem[], deliveryStores: string[] = []): Promise<Cart> {
-  return quoteItems(parseItems(items), deliveryStores);
+export async function quoteGuestCart(
+  _ctx: AccountContext,
+  items: CartItem[],
+  deliveryStores: string[] = [],
+  geo: GeoFilter = null,
+): Promise<Cart> {
+  return quoteItems(parseItems(items), deliveryStores, geo);
 }
 
-export async function getCart(ctx: AccountContext, deliveryStores: string[] = []): Promise<Cart> {
-  return quoteItems(cartItemsFor(customerIdFor(ctx)), deliveryStores);
+export async function getCart(ctx: AccountContext, deliveryStores: string[] = [], geo: GeoFilter = null): Promise<Cart> {
+  return quoteItems(cartItemsFor(customerIdFor(ctx)), deliveryStores, geo);
 }
 
 export function cartItemsFor(customerId: number): CartItem[] {

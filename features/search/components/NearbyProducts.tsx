@@ -51,12 +51,13 @@ export async function NearbyProducts({
   title,
   showAll = true,
   headingId = "nearby-products-title",
-}: { title?: string; showAll?: boolean; headingId?: string } = {}) {
+  openNow = false,
+}: { title?: string; showAll?: boolean; headingId?: string; openNow?: boolean } = {}) {
   const { location } = await getEffectiveLocation();
   const geo = toGeoFilter(location);
   let response: NearbyProductsResponse;
   try {
-    response = await listNearbyProducts({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1 });
+    response = await listNearbyProducts({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1, openNow: openNow || undefined });
   } catch (error) {
     if (error instanceof MarketplaceUnavailableError) return null;
     throw error;

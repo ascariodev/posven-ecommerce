@@ -63,9 +63,11 @@ export function nearbyProductsQuery(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  openNow?: boolean;
 }): URLSearchParams {
   const query = new URLSearchParams();
   appendLocation(query, p.geo, p.radiusKm);
+  if (p.openNow === true) query.set("open_now", "true");
   query.set("page", String(p.page));
   return query;
 }
@@ -85,15 +87,24 @@ export function pageQuery(page: number): URLSearchParams {
   return new URLSearchParams({ page: String(page) });
 }
 
-export function cartFulfillmentQuery(deliveryStores: string[]): URLSearchParams {
+export function cartFulfillmentQuery(deliveryStores: string[], geo: GeoFilter = null): URLSearchParams {
   const query = new URLSearchParams();
   for (const slug of deliveryStores) query.set(`fulfillment[${slug}]`, "delivery");
+  if (geo !== null && "lat" in geo) {
+    query.set("lat", String(geo.lat));
+    query.set("lng", String(geo.lng));
+  }
   return query;
 }
 
-export function cartFulfillmentBody(deliveryStores: string[]): { fulfillment?: Record<string, "delivery"> } {
-  if (deliveryStores.length === 0) return {};
-  return { fulfillment: Object.fromEntries(deliveryStores.map((slug) => [slug, "delivery" as const])) };
+export function cartFulfillmentBody(
+  deliveryStores: string[],
+  geo: GeoFilter = null,
+): { fulfillment?: Record<string, "delivery">; lat?: number; lng?: number } {
+  return {
+    ...(deliveryStores.length === 0 ? {} : { fulfillment: Object.fromEntries(deliveryStores.map((slug) => [slug, "delivery" as const])) }),
+    ...(geo !== null && "lat" in geo ? { lat: geo.lat, lng: geo.lng } : {}),
+  };
 }
 
 export type AccountContext = { session: string | null; clientIp: string | null };

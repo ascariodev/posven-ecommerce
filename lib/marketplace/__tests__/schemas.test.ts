@@ -46,6 +46,7 @@ import {
   searchResponseSchema,
   sitemapResponseSchema,
   storeResponseSchema,
+  storeSchema,
   storesResponseSchema,
   storeSummarySchema,
   nearbyProductsResponseSchema,
@@ -336,6 +337,7 @@ describe("el simulado del carrito pasa los esquemas del contrato", () => {
     const responses = [
       await quoteGuestCart(anonymous, []),
       await quoteGuestCart(anonymous, [line, offerGone]),
+      await quoteGuestCart(anonymous, [line], [], { lat: 10.18, lng: -68.0 }),
       await setCartItem(ctx, line),
       await mergeCart(ctx, [offerGone]),
       await getCart(ctx),
@@ -609,6 +611,7 @@ describe("closes_at en cartStoreSchema", () => {
     is_open: true,
     accepts_orders: true,
     offers_delivery: false,
+    distance_km: null,
     lines: [
       {
         product: { slug: "a", name: "A", image_url: null, category: null },
@@ -634,6 +637,13 @@ describe("closes_at en cartStoreSchema", () => {
 
   it("rechaza una hora mal formada", () => {
     expect(cartStoreSchema.safeParse({ ...store, closes_at: "8pm" }).success).toBe(false);
+  });
+
+  it("distance_km admite ausente, nulo o un número no negativo", () => {
+    expect(cartStoreSchema.safeParse({ ...store, distance_km: undefined }).success).toBe(true);
+    expect(cartStoreSchema.safeParse({ ...store, distance_km: null }).success).toBe(true);
+    expect(cartStoreSchema.safeParse({ ...store, distance_km: 2.3 }).success).toBe(true);
+    expect(cartStoreSchema.safeParse({ ...store, distance_km: -1 }).success).toBe(false);
   });
 
   it("fulfillment, delivery_fee_* y total_* son opcionales y se validan si vienen", () => {
@@ -666,11 +676,22 @@ describe("is_open y closes_at", () => {
     expect(offerSchema.safeParse({ ...offer, is_open: "1" }).success).toBe(false);
   });
 
+  it("son opcionales en la tienda y se rechaza una hora mal formada", async () => {
+    const response = await getStore({ slug: "farmacia-central-valencia", page: 1 });
+    const data = storeResponseSchema.parse(response).data;
+    const bare = { ...data, is_open: undefined, closes_at: undefined };
+    expect(storeSchema.safeParse(bare).success).toBe(true);
+    expect(storeSchema.safeParse({ ...bare, is_open: true, closes_at: "20:00" }).success).toBe(true);
+    expect(storeSchema.safeParse({ ...bare, closes_at: "8pm" }).success).toBe(false);
+  });
+
   it("el simulado los trae en búsqueda, ficha y tiendas", async () => {
     const search = await searchProducts({ ...noFilters, q: "acetaminofen" });
     expect(typeof search.featured[0].offer.is_open).toBe("boolean");
     const stores = await listNearbyStores({ geo: null, radiusKm: null, page: 1 });
     expect(stores.data.every((store) => typeof store.is_open === "boolean")).toBe(true);
+    const store = await getStore({ slug: "farmacia-central-valencia", page: 1 });
+    expect(typeof store?.data.is_open).toBe("boolean");
     const page = productResponseSchema.parse(await getProduct("acetaminofen-500-mg-20-tabletas"));
     expect("offers" in page && page.offers.every((entry) => typeof entry.is_open === "boolean")).toBe(true);
   });

@@ -52,6 +52,24 @@ describe("StoreHeader", () => {
     expect(container.querySelector("img")).toBeNull();
   });
 
+  it("muestra Abierta con la hora de cierre que entrega la API", () => {
+    render(<StoreHeader store={store({ is_open: true, closes_at: "20:00" })} />);
+    expect(screen.getByText("Abierta · hasta 20:00")).toBeTruthy();
+  });
+
+  it("muestra Abierta sin hora si la API no trae closes_at", () => {
+    render(<StoreHeader store={store({ is_open: true, closes_at: null })} />);
+    expect(screen.getByText("Abierta")).toBeTruthy();
+  });
+
+  it("muestra Cerrada ahora si la API dice que no está abierta y nada si no informa", () => {
+    const closed = render(<StoreHeader store={store({ is_open: false, closes_at: null })} />);
+    expect(screen.getByText("Cerrada ahora")).toBeTruthy();
+    closed.unmount();
+    render(<StoreHeader store={store()} />);
+    expect(screen.queryByText(/Abierta|Cerrada/)).toBeNull();
+  });
+
   it("pinta los hijos junto a los botones de contacto", () => {
     render(
       <StoreHeader store={store()}>

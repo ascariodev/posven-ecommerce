@@ -166,8 +166,9 @@ export async function SearchResults({
           nearby={
             <Suspense fallback={<NearbyProductsSkeleton />}>
               <NearbyProducts
-                title={query.openNow === true ? "Quizás te sirve (sin filtrar por horario)" : "Quizás te sirve"}
+                title={query.openNow === true ? "Quizás te sirve (abierto ahora)" : "Quizás te sirve"}
                 showAll={false}
+                openNow={query.openNow === true}
               />
             </Suspense>
           }

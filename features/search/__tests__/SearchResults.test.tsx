@@ -59,7 +59,7 @@ describe("SearchResults", () => {
     expect(vi.mocked(searchProducts).mock.calls[1]?.[0].openNow).toBeUndefined();
   });
 
-  it("con abierto=1 sin resultados rotula Quizás te sirve como no filtrado por horario", async () => {
+  it("con abierto=1 sin resultados pide productos cercanos abiertos y lo rotula", async () => {
     vi.mocked(searchProducts).mockResolvedValue({
       data: [],
       featured: [],
@@ -89,10 +89,12 @@ describe("SearchResults", () => {
       rate: { usd_ves: "36.5000", valid_on: "2026-10-04" },
     });
     render(await SearchResults({ searchParams: Promise.resolve({ q: "zzz", abierto: "1" }) }));
-    expect(await screen.findByRole("heading", { name: "Quizás te sirve (sin filtrar por horario)" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Quizás te sirve (abierto ahora)" })).toBeTruthy();
+    expect(vi.mocked(listNearbyProducts).mock.calls.at(-1)?.[0]).toMatchObject({ openNow: true });
     cleanup();
     render(await SearchResults({ searchParams: Promise.resolve({ q: "zzz" }) }));
     expect(await screen.findByRole("heading", { name: "Quizás te sirve" })).toBeTruthy();
+    expect(vi.mocked(listNearbyProducts).mock.calls.at(-1)?.[0].openNow).toBeUndefined();
   });
 
   describe("evento search", () => {

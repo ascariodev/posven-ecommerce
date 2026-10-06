@@ -87,6 +87,16 @@ describe("NearbyProducts", () => {
     expect(screen.queryByRole("link", { name: "Ver todo" })).toBeNull();
   });
 
+  it("con openNow lo pasa a listNearbyProducts y sin él lo omite", async () => {
+    vi.mocked(listNearbyProducts).mockResolvedValue(response([item("a")]));
+
+    render(await NearbyProducts({ openNow: true }));
+    expect(vi.mocked(listNearbyProducts).mock.calls.at(-1)?.[0]).toMatchObject({ openNow: true });
+    cleanup();
+    render(await NearbyProducts());
+    expect(vi.mocked(listNearbyProducts).mock.calls.at(-1)?.[0].openNow).toBeUndefined();
+  });
+
   it("enlaza la sección a su encabezado con el headingId dado", async () => {
     vi.mocked(listNearbyProducts).mockResolvedValue(response([item("a")]));
 

@@ -13,8 +13,8 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
    simulan lo que calcula la API: `mock/adapter.ts` compara montos con `Number()` para ordenar y
    elegir mínimo y máximo, sin sumar ni redondear; y `mock/money.ts` multiplica y suma los montos
    del carrito y del checkout en céntimos enteros (sin coma flotante), único lugar del repo que lo
-   hace. `mock/checkout.ts` calcula además la distancia haversine de una dirección a la tienda para
-   decidir si hay entrega, como la API (spec cuentas-y-compras §5.3).
+   hace. `mock/cart.ts` calcula además la distancia haversine de la ubicación a cada tienda (`distance_km`) y
+   `mock/checkout.ts` la reutiliza para decidir si hay entrega, como la API (spec cuentas-y-compras §4 y §5.3).
 2. **Esquema antes que tipo a mano.** Cada tipo del contrato es `z.infer` de su esquema en
    `schemas.ts`; no se declara un `type` o `interface` paralelo. Los tipos que no son contrato
    (`GeoFilter` en `params.ts`, `MockProduct` en `mock/fixtures.ts`) sí se escriben a mano.

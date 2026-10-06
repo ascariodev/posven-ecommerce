@@ -108,6 +108,7 @@ export async function listNearbyProducts(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  openNow?: boolean;
 }): Promise<NearbyProductsResponse> {
   "use cache";
   cacheLife("minutes");
@@ -334,14 +335,19 @@ export async function removeFavorite(ctx: AccountContext, target: FavoriteTarget
 
 // Carrito (spec cuentas-y-compras §4.2 con la enmienda del 2026-09-30): nada de un comprador en
 // 'use cache'. El invitado cotiza su cookie; el usuario usa su carrito del servidor.
-export async function quoteGuestCart(ctx: AccountContext, items: CartItem[], deliveryStores: string[] = []): Promise<Cart> {
-  if (usesMock()) return mock.quoteGuestCart(ctx, items, deliveryStores);
-  return accountRequest({ method: "POST", path: "/cart/quote", ctx, body: { items, ...cartFulfillmentBody(deliveryStores) } }, cartSchema);
+export async function quoteGuestCart(
+  ctx: AccountContext,
+  items: CartItem[],
+  deliveryStores: string[] = [],
+  geo: GeoFilter = null,
+): Promise<Cart> {
+  if (usesMock()) return mock.quoteGuestCart(ctx, items, deliveryStores, geo);
+  return accountRequest({ method: "POST", path: "/cart/quote", ctx, body: { items, ...cartFulfillmentBody(deliveryStores, geo) } }, cartSchema);
 }
 
-export async function getCart(ctx: AccountContext, deliveryStores: string[] = []): Promise<Cart> {
-  if (usesMock()) return mock.getCart(ctx, deliveryStores);
-  return accountRequest({ method: "GET", path: "/me/cart", ctx, query: cartFulfillmentQuery(deliveryStores) }, cartSchema);
+export async function getCart(ctx: AccountContext, deliveryStores: string[] = [], geo: GeoFilter = null): Promise<Cart> {
+  if (usesMock()) return mock.getCart(ctx, deliveryStores, geo);
+  return accountRequest({ method: "GET", path: "/me/cart", ctx, query: cartFulfillmentQuery(deliveryStores, geo) }, cartSchema);
 }
 
 export async function setCartItem(ctx: AccountContext, item: CartItemPut): Promise<Cart> {

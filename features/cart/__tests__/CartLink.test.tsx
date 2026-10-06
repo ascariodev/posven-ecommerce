@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getCart } from "@/lib/marketplace/client";
 import { MarketplaceAccountError, MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { Cart } from "@/lib/marketplace/schemas";
+import { getUserLocation } from "@/features/location/server/location";
 import { CartLink } from "@/features/cart/components/CartLink";
 
 const cookieStore = vi.hoisted(() => ({ get: vi.fn() }));
@@ -13,6 +14,7 @@ vi.mock("next/headers", () => ({
 }));
 
 vi.mock("@/lib/marketplace/client", () => ({ getCart: vi.fn(), getMe: vi.fn() }));
+vi.mock("@/features/location/server/location", () => ({ getUserLocation: vi.fn() }));
 
 function withCookies(values: { session?: string; cart?: string }): void {
   cookieStore.get.mockImplementation((name: string) => {
@@ -28,6 +30,7 @@ function cartWith(lineCount: number): Cart {
 
 beforeEach(() => {
   vi.stubEnv("MARKETPLACE_MODE", "mock");
+  vi.mocked(getUserLocation).mockResolvedValue(null);
 });
 
 afterEach(() => {
@@ -35,6 +38,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
   cookieStore.get.mockReset();
   vi.mocked(getCart).mockReset();
+  vi.mocked(getUserLocation).mockReset();
 });
 
 async function renderLink(): Promise<void> {
@@ -50,6 +54,16 @@ describe("CartLink", () => {
     await renderLink();
 
     expect(screen.getByRole("link", { name: "Carrito, 2 productos" }).getAttribute("href")).toBe("/carrito");
+  });
+
+  it("con sesión el contador lee el carrito con la ubicación de la cookie", async () => {
+    withCookies({ session: "7|token" });
+    vi.mocked(getUserLocation).mockResolvedValue({ kind: "coords", lat: 10.162, lng: -68.007 });
+    vi.mocked(getCart).mockResolvedValue(cartWith(1));
+
+    await renderLink();
+
+    expect(getCart).toHaveBeenCalledWith(expect.anything(), [], { lat: 10.162, lng: -68.007 });
   });
 
   it("el invitado cuenta las entradas de mp_cart sin llamar a la API", async () => {

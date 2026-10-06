@@ -190,9 +190,13 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
   tras retirar `/comercios`), conservando el mensaje que usa `merchantContactHref`, y ajustar los
   `intent_aliases` de `features/site/README.md`. `features/site/components/MerchantContact.tsx`, su
   test, `features/site/README.md`, `docs/CAPABILITIES.md`.
-- [ ] M-11 (baja, sonnet) — El e2e de ancho completo de `/ayuda` (375 px, `e2e/site.spec.ts`) pasa aun
+- [x] M-11 (baja, sonnet) — El e2e de ancho completo de `/ayuda` (375 px, `e2e/site.spec.ts`) pasa aun
   sin el `overflow-x: clip` (Chromium headless no tiene barra clásica); cubrir el caso con barra o
   aclarar en el nombre que sólo mide el ancho.
+- [ ] M-12 (media, sonnet) — Con barra clásica real (sin emulación móvil y sin `--hide-scrollbars`),
+  `/ayuda` a 375 px desborda 8 px (`scrollWidth` 368 contra `clientWidth` 360) aun con el
+  `overflow-x: clip` del `body`; averiguar qué elemento desborda y llevar el e2e de ancho completo a
+  ese modo para que detecte la regresión.
 - Patrón M-5: sección a sangre con `data-full-bleed`, `w-screen`, `ml-[calc(50%-50vw)]` y `-mt-8`
   (depende del `py-8` de `<main>` en `app/layout.tsx`), más `body:has([data-full-bleed]) { overflow-x: clip }`
   en `app/globals.css`; con barra clásica el héroe se recorta 7.5 px por lado, sin efecto visible.

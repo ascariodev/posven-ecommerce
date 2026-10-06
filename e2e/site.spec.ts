@@ -137,7 +137,7 @@ test("/ayuda tiene canónica propia, filtra las preguntas y se llega desde el pi
   await expect(page.getByRole("heading", { name: "Sin coincidencias" })).toBeVisible();
 });
 
-test("/ayuda lleva el héroe a ancho completo sin desborde horizontal a 375 px", async ({ page }) => {
+test("/ayuda lleva el héroe a ancho completo a 375 px (mide ancho y desborde sin barra clásica: no detecta la falta de overflow-x: clip)", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 800 });
   await page.goto("/ayuda");
   const hero = page.getByRole("heading", { level: 1, name: "¿En qué te ayudamos?" }).locator("xpath=ancestor::section[1]");

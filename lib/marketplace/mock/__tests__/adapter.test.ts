@@ -41,6 +41,67 @@ describe("adaptador simulado", () => {
   });
 });
 
+describe("ciudad sin tiendas simulada", () => {
+  const geo = { city: "maracaibo" };
+
+  it("la búsqueda devuelve todo el país fuera de rango y sin destacados", async () => {
+    const everything = await searchProducts({ q: "", category: null, geo: null, radiusKm: null, page: 1 });
+    const response = await searchProducts({ q: "", category: null, geo, radiusKm: 10, page: 1 });
+
+    expect(response.meta.out_of_range).toBe(true);
+    expect(response.meta.total).toBe(everything.meta.total);
+    expect(response.featured).toEqual([]);
+    expect(response.data.length).toBeGreaterThan(0);
+    for (const item of response.data) expect(item.outside_radius).toBe(true);
+  });
+
+  it("las tiendas salen todas, de la más cercana a la más lejana, fuera de rango", async () => {
+    const everything = await listNearbyStores({ geo: null, radiusKm: null, page: 1 });
+    const response = await listNearbyStores({ geo, radiusKm: 10, page: 1 });
+
+    expect(response.meta).toMatchObject({ out_of_range: true, total: everything.meta.total });
+    expect(response.featured).toEqual([]);
+    for (const store of response.data) expect(store.outside_radius).toBe(true);
+    const km = response.data.map((store) => store.distance_km ?? 0);
+    expect(km).toEqual([...km].sort((a, b) => a - b));
+  });
+
+  it("los productos cercanos marcan la ciudad sin tiendas", async () => {
+    const response = await listNearbyProducts({ geo, radiusKm: 10, page: 1 });
+
+    expect(response.meta.out_of_range).toBe(true);
+    for (const item of response.data) expect(item.outside_radius).toBe(true);
+  });
+
+  it("las ofertas de un producto salen todas fuera de rango, sin destacadas ni mejor precio", async () => {
+    const response = await getProductOffers({
+      slug: "acetaminofen-500-mg-20-tabletas",
+      geo,
+      radiusKm: 10,
+      sort: "price",
+    });
+    if (response === null || "redirect_to" in response) throw new Error("se esperaba la página");
+
+    expect(response.meta).toEqual({ out_of_range: true });
+    expect(response.featured).toEqual([]);
+    expect(response.offers.length).toBe(response.data.offers_summary.offer_count);
+    for (const offer of response.offers) {
+      expect(offer.outside_radius).toBe(true);
+      expect(offer.is_best_price).toBe(false);
+    }
+  });
+
+  it("una ciudad con tiendas, sin ubicación o desconocida llevan out_of_range en falso", async () => {
+    const valencia = await searchProducts({ q: "", category: null, geo: { city: "valencia" }, radiusKm: 10, page: 1 });
+    const none = await listNearbyStores({ geo: null, radiusKm: null, page: 1 });
+    const unknown = await listNearbyStores({ geo: { city: "no-existe" }, radiusKm: 10, page: 1 });
+
+    expect(valencia.meta.out_of_range).toBe(false);
+    expect(none.meta.out_of_range).toBe(false);
+    expect(unknown).toMatchObject({ data: [], meta: { out_of_range: false } });
+  });
+});
+
 describe("producto simulado", () => {
   const slug = "acetaminofen-500-mg-20-tabletas";
 
@@ -279,7 +340,7 @@ describe("productos cercanos simulados", () => {
     const first = await listNearbyProducts({ geo: null, radiusKm: null, page: 1 });
     const second = await listNearbyProducts({ geo: null, radiusKm: null, page: 2 });
     const firstSlugs = first.data.map((item) => item.slug);
-    expect(second.meta).toEqual({ page: 2, per_page: 20, total: first.meta.total });
+    expect(second.meta).toEqual({ page: 2, per_page: 20, total: first.meta.total, out_of_range: false });
     expect(second.data).toHaveLength(Math.max(0, first.meta.total - 20));
     expect(second.data.some((item) => firstSlugs.includes(item.slug))).toBe(false);
   });

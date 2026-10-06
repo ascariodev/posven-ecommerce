@@ -48,6 +48,7 @@ export const MOCK_RATE: Rate = { usd_ves: "36.50", valid_on: "2026-09-26" };
 const valencia: CityRef = { slug: "valencia", name: "Valencia" };
 const naguanagua: CityRef = { slug: "naguanagua", name: "Naguanagua" };
 const caracas: CityRef = { slug: "caracas", name: "Caracas" };
+const maracaibo: CityRef = { slug: "maracaibo", name: "Maracaibo" };
 
 export const MOCK_LOCATIONS: LocationState[] = [
   {
@@ -62,6 +63,11 @@ export const MOCK_LOCATIONS: LocationState[] = [
     slug: "distrito-capital",
     name: "Distrito Capital",
     municipalities: [{ slug: "libertador", name: "Libertador", cities: [caracas] }],
+  },
+  {
+    slug: "zulia",
+    name: "Zulia",
+    municipalities: [{ slug: "maracaibo", name: "Maracaibo", cities: [maracaibo] }],
   },
 ];
 

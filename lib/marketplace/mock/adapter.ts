@@ -75,13 +75,25 @@ function readScope(query: URLSearchParams): Scope {
   return { kind: "none" };
 }
 
+const CITIES_WITH_NO_STORES = new Set(
+  MOCK_LOCATIONS.flatMap((state) => state.municipalities.flatMap((municipality) => municipality.cities))
+    .map((city) => city.slug)
+    .filter((slug) => !MOCK_STORES.some((store) => store.summary.city.slug === slug)),
+);
+
+function isOutOfRange(scope: Scope): boolean {
+  return scope.kind === "city" && CITIES_WITH_NO_STORES.has(scope.city);
+}
+
 function storeInScope(store: MockStore, scope: Scope): boolean {
+  if (isOutOfRange(scope)) return true;
   if (scope.kind === "city") return store.summary.city.slug === scope.city;
   if (scope.kind === "coords" && scope.radiusKm !== null) return store.distance_km <= scope.radiusKm;
   return true;
 }
 
 function productInScope(item: MockProduct, scope: Scope): boolean {
+  if (isOutOfRange(scope)) return true;
   if (scope.kind === "city") {
     return item.offers.some((offer) => findStore(offer.store_slug).summary.city.slug === scope.city);
   }
@@ -122,7 +134,7 @@ function toSearchItem(item: MockProduct, scope: Scope): SearchItem {
     min_price_usd: item.min_price_usd,
     min_price_ves: item.min_price_ves,
     nearest_km: scope.kind === "none" ? null : item.nearest_km,
-    outside_radius: false,
+    outside_radius: isOutOfRange(scope),
   };
 }
 
@@ -170,6 +182,7 @@ function toOffer(offer: MockOffer, store: MockStore, scope: Scope): Offer {
 }
 
 function toFeatured(item: MockProduct, scope: Scope): FeaturedProduct | null {
+  if (isOutOfRange(scope)) return null;
   for (const offer of item.offers) {
     const store = findStore(offer.store_slug);
     if (!store.summary.is_premium || !storeInScope(store, scope)) continue;
@@ -217,7 +230,7 @@ export async function searchProducts(p: {
       .filter((item) => !featuredSlugs.has(item.product.slug))
       .map((item) => toSearchItem(item, scope)),
     featured,
-    meta: { page: p.page, per_page: SEARCH_PER_PAGE, total: matches.length },
+    meta: { page: p.page, per_page: SEARCH_PER_PAGE, total: matches.length, out_of_range: isOutOfRange(scope) },
     rate: MOCK_RATE,
   };
 }
@@ -273,7 +286,7 @@ export async function listNearbyProducts(p: {
   );
   return {
     data: pageOf(ordered, p.page, SEARCH_PER_PAGE).map((item) => toSearchItem(item, scope)),
-    meta: { page: p.page, per_page: SEARCH_PER_PAGE, total: ordered.length },
+    meta: { page: p.page, per_page: SEARCH_PER_PAGE, total: ordered.length, out_of_range: isOutOfRange(scope) },
     rate: MOCK_RATE,
   };
 }
@@ -292,15 +305,18 @@ export async function listNearbyStores(p: {
   const stores: NearbyStore[] = ordered.map((store) => ({
     ...store.summary,
     distance_km: scope.kind === "none" ? null : store.distance_km,
-    outside_radius: false,
+    outside_radius: isOutOfRange(scope),
     cover_url: MOCK_STORE_DETAILS[store.summary.slug]?.cover_url ?? null,
     ...storeStatus(store),
   }));
 
   return {
     data: pageOf(stores, p.page, STORES_PER_PAGE),
-    featured: p.page === 1 ? stores.filter((store) => store.is_premium).slice(0, MAX_FEATURED) : [],
-    meta: { page: p.page, per_page: STORES_PER_PAGE, total: stores.length },
+    featured:
+      p.page === 1 && !isOutOfRange(scope)
+        ? stores.filter((store) => store.is_premium).slice(0, MAX_FEATURED)
+        : [],
+    meta: { page: p.page, per_page: STORES_PER_PAGE, total: stores.length, out_of_range: isOutOfRange(scope) },
   };
 }
 
@@ -348,6 +364,10 @@ function productPage(
 ): ProductResponse | null {
   if (Object.hasOwn(MOCK_REDIRECTS, slug)) return { redirect_to: MOCK_REDIRECTS[slug] };
 
+  const query = productQuery(p);
+  const scope = readScope(query);
+  const meta = { out_of_range: isOutOfRange(scope) };
+
   const unavailable = MOCK_UNAVAILABLE_PRODUCTS.find((product) => product.slug === slug);
   if (unavailable !== undefined) {
     return {
@@ -355,14 +375,13 @@ function productPage(
       featured: [],
       offers: [],
       rate: MOCK_RATE,
+      meta,
     };
   }
 
   const item = MOCK_PRODUCTS.find((candidate) => candidate.product.slug === slug);
   if (item === undefined) return null;
 
-  const query = productQuery(p);
-  const scope = readScope(query);
   const byDistance = query.get("sort") === "distance" && scope.kind !== "none";
   const ordered = item.offers
     .map((offer) => ({ offer, store: findStore(offer.store_slug) }))
@@ -372,12 +391,13 @@ function productPage(
         : comparePrice(a, b) || compareDistance(a, b),
     );
 
-  const inScope = ordered.filter((entry) => storeInScope(entry.store, scope));
+  const inScope = meta.out_of_range ? [] : ordered.filter((entry) => storeInScope(entry.store, scope));
   const featured = inScope.filter((entry) => entry.store.summary.is_premium).slice(0, MAX_FEATURED);
   const rest = inScope.filter((entry) => !featured.includes(entry));
   const bounded = scope.kind === "city" || (scope.kind === "coords" && scope.radiusKm !== null);
-  const outside =
-    bounded && inScope.length < MIN_OFFERS_IN_SCOPE
+  const outside = meta.out_of_range
+    ? ordered
+    : bounded && inScope.length < MIN_OFFERS_IN_SCOPE
       ? ordered
           .filter((entry) => !inScope.includes(entry))
           .sort(compareDistance)
@@ -404,6 +424,7 @@ function productPage(
     featured: featured.map((entry) => toProductOffer(entry, false)),
     offers: served.map((item) => toProductOffer(item.entry, item.outsideRadius)),
     rate: MOCK_RATE,
+    meta,
   };
 }
 

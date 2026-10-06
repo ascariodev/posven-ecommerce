@@ -5,6 +5,7 @@ import {
   createAddress,
   getMe,
   getProduct,
+  getProductOffers,
   getStore,
   listCategories,
   listLocations,
@@ -212,6 +213,47 @@ describe("storeSummarySchema", () => {
 
   it("con accepts_orders conserva su valor", () => {
     expect(storeSummarySchema.parse({ ...withoutField, accepts_orders: true }).accepts_orders).toBe(true);
+  });
+});
+
+describe("meta.out_of_range", () => {
+  const maracaibo = { ...noFilters, q: "", geo: { city: "maracaibo" }, radiusKm: 10 } as const;
+
+  it("el simulado de una ciudad sin tiendas pasa los cuatro esquemas con la marca", async () => {
+    const search = await searchProducts(maracaibo);
+    const nearby = await listNearbyProducts({ geo: maracaibo.geo, radiusKm: 10, page: 1 });
+    const stores = await listNearbyStores({ geo: maracaibo.geo, radiusKm: 10, page: 1 });
+    const product = await getProductOffers({
+      slug: "acetaminofen-500-mg-20-tabletas",
+      geo: maracaibo.geo,
+      radiusKm: 10,
+      sort: "price",
+    });
+
+    expect(searchResponseSchema.parse(search).meta.out_of_range).toBe(true);
+    expect(nearbyProductsResponseSchema.parse(nearby).meta.out_of_range).toBe(true);
+    expect(storesResponseSchema.parse(stores).meta.out_of_range).toBe(true);
+    const page = productResponseSchema.parse(product);
+    expect("redirect_to" in page ? undefined : page.meta?.out_of_range).toBe(true);
+  });
+
+  it("la respuesta sin la clave sigue siendo válida", async () => {
+    const response = await searchProducts({ ...noFilters, q: "" });
+    const meta = { page: response.meta.page, per_page: response.meta.per_page, total: response.meta.total };
+    expect(searchResponseSchema.safeParse({ ...response, meta }).success).toBe(true);
+  });
+
+  it("rechaza un valor que no es booleano", async () => {
+    const response = await searchProducts({ ...noFilters, q: "" });
+    const meta = { ...response.meta, out_of_range: "si" };
+    expect(searchResponseSchema.safeParse({ ...response, meta }).success).toBe(false);
+  });
+
+  it("la ficha de producto sin meta sigue siendo válida", async () => {
+    const response = await getProduct("acetaminofen-500-mg-20-tabletas");
+    if (response === null || "redirect_to" in response) throw new Error("se esperaba la página");
+    const withoutMeta = { data: response.data, featured: response.featured, offers: response.offers, rate: response.rate };
+    expect(productResponseSchema.safeParse(withoutMeta).success).toBe(true);
   });
 });
 

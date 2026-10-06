@@ -61,7 +61,7 @@ export async function StoresDirectory({
         {meta.total === 1 ? "1 comercio" : `${meta.total} comercios`}
         {location !== null ? " cerca de ti" : ` en ${SITE_NAME}`}
       </p>
-      <ul aria-label="Comercios" className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <ul aria-label="Comercios" className="grid grid-cols-[minmax(0,1fr)] items-start gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {stores.map(({ store, featured: isFeatured }) => (
           <li key={store.slug}>
             <StoreCard store={store} featured={isFeatured} />

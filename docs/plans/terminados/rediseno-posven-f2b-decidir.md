@@ -153,7 +153,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [x] M-16 — P06: ofertas en filas compactas con el precio a la derecha y un solo "Agregar" en la barra (hoy cada oferta es tarjeta alta con "Elegir" y "Agregar al carrito"). Rediseño de `OfferCard`.
   posven-ecommerce · media · sonnet
-- [ ] M-17 — P06: "Fuera de tu zona" plegado en móvil ("Ver N tiendas fuera de tu zona").
+- [x] M-17 — P06: "Fuera de tu zona" plegado en móvil ("Ver N tiendas fuera de tu zona").
   posven-ecommerce · baja · sonnet
 - [x] M-18 — La barra de compra elige por defecto la de `is_best_price` aunque no reciba pedidos; preferir la más barata que sí los acepte (absorbe M-8).
   posven-ecommerce · baja · sonnet
@@ -177,3 +177,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [ ] M-28 — Comprobar a 320 px que el `-ml-2` de `OfferSelectButton` alinea el círculo con el borde de la fila sin recortarlo.
   posven-ecommerce · baja · sonnet
+- [ ] M-29 — `RN-PRODUCT-03` del README de product no cita la prueba nueva de "Fuera de tu zona" plegado, y esa prueba deja `vi.stubEnv` sin `try/finally` (un fallo arrastra el stub a las siguientes).
+  posven-ecommerce · baja · sonnet
+- [ ] M-30 — El lienzo P06 enlaza "Ver N tiendas fuera de tu zona" a `/resultados`; la ficha lo pliega en el sitio. Decidir si se cambia a navegación.
+  posven-ecommerce · media · sonnet

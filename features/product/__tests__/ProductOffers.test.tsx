@@ -88,7 +88,7 @@ describe("ProductOffers", () => {
     expect(within(items[1]).getByText("$ 2,50")).toBeTruthy();
     expect(within(items[1]).queryByText("Destacado")).toBeNull();
 
-    expect(screen.getByRole("heading", { level: 3, name: "Fuera de tu zona" })).toBeTruthy();
+    expect(screen.getByText("Ver 1 tienda fuera de tu zona").closest("summary")).not.toBeNull();
     const outside = screen.getByRole("list", { name: "Fuera de tu zona" });
     expect(within(outside).getByText("$ 2,70")).toBeTruthy();
   });
@@ -124,6 +124,26 @@ describe("ProductOffers", () => {
     expect(summary.className).not.toContain("group-open:hidden");
     expect(within(summary).getByText("Ver menos").className).toContain("group-open:inline");
     expect(within(summary).getByText("Ver 1 tienda más").className).toContain("group-open:hidden");
+  });
+
+  it("Fuera de tu zona va plegado con el conteo de la lista y abierto si la tienda elegida está dentro", async () => {
+    vi.stubEnv("MARKETPLACE_MODE", "mock");
+    const sells = (slug: string, name: string, overrides: Partial<ProductOffer> = {}) => {
+      const base = offer(slug, name, overrides);
+      return { ...base, store: { ...base.store, accepts_orders: true } };
+    };
+    const far = [1, 2, 3].map((n) => sells(`lejos-${n}`, `Lejos ${n}`, { outside_radius: true }));
+    vi.mocked(getProductOffers).mockResolvedValue(page([sells("cerca", "Cerca"), ...far], []));
+
+    const { container, unmount } = render(await ProductOffers({ product, searchParams: searchParams({}) }));
+    expect(screen.getByText("Ver 3 tiendas fuera de tu zona")).toBeTruthy();
+    expect((container.querySelector("details") as HTMLDetailsElement).open).toBe(false);
+    unmount();
+
+    vi.mocked(getProductOffers).mockResolvedValue(page(far, []));
+    const second = render(await ProductOffers({ product, searchParams: searchParams({}) }));
+    expect((second.container.querySelector("details") as HTMLDetailsElement).open).toBe(true);
+    vi.unstubAllEnvs();
   });
 
   it("sin ubicación no ofrece Más cerca y pide sort price aunque venga orden=cerca", async () => {

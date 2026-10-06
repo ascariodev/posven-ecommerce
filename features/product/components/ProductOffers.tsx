@@ -95,7 +95,7 @@ export async function ProductOffers({
             </span>
             <span className="hidden group-open:inline">Ver menos</span>
           </summary>
-          <ul aria-label="Más ofertas" className="flex flex-col gap-3">
+          <ul aria-label="Más ofertas" className="mt-3 flex flex-col gap-3">
             {more.map((offer) => (
               <li key={offer.store.slug}>
                 <OfferCard offer={offer} product={product} featured={false} now={now} />
@@ -105,16 +105,21 @@ export async function ProductOffers({
         </details>
       )}
       {outside.length > 0 && (
-        <>
-          <h3 className="text-lg font-bold tracking-tight">Fuera de tu zona</h3>
-          <ul aria-label="Fuera de tu zona" className="flex flex-col gap-3">
+        <details className="group" open={withBar && outside.includes(defaultOffer)}>
+          <summary className="flex h-11 cursor-pointer list-none items-center justify-center rounded-lg border border-input-border text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground md:h-9 [&::-webkit-details-marker]:hidden">
+            <span className="group-open:hidden">
+              {outside.length === 1 ? "Ver 1 tienda fuera de tu zona" : `Ver ${outside.length} tiendas fuera de tu zona`}
+            </span>
+            <span className="hidden group-open:inline">Ocultar tiendas fuera de tu zona</span>
+          </summary>
+          <ul aria-label="Fuera de tu zona" className="mt-3 flex flex-col gap-3">
             {outside.map((offer) => (
               <li key={offer.store.slug}>
                 <OfferCard offer={offer} product={product} featured={false} now={now} />
               </li>
             ))}
           </ul>
-        </>
+        </details>
       )}
       {withBar && <PurchaseBar product={product} />}
     </section>

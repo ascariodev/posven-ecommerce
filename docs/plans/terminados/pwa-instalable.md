@@ -61,6 +61,10 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
   el layout conserva `viewport.themeColor` por modo. `appleWebApp` con `capable`, `title: SITE_NAME`
   y `statusBarStyle: "default"`. `features/site/README.md` re-verificado (`verified_at` `b0bed8d`).
 
+- 2026-10-06 — M-2: `brandIcon` pasa a async (`Promise<ImageResponse>`) y lee
+  `features/site/assets/Poppins-Bold.ttf` con `readFile` desde `process.cwd()`; `import.meta.url`
+  daba 500 en el servidor compilado. El standalone traza la fuente sola.
+
 ## Notas para la próxima sesión
 - Plan terminado 2026-10-06 en `feat/pwa-instalable` (b0bed8d, ee4a7c6), sin merge ni push.
 
@@ -68,7 +72,7 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
 - [x] M-1 — `app/icon.tsx`: `ICONS[String(await id)]` revienta con un id desconocido; Next sólo
   pide los declarados, pero un `notFound()` defensivo lo cierra.
   posven-ecommerce · baja · sonnet
-- [ ] M-2 — Cargar Poppins en negrita en `brandIcon` para igualar la marca de la cabecera (la
+- [x] M-2 — Cargar Poppins en negrita en `brandIcon` para igualar la marca de la cabecera (la
   tipografía por defecto de `ImageResponse` sale sin negrita).
   posven-ecommerce · baja · sonnet
 - [ ] M-3 — `theme_color` del manifest es la tinta fija, pero `viewport.themeColor` usa `#ffffff`
@@ -77,4 +81,10 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
   posven-ecommerce · baja · sonnet
 - [ ] M-4 — `e2e/site.spec.ts`: los colores del manifest se comparan en hexadecimal fijo; leerlos
   de una constante compartida con `app/manifest.ts`.
+  posven-ecommerce · baja · sonnet
+- [ ] M-5 — `features/site/assets/`: agregar `OFL.txt` junto a `Poppins-Bold.ttf` para cumplir la
+  atribución de la licencia.
+  posven-ecommerce · baja · sonnet
+- [ ] M-6 — Prueba de vitest que falle si `brandIcon` deja de encontrar el `.ttf` (un cambio a
+  `import.meta.url` o a una ruta con variables rompe el trazado del standalone).
   posven-ecommerce · baja · sonnet

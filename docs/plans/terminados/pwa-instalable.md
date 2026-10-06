@@ -82,7 +82,7 @@ propios con la marca), sin service worker ni funcionamiento sin conexión.
   en claro: en Android la barra de la app instalada sale oscura con el sistema en claro. Alinear o
   dejar la decisión escrita.
   posven-ecommerce · baja · sonnet
-- [ ] M-4 — `e2e/site.spec.ts`: los colores del manifest se comparan en hexadecimal fijo; leerlos
+- [x] M-4 — `e2e/site.spec.ts`: los colores del manifest se comparan en hexadecimal fijo; leerlos
   de una constante compartida con `app/manifest.ts`.
   posven-ecommerce · baja · sonnet
 - [ ] M-5 — `features/site/assets/`: agregar `OFL.txt` junto a `Poppins-Bold.ttf` para cumplir la

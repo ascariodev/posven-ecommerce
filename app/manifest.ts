@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import { MANIFEST_BACKGROUND_COLOR, MANIFEST_THEME_COLOR, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: SITE_DESCRIPTION,
     start_url: "/",
     display: "standalone",
-    background_color: "#fafafb",
-    theme_color: "#28292d",
+    background_color: MANIFEST_BACKGROUND_COLOR,
+    theme_color: MANIFEST_THEME_COLOR,
     lang: "es",
     icons: [
       { src: "/icon/192", sizes: "192x192", type: "image/png", purpose: "any" },

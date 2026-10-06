@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { MANIFEST_BACKGROUND_COLOR, MANIFEST_THEME_COLOR } from "../lib/site";
 
 const FOOTER_LINKS = [
   { name: "Para comercios", path: "/vende" },
@@ -192,8 +193,8 @@ test("el manifest declara la instalación con sus íconos y el head enlaza el ma
     start_url: "/",
     display: "standalone",
     lang: "es",
-    background_color: "#fafafb",
-    theme_color: "#28292d",
+    background_color: MANIFEST_BACKGROUND_COLOR,
+    theme_color: MANIFEST_THEME_COLOR,
   });
   expect(manifest.description).toBeTruthy();
   expect(manifest.icons.map((icon: { src: string; purpose: string }) => [icon.src, icon.purpose])).toEqual([

@@ -95,7 +95,7 @@ que enlaza.
 | Texto de privacidad, o una cookie o dato nuevo del sitio | `privacyDocument` en `privacy.ts` | comprobarlo contra el código que lo guarda y RN-SITE-06 |
 | Una página legal nueva | `LEGAL_PATHS` en `legal.ts`, su documento y `app/<ruta>/page.tsx` sobre `LegalDocument` | sumarla a `registered` en `legal.test.tsx` |
 | Íconos del sitio (pestaña, instalación, iOS) | dibujo en `brandIcon` de `brand-icon.tsx`; tamaños y variantes en `ICONS` de `app/icon.tsx` y en `app/apple-icon.tsx` | la inicial y los colores replican la marca de `SiteHeader`; la variante `maskable` mantiene la letra dentro del 80 % central |
-| Nombre, colores o íconos de la instalación (manifest) | `manifest` en `app/manifest.ts`; `appleWebApp` en `metadata` de `app/layout.tsx` | los `src` de `icons` son los ids de `app/icon.tsx`; `e2e/site.spec.ts` ("el manifest declara la instalación") los pide |
+| Nombre, colores o íconos de la instalación (manifest) | `manifest` en `app/manifest.ts` (colores en `MANIFEST_*_COLOR` de `lib/site.ts`); `appleWebApp` en `metadata` de `app/layout.tsx` | los `src` de `icons` son los ids de `app/icon.tsx`; `e2e/site.spec.ts` ("el manifest declara la instalación") los pide |
 | Cómo se calcula el año | `footerYear` en `year.ts` | sigue en `'use cache'` con `cacheLife` |
 
 ## 4. API pública
@@ -137,13 +137,13 @@ que enlaza.
 ## 6. Dependencias
 
 - `lib/marketplace/client.ts` (`listCategories`), `lib/marketplace/errors.ts`, `lib/marketplace/params.ts` (`DEFAULT_RADIUS_KM`) y `lib/marketplace/schemas.ts` (`CategoryNode`, sólo tipo).
-- `features/search/lib/query.ts` (`searchHref`, su única dependencia sobre ese archivo; el pie no pasa `openNow` ni `sort`, así que la URL queda sin `abierto` ni `orden`) y `lib/site.ts` (`SITE_NAME`, `SITE_DESCRIPTION`, `POS_NAME`, `merchantWhatsapp`, `merchantEmail`).
+- `features/search/lib/query.ts` (`searchHref`, su única dependencia sobre ese archivo; el pie no pasa `openNow` ni `sort`, así que la URL queda sin `abierto` ni `orden`) y `lib/site.ts` (`SITE_NAME`, `SITE_DESCRIPTION`, `POS_NAME`, `MANIFEST_BACKGROUND_COLOR`, `MANIFEST_THEME_COLOR`, `merchantWhatsapp`, `merchantEmail`).
 - `next` (tipo `Metadata`) en `legal.ts`; `next-themes` en `ThemeProvider`.
 - `features/account/lib/returnPath.ts` (`loginHref`), `features/account/server/session.ts` (`accountContext`), `features/cart/components/CartLink.tsx` (`cartCount`) y `features/cart/lib/flag.ts` (`cartEnabled`) en `MobileNav`. `cartCount` lee `getSessionCart()` de `features/cart/server/cart.ts` sin argumento (`deliveryKey` vacío, la clave de `cache` sin entrega elegida; la ubicación de la cookie `loc` se lee dentro) y sólo usa `line_count`; `lucide-react` y `next/navigation` (`usePathname`) en `MobileNavLinks`.
 - `features/location/components/LocationBar.tsx`, `features/search/components/HeaderSearchSlot.tsx` y `SearchPill.tsx`, `features/cart/components/CartLink.tsx` y `features/account/components/AccountMenu.tsx` en `SiteHeader`.
 - `components/ui/button.tsx` (`buttonVariants`), `components/ui/switch.tsx` (`Switch`) y `lib/utils.ts` (`cn`).
 - `next/og` (`ImageResponse`), `node:fs/promises` y `features/site/assets/Poppins-Bold.ttf` (Poppins, licencia SIL OFL 1.1) en `brand-icon.tsx`.
-- `next` (tipo `MetadataRoute.Manifest`) y `lib/site.ts` (`SITE_NAME`, `SITE_DESCRIPTION`) en `app/manifest.ts`.
+- `next` (tipo `MetadataRoute.Manifest`) y `lib/site.ts` (`SITE_NAME`, `SITE_DESCRIPTION`, `MANIFEST_BACKGROUND_COLOR`, `MANIFEST_THEME_COLOR`) en `app/manifest.ts`, que `e2e/site.spec.ts` importa también.
 - `next/link` y `next/cache` (`cacheLife`). `app/ayuda/page.tsx` usa `features/help/components/HelpCenter.tsx`.  `app/vende/page.tsx` usa `features/merchants/components/MerchantsLanding.tsx`, que importa `merchantContactHref` de este módulo.
 
 ## 7. Ejemplo de uso

@@ -29,3 +29,14 @@ export async function clickPay(page: Page): Promise<void> {
     .toBe(true);
   await pay.click();
 }
+
+// El disparador llega en el HTML del servidor, pero hasta que React hidrata un clic no abre el
+// sheet y el test se queda esperando su contenido. Se espera la marca de hidratación y se hace un
+// solo clic.
+export async function openLocationSheet(page: Page): Promise<void> {
+  const trigger = page.getByRole("button", { name: /^Buscar cerca de / });
+  await expect
+    .poll(() => trigger.evaluate((node) => Object.keys(node).some((key) => key.startsWith("__reactProps$"))), { timeout: 15_000 })
+    .toBe(true);
+  await trigger.click();
+}

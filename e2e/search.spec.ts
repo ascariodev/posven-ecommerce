@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { SITE_NAME } from "../lib/site";
+import { openLocationSheet } from "./helpers";
 
 test("la portada lleva a la búsqueda con resultados, tasa y noindex", async ({ page }) => {
   await page.goto("/");
@@ -32,7 +33,7 @@ test("una búsqueda sin resultados ofrece el enlace a /vende", async ({ page }) 
 
 test("elegir ciudad la guarda y la búsqueda ofrece sólo la ciudad o todo el país", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Buscar cerca de Elegir ubicación" }).click();
+  await openLocationSheet(page);
   await page.getByRole("button", { name: "Elegir ciudad" }).click();
   await page.getByRole("combobox", { name: "Estado" }).click();
   await page.getByRole("option", { name: "Carabobo", exact: true }).click();
@@ -58,7 +59,7 @@ test.describe("con geolocalización concedida", () => {
 
   test("usar mi ubicación muestra la ubicación actual", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Buscar cerca de Elegir ubicación" }).click();
+    await openLocationSheet(page);
     await page.getByRole("button", { name: "Usar mi ubicación" }).click();
 
     await expect(page.getByRole("button", { name: "Buscar cerca de Tu ubicación actual" })).toBeVisible();

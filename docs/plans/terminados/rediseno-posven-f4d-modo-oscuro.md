@@ -103,5 +103,5 @@ el tema (M-4 de F0) y que `/preview` deje de existir.
 - [x] M-7 — (aplicada en 6182c84) `e2e/search.spec.ts:24`: apuntar al enlace visible de `EmptyState` (no `.first()` de `a[href="/vende"]`, que toma el de cabecera oculto en móvil); falla en `main` desde F4b (posven-ecommerce · baja · haiku)
 - [x] M-8 — (quitado) `CategoryRail` (`features/search/components/CategoryRail.tsx`) ya no se monta en ningún lado: quitarlo con su test y su ficha del README de search, o volver a montarlo (posven-ecommerce · baja · sonnet)
 - [x] M-9 — `CategoryTiles` y `categoryPhoto` de `features/search` sin prueba propia ni regla `RN-` (posven-ecommerce · baja · sonnet)
-- [ ] M-10 — `e2e/search.spec.ts:59` ("usar mi ubicación") falló una vez en la suite completa y pasó al repetirlo: investigar la intermitencia (posven-ecommerce · media · sonnet)
+- [x] M-10 — (mitigación preventiva: no se reprodujo; si reaparece, revisar `setLocationFromCoords` y `router.refresh` bajo carga) `e2e/search.spec.ts:59` ("usar mi ubicación") falló una vez en la suite completa y pasó al repetirlo: investigar la intermitencia (posven-ecommerce · media · sonnet)
 - [ ] M-11 — Reflujo de `.claude/rules/tests.md:40-41` (una línea pasa de 100 columnas) (posven-ecommerce · baja · haiku)

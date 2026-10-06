@@ -58,12 +58,6 @@ lectura se repite. Quien comparte un `cache` con otro llamador lo invoca con los
 (sin el valor por defecto explícito), y una prueba memoizando por argumentos lo fija.
 aplicada en: `features/cart/__tests__/cart.test.ts`
 
-## L-14
-Una primitiva sobre `bg-ink` (pie) no contrasta con sus colores por defecto: `outline-foreground`
-y `bg-primary` quedan por debajo de 3:1 en algún modo. Se le pasan por `className` clases `ink`
-(foco, borde y relleno), con `!` donde el `dark:` de shadcn gana, y se mide en claro y oscuro.
-aplicada en: `.claude/rules/ui.md` ítem 5
-
 ## L-15
 En el frontmatter de un README de módulo, un escalar entre comillas dobles (`output: "..."`) no
 lleva comillas dobles dentro (`"Ver menos"`, `name="robots"`): el YAML queda inválido y

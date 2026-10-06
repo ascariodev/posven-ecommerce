@@ -62,4 +62,4 @@ aplicada en: `features/cart/__tests__/cart.test.ts`
 Una primitiva sobre `bg-ink` (pie) no contrasta con sus colores por defecto: `outline-foreground`
 y `bg-primary` quedan por debajo de 3:1 en algún modo. Se le pasan por `className` clases `ink`
 (foco, borde y relleno), con `!` donde el `dark:` de shadcn gana, y se mide en claro y oscuro.
-aplicada en: pendiente: M-2 del plan `rediseno-posven-f4d-modo-oscuro`
+aplicada en: `.claude/rules/ui.md` ítem 5

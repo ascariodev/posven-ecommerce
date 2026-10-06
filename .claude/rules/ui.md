@@ -48,7 +48,11 @@ escribe `import { cn } from "cn"`, que se corrige a `@/lib/utils`.
    3:1); el `ring` y el borde de foco de luma no lo reemplazan. Un control con
    `aria-invalid` lo cambia a `outline-destructive` (sí llega a 3:1) para no mezclar negro y rojo.
    Los bordes de controles usan `border-input-border` (`--border` no llega a 3:1 sobre blanco);
-   `border-border` queda para tarjetas y separadores. Los controles principales miden al menos 44 px de alto
+   `border-border` queda para tarjetas y separadores. Una primitiva pintada sobre `bg-ink` no
+   contrasta con sus colores por defecto (`outline-foreground` y `bg-primary` bajan de 3:1 en algún
+   modo): se le pasan por `className` clases `ink` (foco, borde y relleno), con `!` donde el `dark:`
+   de shadcn gana, y se mide el ratio en claro y en oscuro.
+   Los controles principales miden al menos 44 px de alto
    (`h-11`): sin los tamaños de luma bajo 44 px (`xs`, `icon-xs`, `icon-sm`). El tamaño `sm` de `Button`, `Toggle` y `SelectTrigger` mide 44 px en móvil y 36 px
    desde `md` (`h-11 md:h-9`); un control o esqueleto con altura escrita a mano sigue esa misma
    pareja. Los campos llevan `text-base` en móvil (iOS no hace zoom).

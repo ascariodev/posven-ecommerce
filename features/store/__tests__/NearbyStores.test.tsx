@@ -96,6 +96,18 @@ describe("NearbyStores", () => {
     expect(screen.getByRole("heading", { name: /^Comercios en / })).toBeTruthy();
   });
 
+  it("avisa que las tiendas están fuera de rango sólo con out_of_range true", async () => {
+    const data = [store("abasto-la-esquina", "Abasto La Esquina")];
+    vi.mocked(listNearbyStores).mockResolvedValue({ ...response(data, []), meta: { page: 1, per_page: 12, total: 1, out_of_range: true } });
+    render(await NearbyStores());
+    expect(screen.getByRole("status").textContent).toContain("fuera");
+    cleanup();
+
+    vi.mocked(listNearbyStores).mockResolvedValue(response(data, []));
+    render(await NearbyStores());
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
   it("si la API no responde no pinta nada", async () => {
     vi.mocked(listNearbyStores).mockRejectedValue(new MarketplaceUnavailableError("/stores"));
 

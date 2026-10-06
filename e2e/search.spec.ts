@@ -51,6 +51,19 @@ test("elegir ciudad la guarda y la búsqueda ofrece sólo la ciudad o todo el pa
   await expect(page.getByRole("link", { name: "Todo el país" })).toBeVisible();
 });
 
+test("una ciudad sin tiendas muestra el aviso de fuera de rango en la búsqueda y en la oferta", async ({ page }) => {
+  await page.context().addCookies([{ name: "loc", value: encodeURIComponent(JSON.stringify({ city: "maracaibo" })), url: "http://localhost:3000" }]);
+
+  await page.goto("/buscar?q=acetaminofen");
+  await expect(page.getByRole("status").filter({ hasText: "fuera del rango de Maracaibo" })).toBeVisible();
+
+  await page.goto("/");
+  await expect(page.getByRole("status").filter({ hasText: "fuera del rango de Maracaibo" })).toBeVisible();
+
+  await page.goto("/p/acetaminofen-500-mg-20-tabletas");
+  await expect(page.getByRole("status").filter({ hasText: "fuera del rango de Maracaibo" })).toBeVisible();
+});
+
 test.describe("con geolocalización concedida", () => {
   test.use({
     geolocation: { latitude: 10.162, longitude: -68.007 },

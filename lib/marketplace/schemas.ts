@@ -110,6 +110,7 @@ export const pageMetaSchema = z.object({
   page: z.int().min(1),
   per_page: z.int().min(1),
   total: z.int().min(0),
+  out_of_range: z.boolean().optional(),
 });
 export type PageMeta = z.infer<typeof pageMetaSchema>;
 
@@ -223,6 +224,7 @@ export const productPageSchema = z.object({
   featured: z.array(productOfferSchema).max(2),
   offers: z.array(productOfferSchema).max(50),
   rate: rateSchema,
+  meta: z.object({ out_of_range: z.boolean() }).optional(),
 });
 export type ProductPage = z.infer<typeof productPageSchema>;
 

@@ -45,6 +45,23 @@ describe("SearchResults", () => {
     expect(vi.mocked(searchProducts).mock.calls[2]?.[0].sort).toBeUndefined();
   });
 
+  it("muestra el aviso de fuera de rango sólo con meta.out_of_range true", async () => {
+    const result = (meta: Record<string, unknown>) =>
+      ({
+        data: [],
+        featured: [],
+        meta: { page: 1, per_page: 20, total: 0, ...meta },
+        rate: { rate: "100.00", date: "2026-10-03" },
+      }) as unknown as Awaited<ReturnType<typeof searchProducts>>;
+    vi.mocked(searchProducts).mockResolvedValue(result({ out_of_range: true }));
+    render(await SearchResults({ searchParams: Promise.resolve({ q: "arroz" }) }));
+    expect(screen.getByRole("status").textContent).toContain("fuera");
+    cleanup();
+    vi.mocked(searchProducts).mockResolvedValue(result({}));
+    render(await SearchResults({ searchParams: Promise.resolve({ q: "arroz" }) }));
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
   it("pasa open_now a searchProducts sólo con abierto=1", async () => {
     vi.mocked(searchProducts).mockResolvedValue({
       data: [],

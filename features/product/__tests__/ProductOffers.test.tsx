@@ -93,6 +93,19 @@ describe("ProductOffers", () => {
     expect(within(outside).getByText("$ 2,70")).toBeTruthy();
   });
 
+  it("con out_of_range avisa y deja abiertas las tiendas fuera de la zona; sin la marca no avisa", async () => {
+    const far = offer("farmacia-altamira", "Farmacia Altamira", { outside_radius: true });
+    vi.mocked(getProductOffers).mockResolvedValue({ ...page([far], []), meta: { out_of_range: true } });
+    const { container } = render(await ProductOffers({ product, searchParams: searchParams({}) }));
+    expect(screen.getByRole("status").textContent).toContain("fuera");
+    expect(container.querySelector("details")?.hasAttribute("open")).toBe(true);
+    cleanup();
+
+    vi.mocked(getProductOffers).mockResolvedValue(page([far], []));
+    render(await ProductOffers({ product, searchParams: searchParams({}) }));
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
   it("muestra tres ofertas del radio y deja las demás tras Ver N tiendas más", async () => {
     const inside = ["a", "b", "c", "d", "e"].map((slug) => offer(`tienda-${slug}`, `Tienda ${slug}`));
     vi.mocked(getProductOffers).mockResolvedValue(page(inside, []));

@@ -137,7 +137,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [x] M-8 — Tiendas sin `accepts_orders` muestran "Elegir" y la barra sólo dice que no reciben pedidos: confirmar el estado con el lienzo.
   posven-ecommerce · baja · sonnet
-- [ ] M-9 — `is_open` y `closes_at` en `GET /stores/{slug}` (posveapi, spec §3 primero) para que la cabecera de tienda muestre "Abierto · cierra HH:MM"; puede ir junto a la M-23 de F1b (`open_now` en `/products/nearby`).
+- [x] M-9: Ya implementada (posveapi 625e1b53, ecommerce e248de8). `is_open` y `closes_at` en `GET /stores/{slug}` (posveapi, spec §3 primero) para que la cabecera de tienda muestre "Abierto · cierra HH:MM"; puede ir junto a la M-23 de F1b (`open_now` en `/products/nearby`).
   posveapi + posven-ecommerce · alta · plan nuevo
 - [x] M-10 — `StoreProductsSkeleton` usa `h-32`, más bajo que la tarjeta nueva: salto de layout al cargar.
   posven-ecommerce · baja · sonnet

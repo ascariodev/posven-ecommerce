@@ -125,7 +125,7 @@ el código de retiro. Sin cambios de contrato.
 - [-] M-5: Descartada: e2e sin defecto actual. e2e de la tarjeta "Para retirar" en `/cuenta` (`e2e/checkout.spec.ts`, flujo de compra
   completa) si el simulado deja un pedido `ready_for_pickup`.
   posven-ecommerce · media · sonnet
-- [ ] M-6 — Separador `sr-only` (" · ") entre USD y Bs en la fila de compra (`PurchaseList.tsx`) y
+- [x] M-6: Separador `sr-only` (" · ") entre USD y Bs en la fila de compra (`PurchaseList.tsx`) y
   devolver `PurchaseList.test.tsx` a `"$ 6,70 · Bs 244,55"`.
   posven-ecommerce · baja · sonnet
 - [-] M-7: Descartada: promoción de lección, documento. Promover L-08 a `.claude/rules/ui.md` (grilla con `grid-cols-[minmax(0,1fr)]` cuando un

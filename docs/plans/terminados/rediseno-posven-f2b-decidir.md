@@ -175,7 +175,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [ ] M-27 — Si ninguna tienda acepta pedidos, la fila de la tienda por defecto de la barra no se resalta porque no tiene control de elección; resaltarla sin control desde `OfferSelection`.
   posven-ecommerce · baja · sonnet
-- [ ] M-28 — Comprobar a 320 px que el `-ml-2` de `OfferSelectButton` alinea el círculo con el borde de la fila sin recortarlo.
+- [-] M-28: Descartada: medido a 320 px con Playwright, el círculo no se recorta. Comprobar a 320 px que el `-ml-2` de `OfferSelectButton` alinea el círculo con el borde de la fila sin recortarlo.
   posven-ecommerce · baja · sonnet
 - [-] M-29: Descartada: documento y robustez de una prueba. `RN-PRODUCT-03` del README de product no cita la prueba nueva de "Fuera de tu zona" plegado, y esa prueba deja `vi.stubEnv` sin `try/finally` (un fallo arrastra el stub a las siguientes).
   posven-ecommerce · baja · sonnet

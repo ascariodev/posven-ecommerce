@@ -109,7 +109,7 @@ el código de retiro. Sin cambios de contrato.
 - Sin revisión visual en el navegador (ficha, tarjeta "Para retirar", filas, dos columnas).
 
 ## Mejoras propuestas
-- [ ] M-1 — `AccountNav`: el `useEffect` que desplaza la pestaña activa depende de `[]`; el layout
+- [-] M-1: Descartada: ya resuelta, AccountNav depende de [pathname]. `AccountNav`: el `useEffect` que desplaza la pestaña activa depende de `[]`; el layout
   persiste entre rutas hijas y al navegar en el teléfono no se recentra. Usar `[pathname]`.
   posven-ecommerce · baja · sonnet
 - [-] M-2: Descartada: prueba sin defecto actual. Prueba de `isActiveLink` (Resumen sólo en `/cuenta` exacto, "Mis compras" también en

@@ -173,7 +173,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [-] M-26: Descartada: prueba o README sin defecto actual. `StoreHeader.test.tsx`: la prueba de hijos no comprueba que queden junto a `ContactButtons` (el README lo afirma); afirmar el contenedor común o ajustar el README.
   posven-ecommerce · baja · sonnet
-- [ ] M-27 — Si ninguna tienda acepta pedidos, la fila de la tienda por defecto de la barra no se resalta porque no tiene control de elección; resaltarla sin control desde `OfferSelection`.
+- [x] M-27: Si ninguna tienda acepta pedidos, la fila de la tienda por defecto de la barra no se resalta porque no tiene control de elección; resaltarla sin control desde `OfferSelection`.
   posven-ecommerce · baja · sonnet
 - [-] M-28: Descartada: medido a 320 px con Playwright, el círculo no se recorta. Comprobar a 320 px que el `-ml-2` de `OfferSelectButton` alinea el círculo con el borde de la fila sin recortarlo.
   posven-ecommerce · baja · sonnet

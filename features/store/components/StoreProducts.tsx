@@ -8,7 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ProductThumb } from "@/features/search/components/ProductThumb";
 import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
 import { cartEnabled } from "@/features/cart/lib/flag";
+import { cn } from "@/lib/utils";
 import { formatRate, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
+import { StoreCategoryNav } from "@/features/store/components/StoreCategoryNav";
 import { getStore } from "@/lib/marketplace/client";
 import type { Store, StoreProduct } from "@/lib/marketplace/schemas";
 
@@ -20,6 +22,11 @@ function parsePage(value: string | string[] | undefined): number {
   if (raw === undefined || !POSITIVE_INTEGER.test(raw)) return 1;
   const page = Number.parseInt(raw, 10);
   return Number.isSafeInteger(page) && page >= 1 ? page : 1;
+}
+
+function parseCategory(value: string | string[] | undefined): string | null {
+  const raw = Array.isArray(value) ? value[0] : value;
+  return raw === undefined || raw === "" ? null : raw;
 }
 
 function StoreProductCard({ product, store, now }: { product: StoreProduct; store: Store; now: Date }) {
@@ -72,12 +79,13 @@ export async function StoreProducts({
   slug: string;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { pagina } = await searchParams;
+  const { pagina, categoria } = await searchParams;
   const page = parsePage(pagina);
-  const response = await getStore({ slug, page, category: null });
+  const category = parseCategory(categoria);
+  const response = await getStore({ slug, page, category });
   const now = new Date();
 
-  if (response === null || response.meta.total === 0) {
+  if (response === null || (response.meta.total === 0 && category === null)) {
     return (
       <section className="flex flex-col gap-4">
         <h2 className="font-heading text-xl font-bold tracking-tight">Productos</h2>
@@ -88,42 +96,54 @@ export async function StoreProducts({
 
   const { meta } = response;
   const lastPage = Math.max(1, Math.ceil(meta.total / meta.per_page));
-  const pageHref = (target: number) => `/tienda/${slug}?pagina=${target}`;
+  const categoryParam = category === null ? "" : `&categoria=${encodeURIComponent(category)}`;
+  const pageHref = (target: number) => `/tienda/${slug}?pagina=${target}${categoryParam}`;
+  const nav = response.categories && (
+    <StoreCategoryNav slug={slug} categories={response.categories} activeCategory={category} />
+  );
 
   return (
     <section className="flex flex-col gap-4">
       <h2 className="font-heading text-xl font-bold tracking-tight">Productos</h2>
       <p className="text-sm text-muted-foreground">{formatRate(response.rate)}</p>
-      {response.products.length > 0 && (
-        <ul aria-label="Productos" className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-          {response.products.map((product) => (
-            <li key={product.slug}>
-              <StoreProductCard product={product} store={response.data} now={now} />
-            </li>
-          ))}
-        </ul>
-      )}
-      {lastPage > 1 && (
-        <nav aria-label="Paginación" className="flex items-center justify-between gap-4">
-          {meta.page > 1 ? (
-            <Link href={pageHref(meta.page - 1)} className={buttonVariants({ variant: "outline", size: "sm" })}>
-              Anterior
-            </Link>
-          ) : (
-            <span />
+      <div className="flex flex-col gap-4 md:grid md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:items-start md:gap-6">
+        {nav}
+        <div className={cn("flex flex-col gap-4", !nav && "md:col-span-2")}>
+          {response.products.length === 0 && category !== null && (
+            <EmptyState icon={StoreIcon} title="No hay productos en esta categoría." headingLevel="h3" compact />
           )}
-          <p className="text-sm text-muted-foreground">
-            Página {meta.page} de {lastPage}
-          </p>
-          {meta.page < lastPage ? (
-            <Link href={pageHref(meta.page + 1)} className={buttonVariants({ variant: "outline", size: "sm" })}>
-              Siguiente
-            </Link>
-          ) : (
-            <span />
+          {response.products.length > 0 && (
+            <ul aria-label="Productos" className={cn("grid grid-cols-2 gap-3", nav ? "md:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-3 lg:grid-cols-4")}>
+              {response.products.map((product) => (
+                <li key={product.slug}>
+                  <StoreProductCard product={product} store={response.data} now={now} />
+                </li>
+              ))}
+            </ul>
           )}
-        </nav>
-      )}
+          {lastPage > 1 && (
+            <nav aria-label="Paginación" className="flex items-center justify-between gap-4">
+              {meta.page > 1 ? (
+                <Link href={pageHref(meta.page - 1)} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  Anterior
+                </Link>
+              ) : (
+                <span />
+              )}
+              <p className="text-sm text-muted-foreground">
+                Página {meta.page} de {lastPage}
+              </p>
+              {meta.page < lastPage ? (
+                <Link href={pageHref(meta.page + 1)} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  Siguiente
+                </Link>
+              ) : (
+                <span />
+              )}
+            </nav>
+          )}
+        </div>
+      </div>
     </section>
   );
 }

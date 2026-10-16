@@ -193,7 +193,7 @@ Catálogo actual: no hay `RN-HELP-` (módulo nuevo `features/help/`).
 - [x] M-11 (baja, sonnet) — El e2e de ancho completo de `/ayuda` (375 px, `e2e/site.spec.ts`) pasa aun
   sin el `overflow-x: clip` (Chromium headless no tiene barra clásica); cubrir el caso con barra o
   aclarar en el nombre que sólo mide el ancho.
-- [ ] M-12 (media, sonnet) — Con barra clásica real (sin emulación móvil y sin `--hide-scrollbars`),
+- [x] M-12:  (media, sonnet) — Con barra clásica real (sin emulación móvil y sin `--hide-scrollbars`),
   `/ayuda` a 375 px desborda 8 px (`scrollWidth` 368 contra `clientWidth` 360) aun con el
   `overflow-x: clip` del `body`; averiguar qué elemento desborda y llevar el e2e de ancho completo a
   ese modo para que detecte la regresión.

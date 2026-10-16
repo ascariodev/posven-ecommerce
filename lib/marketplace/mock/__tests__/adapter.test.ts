@@ -184,7 +184,7 @@ describe("producto simulado", () => {
   });
 
   it("una tienda desconocida da null", async () => {
-    expect(await getStore({ slug: "no-existe", page: 1 })).toBeNull();
+    expect(await getStore({ slug: "no-existe", page: 1, category: null })).toBeNull();
   });
 });
 
@@ -208,9 +208,9 @@ describe("horario y orden simulados", () => {
 
   it("la tienda lleva is_open y closes_at calculados del horario", async () => {
     vi.useFakeTimers({ now: SUNDAY_10_CARACAS });
-    const open = await getStore({ slug: "farmacia-central-valencia", page: 1 });
+    const open = await getStore({ slug: "farmacia-central-valencia", page: 1, category: null });
     expect(open?.data).toMatchObject({ is_open: true, closes_at: "13:00" });
-    const closed = await getStore({ slug: "ferreteria-el-tornillo", page: 1 });
+    const closed = await getStore({ slug: "ferreteria-el-tornillo", page: 1, category: null });
     expect(closed?.data).toMatchObject({ is_open: false, closes_at: null });
   });
 
@@ -353,5 +353,38 @@ describe("productos cercanos simulados", () => {
     expect(response.meta.total).toBeLessThanOrEqual(all.meta.total);
     expect(distances.every((km) => km !== null)).toBe(true);
     expect(distances).toEqual([...distances].sort((a, b) => (a ?? 0) - (b ?? 0)));
+  });
+});
+
+describe("categorías de la tienda simulada", () => {
+  const SLUG = "abasto-la-esquina";
+
+  it("cuenta por raíz sumando las hijas, ordena por conteo y nombre, y total incluye lo sin categoría", async () => {
+    const response = await getStore({ slug: SLUG, page: 1, category: null });
+    expect(response?.categories).toEqual({
+      total: 11,
+      items: [
+        { slug: "alimentos", name: "Alimentos", count: 6 },
+        { slug: "bebidas", name: "Bebidas", count: 2 },
+        { slug: "ferreteria", name: "Ferretería", count: 1 },
+        { slug: "salud-y-medicamentos", name: "Salud y medicamentos", count: 1 },
+      ],
+    });
+  });
+
+  it("category filtra por la raíz y sus hijas sin cambiar los conteos", async () => {
+    const all = await getStore({ slug: SLUG, page: 1, category: null });
+    const response = await getStore({ slug: SLUG, page: 1, category: "alimentos" });
+    expect(response?.meta.total).toBe(6);
+    expect(response?.products.map((product) => product.category?.parent_slug ?? product.category?.slug)).toEqual(
+      Array(6).fill("alimentos"),
+    );
+    expect(response?.categories).toEqual(all?.categories);
+  });
+
+  it.each(["viveres", "no-existe", "gripe-y-respiratorio"])("el slug %s devuelve vacío sin error", async (category) => {
+    const response = await getStore({ slug: SLUG, page: 1, category });
+    expect(response?.products).toEqual([]);
+    expect(response?.meta.total).toBe(0);
   });
 });

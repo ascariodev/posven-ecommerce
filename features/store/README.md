@@ -6,7 +6,7 @@ exports: ["PremiumSeal", "StoreCard", "NearbyStores", "NearbyStoresSkeleton", "S
 depends_on: ["features/location/components/OutOfRangeNotice.tsx", "lib/marketplace/client.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "features/cart/components/AddToCartButton.tsx", "features/cart/lib/flag.ts", "features/search/components/ProductThumb.tsx", "features/search/components/Pagination.tsx", "components/EmptyState.tsx"]
 tests: "features/store/__tests__/*.test.{ts,tsx}"
 verified_against: ["features/location/components/OutOfRangeNotice.tsx", "features/store/components/PremiumSeal.tsx", "features/store/components/StoreCard.tsx", "features/store/components/StoreLogo.tsx", "features/store/components/NearbyStores.tsx", "features/store/components/SponsoredStore.tsx", "features/store/lib/initials.ts", "features/store/lib/schedule.ts", "features/store/lib/jsonld.ts", "features/store/components/StoreHeader.tsx", "features/store/components/StoreProducts.tsx", "features/search/components/ProductThumb.tsx", "features/store/components/StoresDirectory.tsx", "features/search/components/Pagination.tsx", "app/tiendas/page.tsx", "app/page.tsx", "app/tienda/[slug]/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/errors.ts", "lib/marketplace/params.ts", "lib/marketplace/schemas.ts", "lib/format.ts", "lib/jsonld.ts", "lib/site.ts", "features/location/lib/cookie.ts", "features/location/server/location.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "components/ui/badge.tsx", "components/ui/button.tsx", "components/ui/card.tsx", "lib/utils.ts", "components/ui/skeleton.tsx", "components/EmptyState.tsx"]
-verified_at: "b8b8ecf"
+verified_at: "4da42c6"
 capabilities:
   - intent: "mostrar la tienda patrocinada y los comercios cercanos en la portada"
     intent_aliases: ["tiendas cercanas", "tiendas cerca de mi", "comercios cercanos", "tiendas destacadas"]
@@ -46,7 +46,7 @@ capabilities:
     file: "features/store/components/StoreProducts.tsx"
     input: "slug: string; searchParams con pagina opcional (entero >= 1, si no 1); se monta en <Suspense fallback={<StoreProductsSkeleton />}>"
     output: "sección 'Productos': tasa, rejilla de 2 a 4 columnas con una tarjeta por producto (miniatura ProductThumb, enlace a /p/{slug}, USD, Bs, 'Pocas unidades', 'Requiere récipe' y antigüedad); 'Anterior' y 'Siguiente' a /tienda/{slug}?pagina={n}; sin productos (meta.total 0), un EmptyState (components/EmptyState.tsx) de tienda sin productos publicados"
-    source: "getStore({ slug, page }) de lib/marketplace"
+    source: "getStore({ slug, page, category: null }) de lib/marketplace"
     rules: []
   - intent: "armar el JSON-LD de una tienda"
     intent_aliases: ["json-ld tienda", "seo de tienda", "openinghoursspecification", "schema.org store"]
@@ -126,7 +126,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 | Horario | `lib/schedule.ts` | `Lun`...`Dom`; tres o más días seguidos como `Lun a Sáb`, el resto separados por `, `; sin tramos, "Horario no informado"; días en inglés para `OpeningHoursSpecification` |
 | JSON-LD | `lib/jsonld.ts` | `Store` con URL absoluta por `SITE_URL`, `PostalAddress` con `addressCountry: "VE"` y `GeoCoordinates` |
 | Cabecera | `components/StoreHeader.tsx` | portada sobre una tarjeta con logo (si trae `logo_url`), `h1`, razón social, etiqueta de abierta o cerrada (`StoreHeaderStatus`, RN-STORE-05), dirección, `h2` "Horario", `ContactButtons` con `product: null` y `children` (el favorito de la página) |
-| Productos | `components/StoreProducts.tsx` | `pagina` a entero, `getStore({ slug, page })`, tasa, tarjetas con `ProductThumb` (con `sizes` de la rejilla: 240 px desde 1024 px, un tercio del ancho útil desde 768 px y la mitad debajo; con `AddToCartButton` si el carrito está encendido, la tienda tiene `accepts_orders` y el producto no es `recipe`, `RN-CART-03`), "Anterior" y "Siguiente" |
+| Productos | `components/StoreProducts.tsx` | `pagina` a entero, `getStore({ slug, page, category: null })`, tasa, tarjetas con `ProductThumb` (con `sizes` de la rejilla: 240 px desde 1024 px, un tercio del ancho útil desde 768 px y la mitad debajo; con `AddToCartButton` si el carrito está encendido, la tienda tiene `accepts_orders` y el producto no es `recipe`, `RN-CART-03`), "Anterior" y "Siguiente" |
 | Directorio | `components/StoresDirectory.tsx` | `pagina` a entero, `listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page })`, destacados primero y sin repetirse, total y `Pagination` de `features/search` con `hrefForPage` a `/tiendas` (la página 1 sin parámetro) |
 | Página del directorio | `app/tiendas/page.tsx` | `h1` "Tiendas", canónica `/tiendas` sin parámetros, indexable (la página fuera de rango pone `noindex` desde `StoresDirectory`: `notFound()` tras el streaming no cambia el 200), y `StoresDirectory` en `<Suspense>`; sin `loading.tsx` |
 | Página | `app/tienda/[slug]/page.tsx` | `generateStaticParams` (20 slugs de `listSitemap` o `__vacio`), `generateMetadata`, JSON-LD, `StoreHeader` (con `FavoriteButton` de `features/account` como hijo), `ViewBeacon` con `store_view` y `StoreProducts` en `<Suspense>` |
@@ -148,7 +148,7 @@ entrega el orden, `distance_km`, `outside_radius` y los montos.
 
 ```tsx
 const { slug } = await params;
-const response = await getStore({ slug, page: 1 });
+const response = await getStore({ slug, page: 1, category: null });
 if (response === null) notFound();
 
 <StoreHeader store={response.data} />
@@ -166,7 +166,7 @@ if (response === null) notFound();
 - `NearbyStores` es un bloque secundario del inicio: ante `MarketplaceUnavailableError` no se pinta (regla `app-router` 7). El estado abierto y la hora de cierre llegan de la API y no se calculan aquí.
 - Logo y portada salen para toda tienda publicada que los trae: la API devuelve `logo_url` con vuelta al logo de la empresa y `cover_url` sin condición premium; premium sólo decide lo destacado y el sello.
 - Logo y portada van por `next/image`: su dominio tiene que estar en `images.remotePatterns` de `next.config.ts` (spec §4.5).
-- La página hace `await params` y `getStore({ slug, page: 1 })` fuera de `<Suspense>` para que `notFound()` dé 404 antes del primer byte; `app/tienda/` no lleva `loading.tsx`. `generateStaticParams` devuelve al menos un slug porque con Cache Components un arreglo vacío rompe el build.
+- La página hace `await params` y `getStore({ slug, page: 1, category: null })` fuera de `<Suspense>` para que `notFound()` dé 404 antes del primer byte; `app/tienda/` no lleva `loading.tsx`. `generateStaticParams` devuelve al menos un slug porque con Cache Components un arreglo vacío rompe el build.
 - Metadatos, cabecera y JSON-LD no dependen de la cookie ni de `pagina`: la canónica es `/tienda/{slug}` también en `?pagina=2`.
 - `Store` (`getStore`) trae `is_open` y `closes_at` calculados por la API: la cabecera los muestra (`StoreHeaderStatus`) y no calcula el estado en el frontend; sin `is_open` no pinta etiqueta.
 - `new Date()` en `StoreProducts` va después de leer `searchParams`; si no, el prerender falla.

@@ -22,7 +22,7 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
-  const response = await getStore({ slug, page: 1 });
+  const response = await getStore({ slug, page: 1, category: null });
   if (response === null) notFound();
   const store = response.data;
   const metadata: Metadata = {
@@ -42,7 +42,7 @@ export default async function StorePage({
   searchParams: SearchParams;
 }) {
   const { slug } = await params;
-  const response = await getStore({ slug, page: 1 });
+  const response = await getStore({ slug, page: 1, category: null });
   if (response === null) notFound();
   const store = response.data;
 

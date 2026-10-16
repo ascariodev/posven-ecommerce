@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cartFulfillmentBody, cartFulfillmentQuery, nearbyProductsQuery, productQuery, searchQuery, storesQuery, suggestionsQuery } from "@/lib/marketplace/params";
+import { cartFulfillmentBody, cartFulfillmentQuery, nearbyProductsQuery, productQuery, searchQuery, storeQuery, storesQuery, suggestionsQuery } from "@/lib/marketplace/params";
 
 const LOCATION_KEYS = ["lat", "lng", "city", "radius_km"];
 
@@ -92,6 +92,15 @@ describe("storesQuery", () => {
   it("sin geo no envía ubicación aunque haya radio (RN-MARKETPLACE-03)", () => {
     const query = storesQuery({ geo: null, radiusKm: 25, page: 1 });
     expect(keysOf(query)).toEqual(["page"]);
+  });
+});
+
+describe("storeQuery", () => {
+  it("sin categoría envía sólo page; con categoría, también category", () => {
+    expect(keysOf(storeQuery({ page: 2, category: null }))).toEqual(["page"]);
+    const query = storeQuery({ page: 1, category: "alimentos" });
+    expect(query.get("page")).toBe("1");
+    expect(query.get("category")).toBe("alimentos");
   });
 });
 

@@ -110,7 +110,7 @@ describe("StoreProducts", () => {
 
     render(await StoreProducts({ slug: SLUG, searchParams: searchParams({ pagina: "abc" }) }));
 
-    expect(getStore).toHaveBeenCalledWith({ slug: SLUG, page: 1 });
+    expect(getStore).toHaveBeenCalledWith({ slug: SLUG, page: 1, category: null });
   });
 });
 

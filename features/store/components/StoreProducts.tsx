@@ -74,7 +74,7 @@ export async function StoreProducts({
 }) {
   const { pagina } = await searchParams;
   const page = parsePage(pagina);
-  const response = await getStore({ slug, page });
+  const response = await getStore({ slug, page, category: null });
   const now = new Date();
 
   if (response === null || response.meta.total === 0) {

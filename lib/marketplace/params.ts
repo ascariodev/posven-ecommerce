@@ -87,6 +87,12 @@ export function pageQuery(page: number): URLSearchParams {
   return new URLSearchParams({ page: String(page) });
 }
 
+export function storeQuery(p: { page: number; category: string | null }): URLSearchParams {
+  const query = pageQuery(p.page);
+  if (p.category !== null) query.set("category", p.category);
+  return query;
+}
+
 export function cartFulfillmentQuery(deliveryStores: string[], geo: GeoFilter = null): URLSearchParams {
   const query = new URLSearchParams();
   for (const slug of deliveryStores) query.set(`fulfillment[${slug}]`, "delivery");

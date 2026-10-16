@@ -208,6 +208,6 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [-] M-19: Descartada: configuración de pruebas, sin defecto del producto. `playwright.config.ts` no fija `timeout` ni `expect.timeout`: el de prueba (30 s) iguala al
   poll de `waitHydrated`, así que un fallo de hidratación sale como "Test timeout" y no con su error.
   Repo posven-ecommerce · complejidad baja · modelo sonnet.
-- [ ] M-20 — Una corrida caliente del e2e imprimió `[WebServer] SyntaxError: Unexpected end of JSON
+- [-] M-20: Descartada: no se reproduce y ningún parseo de JSON del servidor queda sin proteger; ruido del entorno de prueba. Una corrida caliente del e2e imprimió `[WebServer] SyntaxError: Unexpected end of JSON
   input` sin fallar ninguna prueba; averiguar qué ruta lo produce. Repo posven-ecommerce ·
   complejidad media · modelo sonnet.

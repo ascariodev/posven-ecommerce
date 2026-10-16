@@ -109,25 +109,25 @@ el código de retiro. Sin cambios de contrato.
 - Sin revisión visual en el navegador (ficha, tarjeta "Para retirar", filas, dos columnas).
 
 ## Mejoras propuestas
-- [ ] M-1 — `AccountNav`: el `useEffect` que desplaza la pestaña activa depende de `[]`; el layout
+- [-] M-1: Descartada: ya resuelta, AccountNav depende de [pathname]. `AccountNav`: el `useEffect` que desplaza la pestaña activa depende de `[]`; el layout
   persiste entre rutas hijas y al navegar en el teléfono no se recentra. Usar `[pathname]`.
   posven-ecommerce · baja · sonnet
-- [ ] M-2 — Prueba de `isActiveLink` (Resumen sólo en `/cuenta` exacto, "Mis compras" también en
+- [-] M-2: Descartada: prueba sin defecto actual. Prueba de `isActiveLink` (Resumen sólo en `/cuenta` exacto, "Mis compras" también en
   `/cuenta/compras/<código>`) en `features/account/__tests__/accountLinks.test.ts`.
   posven-ecommerce · baja · sonnet
-- [ ] M-3 — Prueba de `AccountIdentity` (iniciales, chip verificado y sin verificar, `null` sin
+- [-] M-3: Descartada: prueba sin defecto actual. Prueba de `AccountIdentity` (iniciales, chip verificado y sin verificar, `null` sin
   comprador) en `features/account/__tests__/AccountIdentity.test.tsx`; hoy el paso de `identity` y
   `compactIdentity` del layout a `AccountNav` sólo lo cubre el build.
   posven-ecommerce · baja · sonnet
-- [ ] M-4 — `PickupCard` en `RecentPurchases.tsx` pone el `<h2>` dentro del `<Link>` y el enlace se
+- [x] M-4: `PickupCard` en `RecentPurchases.tsx` pone el `<h2>` dentro del `<Link>` y el enlace se
   lee como encabezado más código: sacar el `h2` del enlace.
   posven-ecommerce · baja · sonnet
-- [ ] M-5 — e2e de la tarjeta "Para retirar" en `/cuenta` (`e2e/checkout.spec.ts`, flujo de compra
+- [-] M-5: Descartada: e2e sin defecto actual. e2e de la tarjeta "Para retirar" en `/cuenta` (`e2e/checkout.spec.ts`, flujo de compra
   completa) si el simulado deja un pedido `ready_for_pickup`.
   posven-ecommerce · media · sonnet
-- [ ] M-6 — Separador `sr-only` (" · ") entre USD y Bs en la fila de compra (`PurchaseList.tsx`) y
+- [x] M-6: Separador `sr-only` (" · ") entre USD y Bs en la fila de compra (`PurchaseList.tsx`) y
   devolver `PurchaseList.test.tsx` a `"$ 6,70 · Bs 244,55"`.
   posven-ecommerce · baja · sonnet
-- [ ] M-7 — Promover L-08 a `.claude/rules/ui.md` (grilla con `grid-cols-[minmax(0,1fr)]` cuando un
+- [-] M-7: Descartada: promoción de lección, documento. Promover L-08 a `.claude/rules/ui.md` (grilla con `grid-cols-[minmax(0,1fr)]` cuando un
   hijo tiene desplazamiento horizontal).
   posven-ecommerce · baja · sonnet

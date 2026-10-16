@@ -202,12 +202,12 @@ pedido; puerta: pago de prueba completo en modo simulado.
 - [ ] M-17 — Distancia en la cabecera de tienda del carrito, como en el lienzo: `cartStoreSchema` no
   trae `distance_km`; pide cambiar la spec §3 y el contrato en posveapi primero. Repo posveapi y
   posven-ecommerce · complejidad alta · modelo opus.
-- [ ] M-18 — En `CartStoreGroup.tsx` la insignia de abierto queda dentro del `<span>` de la ciudad
+- [-] M-18: Descartada: estructura del marcado, sin defecto visible. En `CartStoreGroup.tsx` la insignia de abierto queda dentro del `<span>` de la ciudad
   (`text-muted-foreground`); pasarla a hermana para que la estructura sea clara. Repo
   posven-ecommerce · complejidad baja · modelo sonnet.
-- [ ] M-19 — `playwright.config.ts` no fija `timeout` ni `expect.timeout`: el de prueba (30 s) iguala al
+- [-] M-19: Descartada: configuración de pruebas, sin defecto del producto. `playwright.config.ts` no fija `timeout` ni `expect.timeout`: el de prueba (30 s) iguala al
   poll de `waitHydrated`, así que un fallo de hidratación sale como "Test timeout" y no con su error.
   Repo posven-ecommerce · complejidad baja · modelo sonnet.
-- [ ] M-20 — Una corrida caliente del e2e imprimió `[WebServer] SyntaxError: Unexpected end of JSON
+- [-] M-20: Descartada: no se reproduce y ningún parseo de JSON del servidor queda sin proteger; ruido del entorno de prueba. Una corrida caliente del e2e imprimió `[WebServer] SyntaxError: Unexpected end of JSON
   input` sin fallar ninguna prueba; averiguar qué ruta lo produce. Repo posven-ecommerce ·
   complejidad media · modelo sonnet.

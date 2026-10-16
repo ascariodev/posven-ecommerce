@@ -5,7 +5,7 @@ import { ContactButtons } from "@/features/events/components/ContactButtons";
 import { formatDistance, formatUpdatedAgo, formatUsd, formatVes } from "@/lib/format";
 import type { ProductOffer, Restriction } from "@/lib/marketplace/schemas";
 import { PremiumSeal } from "@/features/store/components/PremiumSeal";
-import { OfferSelectButton } from "./OfferSelection";
+import { OfferSelectButton, OfferSelectedMark } from "./OfferSelection";
 
 export function OfferCard({
   offer,
@@ -22,9 +22,13 @@ export function OfferCard({
   const best = offer.is_best_price === true;
   const selectable = cartEnabled() && store.accepts_orders && product.restriction !== "recipe";
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 has-[[aria-pressed=true]]:border-foreground has-[[aria-pressed=true]]:ring-1 has-[[aria-pressed=true]]:ring-foreground">
+    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 has-[[aria-pressed=true]]:border-foreground has-[[aria-pressed=true]]:ring-1 has-[[aria-pressed=true]]:ring-foreground has-[[data-selected-offer]]:border-foreground has-[[data-selected-offer]]:ring-1 has-[[data-selected-offer]]:ring-foreground">
       <div className="flex items-start gap-3">
-        {selectable && <OfferSelectButton storeSlug={store.slug} storeName={store.name} priceUsd={offer.price_usd} />}
+        {selectable ? (
+          <OfferSelectButton storeSlug={store.slug} storeName={store.name} priceUsd={offer.price_usd} />
+        ) : (
+          cartEnabled() && product.restriction !== "recipe" && <OfferSelectedMark storeSlug={store.slug} />
+        )}
         <div className="flex min-w-0 flex-1 flex-col">
           <Link
             href={`/tienda/${store.slug}`}

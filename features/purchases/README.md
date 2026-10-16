@@ -37,7 +37,7 @@ capabilities:
     entrypoint: "<LastPurchase /> y <RecentPurchases />"
     file: "features/purchases/components/RecentPurchases.tsx"
     input: "ctx: AccountContext; en app/cuenta/page.tsx cada uno en su <Suspense>, con el carrito encendido"
-    output: "LastPurchase: tarjeta 'Tu última compra' (estado, código, tiendas, total y 'Ver seguimiento') y, si algún pedido de la página 1 está listo con código, 'Para retirar'; RecentPurchases: las 3 primeras de la página 1 en tabla desde md y en filas en móvil, y 'Ver todas'; null sin compras"
+    output: "LastPurchase: tarjeta 'Tu última compra' (estado, código, tiendas, total y 'Ver seguimiento') y, si algún pedido de la página 1 está listo con código, 'Para retirar' (su `h2` fuera del enlace; el enlace cubre toda la tarjeta); RecentPurchases: las 3 primeras de la página 1 en tabla desde md y en filas en móvil, y 'Ver todas'; null sin compras"
     source: "GET /me/purchases?page=1 (una sola lectura por petición, compartida con cache de React)"
     rules: ["RN-PURCHASES-01", "RN-PURCHASES-04", "RN-PURCHASES-07"]
   - intent: "volver a comprar productos de compras pagadas desde el resumen de la cuenta"

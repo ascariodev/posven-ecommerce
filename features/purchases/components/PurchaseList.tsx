@@ -45,6 +45,7 @@ export function PurchaseRow({ purchase }: { purchase: Purchase }) {
         </span>
         <span className="flex flex-col sm:items-end">
           <span className="font-bold text-foreground">{formatUsd(purchase.total_usd)}</span>
+          <span className="sr-only"> · </span>
           <span className="text-sm text-muted-foreground">{formatVes(purchase.total_ves)}</span>
         </span>
       </Link>

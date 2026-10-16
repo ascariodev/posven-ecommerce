@@ -145,7 +145,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [x] M-12 — Tests de `StoreHeader` (portada sólo premium, hijos) pendientes desde RN-STORE-04.
   posven-ecommerce · baja · sonnet
-- [ ] M-13 — Fila de `/tiendas` (indexable, canónica sin `pagina`) en la spec hiperlocal §4.1 (`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`), que `seo.md` cita como fuente de qué se indexa.
+- [-] M-13: Descartada: documento de la spec. Fila de `/tiendas` (indexable, canónica sin `pagina`) en la spec hiperlocal §4.1 (`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`), que `seo.md` cita como fuente de qué se indexa.
   posven/.claude · baja · sonnet
 - [x] M-14 — `/tiendas?pagina=N` fuera de rango responde 200 con "No hay más comercios": `noindex` o `notFound()`.
   posven-ecommerce · baja · sonnet
@@ -163,21 +163,21 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [x] M-21 — `next build` fallaba por `app/preview/rediseno/[pantalla]` (sin trackear, de F0): por decisión del usuario la maqueta pasó a `docs/design/2026-10-03-rediseno/maqueta/`, sin trackear; `next build` y `tsc` pasan.
   posven-ecommerce · media · decide el usuario
-- [ ] M-22 — `ShareButton` sin prueba (Web Share, copia del enlace y "Enlace copiado"); el `catch` deja `error` sin usar y la sección 5 del README de product no dice que la etiqueta se oculta bajo `sm`.
+- [-] M-22: Descartada: prueba y documento sin defecto actual. `ShareButton` sin prueba (Web Share, copia del enlace y "Enlace copiado"); el `catch` deja `error` sin usar y la sección 5 del README de product no dice que la etiqueta se oculta bajo `sm`.
   posven-ecommerce · baja · sonnet
-- [ ] M-23 — Variable `--purchase-bar-height` en `app/globals.css` que usen `--toast-offset` (hoy +6rem) y `scroll-padding-bottom` (hoy 9rem), en vez de valores sueltos.
+- [-] M-23: Descartada: estilo, sin defecto visible. Variable `--purchase-bar-height` en `app/globals.css` que usen `--toast-offset` (hoy +6rem) y `scroll-padding-bottom` (hoy 9rem), en vez de valores sueltos.
   posven-ecommerce · baja · sonnet
-- [ ] M-24 — `ProductOffers.test.tsx`: gemela positiva explícita de la prueba `recipe`, fusionar la del interruptor apagado con la de `addButtons` (sin el `is_best_price` sobrante) y una sola fila de esa prueba en el README de product.
+- [-] M-24: Descartada: reorganización de pruebas. `ProductOffers.test.tsx`: gemela positiva explícita de la prueba `recipe`, fusionar la del interruptor apagado con la de `addButtons` (sin el `is_best_price` sobrante) y una sola fila de esa prueba en el README de product.
   posven-ecommerce · baja · sonnet
-- [ ] M-25 — `sizes` propios para `ProductThumb` en las rejillas de `NearbyProducts`, `FeaturedCard`, `SearchResults` y favoritos, como el de `StoreProducts`.
+- [-] M-25: Descartada: optimización sin medición. `sizes` propios para `ProductThumb` en las rejillas de `NearbyProducts`, `FeaturedCard`, `SearchResults` y favoritos, como el de `StoreProducts`.
   posven-ecommerce · baja · sonnet
-- [ ] M-26 — `StoreHeader.test.tsx`: la prueba de hijos no comprueba que queden junto a `ContactButtons` (el README lo afirma); afirmar el contenedor común o ajustar el README.
+- [-] M-26: Descartada: prueba o README sin defecto actual. `StoreHeader.test.tsx`: la prueba de hijos no comprueba que queden junto a `ContactButtons` (el README lo afirma); afirmar el contenedor común o ajustar el README.
   posven-ecommerce · baja · sonnet
-- [ ] M-27 — Si ninguna tienda acepta pedidos, la fila de la tienda por defecto de la barra no se resalta porque no tiene control de elección; resaltarla sin control desde `OfferSelection`.
+- [x] M-27: Si ninguna tienda acepta pedidos, la fila de la tienda por defecto de la barra no se resalta porque no tiene control de elección; resaltarla sin control desde `OfferSelection`.
   posven-ecommerce · baja · sonnet
-- [ ] M-28 — Comprobar a 320 px que el `-ml-2` de `OfferSelectButton` alinea el círculo con el borde de la fila sin recortarlo.
+- [-] M-28: Descartada: medido a 320 px con Playwright, el círculo no se recorta. Comprobar a 320 px que el `-ml-2` de `OfferSelectButton` alinea el círculo con el borde de la fila sin recortarlo.
   posven-ecommerce · baja · sonnet
-- [ ] M-29 — `RN-PRODUCT-03` del README de product no cita la prueba nueva de "Fuera de tu zona" plegado, y esa prueba deja `vi.stubEnv` sin `try/finally` (un fallo arrastra el stub a las siguientes).
+- [-] M-29: Descartada: documento y robustez de una prueba. `RN-PRODUCT-03` del README de product no cita la prueba nueva de "Fuera de tu zona" plegado, y esa prueba deja `vi.stubEnv` sin `try/finally` (un fallo arrastra el stub a las siguientes).
   posven-ecommerce · baja · sonnet
 - [ ] M-30 — El lienzo P06 enlaza "Ver N tiendas fuera de tu zona" a `/resultados`; la ficha lo pliega en el sitio. Decidir si se cambia a navegación.
   posven-ecommerce · media · sonnet

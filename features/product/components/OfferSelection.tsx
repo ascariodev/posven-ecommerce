@@ -61,6 +61,12 @@ export function OfferSelectButton({ storeSlug, storeName, priceUsd }: { storeSlu
   );
 }
 
+export function OfferSelectedMark({ storeSlug }: { storeSlug: string }) {
+  const selection = useContext(SelectionContext);
+  if (selection === null || selection.selectedSlug !== storeSlug) return null;
+  return <span hidden data-selected-offer />;
+}
+
 export function PurchaseBar({ product }: { product: { slug: string; name: string } }) {
   const selection = useContext(SelectionContext);
   if (selection === null) return null;

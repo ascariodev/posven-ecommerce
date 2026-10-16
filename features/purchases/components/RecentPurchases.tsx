@@ -51,14 +51,14 @@ function storeNames(purchase: Purchase): string {
 
 function PickupCard({ ready }: { ready: PickupReady }) {
   return (
-    <section aria-labelledby={PICKUP_HEADING_ID} className="rounded-2xl bg-primary-soft p-4 lg:p-6">
-      <Link
-        href={purchaseHref(ready.purchase.code)}
-        className="flex flex-col gap-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-      >
-        <h2 id={PICKUP_HEADING_ID} className="text-sm font-bold uppercase tracking-wide text-foreground">
-          Para retirar
-        </h2>
+    <section
+      aria-labelledby={PICKUP_HEADING_ID}
+      className="relative flex flex-col gap-1 rounded-2xl bg-primary-soft p-4 has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-foreground lg:p-6"
+    >
+      <h2 id={PICKUP_HEADING_ID} className="text-sm font-bold uppercase tracking-wide text-foreground">
+        Para retirar
+      </h2>
+      <Link href={purchaseHref(ready.purchase.code)} className="flex flex-col gap-1 outline-none after:absolute after:inset-0 after:rounded-2xl">
         <span className="text-sm text-foreground">
           {ready.order.store.name} · {ready.purchase.code}
         </span>

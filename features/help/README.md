@@ -96,7 +96,7 @@ export default function Page() {
 
 - Sin llamadas a la API ni al navegador hacia posveapi: el contenido es estático.
 - Sin montos en las respuestas; los plazos y reglas salen de la spec citada.
-- El héroe va a ancho completo dentro del `max-w-5xl` del `<main>` (`w-screen`, margen izquierdo `calc(50% - 50vw)` y `-mt-8` contra el `py-8` del layout); `data-full-bleed` activa `body:has([data-full-bleed]) { overflow-x: clip }` en `app/globals.css`, que evita el desborde horizontal por el ancho de la barra de scroll. Una sección a sangre nueva usa el mismo atributo.
+- El héroe va a ancho completo dentro del `max-w-5xl` del `<main>` (`w-screen`, margen izquierdo `calc(50% - 50vw)` y `-mt-8` contra el `py-8` del layout); `data-full-bleed` activa `html:has([data-full-bleed]), body:has([data-full-bleed]) { overflow-x: clip }` en `app/globals.css`, que evita (en `html` también, porque `clip` solo en `body` se propaga al visor y `scrollWidth` seguía contando el desborde) el desborde horizontal por el ancho de la barra de scroll. Una sección a sangre nueva usa el mismo atributo.
 - Las preguntas plegables usan `<details>`; el filtro abre todas las coincidencias y, sin texto, sólo la primera.
 - El enlace de cada tema apunta a `#pregunta-<id>` de su primera pregunta; un tema sin preguntas no tiene enlace (`content.test.ts`, "todo tema tiene al menos una pregunta").
 

@@ -37,7 +37,7 @@ capabilities:
     entrypoint: "<StoreHeader />"
     file: "features/store/components/StoreHeader.tsx"
     input: "store: Store; children opcional (la página monta ahí el botón de favorito)"
-    output: "portada si trae cover_url; tarjeta con logo si trae logo_url (si no, iniciales), h1 con el nombre, sello 'Aliado PosVen' si is_premium, company_name, dirección y ciudad, h2 'Horario' con las líneas de formatSchedule(), ContactButtons sin producto y children; no pinta abierto o cerrado porque Store no trae is_open"
+    output: "portada si trae cover_url; tarjeta con logo si trae logo_url (si no, iniciales), h1 con el nombre, sello 'Aliado PosVen' si is_premium, company_name, 'Abierta' (con 'hasta {closes_at}') o 'Cerrada ahora' si la API informa is_open, dirección y ciudad, h2 'Horario' con las líneas de formatSchedule(), ContactButtons sin producto y children"
     source: "Store de getStore() (cacheado por slug, sin ubicación)"
     rules: ["RN-STORE-01", "RN-STORE-04", "RN-STORE-06"]
   - intent: "listar los productos de una tienda con paginación"
@@ -168,7 +168,7 @@ if (response === null) notFound();
 - Logo y portada van por `next/image`: su dominio tiene que estar en `images.remotePatterns` de `next.config.ts` (spec §4.5).
 - La página hace `await params` y `getStore({ slug, page: 1 })` fuera de `<Suspense>` para que `notFound()` dé 404 antes del primer byte; `app/tienda/` no lleva `loading.tsx`. `generateStaticParams` devuelve al menos un slug porque con Cache Components un arreglo vacío rompe el build.
 - Metadatos, cabecera y JSON-LD no dependen de la cookie ni de `pagina`: la canónica es `/tienda/{slug}` también en `?pagina=2`.
-- `Store` (`getStore`) no trae `is_open` ni `closes_at`: la cabecera muestra sólo el horario formateado y no calcula el estado en el frontend.
+- `Store` (`getStore`) trae `is_open` y `closes_at` calculados por la API: la cabecera los muestra (`StoreHeaderStatus`) y no calcula el estado en el frontend; sin `is_open` no pinta etiqueta.
 - `new Date()` en `StoreProducts` va después de leer `searchParams`; si no, el prerender falla.
 
 ## 9. Pruebas

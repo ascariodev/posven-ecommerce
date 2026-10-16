@@ -222,7 +222,7 @@ en móvil, sobre los tokens y primitivas de F0 y el contrato de F1a.
 - [x] M-22 — `SearchBox`: con la lista vacía, `ArrowUp` no limpia la marca de "activar la primera"
   que dejó un `ArrowDown` previo (inocuo; se limpia al teclear o cerrar).
   posven-ecommerce · baja · sonnet
-- [ ] M-23 — `open_now` en `/products/nearby` (posveapi) y `listNearbyProducts`, para que "Quizás te
+- [x] M-23: Ya implementada (posveapi bfa76182, ecommerce b1bcd59 y d87edf9). `open_now` en `/products/nearby` (posveapi) y `listNearbyProducts`, para que "Quizás te
   sirve" filtre de verdad con "Abierto ahora" (hoy sólo lo rotula). Cruza el contrato.
   posveapi + posven-ecommerce · alta · plan nuevo
 - [x] M-24 — `SearchBox.test.tsx`: un caso con `fireEvent.submit` del `Form` que compruebe que el

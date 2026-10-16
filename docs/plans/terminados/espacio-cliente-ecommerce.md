@@ -119,7 +119,7 @@ el código de retiro. Sin cambios de contrato.
   comprador) en `features/account/__tests__/AccountIdentity.test.tsx`; hoy el paso de `identity` y
   `compactIdentity` del layout a `AccountNav` sólo lo cubre el build.
   posven-ecommerce · baja · sonnet
-- [ ] M-4 — `PickupCard` en `RecentPurchases.tsx` pone el `<h2>` dentro del `<Link>` y el enlace se
+- [x] M-4: `PickupCard` en `RecentPurchases.tsx` pone el `<h2>` dentro del `<Link>` y el enlace se
   lee como encabezado más código: sacar el `h2` del enlace.
   posven-ecommerce · baja · sonnet
 - [-] M-5: Descartada: e2e sin defecto actual. e2e de la tarjeta "Para retirar" en `/cuenta` (`e2e/checkout.spec.ts`, flujo de compra

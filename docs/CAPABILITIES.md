@@ -130,6 +130,7 @@ README: `features/store/README.md`
 | listar todas las tiendas cercanas con paginación | `<StoresDirectory />` | `features/store/components/StoresDirectory.tsx` | RN-STORE-02, RN-STORE-04, RN-STORE-05 |
 | mostrar la cabecera de la página de una tienda con su horario y contacto | `<StoreHeader />` | `features/store/components/StoreHeader.tsx` | RN-STORE-01, RN-STORE-04, RN-STORE-06 |
 | listar los productos de una tienda con paginación | `<StoreProducts />` | `features/store/components/StoreProducts.tsx` |  |
+| filtrar los productos de una tienda por categoría con conteos | `<StoreCategoryNav />` | `features/store/components/StoreCategoryNav.tsx` |  |
 | armar el JSON-LD de una tienda | `storeJsonLd()` | `features/store/lib/jsonld.ts` | RN-STORE-04 |
 
 ## marketplace

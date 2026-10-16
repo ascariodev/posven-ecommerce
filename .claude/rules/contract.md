@@ -35,7 +35,7 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
    simulado lleva su prueba en el mismo cambio, y tras escribir una regex se relee el archivo para
    confirmar las barras invertidas (`d{7}` por `\d{7}` rechaza todo con la suite en verde).
 6. **Consultas sólo por `params.ts`.** `searchQuery`, `suggestionsQuery`, `nearbyProductsQuery`, `storesQuery`, `productQuery`,
-   `pageQuery` y `cartFulfillmentQuery` (con `cartFulfillmentBody`, su par del cuerpo de `POST /cart/quote`) fijan las claves y cuándo se envía la ubicación (RN-MARKETPLACE-03); `client.ts`
+   `pageQuery`, `storeQuery` y `cartFulfillmentQuery` (con `cartFulfillmentBody`, su par del cuerpo de `POST /cart/quote`) fijan las claves y cuándo se envía la ubicación (RN-MARKETPLACE-03); `client.ts`
    las usa todas y el simulado lee la ubicación de las cuatro primeras con `readScope`.
 7. **`'use cache'` sólo en funciones que reciben todo por argumento** y no leen la petición, con
    `cacheLife` y `cacheTag` explícitos: `"hours"` en `listCategories`, `listLocations` y

@@ -199,7 +199,7 @@ pedido; puerta: pago de prueba completo en modo simulado.
   `checkout.spec.ts`, el formulario de `signIn` en `account.spec.ts`) llegan antes de hidratar y
   fallan en la primera corrida; las siguientes pasan (48/48). Llevar la espera de `clickPay` a un
   helper común en `e2e/`. Repo posven-ecommerce · complejidad media · modelo sonnet.
-- [ ] M-17 — Distancia en la cabecera de tienda del carrito, como en el lienzo: `cartStoreSchema` no
+- [x] M-17: Ya implementada (posveapi 04d1bde7, ecommerce b8b8ecf y 021bd28). Distancia en la cabecera de tienda del carrito, como en el lienzo: `cartStoreSchema` no
   trae `distance_km`; pide cambiar la spec §3 y el contrato en posveapi primero. Repo posveapi y
   posven-ecommerce · complejidad alta · modelo opus.
 - [-] M-18: Descartada: estructura del marcado, sin defecto visible. En `CartStoreGroup.tsx` la insignia de abierto queda dentro del `<span>` de la ciudad

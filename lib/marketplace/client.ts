@@ -9,6 +9,7 @@ import {
   pageQuery,
   productQuery,
   searchQuery,
+  storeQuery,
   storesQuery,
   suggestionsQuery,
   type AccountContext,
@@ -168,14 +169,18 @@ export async function getProductOffers(p: {
   );
 }
 
-export async function getStore(p: { slug: string; page: number }): Promise<StoreResponse | null> {
+export async function getStore(p: {
+  slug: string;
+  page: number;
+  category: string | null;
+}): Promise<StoreResponse | null> {
   "use cache";
   cacheLife("minutes");
   cacheTag(`marketplace:store:${p.slug}`);
   if (usesMock()) return mock.getStore(p);
   return requestJsonOrNull(
     `/stores/${encodeURIComponent(p.slug)}`,
-    pageQuery(p.page),
+    storeQuery(p),
     storeResponseSchema,
   );
 }

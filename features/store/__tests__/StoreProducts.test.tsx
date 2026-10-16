@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getStore } from "@/lib/marketplace/client";
 import type { StoreProduct, StoreResponse } from "@/lib/marketplace/schemas";
@@ -31,7 +31,20 @@ function product(slug: string, name: string, overrides: Partial<StoreProduct> = 
   };
 }
 
-function response(products: StoreProduct[], meta: StoreResponse["meta"], acceptsOrders = false): StoreResponse {
+const CATEGORIES: StoreResponse["categories"] = {
+  total: 12,
+  items: [
+    { slug: "analgesicos", name: "Analgésicos", count: 8 },
+    { slug: "vitaminas", name: "Vitaminas", count: 4 },
+  ],
+};
+
+function response(
+  products: StoreProduct[],
+  meta: StoreResponse["meta"],
+  acceptsOrders = false,
+  categories?: StoreResponse["categories"],
+): StoreResponse {
   return {
     data: {
       slug: SLUG,
@@ -52,6 +65,7 @@ function response(products: StoreProduct[], meta: StoreResponse["meta"], accepts
     products,
     meta,
     rate: { usd_ves: "36.50", valid_on: "2026-09-26" },
+    ...(categories ? { categories } : {}),
   };
 }
 
@@ -110,7 +124,57 @@ describe("StoreProducts", () => {
 
     render(await StoreProducts({ slug: SLUG, searchParams: searchParams({ pagina: "abc" }) }));
 
-    expect(getStore).toHaveBeenCalledWith({ slug: SLUG, page: 1 });
+    expect(getStore).toHaveBeenCalledWith({ slug: SLUG, page: 1, category: null });
+  });
+});
+
+describe("categorías de la tienda", () => {
+  const one = [product("acetaminofen-500-mg-20-tabletas", "Acetaminofén 500 mg x 20 tabletas")];
+
+  it("sin categories no pinta la barra", async () => {
+    vi.mocked(getStore).mockResolvedValue(response(one, { page: 1, per_page: 20, total: 1 }));
+
+    render(await StoreProducts({ slug: SLUG, searchParams: searchParams({}) }));
+
+    expect(screen.queryByRole("navigation", { name: "Categorías de la tienda" })).toBeNull();
+  });
+
+  it("pinta Todo con el total y marca Todo como activa sin categoria", async () => {
+    vi.mocked(getStore).mockResolvedValue(response(one, { page: 1, per_page: 20, total: 12 }, false, CATEGORIES));
+
+    render(await StoreProducts({ slug: SLUG, searchParams: searchParams({}) }));
+
+    const nav = screen.getByRole("navigation", { name: "Categorías de la tienda" });
+    const all = within(nav).getByRole("link", { name: /^Todo/ });
+    expect(all.textContent).toBe("Todo12");
+    expect(all.getAttribute("href")).toBe(`/tienda/${SLUG}`);
+    expect(all.getAttribute("aria-current")).toBe("page");
+    const analgesicos = within(nav).getByRole("link", { name: /^Analgésicos/ });
+    expect(analgesicos.getAttribute("href")).toBe(`/tienda/${SLUG}?categoria=analgesicos`);
+    expect(analgesicos.getAttribute("aria-current")).toBeNull();
+  });
+
+  it("categoria pide esa categoría, la marca activa y la paginación la conserva", async () => {
+    vi.mocked(getStore).mockResolvedValue(response(one, { page: 1, per_page: 5, total: 8 }, false, CATEGORIES));
+
+    render(await StoreProducts({ slug: SLUG, searchParams: searchParams({ categoria: "analgesicos" }) }));
+
+    expect(getStore).toHaveBeenCalledWith({ slug: SLUG, page: 1, category: "analgesicos" });
+    const nav = screen.getByRole("navigation", { name: "Categorías de la tienda" });
+    expect(within(nav).getByRole("link", { name: /^Analgésicos/ }).getAttribute("aria-current")).toBe("page");
+    expect(within(nav).getByRole("link", { name: /^Todo/ }).getAttribute("aria-current")).toBeNull();
+    expect(screen.getByRole("link", { name: "Siguiente" }).getAttribute("href")).toBe(
+      `/tienda/${SLUG}?pagina=2&categoria=analgesicos`,
+    );
+  });
+
+  it("una categoría sin productos conserva la barra y avisa", async () => {
+    vi.mocked(getStore).mockResolvedValue(response([], { page: 1, per_page: 20, total: 0 }, false, CATEGORIES));
+
+    render(await StoreProducts({ slug: SLUG, searchParams: searchParams({ categoria: "vieja" }) }));
+
+    expect(screen.getByRole("navigation", { name: "Categorías de la tienda" })).toBeTruthy();
+    expect(screen.getByText("No hay productos en esta categoría.")).toBeTruthy();
   });
 });
 

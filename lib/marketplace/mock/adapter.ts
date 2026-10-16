@@ -2,6 +2,7 @@ import {
   nearbyProductsQuery,
   productQuery,
   searchQuery,
+  storeQuery,
   storesQuery,
   suggestionsQuery,
   type AccountContext,
@@ -24,6 +25,7 @@ import type {
   SearchResponse,
   SitemapResponse,
   SitemapType,
+  StoreCategories,
   StoreProduct,
   StoreResponse,
   StoresResponse,
@@ -441,7 +443,29 @@ export async function getProductOffers(p: {
   return productPage(p.slug, p);
 }
 
-export async function getStore(p: { slug: string; page: number }): Promise<StoreResponse | null> {
+function rootCategorySlug(product: StoreProduct): string | null {
+  if (product.category === null) return null;
+  return product.category.parent_slug ?? product.category.slug;
+}
+
+function storeCategories(products: StoreProduct[]): StoreCategories {
+  const counts = new Map<string, number>();
+  for (const product of products) {
+    const root = rootCategorySlug(product);
+    if (root !== null) counts.set(root, (counts.get(root) ?? 0) + 1);
+  }
+  const items = MOCK_CATEGORIES.flatMap((root) => {
+    const count = counts.get(root.slug);
+    return count === undefined ? [] : [{ slug: root.slug, name: root.name, count }];
+  }).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  return { total: products.length, items };
+}
+
+export async function getStore(p: {
+  slug: string;
+  page: number;
+  category: string | null;
+}): Promise<StoreResponse | null> {
   const store = MOCK_STORES.find((candidate) => candidate.summary.slug === p.slug);
   if (store === undefined) return null;
 
@@ -459,11 +483,15 @@ export async function getStore(p: { slug: string; page: number }): Promise<Store
     ];
   });
 
+  const category = storeQuery(p).get("category");
+  const filtered = category === null ? products : products.filter((product) => rootCategorySlug(product) === category);
+
   return {
     data: { ...store.summary, ...MOCK_STORE_DETAILS[p.slug], ...storeStatus(store) },
-    products: pageOf(products, p.page, STORE_PRODUCTS_PER_PAGE),
-    meta: { page: p.page, per_page: STORE_PRODUCTS_PER_PAGE, total: products.length },
+    products: pageOf(filtered, p.page, STORE_PRODUCTS_PER_PAGE),
+    meta: { page: p.page, per_page: STORE_PRODUCTS_PER_PAGE, total: filtered.length },
     rate: MOCK_RATE,
+    categories: storeCategories(products),
   };
 }
 

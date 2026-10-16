@@ -189,11 +189,25 @@ export const storeProductSchema = productSchema.extend({
 });
 export type StoreProduct = z.infer<typeof storeProductSchema>;
 
+export const storeCategoryCountSchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  count: z.int().min(1),
+});
+export type StoreCategoryCount = z.infer<typeof storeCategoryCountSchema>;
+
+export const storeCategoriesSchema = z.object({
+  total: z.int().min(0),
+  items: z.array(storeCategoryCountSchema),
+});
+export type StoreCategories = z.infer<typeof storeCategoriesSchema>;
+
 export const storeResponseSchema = z.object({
   data: storeSchema,
   products: z.array(storeProductSchema),
   meta: pageMetaSchema,
   rate: rateSchema,
+  categories: storeCategoriesSchema.optional(),
 });
 export type StoreResponse = z.infer<typeof storeResponseSchema>;
 

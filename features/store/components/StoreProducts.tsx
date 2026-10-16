@@ -15,7 +15,7 @@ import { getStore } from "@/lib/marketplace/client";
 import type { Store, StoreProduct } from "@/lib/marketplace/schemas";
 
 const POSITIVE_INTEGER = /^\d+$/;
-const GRID_THUMB_SIZES = "(min-width: 1024px) 240px, (min-width: 768px) calc((100vw - 56px) / 3), calc((100vw - 44px) / 2)";
+const GRID_THUMB_SIZES = "(min-width: 1024px) 240px, (min-width: 768px) calc((100vw - 56px) / 3), 64px";
 
 function parsePage(value: string | string[] | undefined): number {
   const raw = Array.isArray(value) ? value[0] : value;
@@ -31,15 +31,15 @@ function parseCategory(value: string | string[] | undefined): string | null {
 
 function StoreProductCard({ product, store, now }: { product: StoreProduct; store: Store; now: Date }) {
   return (
-    <Card className="h-full gap-2 rounded-2xl border border-border p-2 pb-3 shadow-card transition-shadow duration-200 ease-out hover:shadow-raised motion-reduce:transition-none">
+    <Card className="h-full flex-row items-center gap-3 rounded-2xl border border-border p-2 shadow-card transition-shadow duration-200 ease-out hover:shadow-raised motion-reduce:transition-none md:flex-col md:items-stretch md:gap-2 md:pb-3">
       <ProductThumb
         imageUrl={product.image_url}
         category={product.category}
         size="card"
-        className="aspect-square"
+        className="size-16 shrink-0 md:aspect-square md:size-auto md:w-full"
         sizes={GRID_THUMB_SIZES}
       />
-      <CardContent className="flex flex-1 flex-col gap-2 px-1">
+      <CardContent className="flex min-w-0 flex-1 flex-col gap-2 px-1 md:w-full">
         <Link
           href={`/p/${product.slug}`}
           className="line-clamp-2 text-sm leading-snug font-semibold text-foreground underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
@@ -113,7 +113,7 @@ export async function StoreProducts({
             <EmptyState icon={StoreIcon} title="No hay productos en esta categoría." headingLevel="h3" compact />
           )}
           {response.products.length > 0 && (
-            <ul aria-label="Productos" className={cn("grid grid-cols-2 gap-3", nav ? "md:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-3 lg:grid-cols-4")}>
+            <ul aria-label="Productos" className={cn("grid grid-cols-[minmax(0,1fr)] gap-2 md:gap-3", nav ? "md:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-3 lg:grid-cols-4")}>
               {response.products.map((product) => (
                 <li key={product.slug}>
                   <StoreProductCard product={product} store={response.data} now={now} />
@@ -152,11 +152,11 @@ export function StoreProductsSkeleton() {
   return (
     <div className="flex flex-col gap-4">
       <Skeleton className="h-7 w-40" />
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-2 md:grid-cols-3 md:gap-3 lg:grid-cols-4">
         {Array.from({ length: 4 }, (_, index) => (
-          <Card key={index} className="h-full gap-2 rounded-2xl border border-border p-2 pb-3 shadow-card">
-            <Skeleton className="aspect-square" />
-            <CardContent className="flex flex-1 flex-col gap-2 px-1">
+          <Card key={index} className="h-full flex-row items-center gap-3 rounded-2xl border border-border p-2 shadow-card md:flex-col md:items-stretch md:gap-2 md:pb-3">
+            <Skeleton className="size-16 shrink-0 md:size-auto md:aspect-square md:w-full" />
+            <CardContent className="flex min-w-0 flex-1 flex-col gap-2 px-1 md:w-full">
               <Skeleton className="h-10" />
               <Skeleton className="h-16" />
               <Skeleton className="h-11 md:h-9" />

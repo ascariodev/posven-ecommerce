@@ -157,7 +157,7 @@ directorio de comercios, sobre los tokens de F0, la cabecera y barra de F1b y el
   posven-ecommerce · baja · sonnet
 - [x] M-18 — La barra de compra elige por defecto la de `is_best_price` aunque no reciba pedidos; preferir la más barata que sí los acepte (absorbe M-8).
   posven-ecommerce · baja · sonnet
-- [ ] M-19 — W07/P07: barra lateral de categorías con conteos y filas de lista en móvil; requiere conteos en el contrato de tienda.
+- [x] M-19 — W07/P07: barra lateral de categorías con conteos y filas de lista en móvil; requiere conteos en el contrato de tienda.
   posveapi + posven-ecommerce · alta · plan nuevo
 - [x] M-20 — En `/tiendas` de escritorio las `StoreCard` sin portada se estiran a la altura de las que la tienen.
   posven-ecommerce · baja · sonnet

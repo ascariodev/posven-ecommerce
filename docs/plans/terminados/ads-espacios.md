@@ -1,7 +1,7 @@
 # Plan: ads-espacios
 
 **Objetivo:** el ecommerce pinta los espacios publicitarios de `GET /placements` y el `sponsored` de `/search` y `/stores`, ordena la portada según `sections` y cuenta impresiones y clics como `ad_impression` y `ad_click`.
-**Estado:** en curso · Fase actual: 9 (hecha)
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: `posven/.claude/docs/specs/2026-10-18-publicidad-ecommerce-design.md` (§1 catálogo de espacios, §2.3 contrato, §3.6 conteo, §4 errores, §5 verificación). Plan 3 de §6.

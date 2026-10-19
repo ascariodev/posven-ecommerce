@@ -1,7 +1,7 @@
 # Plan: ads-espacios
 
 **Objetivo:** el ecommerce pinta los espacios publicitarios de `GET /placements` y el `sponsored` de `/search` y `/stores`, ordena la portada según `sections` y cuenta impresiones y clics como `ad_impression` y `ad_click`.
-**Estado:** en curso · Fase actual: 2
+**Estado:** en curso · Fase actual: 3
 
 ## Contexto mínimo
 - Spec: `posven/.claude/docs/specs/2026-10-18-publicidad-ecommerce-design.md` (§1 catálogo de espacios, §2.3 contrato, §3.6 conteo, §4 errores, §5 verificación). Plan 3 de §6.
@@ -24,7 +24,7 @@
 - **Terminado cuando:** los esquemas aceptan respuestas con y sin `placements`, `sections` y `sponsored`; `<repo>/node_modules/.bin/tsc --noEmit -p <repo>/tsconfig.json`, `npx eslint <archivos>` y `npx vitest run lib/marketplace` pasan.
 - **Commit:** `feat(marketplace): contrato de espacios publicitarios y patrocinados`
 
-### [ ] Fase 2 — Eventos de anuncio en el route handler
+### [x] Fase 2 — Eventos de anuncio en el route handler
 - **Repo:** posven-ecommerce
 - **Alcance:** `ad_impression` y `ad_click` en `eventTypeSchema` con `ad_token` (sólo en esos dos, sin slugs ni campos de búsqueda); deduplicación por sesión, tipo y token; los eventos de siempre no cambian.
 - **Archivos:** `lib/marketplace/schemas.ts`, `features/events/lib/handle.ts`, `features/events/README.md`, `lib/marketplace/README.md`.
@@ -73,6 +73,7 @@
 
 ## Notas para la próxima sesión
 - Fase 1 hecha: `getPlacements({page, geo, radiusKm, category?, store?})` sin `'use cache'`; `listNearbyStores` con `placement?: StoresPlacement` (`home_stores_native|stores_native`); tipos `Piece`, `PlacementsResponse`, `PlacementPage`, `HomeSectionKey`, `SponsoredProduct`, `SponsoredStore` (choca de nombre con el componente `features/store/components/SponsoredStore.tsx`: importar con alias) y constantes `PLACEMENT_PAGES`, `HOME_SECTION_KEYS`. `slots` es `Record<string, Piece|null>`. Simulado: `sponsored` sólo en página 1 y se saca de `data` (búsqueda: último no destacado; tiendas: `abasto-la-esquina`, no premium); `getPlacements` da una pieza por espacio no nativo con imágenes `data:` y `sections` en el orden por omisión.
+- Fase 2 hecha: el navegador manda `{type: ad_impression|ad_click, ad_token}` (1..512) a `/api/events`; se reenvía `{type, ad_token, session_id}`; dedupe por sesión, tipo y token. `store_slug`/`product_slug` son `.nullish()` en el esquema pero los tipos de siempre los siguen exigiendo presentes.
 - tsc en el worktree necesita antes `"<árbol>/node_modules/.bin/next" typegen "<árbol>"` (si no, faltan `PageProps`/`LayoutProps`).
 - `docs-check` marcará rancios los README que listan `client.ts`/`schemas.ts` (account, cart, checkout, events): se revisa tras el merge.
 - En main no existe nada de `placements`, `sponsored`, `ad_token` ni `IntersectionObserver`. `SponsoredStore` hoy marca "PATROCINADO" al primer premium (`NearbyStores.tsx`), lo que la fase 6 corrige.

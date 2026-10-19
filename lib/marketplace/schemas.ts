@@ -318,13 +318,16 @@ export const eventTypeSchema = z.enum([
   "click_route",
   "search",
   "add_to_cart",
+  "ad_impression",
+  "ad_click",
 ]);
 export type EventType = z.infer<typeof eventTypeSchema>;
 
 const eventFieldsSchema = z.object({
   type: eventTypeSchema,
-  store_slug: z.string().max(160).nullable(),
-  product_slug: z.string().max(160).nullable(),
+  store_slug: z.string().max(160).nullish(),
+  product_slug: z.string().max(160).nullish(),
+  ad_token: z.string().min(1).max(512).optional(),
   query: z.string().trim().toLowerCase().max(100).nullish(),
   category_slug: z.string().max(120).nullish(),
   results_count: z.number().int().min(0).nullish(),
@@ -334,9 +337,24 @@ function isBlank(value: string | null | undefined): boolean {
   return value === null || value === undefined || value === "";
 }
 
+function isAdEvent(type: z.infer<typeof eventTypeSchema>): boolean {
+  return type === "ad_impression" || type === "ad_click";
+}
+
 function hasFieldsForType(event: z.infer<typeof eventFieldsSchema>): boolean {
   const hasResultsCount = event.results_count !== null && event.results_count !== undefined;
   const hasQueryOrCategory = !isBlank(event.query) || !isBlank(event.category_slug);
+  if (isAdEvent(event.type)) {
+    return (
+      event.ad_token !== undefined &&
+      (event.store_slug ?? null) === null &&
+      (event.product_slug ?? null) === null &&
+      !hasQueryOrCategory &&
+      !hasResultsCount
+    );
+  }
+  if (event.ad_token !== undefined) return false;
+  if (event.store_slug === undefined || event.product_slug === undefined) return false;
   if (event.type === "search") {
     return event.store_slug === null && event.product_slug === null && hasQueryOrCategory && hasResultsCount;
   }
@@ -347,7 +365,7 @@ function hasFieldsForType(event: z.infer<typeof eventFieldsSchema>): boolean {
 }
 
 const EVENT_FIELDS_MESSAGE =
-  "search exige query o category_slug y results_count, sin tienda ni producto; product_view exige product_slug y store_slug nulo; add_to_cart exige store_slug y product_slug; los demás exigen store_slug; query, category_slug y results_count sólo van en search";
+  "ad_impression y ad_click exigen ad_token y no admiten tienda, producto ni campos de búsqueda; ad_token sólo va en ellos; search exige query o category_slug y results_count, sin tienda ni producto; product_view exige product_slug y store_slug nulo; add_to_cart exige store_slug y product_slug; los demás exigen store_slug; query, category_slug y results_count sólo van en search";
 
 export const eventInputSchema = eventFieldsSchema.refine(hasFieldsForType, {
   message: EVENT_FIELDS_MESSAGE,

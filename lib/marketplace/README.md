@@ -100,7 +100,7 @@ capabilities:
     intent_aliases: ["eventos", "metricas", "click whatsapp", "vista de producto"]
     entrypoint: "sendEvent()"
     file: "lib/marketplace/client.ts"
-    input: "MarketplaceEvent { type: EventType, store_slug: string|null, product_slug: string|null, query?: string|null, category_slug?: string|null, results_count?: number|null, session_id: uuid }; clientIp: string|null"
+    input: "MarketplaceEvent { type: EventType, store_slug?: string|null, product_slug?: string|null, ad_token?: string, query?: string|null, category_slug?: string|null, results_count?: number|null, session_id: uuid }; clientIp: string|null"
     output: "void"
     source: "POST /events de posveapi vía BFF con X-Client-IP si hay IP, sin caché; el simulado no hace nada"
     rules: ["RN-MARKETPLACE-02"]
@@ -298,7 +298,7 @@ Esquemas y tipos inferidos (`z.infer`), `lib/marketplace/schemas.ts`:
 - `productOfferSchema` / `ProductOffer`; `offersSummarySchema` / `OffersSummary`; `productDetailSchema` / `ProductDetail`
 - `productRedirectSchema`; `productPageSchema` / `ProductPage` (`meta: { out_of_range }` opcional); `productResponseSchema` / `ProductResponse` (unión de redirección y página)
 - `sitemapTypeSchema` / `SitemapType`; `sitemapResponseSchema` / `SitemapResponse`
-- `eventTypeSchema` / `EventType`; `eventInputSchema` / `EventInput` (siete tipos; `product_view` exige `product_slug` y `store_slug` nulo; `add_to_cart`, ambos slugs; cada slug hasta 160; `search`, `query` normalizada (recortada, en minúsculas, hasta 100) o `category_slug`, `results_count` y sin slugs; los demás, `store_slug`; `query`, `category_slug` y `results_count` sólo en `search`); `marketplaceEventSchema` / `MarketplaceEvent` (más `session_id` uuid)
+- `eventTypeSchema` / `EventType`; `eventInputSchema` / `EventInput` (nueve tipos; `ad_impression` y `ad_click` exigen `ad_token` (hasta 512) y ningún slug con valor ni campo de búsqueda, y `ad_token` sólo va en ellos; los slugs son nulables y, fuera de los anuncios, obligatorios; `product_view` exige `product_slug` y `store_slug` nulo; `add_to_cart`, ambos slugs; cada slug hasta 160; `search`, `query` normalizada (recortada, en minúsculas, hasta 100) o `category_slug`, `results_count` y sin slugs; los demás, `store_slug`; `query`, `category_slug` y `results_count` sólo en `search`); `marketplaceEventSchema` / `MarketplaceEvent` (más `session_id` uuid)
 - `accountErrorCodeSchema` / `AccountErrorCode` (`unauthenticated`, `not_found`, `validation_failed`, `invalid_credentials`, `token_invalid`, `token_expired`, `too_many_attempts`, `not_orderable`, `product_restricted`, `cart_full`, `email_unverified`, `quote_changed`, `cart_empty`, `open_orders`, `billing_incomplete`); `accountErrorBodySchema` (`{ error: { code, message, fields?, retry_after?, quote? } }`)
 - `billingDocumentTypeSchema` (`V`, `E`, `J`, `G`), `billingTaxpayerTypeSchema` (`special`, `ordinary`), `billingSchema` / `Billing` (`document_type`, `document`, `name`, `phone`, `address`, `taxpayer_type`; el módulo no valida largos ni patrones: los aplican la API y el simulado)
 - `customerSchema` / `Customer` (con `billing: Billing|null`); `customerEnvelopeSchema` (`{ data: Customer }`); `authResponseSchema` / `AuthResponse` (`token` con `^\d{1,18}\|.+$`)

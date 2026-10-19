@@ -194,6 +194,30 @@ describe("eventInputSchema", () => {
     expect(eventInputSchema.safeParse({ ...base, store_slug: "a".repeat(161) }).success).toBe(false);
     expect(eventInputSchema.safeParse({ ...base, product_slug: "b".repeat(161) }).success).toBe(false);
   });
+
+  it.each(["ad_impression", "ad_click"])("%s acepta ad_token sin slugs, con slugs nulos y topa el token en 512", (type) => {
+    expect(eventInputSchema.safeParse({ type, ad_token: "tok" }).success).toBe(true);
+    expect(eventInputSchema.safeParse({ type, ad_token: "tok", store_slug: null, product_slug: null }).success).toBe(true);
+    expect(eventInputSchema.safeParse({ type, ad_token: "a".repeat(512) }).success).toBe(true);
+    expect(eventInputSchema.safeParse({ type, ad_token: "a".repeat(513) }).success).toBe(false);
+  });
+
+  it.each(["ad_impression", "ad_click"])("%s rechaza token ausente o vacío, slugs y campos de búsqueda", (type) => {
+    const base = { type, ad_token: "tok" };
+    expect(eventInputSchema.safeParse({ type }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ type, ad_token: "" }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, store_slug: "farmacia" }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, product_slug: "tos-jarabe" }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, query: "tos" }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, category_slug: "analgesicos" }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ ...base, results_count: 0 }).success).toBe(false);
+  });
+
+  it("ad_token está prohibido en los demás tipos y los slugs siguen siendo obligatorios en ellos", () => {
+    expect(eventInputSchema.safeParse({ type: "click_call", store_slug: "farmacia", product_slug: null, ad_token: "tok" }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ type: "product_view", product_slug: "tos-jarabe" }).success).toBe(false);
+    expect(eventInputSchema.safeParse({ type: "click_call", store_slug: "farmacia" }).success).toBe(false);
+  });
 });
 
 describe("moneySchema", () => {

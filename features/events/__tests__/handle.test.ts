@@ -71,6 +71,36 @@ describe("handleEvent", () => {
     expect(handle(body, BROWSER_UA)).toEqual({ status: 400, forward: null });
   });
 
+  it("un evento de anuncio se reenvía sólo con type, ad_token y session_id, aun con slugs nulos", () => {
+    const body = JSON.stringify({ type: "ad_impression", ad_token: "tok-1", store_slug: null, product_slug: null });
+    expect(handle(body, BROWSER_UA)).toEqual({
+      status: 202,
+      forward: { type: "ad_impression", ad_token: "tok-1", session_id: SESSION_ID },
+    });
+  });
+
+  it("un evento de anuncio con slugs, sin token o con token de más de 512 caracteres responde 400", () => {
+    const send = (event: object) => handle(JSON.stringify(event), BROWSER_UA);
+    expect(send({ type: "ad_click", ad_token: "tok", store_slug: "farmacia" })).toEqual({ status: 400, forward: null });
+    expect(send({ type: "ad_click" })).toEqual({ status: 400, forward: null });
+    expect(send({ type: "ad_click", ad_token: "a".repeat(513) })).toEqual({ status: 400, forward: null });
+  });
+
+  it("ad_token en un tipo de siempre responde 400", () => {
+    const body = JSON.stringify({ type: "product_view", store_slug: null, product_slug: "tos", ad_token: "tok" });
+    expect(handle(body, BROWSER_UA)).toEqual({ status: 400, forward: null });
+  });
+
+  it("los anuncios se deduplican por sesión, tipo y token", () => {
+    const ad = (type: string, ad_token: string) => JSON.stringify({ type, ad_token });
+    const shouldForward = createDeduper();
+    expect(handle(ad("ad_impression", "a"), BROWSER_UA, shouldForward).forward).not.toBeNull();
+    expect(handle(ad("ad_impression", "a"), BROWSER_UA, shouldForward, T0 + 1).forward).toBeNull();
+    expect(handle(ad("ad_click", "a"), BROWSER_UA, shouldForward, T0 + 1).forward).not.toBeNull();
+    expect(handle(ad("ad_impression", "b"), BROWSER_UA, shouldForward, T0 + 1).forward).not.toBeNull();
+    expect(handle(ad("ad_impression", "a"), BROWSER_UA, shouldForward, T0 + EVENT_DEDUP_WINDOW_MS).forward).not.toBeNull();
+  });
+
   it("con más de 10 000 claves dentro de la ventana se descarta la más vieja", () => {
     const shouldForward = createDeduper();
     for (let i = 0; i <= 10_000; i++) expect(shouldForward(`clave-${i}`, T0)).toBe(true);

@@ -1,13 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock("next/cache", () => ({ cacheLife: vi.fn(), cacheTag: vi.fn() }));
 vi.mock("@/lib/marketplace/http", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/marketplace/http")>()),
   accountRequest: vi.fn(),
+  requestJson: vi.fn(),
 }));
 
-import { getCart, quoteGuestCart } from "@/lib/marketplace/client";
-import { accountRequest } from "@/lib/marketplace/http";
+import { getCart, getPlacements, quoteGuestCart } from "@/lib/marketplace/client";
+import { accountRequest, requestJson } from "@/lib/marketplace/http";
+import { placementsResponseSchema } from "@/lib/marketplace/schemas";
 
 const ctx = { session: "token", clientIp: null };
 const items = [{ product_slug: "alcohol-isopropilico-250-ml", store_slug: "farmacia-sur", quantity: 1 }];
@@ -63,5 +66,25 @@ describe("client: entrega elegida en el carrito", () => {
   it("quoteGuestCart sin elección manda sólo items", async () => {
     await quoteGuestCart(ctx, items);
     expect(lastRequest().body).toEqual({ items });
+  });
+});
+
+describe("client: espacios publicitarios", () => {
+  it("getPlacements consulta /placements con la página, la ubicación y el filtro", async () => {
+    vi.mocked(requestJson).mockResolvedValue({ slots: {} } as never);
+    await getPlacements({ page: "search", geo: { city: "valencia" }, radiusKm: 10, category: "alimentos" });
+    const [path, query, schema] = vi.mocked(requestJson).mock.calls[0];
+    expect(path).toBe("/placements");
+    expect(query.get("page")).toBe("search");
+    expect(query.get("city")).toBe("valencia");
+    expect(query.get("category")).toBe("alimentos");
+    expect(schema).toBe(placementsResponseSchema);
+  });
+
+  it("getPlacements en modo simulado devuelve una pieza por espacio de la página", async () => {
+    vi.stubEnv("MARKETPLACE_MODE", "mock");
+    const response = await getPlacements({ page: "product", geo: null, radiusKm: null });
+    expect(Object.keys(response.slots)).toEqual(["product_banner"]);
+    expect(requestJson).not.toHaveBeenCalled();
   });
 });

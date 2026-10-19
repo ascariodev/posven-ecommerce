@@ -28,17 +28,18 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
    después en `schemas.ts`. Ningún campo se renombra ni se quita (spec §3.1, ítem 7). Un campo nuevo de
    la API va `.optional()` (más `.nullable()` si la API lo manda nulo): el push a `main` despliega
    solo y puede llegar antes que posveapi, y un campo requerido ausente tumba el `safeParse` del
-   recurso entero.
+   recurso entero. Los espacios publicitarios (`placements`, `sponsored`) los fija
+   `posven/.claude/docs/specs/2026-10-18-publicidad-ecommerce-design.md` §2.3.
 5. **El simulado pasa los mismos esquemas.** `mock/adapter.ts` exporta las mismas funciones con
    las mismas firmas que `client.ts`, y `__tests__/schemas.test.ts` valida cada respuesta simulada contra su
    esquema. Un campo nuevo se agrega también a `mock/fixtures.ts`. Una validación nueva del
    simulado lleva su prueba en el mismo cambio, y tras escribir una regex se relee el archivo para
    confirmar las barras invertidas (`d{7}` por `\d{7}` rechaza todo con la suite en verde).
-6. **Consultas sólo por `params.ts`.** `searchQuery`, `suggestionsQuery`, `nearbyProductsQuery`, `storesQuery`, `productQuery`,
+6. **Consultas sólo por `params.ts`.** `searchQuery`, `suggestionsQuery`, `nearbyProductsQuery`, `storesQuery`, `placementsQuery`, `productQuery`,
    `pageQuery`, `storeQuery` y `cartFulfillmentQuery` (con `cartFulfillmentBody`, su par del cuerpo de `POST /cart/quote`) fijan las claves y cuándo se envía la ubicación (RN-MARKETPLACE-03); `client.ts`
    las usa todas y el simulado lee la ubicación de las cuatro primeras con `readScope`.
 7. **`'use cache'` sólo en funciones que reciben todo por argumento** y no leen la petición, con
    `cacheLife` y `cacheTag` explícitos: `"hours"` en `listCategories`, `listLocations` y
    `listSitemap`; `"minutes"` en `searchProducts`, `getSuggestions`, `listNearbyProducts`, `listNearbyStores`, `getProductOffers` y
    `getStore`, que traen precios por tienda. `getProduct` no tiene caché propia: delega en
-   `getProductOffers` sin ubicación.
+   `getProductOffers` sin ubicación. `getPlacements` no se cachea: la rotación es por pedido.

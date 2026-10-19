@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/components/FavoriteButton";
+import { SlotBanner } from "@/features/ads/components/SlotBanner";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { ViewBeacon } from "@/features/events/components/ViewBeacon";
 import { productJsonLd } from "@/features/product/lib/jsonld";
@@ -186,6 +187,14 @@ export default async function ProductPage({
               />
             </Suspense>
           )}
+
+          <Suspense fallback={null}>
+            <SlotBanner
+              page="product"
+              slot="product_banner"
+              scope={{ category: product.category?.slug ?? null }}
+            />
+          </Suspense>
 
           <ProductDetails product={product} />
         </div>

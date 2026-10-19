@@ -120,9 +120,16 @@ const featuredProductSchema = z.object({
 });
 export type FeaturedProduct = z.infer<typeof featuredProductSchema>;
 
+const sponsoredProductSchema = featuredProductSchema.extend({
+  token: z.string(),
+  advertiser_name: z.string(),
+});
+export type SponsoredProduct = z.infer<typeof sponsoredProductSchema>;
+
 export const searchResponseSchema = z.object({
   data: z.array(searchItemSchema),
   featured: z.array(featuredProductSchema).max(2),
+  sponsored: sponsoredProductSchema.optional(),
   meta: pageMetaSchema,
   rate: rateSchema,
 });
@@ -151,12 +158,56 @@ export const nearbyStoreSchema = storeSummarySchema.extend({
 });
 export type NearbyStore = z.infer<typeof nearbyStoreSchema>;
 
+const sponsoredStoreSchema = nearbyStoreSchema.extend({
+  token: z.string(),
+  advertiser_name: z.string(),
+});
+export type SponsoredStore = z.infer<typeof sponsoredStoreSchema>;
+
 export const storesResponseSchema = z.object({
   data: z.array(nearbyStoreSchema),
   featured: z.array(nearbyStoreSchema).max(2),
+  sponsored: sponsoredStoreSchema.optional(),
   meta: pageMetaSchema,
 });
 export type StoresResponse = z.infer<typeof storesResponseSchema>;
+
+export const PLACEMENT_PAGES = ["home", "search", "product", "stores", "store"] as const;
+export type PlacementPage = (typeof PLACEMENT_PAGES)[number];
+
+export const HOME_SECTION_KEYS = [
+  "trust_strip",
+  "promos",
+  "categories",
+  "home_strip",
+  "nearby_products",
+  "how_it_works",
+  "nearby_stores",
+  "home_bottom",
+] as const;
+export type HomeSectionKey = (typeof HOME_SECTION_KEYS)[number];
+
+export const pieceSchema = z.object({
+  kind: z.enum(["ad", "house"]),
+  format: z.enum(["hero", "promo", "banner", "native_product", "native_store"]),
+  image_desktop_url: z.string().nullable(),
+  image_mobile_url: z.string().nullable(),
+  alt: z.string().nullable(),
+  badge: z.string().nullable(),
+  title: z.string().nullable(),
+  cta: z.string().nullable(),
+  href: z.string(),
+  external: z.boolean(),
+  advertiser_name: z.string().nullable(),
+  token: z.string(),
+});
+export type Piece = z.infer<typeof pieceSchema>;
+
+export const placementsResponseSchema = z.object({
+  slots: z.record(z.string(), pieceSchema.nullable()),
+  sections: z.array(z.string()).optional(),
+});
+export type PlacementsResponse = z.infer<typeof placementsResponseSchema>;
 
 export const categoriesResponseSchema = z.object({
   data: z.array(categoryNodeSchema),
@@ -267,13 +318,16 @@ export const eventTypeSchema = z.enum([
   "click_route",
   "search",
   "add_to_cart",
+  "ad_impression",
+  "ad_click",
 ]);
 export type EventType = z.infer<typeof eventTypeSchema>;
 
 const eventFieldsSchema = z.object({
   type: eventTypeSchema,
-  store_slug: z.string().max(160).nullable(),
-  product_slug: z.string().max(160).nullable(),
+  store_slug: z.string().max(160).nullish(),
+  product_slug: z.string().max(160).nullish(),
+  ad_token: z.string().min(1).max(512).optional(),
   query: z.string().trim().toLowerCase().max(100).nullish(),
   category_slug: z.string().max(120).nullish(),
   results_count: z.number().int().min(0).nullish(),
@@ -283,9 +337,24 @@ function isBlank(value: string | null | undefined): boolean {
   return value === null || value === undefined || value === "";
 }
 
+function isAdEvent(type: z.infer<typeof eventTypeSchema>): boolean {
+  return type === "ad_impression" || type === "ad_click";
+}
+
 function hasFieldsForType(event: z.infer<typeof eventFieldsSchema>): boolean {
   const hasResultsCount = event.results_count !== null && event.results_count !== undefined;
   const hasQueryOrCategory = !isBlank(event.query) || !isBlank(event.category_slug);
+  if (isAdEvent(event.type)) {
+    return (
+      event.ad_token !== undefined &&
+      (event.store_slug ?? null) === null &&
+      (event.product_slug ?? null) === null &&
+      !hasQueryOrCategory &&
+      !hasResultsCount
+    );
+  }
+  if (event.ad_token !== undefined) return false;
+  if (event.store_slug === undefined || event.product_slug === undefined) return false;
   if (event.type === "search") {
     return event.store_slug === null && event.product_slug === null && hasQueryOrCategory && hasResultsCount;
   }
@@ -296,7 +365,7 @@ function hasFieldsForType(event: z.infer<typeof eventFieldsSchema>): boolean {
 }
 
 const EVENT_FIELDS_MESSAGE =
-  "search exige query o category_slug y results_count, sin tienda ni producto; product_view exige product_slug y store_slug nulo; add_to_cart exige store_slug y product_slug; los demás exigen store_slug; query, category_slug y results_count sólo van en search";
+  "ad_impression y ad_click exigen ad_token y no admiten tienda, producto ni campos de búsqueda; ad_token sólo va en ellos; search exige query o category_slug y results_count, sin tienda ni producto; product_view exige product_slug y store_slug nulo; add_to_cart exige store_slug y product_slug; los demás exigen store_slug; query, category_slug y results_count sólo van en search";
 
 export const eventInputSchema = eventFieldsSchema.refine(hasFieldsForType, {
   message: EVENT_FIELDS_MESSAGE,

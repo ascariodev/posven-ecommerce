@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toGeoFilter } from "@/features/location/lib/cookie";
+import { toGeoFilter, type UserLocation } from "@/features/location/lib/cookie";
 import { getEffectiveLocation } from "@/features/location/server/location";
 import { formatDistance, formatUsd, formatVes } from "@/lib/format";
 import { listNearbyProducts } from "@/lib/marketplace/client";
@@ -47,17 +47,27 @@ function NearbyProductCard({ item }: { item: SearchItem }) {
   );
 }
 
+async function loadNearbyProducts(openNow: boolean) {
+  const { location } = await getEffectiveLocation();
+  const geo = toGeoFilter(location);
+  const response = await listNearbyProducts({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1, openNow: openNow || undefined });
+  return { location, response };
+}
+
+export function preloadNearbyProducts(): void {
+  loadNearbyProducts(false).catch(() => {});
+}
+
 export async function NearbyProducts({
   title,
   showAll = true,
   headingId = "nearby-products-title",
   openNow = false,
 }: { title?: string; showAll?: boolean; headingId?: string; openNow?: boolean } = {}) {
-  const { location } = await getEffectiveLocation();
-  const geo = toGeoFilter(location);
+  let location: UserLocation | null;
   let response: NearbyProductsResponse;
   try {
-    response = await listNearbyProducts({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1, openNow: openNow || undefined });
+    ({ location, response } = await loadNearbyProducts(openNow));
   } catch (error) {
     if (error instanceof MarketplaceUnavailableError) return null;
     throw error;

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { EmptyState } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OutOfRangeNotice } from "@/features/location/components/OutOfRangeNotice";
-import { toGeoFilter } from "@/features/location/lib/cookie";
+import { toGeoFilter, type UserLocation } from "@/features/location/lib/cookie";
 import { getEffectiveLocation } from "@/features/location/server/location";
 import { listNearbyStores } from "@/lib/marketplace/client";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
@@ -15,21 +15,33 @@ import { StoreCard } from "./StoreCard";
 
 const MAX_STORES = 6;
 
-export async function NearbyStores() {
-  const { location, name: locationName } = await getEffectiveLocation();
+async function loadNearbyStores() {
+  const { location, name } = await getEffectiveLocation();
   const geo = toGeoFilter(location);
+  const response = await listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1, placement: "home_stores_native" });
+  return { location, name, response };
+}
+
+export function preloadNearbyStores(): void {
+  loadNearbyStores().catch(() => {});
+}
+
+export async function NearbyStores() {
+  let location: UserLocation | null;
+  let locationName: string | null;
   let response: StoresResponse;
   try {
-    response = await listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1 });
+    ({ location, name: locationName, response } = await loadNearbyStores());
   } catch (error) {
     if (error instanceof MarketplaceUnavailableError) return null;
     throw error;
   }
 
-  const [sponsored, ...otherFeatured] = response.featured;
-  const taken = new Set(response.featured.map((store) => store.slug));
+  const { sponsored } = response;
+  const featured = response.featured.filter((store) => store.slug !== sponsored?.slug);
+  const taken = new Set([...response.featured.map((store) => store.slug), sponsored?.slug]);
   const stores = [
-    ...otherFeatured.map((store) => ({ store, featured: true })),
+    ...featured.map((store) => ({ store, featured: true })),
     ...response.data.filter((store) => !taken.has(store.slug)).map((store) => ({ store, featured: false })),
   ].slice(0, MAX_STORES);
 

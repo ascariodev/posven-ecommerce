@@ -34,7 +34,9 @@ Rige al editar `app/` y `features/`.
    secundario de una página que no debe tumbarla: "Tu última compra", "Compras recientes" y "Volver a comprar" de `/cuenta`
    (`features/purchases/components/RecentPurchases.tsx` y `BuyAgain.tsx`) no se pintan si la API falla, igual que
    `NearbyProducts` y `NearbyStores` de la portada, y `NearbyProducts` en el estado vacío de
-   `/buscar` ("Quizás te sirve", montado desde `features/search/components/SearchResults.tsx`).
+   `/buscar` ("Quizás te sirve", montado desde `features/search/components/SearchResults.tsx`). Otra,
+   los espacios publicitarios (`features/ads`): `getPagePlacements` devuelve `null` si la API falla
+   y el espacio muestra lo de hoy o nada.
 8. **Marca por `SITE_NAME`** (`lib/site.ts`): ningún texto visible ni metadato escribe la marca
    literal. El título de una página es su parte propia; la plantilla `%s | SITE_NAME` la pone
    `app/layout.tsx`.

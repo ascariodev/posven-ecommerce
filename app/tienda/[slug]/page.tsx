@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { FavoriteButton, FavoriteButtonSkeleton } from "@/features/account/components/FavoriteButton";
+import { SlotBanner } from "@/features/ads/components/SlotBanner";
 import { ViewBeacon } from "@/features/events/components/ViewBeacon";
 import { storeJsonLd } from "@/features/store/lib/jsonld";
 import { StoreHeader } from "@/features/store/components/StoreHeader";
@@ -58,6 +59,9 @@ export default async function StorePage({
           <FavoriteButton target={{ kind: "store", slug }} returnTo={`/tienda/${slug}`} />
         </Suspense>
       </StoreHeader>
+      <Suspense fallback={null}>
+        <SlotBanner page="store" slot="store_banner" scope={{ store: slug }} />
+      </Suspense>
       <Suspense fallback={<StoreProductsSkeleton />}>
         <StoreProducts slug={slug} searchParams={searchParams} />
       </Suspense>

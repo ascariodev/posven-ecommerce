@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { toggleVariants } from "@/components/ui/toggle";
+import { SlotBanner } from "@/features/ads/components/SlotBanner";
 import { OutOfRangeNotice } from "@/features/location/components/OutOfRangeNotice";
 import { toGeoFilter } from "@/features/location/lib/cookie";
 import { getEffectiveLocation } from "@/features/location/server/location";
@@ -21,6 +22,7 @@ import { parseSearchQuery, searchHref } from "../lib/query";
 import { RadiusFilter } from "./RadiusFilter";
 import { ResultsHeader } from "./ResultsHeader";
 import { SortLinks } from "./SortLinks";
+import { SponsoredCard } from "./SponsoredCard";
 
 export async function SearchResults({
   searchParams,
@@ -41,7 +43,7 @@ export async function SearchResults({
   const { location, name: locationName } = await getEffectiveLocation();
   const geoKind = location?.kind ?? null;
 
-  const [{ data, featured, meta, rate }, categories] = await Promise.all([
+  const [{ data, featured, sponsored: sponsoredRaw, meta, rate }, categories] = await Promise.all([
     searchProducts({
       q: query.q,
       category: query.categoria,
@@ -54,6 +56,16 @@ export async function SearchResults({
     listCategories(),
   ]);
   const isEmpty = data.length === 0 && featured.length === 0;
+  const sponsored =
+    query.pagina === 1 &&
+    sponsoredRaw !== undefined &&
+    !featured.some(
+      (item) => item.product.slug === sponsoredRaw.product.slug && item.offer.store.slug === sponsoredRaw.offer.store.slug,
+    )
+      ? sponsoredRaw
+      : undefined;
+  const results = sponsored === undefined ? data : data.filter((item) => item.slug !== sponsored.product.slug);
+  const adScope = { category: query.categoria };
 
   const gridClasses = "grid grid-cols-2 gap-4 lg:grid-cols-3";
 
@@ -146,6 +158,9 @@ export async function SearchResults({
             </div>
           </FiltersSheet>
         </div>
+      <Suspense fallback={null}>
+        <SlotBanner page="search" slot="search_top" scope={adScope} />
+      </Suspense>
       <ResultsHeader
         query={query}
         categories={categories}
@@ -161,34 +176,44 @@ export async function SearchResults({
         <p className="ml-auto text-sm text-muted-foreground">{formatRate(rate)}</p>
       </div>
       {isEmpty ? (
-        <EmptyState
-          query={query}
-          geoKind={geoKind}
-          categories={categories}
-          nearby={
-            <Suspense fallback={<NearbyProductsSkeleton />}>
-              <NearbyProducts
-                title={query.openNow === true ? "Quizás te sirve (abierto ahora)" : "Quizás te sirve"}
-                showAll={false}
-                openNow={query.openNow === true}
-              />
-            </Suspense>
-          }
-        />
+        <>
+          <Suspense fallback={null}>
+            <SlotBanner page="search" slot="search_empty" scope={adScope} />
+          </Suspense>
+          <EmptyState
+            query={query}
+            geoKind={geoKind}
+            categories={categories}
+            nearby={
+              <Suspense fallback={<NearbyProductsSkeleton />}>
+                <NearbyProducts
+                  title={query.openNow === true ? "Quizás te sirve (abierto ahora)" : "Quizás te sirve"}
+                  showAll={false}
+                  openNow={query.openNow === true}
+                />
+              </Suspense>
+            }
+          />
+        </>
       ) : (
         <>
-          {featured.length > 0 && (
+          {(featured.length > 0 || sponsored !== undefined) && (
             <ul aria-label="Destacados" className={gridClasses}>
               {featured.map((item) => (
                 <li key={`${item.product.slug}:${item.offer.store.slug}`}>
                   <FeaturedCard item={item} />
                 </li>
               ))}
+              {sponsored !== undefined && (
+                <li key={`sponsored:${sponsored.token}`}>
+                  <SponsoredCard item={sponsored} />
+                </li>
+              )}
             </ul>
           )}
-          {data.length > 0 && (
+          {results.length > 0 && (
             <ul aria-label="Resultados" className={gridClasses}>
-              {data.map((item) => (
+              {results.map((item) => (
                 <li key={item.slug}>
                   <ProductCard item={item} />
                 </li>

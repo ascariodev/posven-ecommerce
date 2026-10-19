@@ -12,6 +12,12 @@ vi.mock("@/lib/marketplace/client", () => ({
 
 vi.mock("@/features/events/lib/beacon", () => ({ sendBeaconEvent: vi.fn() }));
 
+vi.mock("@/features/ads/components/SlotBanner", () => ({
+  SlotBanner: ({ slot, scope }: { slot: string; scope?: { category?: string | null } }) => (
+    <div data-testid={`slot-${slot}`} data-category={scope?.category ?? ""} />
+  ),
+}));
+
 vi.mock("@/features/location/server/location", () => ({
   getEffectiveLocation: vi.fn(async () => ({ location: null, name: null })),
 }));
@@ -153,6 +159,72 @@ describe("SearchResults", () => {
       vi.mocked(searchProducts).mockResolvedValue(resultsFor(50));
       render(await SearchResults({ searchParams: Promise.resolve({ q: "aspirina", pagina: "2" }) }));
       expect(sendBeaconEvent).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("espacios publicitarios", () => {
+    const offer = {
+      store: { slug: "tienda-a", name: "Tienda A" },
+      price_usd: "2.00",
+      price_ves: "73.00",
+      distance_km: null,
+    };
+    const product = (slug: string) => ({ slug, name: `Producto ${slug}`, image_url: null, category: null });
+    const response = (extra: Record<string, unknown>) =>
+      ({
+        data: [],
+        featured: [],
+        meta: { page: 1, per_page: 20, total: 1 },
+        rate: { rate: "100.00", date: "2026-10-03" },
+        ...extra,
+      }) as unknown as Awaited<ReturnType<typeof searchProducts>>;
+    const sponsored = { product: product("patro"), offer, token: "tok-s", advertiser_name: "Anunciante" };
+
+    it("monta search_top con la categoría del filtro", async () => {
+      vi.mocked(searchProducts).mockResolvedValue(response({ data: [{ slug: "a" }] }));
+      render(await SearchResults({ searchParams: Promise.resolve({ q: "arroz", categoria: "salud" }) }));
+      expect(screen.getByTestId("slot-search_top").getAttribute("data-category")).toBe("salud");
+      expect(screen.queryByTestId("slot-search_empty")).toBeNull();
+    });
+
+    it("en el estado vacío monta search_empty", async () => {
+      vi.mocked(searchProducts).mockResolvedValue(response({}));
+      render(await SearchResults({ searchParams: Promise.resolve({ q: "zzz" }) }));
+      expect(screen.getByTestId("slot-search_empty")).toBeTruthy();
+    });
+
+    it("pinta el patrocinado tras los destacados con Patrocinado, sin repetirlo en la lista", async () => {
+      vi.mocked(searchProducts).mockResolvedValue(
+        response({
+          data: [
+            { slug: "patro", name: "Producto patro" },
+            { slug: "otro", name: "Producto otro", image_url: null, category: null, offers_count: 1, min_price_usd: "1.00", min_price_ves: "36.50", nearest_km: null, restriction: "none" },
+          ],
+          featured: [{ product: product("dest"), offer }],
+          sponsored,
+        }),
+      );
+      render(await SearchResults({ searchParams: Promise.resolve({ q: "arroz" }) }));
+      const items = screen.getByRole("list", { name: "Destacados" }).querySelectorAll("li");
+      expect(items).toHaveLength(2);
+      expect(items[0]?.textContent).toContain("Destacado");
+      expect(items[1]?.textContent).toContain("Patrocinado");
+      expect(items[1]?.querySelector("a")?.getAttribute("href")).toBe("/p/patro");
+      expect(screen.getByRole("list", { name: "Resultados" }).textContent).not.toContain("Producto patro");
+    });
+
+    it("sin sponsored, en la página 2 o ya destacado no pinta la tarjeta", async () => {
+      vi.mocked(searchProducts).mockResolvedValue(response({ data: [{ slug: "a", name: "A", image_url: null, category: null, offers_count: 1, min_price_usd: "1.00", min_price_ves: "36.50", nearest_km: null, restriction: "none" }] }));
+      render(await SearchResults({ searchParams: Promise.resolve({ q: "arroz" }) }));
+      expect(screen.queryByText("Patrocinado")).toBeNull();
+      cleanup();
+      vi.mocked(searchProducts).mockResolvedValue(response({ data: [{ slug: "a", name: "A", image_url: null, category: null, offers_count: 1, min_price_usd: "1.00", min_price_ves: "36.50", nearest_km: null, restriction: "none" }], sponsored }));
+      render(await SearchResults({ searchParams: Promise.resolve({ q: "arroz", pagina: "2" }) }));
+      expect(screen.queryByText("Patrocinado")).toBeNull();
+      cleanup();
+      vi.mocked(searchProducts).mockResolvedValue(response({ featured: [{ product: product("patro"), offer }], sponsored }));
+      render(await SearchResults({ searchParams: Promise.resolve({ q: "arroz" }) }));
+      expect(screen.queryByText("Patrocinado")).toBeNull();
     });
   });
 });

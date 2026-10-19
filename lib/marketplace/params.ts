@@ -1,3 +1,5 @@
+import type { PlacementPage } from "./schemas";
+
 export const RADIUS_OPTIONS = [3, 10, 25, 50] as const;
 export type RadiusKm = (typeof RADIUS_OPTIONS)[number];
 export const DEFAULT_RADIUS_KM: RadiusKm = 10;
@@ -48,14 +50,33 @@ export function suggestionsQuery(p: {
   return query;
 }
 
+export type StoresPlacement = "home_stores_native" | "stores_native";
+
 export function storesQuery(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  placement?: StoresPlacement;
 }): URLSearchParams {
   const query = new URLSearchParams();
   appendLocation(query, p.geo, p.radiusKm);
   query.set("page", String(p.page));
+  if (p.placement !== undefined) query.set("placement", p.placement);
+  return query;
+}
+
+export function placementsQuery(p: {
+  page: PlacementPage;
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+  category?: string | null;
+  store?: string | null;
+}): URLSearchParams {
+  const query = new URLSearchParams();
+  query.set("page", p.page);
+  appendLocation(query, p.geo, p.radiusKm);
+  if (p.category != null) query.set("category", p.category);
+  if (p.store != null) query.set("store", p.store);
   return query;
 }
 

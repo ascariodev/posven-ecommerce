@@ -36,6 +36,15 @@ describe("POST /api/events", () => {
     expect(sendEvent.mock.calls[0]?.[1]).toBe("198.51.100.7");
   });
 
+  it("reenvía un ad_click con el cuerpo exacto type, ad_token y session_id", async () => {
+    const body = JSON.stringify({ type: "ad_click", ad_token: "tok-ruta" });
+    const response = await POST(
+      new Request("http://localhost/api/events", { method: "POST", headers: { "user-agent": BROWSER_UA }, body }),
+    );
+    expect(response.status).toBe(202);
+    expect(sendEvent.mock.calls[0]?.[0]).toEqual({ type: "ad_click", ad_token: "tok-ruta", session_id: SESSION_ID });
+  });
+
   it("pasa null sin cabecera x-forwarded-for", async () => {
     await post(null);
     expect(sendEvent.mock.calls[0]?.[1]).toBeNull();

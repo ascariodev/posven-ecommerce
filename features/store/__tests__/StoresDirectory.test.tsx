@@ -1,12 +1,14 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { listNearbyStores } from "@/lib/marketplace/client";
-import type { NearbyStore, StoresResponse } from "@/lib/marketplace/schemas";
+import type { NearbyStore, SponsoredStore, StoresResponse } from "@/lib/marketplace/schemas";
 import { StoresDirectory } from "../components/StoresDirectory";
 
 vi.mock("@/lib/marketplace/client", () => ({
   listNearbyStores: vi.fn(),
 }));
+
+vi.mock("@/features/events/lib/beacon", () => ({ sendBeaconEvent: vi.fn() }));
 
 vi.mock("@/features/location/server/location", () => ({
   getEffectiveLocation: vi.fn(async () => ({ location: null, name: null })),
@@ -30,8 +32,14 @@ function store(slug: string, name: string): NearbyStore {
   };
 }
 
-function response(data: NearbyStore[], featured: NearbyStore[], page: number, total: number): StoresResponse {
-  return { data, featured, meta: { page, per_page: 2, total } };
+function response(
+  data: NearbyStore[],
+  featured: NearbyStore[],
+  page: number,
+  total: number,
+  sponsored?: SponsoredStore,
+): StoresResponse {
+  return { data, featured, ...(sponsored ? { sponsored } : {}), meta: { page, per_page: 2, total } };
 }
 
 afterEach(() => {
@@ -40,6 +48,33 @@ afterEach(() => {
 });
 
 describe("StoresDirectory", () => {
+  it("pinta sponsored (stores_native) tras los destacados y sin repetirlo", async () => {
+    const premium = store("farmacia-central", "Farmacia Central");
+    const ad = store("abasto", "Abasto");
+    vi.mocked(listNearbyStores).mockResolvedValue(
+      response([ad, store("otra", "Otra"), premium], [premium], 1, 6, { ...ad, token: "tok-1", advertiser_name: "Abasto C.A." }),
+    );
+
+    render(await StoresDirectory({ searchParams: Promise.resolve({}) }));
+
+    expect(vi.mocked(listNearbyStores).mock.calls[0][0].placement).toBe("stores_native");
+    const list = screen.getByRole("list", { name: "Comercios" });
+    expect(Array.from(list.querySelectorAll("a")).map((link) => link.getAttribute("href"))).toEqual([
+      "/tienda/farmacia-central",
+      "/tienda/abasto",
+      "/tienda/otra",
+    ]);
+    expect(screen.getByText("Patrocinado")).toBeTruthy();
+  });
+
+  it("sin sponsored no hay tarjeta patrocinada", async () => {
+    vi.mocked(listNearbyStores).mockResolvedValue(response([store("abasto", "Abasto")], [], 1, 1));
+
+    render(await StoresDirectory({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.queryByText("Patrocinado")).toBeNull();
+  });
+
   it("lista los destacados primero sin repetirlos y pagina con /tiendas", async () => {
     const premium = store("farmacia-central", "Farmacia Central");
     vi.mocked(listNearbyStores).mockResolvedValue(

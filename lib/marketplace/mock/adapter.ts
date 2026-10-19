@@ -1,3 +1,5 @@
+import { cookies } from "next/headers";
+import { MarketplaceUnavailableError } from "../errors";
 import {
   nearbyProductsQuery,
   productQuery,
@@ -9,6 +11,7 @@ import {
   type GeoFilter,
   type OfferSort,
   type RadiusKm,
+  type StoresPlacement,
 } from "../params";
 import type {
   CategoryNode,
@@ -19,12 +22,16 @@ import type {
   NearbyStore,
   Offer,
   OffersSummary,
+  PlacementPage,
+  PlacementsResponse,
   ProductOffer,
   ProductResponse,
   SearchItem,
   SearchResponse,
   SitemapResponse,
   SitemapType,
+  SponsoredProduct,
+  SponsoredStore,
   StoreCategories,
   StoreProduct,
   StoreResponse,
@@ -33,10 +40,16 @@ import type {
 } from "../schemas";
 import {
   MOCK_CATEGORIES,
+  MOCK_HOME_SECTIONS,
   MOCK_LOCATIONS,
+  MOCK_PLACEMENT_SLOTS,
   MOCK_PRODUCTS,
   MOCK_RATE,
   MOCK_REDIRECTS,
+  MOCK_SPONSORED_ADVERTISER,
+  MOCK_SPONSORED_PRODUCT_TOKEN,
+  MOCK_SPONSORED_STORE_SLUG,
+  MOCK_SPONSORED_STORE_TOKEN,
   MOCK_STORE_DETAILS,
   MOCK_STORES,
   MOCK_UNAVAILABLE_PRODUCTS,
@@ -61,6 +74,7 @@ const SITEMAP_UPDATED_AT = "2026-09-26T14:30:00Z";
 const MAX_FEATURED = 2;
 const MAX_OFFERS = 50;
 const MIN_OFFERS_IN_SCOPE = 3;
+const MIN_ITEMS_FOR_SPONSORED = 3;
 
 type Scope =
   | { kind: "none" }
@@ -193,6 +207,20 @@ function toFeatured(item: MockProduct, scope: Scope): FeaturedProduct | null {
   return null;
 }
 
+function toSponsoredProduct(item: MockProduct, scope: Scope): SponsoredProduct | null {
+  for (const offer of item.offers) {
+    const store = findStore(offer.store_slug);
+    if (!storeInScope(store, scope)) continue;
+    return {
+      product: item.product,
+      offer: toOffer(offer, store, scope),
+      token: MOCK_SPONSORED_PRODUCT_TOKEN,
+      advertiser_name: MOCK_SPONSORED_ADVERTISER,
+    };
+  }
+  return null;
+}
+
 export async function searchProducts(p: {
   q: string;
   category: string | null;
@@ -227,11 +255,20 @@ export async function searchProducts(p: {
   }
   const featuredSlugs = new Set(featured.map((entry) => entry.product.slug));
 
+  const candidates = matches.filter((item) => !featuredSlugs.has(item.product.slug));
+  const sponsoredItem =
+    p.page === 1 && !isOutOfRange(scope) && candidates.length >= MIN_ITEMS_FOR_SPONSORED
+      ? candidates[candidates.length - 1]
+      : undefined;
+  const sponsored = sponsoredItem === undefined ? null : toSponsoredProduct(sponsoredItem, scope);
+  const sponsoredSlug = sponsored?.product.slug;
+
   return {
     data: pageOf(matches, p.page, SEARCH_PER_PAGE)
-      .filter((item) => !featuredSlugs.has(item.product.slug))
+      .filter((item) => !featuredSlugs.has(item.product.slug) && item.product.slug !== sponsoredSlug)
       .map((item) => toSearchItem(item, scope)),
     featured,
+    ...(sponsored === null ? {} : { sponsored }),
     meta: { page: p.page, per_page: SEARCH_PER_PAGE, total: matches.length, out_of_range: isOutOfRange(scope) },
     rate: MOCK_RATE,
   };
@@ -297,6 +334,7 @@ export async function listNearbyStores(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  placement?: StoresPlacement;
 }): Promise<StoresResponse> {
   const scope = readScope(storesQuery(p));
   const matches = MOCK_STORES.filter((store) => storeInScope(store, scope));
@@ -312,13 +350,43 @@ export async function listNearbyStores(p: {
     ...storeStatus(store),
   }));
 
+  const sponsoredStore =
+    p.page === 1 && !isOutOfRange(scope) && stores.length >= MIN_ITEMS_FOR_SPONSORED
+      ? stores.find((store) => store.slug === MOCK_SPONSORED_STORE_SLUG && !store.is_premium)
+      : undefined;
+  const sponsored: SponsoredStore | undefined =
+    sponsoredStore === undefined
+      ? undefined
+      : { ...sponsoredStore, token: MOCK_SPONSORED_STORE_TOKEN, advertiser_name: MOCK_SPONSORED_ADVERTISER };
+
   return {
-    data: pageOf(stores, p.page, STORES_PER_PAGE),
+    data: pageOf(stores, p.page, STORES_PER_PAGE).filter((store) => store.slug !== sponsored?.slug),
     featured:
       p.page === 1 && !isOutOfRange(scope)
         ? stores.filter((store) => store.is_premium).slice(0, MAX_FEATURED)
         : [],
+    ...(sponsored === undefined ? {} : { sponsored }),
     meta: { page: p.page, per_page: STORES_PER_PAGE, total: stores.length, out_of_range: isOutOfRange(scope) },
+  };
+}
+
+export const MOCK_ADS_COOKIE = "mock_ads";
+
+export async function getPlacements(p: {
+  page: PlacementPage;
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+  category?: string | null;
+  store?: string | null;
+}): Promise<PlacementsResponse> {
+  const mode = (await cookies()).get(MOCK_ADS_COOKIE)?.value;
+  if (mode === "down") throw new MarketplaceUnavailableError("/placements");
+  if (mode === "none") {
+    return { slots: Object.fromEntries(Object.keys(MOCK_PLACEMENT_SLOTS[p.page]).map((slot) => [slot, null])) };
+  }
+  return {
+    slots: { ...MOCK_PLACEMENT_SLOTS[p.page] },
+    ...(p.page === "home" ? { sections: [...MOCK_HOME_SECTIONS] } : {}),
   };
 }
 

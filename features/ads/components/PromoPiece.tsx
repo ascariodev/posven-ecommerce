@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import type { Piece } from "@/lib/marketplace/schemas";
-import { getPagePlacements, pieceForSlot } from "../server/placements";
+import type { Piece, PlacementsResponse } from "@/lib/marketplace/schemas";
+import { pieceForSlot } from "../server/placements";
 import { SPONSORED_LABEL } from "./AdBanner";
 import { AdImpression } from "./AdImpression";
 import { AdLink } from "./AdLink";
@@ -61,8 +61,7 @@ export function PromoList({ items }: { items: ReactNode[] }) {
   );
 }
 
-export async function HomePromoSlots({ fallbacks }: { fallbacks: ReactNode[] }) {
-  const placements = await getPagePlacements("home");
+export function HomePromos({ placements, fallbacks }: { placements: PlacementsResponse | null; fallbacks: ReactNode[] }) {
   const items = HOME_PROMO_SLOTS.map((slot, index) => {
     const piece = pieceForSlot(placements, slot);
     if (piece === null || piece.format !== "promo" || (piece.image_desktop_url ?? piece.image_mobile_url) === null) {

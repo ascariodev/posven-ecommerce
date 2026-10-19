@@ -2,10 +2,10 @@
 module: "ads"
 path: "features/ads"
 type: "feature"
-exports: ["getPagePlacements", "pieceForSlot", "AdImpression", "AdLink", "AdBanner", "HeroPiece", "HomeHeroSlot", "PromoPiece", "PromoList", "HomePromoSlots", "HOME_PROMO_SLOTS", "IMPRESSION_VISIBLE_RATIO", "IMPRESSION_DWELL_MS", "SPONSORED_LABEL"]
+exports: ["getPagePlacements", "pieceForSlot", "AdImpression", "AdLink", "AdBanner", "HeroPiece", "HomeHeroSlot", "PromoPiece", "PromoList", "HomePromos", "HOME_PROMO_SLOTS", "HomeSections", "HomeSectionList", "homeSectionOrder", "HomeBlocks", "HomeContentKey", "IMPRESSION_VISIBLE_RATIO", "IMPRESSION_DWELL_MS", "SPONSORED_LABEL"]
 depends_on: ["lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "lib/marketplace/params.ts", "lib/marketplace/errors.ts", "features/location/server/location.ts", "features/location/lib/cookie.ts", "features/events/lib/beacon.ts", "next.config.ts"]
 tests: "features/ads/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/ads/server/placements.ts", "features/ads/components/AdImpression.tsx", "features/ads/components/AdLink.tsx", "features/ads/components/AdBanner.tsx", "features/ads/components/HeroPiece.tsx", "features/ads/components/PromoPiece.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "features/events/lib/beacon.ts", "features/location/server/location.ts", "next.config.ts"]
+verified_against: ["features/ads/server/placements.ts", "features/ads/components/AdImpression.tsx", "features/ads/components/AdLink.tsx", "features/ads/components/AdBanner.tsx", "features/ads/components/HeroPiece.tsx", "features/ads/components/PromoPiece.tsx", "features/ads/components/HomeSections.tsx", "app/page.tsx", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "features/events/lib/beacon.ts", "features/location/server/location.ts", "next.config.ts"]
 verified_at: "9dba4d6"
 capabilities:
   - intent: "leer las piezas publicitarias de una página"
@@ -26,12 +26,20 @@ capabilities:
     rules: ["RN-ADS-02", "RN-ADS-03", "RN-ADS-04", "RN-ADS-05"]
   - intent: "reemplazar la imagen del hero y las promociones de la portada por piezas publicitarias"
     intent_aliases: ["hero patrocinado", "promo patrocinada", "anuncio en la portada", "home_hero", "home_promo"]
-    entrypoint: "<HomeHeroSlot fallback={...} /> / <HomePromoSlots fallbacks={[...]} />"
+    entrypoint: "<HomeHeroSlot fallback={...} /> / <HomePromos placements={...} fallbacks={[...]} />"
     file: "features/ads/components/HeroPiece.tsx"
-    input: "fallback: ReactNode (lo de hoy) en HomeHeroSlot; fallbacks: ReactNode[] (la tarjeta de hoy de home_promo_1 y home_promo_2, o null) en HomePromoSlots"
+    input: "fallback: ReactNode (lo de hoy) en HomeHeroSlot; placements: PlacementsResponse | null y fallbacks: ReactNode[] (la tarjeta de hoy de home_promo_1 y home_promo_2, o null) en HomePromos"
     output: "la pieza de formato hero o promo con su impresión y su clic, y la marca Patrocinado si kind es ad; el fallback si no hay pieza, es de otro formato, no trae imagen o la API no responde"
     source: "getPagePlacements('home') y pieceForSlot()"
     rules: ["RN-ADS-05", "RN-ADS-06"]
+  - intent: "ordenar las secciones de la portada y pintar sus banners home_strip y home_bottom"
+    intent_aliases: ["orden de la portada", "secciones de la portada", "ocultar seccion de la portada", "home_strip", "home_bottom", "sections"]
+    entrypoint: "<HomeSections blocks={...} promoFallbacks={[...]} />"
+    file: "features/ads/components/HomeSections.tsx"
+    input: "blocks: HomeBlocks (el nodo de trust_strip, categories, nearby_products, how_it_works y nearby_stores); promoFallbacks: ReactNode[] (las tarjetas de hoy)"
+    output: "las secciones en el orden de sections, sin las claves desconocidas ni repetidas y sin las ausentes; las promos con HomePromos y los banners con AdBanner si su pieza es de formato banner; sin sections o con la API caída, el orden por defecto de HOME_SECTION_KEYS"
+    source: "getPagePlacements('home'), una sola lectura compartida con HomeHeroSlot"
+    rules: ["RN-ADS-05", "RN-ADS-07"]
 ---
 
 # Módulo `ads`
@@ -40,7 +48,7 @@ capabilities:
 
 Lee los espacios publicitarios de una página (`GET /placements`) y pinta las piezas de formato
 `banner`, `hero` y `promo` (estas dos en la portada, con lo de hoy de respaldo) con sus imágenes, la marca "Patrocinado" y el conteo de impresiones y clics
-(`ad_impression`, `ad_click`) por `/api/events`. No decide qué anuncio rota ni cuenta nada en el
+(`ad_impression`, `ad_click`) por `/api/events`. En la portada además ordena y oculta las secciones según `sections`. No decide qué anuncio rota ni cuenta nada en el
 servidor: eso lo hace posveapi con el token de la pieza.
 
 ## 2. Reglas de negocio
@@ -53,6 +61,7 @@ servidor: eso lo hace posveapi con el token de la pieza.
 | `RN-ADS-04` | El clic manda `ad_click` con el token de la pieza; un destino externo abre otra pestaña con `rel="sponsored noopener"` y uno interno usa `next/link`. | `features/ads/__tests__/AdBanner.test.tsx` ("el clic en un destino interno manda ad_click sin target", "un destino externo abre otra pestaña con rel sponsored noopener") |
 | `RN-ADS-05` | La marca "Patrocinado" sólo sale con `kind: "ad"`; sin pieza o sin ninguna imagen el banner no pinta nada. | `features/ads/__tests__/AdBanner.test.tsx` ("pinta las dos imágenes con alt y la marca Patrocinado sólo en kind ad", "sin pieza o sin imágenes no pinta nada") y `features/ads/__tests__/HomeSlots.test.tsx` |
 | `RN-ADS-06` | En la portada, `home_hero` y `home_promo_1`/`home_promo_2` muestran lo de hoy si no hay pieza, si es de otro formato, si no trae imagen o si la API no responde; el `h1` y el buscador del hero no dependen de la pieza. | `features/ads/__tests__/HomeSlots.test.tsx` ("sin pieza, con la API caída o con otro formato pinta lo de hoy", "sin pieza, con la API caída o con otro formato pinta las tarjetas de hoy", "pinta la pieza aunque su espacio no tenga tarjeta de respaldo") |
+| `RN-ADS-07` | La portada sigue `sections`: ignora claves desconocidas y repetidas y oculta las ausentes; sin `sections` o con la API caída usa el orden por defecto. El hero y "Vende" quedan fijos fuera del orden. | `features/ads/__tests__/HomeSections.test.tsx` ("sin respuesta o sin sections da el orden por defecto", "sigue sections, ignora claves desconocidas y repetidas, y oculta las ausentes", "con sections reordena, ignora las desconocidas y oculta las ausentes", "lee los espacios de la portada una vez y, con la API caída, usa el orden por defecto") |
 
 ## 3. Dónde hacer cambios
 
@@ -63,6 +72,7 @@ servidor: eso lo hace posveapi con el token de la pieza.
 | Atributos del enlace o del clic | `components/AdLink.tsx` | el caso de RN-ADS-04 en `__tests__/AdBanner.test.tsx` |
 | Qué se pide a la API o cómo se agrupa la lectura | `loadPlacements` y `getPagePlacements` en `server/placements.ts` | el caso de RN-ADS-01 en `__tests__/placements.test.ts` |
 | Hero o promociones de la portada | `components/HeroPiece.tsx` y `components/PromoPiece.tsx`; lo de hoy (`HeroImage`, `CategoryPromoCard`) y los `<Suspense>` en `app/page.tsx` | `__tests__/HomeSlots.test.tsx`; la pieza ocupa la misma caja que lo de hoy para no mover el diseño |
+| Orden de la portada, una sección nueva o los banners `home_strip`/`home_bottom` | `homeSectionOrder` y `HomeSectionList` en `components/HomeSections.tsx`; los bloques (`shellBlocks` para el prerender y `liveBlocks` para el pedido) en `app/page.tsx`; una clave nueva entra antes en `HOME_SECTION_KEYS` (`lib/marketplace/schemas.ts`) | `__tests__/HomeSections.test.tsx` |
 | Un formato de pieza nuevo | un componente en `components/` que envuelva `AdImpression` y `AdLink` | exports y sección 4 |
 
 ## 4. API pública
@@ -75,9 +85,14 @@ servidor: eso lo hace posveapi con el token de la pieza.
 - `HeroPiece({ piece }: { piece: Piece })`, `features/ads/components/HeroPiece.tsx`
 - `HomeHeroSlot({ fallback }: { fallback: ReactNode })`, async, `features/ads/components/HeroPiece.tsx`
 - `PromoPiece({ piece }: { piece: Piece })`, `features/ads/components/PromoPiece.tsx`
-- `HomePromoSlots({ fallbacks }: { fallbacks: ReactNode[] })`, async, `features/ads/components/PromoPiece.tsx`
+- `HomePromos({ placements, fallbacks }: { placements: PlacementsResponse | null; fallbacks: ReactNode[] })`, `features/ads/components/PromoPiece.tsx`
 - `PromoList({ items }: { items: ReactNode[] })`, `features/ads/components/PromoPiece.tsx`
 - `HOME_PROMO_SLOTS = ["home_promo_1", "home_promo_2"]`, `features/ads/components/PromoPiece.tsx`
+- `HomeSections({ blocks, promoFallbacks }: { blocks: HomeBlocks; promoFallbacks: ReactNode[] })`, async, `features/ads/components/HomeSections.tsx`
+- `HomeSectionList({ placements, blocks, promoFallbacks }: { placements: PlacementsResponse | null; blocks: HomeBlocks; promoFallbacks: ReactNode[] })`, `features/ads/components/HomeSections.tsx`
+- `homeSectionOrder(placements: PlacementsResponse | null): HomeSectionKey[]`, `features/ads/components/HomeSections.tsx`
+- `type HomeContentKey = Exclude<HomeSectionKey, "promos" | "home_strip" | "home_bottom">`, `features/ads/components/HomeSections.tsx`
+- `type HomeBlocks = Record<HomeContentKey, ReactNode>`, `features/ads/components/HomeSections.tsx`
 - `IMPRESSION_VISIBLE_RATIO = 0.5`, `features/ads/components/AdImpression.tsx`
 - `IMPRESSION_DWELL_MS = 1000`, `features/ads/components/AdImpression.tsx`
 - `SPONSORED_LABEL = "Patrocinado"`, `features/ads/components/AdBanner.tsx`
@@ -92,12 +107,13 @@ servidor: eso lo hace posveapi con el token de la pieza.
 | `AdBanner` | `features/ads/components/AdBanner.tsx` | dos `next/image` (móvil `sm:hidden`, escritorio `hidden sm:block`); si falta una imagen usa la otra |
 | `HeroPiece` | `features/ads/components/HeroPiece.tsx` | capa absoluta dentro del `<section>` del hero: desde `sm`, el 3/5 derecho con la máscara de hoy, `badge` y `cta` abajo a la derecha; en móvil, la imagen móvil a todo el hero bajo un velo `bg-ink/70`; imágenes con `fetchPriority="high"` y sin `preload`; sin `alt`, el enlace lleva un nombre `sr-only` (anunciante o "Patrocinado") en todos los anchos, porque en móvil `badge` y `cta` no se muestran |
 | `PromoPiece` | `features/ads/components/PromoPiece.tsx` | la tarjeta de hoy (`min-h-44`, imagen con máscara, `badge`, `title` en dos líneas como máximo y `cta`) como enlace de la pieza |
-| `HomeHeroSlot`, `HomePromoSlots` | `features/ads/components/HeroPiece.tsx`, `features/ads/components/PromoPiece.tsx` | leen `getPagePlacements("home")` (una sola lectura por pedido para los tres espacios) y devuelven la pieza o el respaldo; `HomePromoSlots` arma con `PromoList` una lista de las promos presentes (pieza o tarjeta), así que una pieza sale aunque su espacio no tenga tarjeta de respaldo |
+| `HomeHeroSlot`, `HomePromos` | `features/ads/components/HeroPiece.tsx`, `features/ads/components/PromoPiece.tsx` | `HomeHeroSlot` lee `getPagePlacements("home")` y `HomePromos` recibe la respuesta; devuelven la pieza o el respaldo; `HomePromos` arma con `PromoList` una lista de las promos presentes (pieza o tarjeta), así que una pieza sale aunque su espacio no tenga tarjeta de respaldo |
+| `HomeSections`, `HomeSectionList`, `homeSectionOrder` | `features/ads/components/HomeSections.tsx` | `HomeSections` lee `getPagePlacements("home")` (la misma lectura del hero, por `cache`) y delega en `HomeSectionList`, que pinta en orden cada bloque recibido, las promos con `HomePromos` y `home_strip`/`home_bottom` con `AdBanner` sólo si la pieza es `banner`; cada sección va en un `Fragment` con su clave, así que queda hija directa del contenedor `flex` de la página y conserva su `gap` |
 
 ## 6. Dependencias
 
 - `lib/marketplace/client.ts`: `getPlacements()` en `server/placements.ts`.
-- `lib/marketplace/schemas.ts` (`Piece`, `PlacementsResponse`, `PlacementPage`), `lib/marketplace/params.ts` (`DEFAULT_RADIUS_KM`) y `lib/marketplace/errors.ts` (`MarketplaceUnavailableError`).
+- `lib/marketplace/schemas.ts` (`Piece`, `PlacementsResponse`, `PlacementPage`, `HomeSectionKey`, `HOME_SECTION_KEYS`), `lib/marketplace/params.ts` (`DEFAULT_RADIUS_KM`) y `lib/marketplace/errors.ts` (`MarketplaceUnavailableError`).
 - `features/location/server/location.ts` (`getEffectiveLocation`) y `features/location/lib/cookie.ts` (`toGeoFilter`).
 - `features/events/lib/beacon.ts`: `sendBeaconEvent()` en `AdImpression` y `AdLink`.
 - `next.config.ts`: `images.remotePatterns` autoriza `media.posven.io`, el host que posveapi usa para las imágenes de producto (Spatie `getUrl()`, el mismo origen que las de las piezas).
@@ -124,6 +140,7 @@ export async function StoresTopBanner() {
 - El clic manda `ad_click` antes de navegar, sin `preventDefault`; si el registro falla el enlace se abre igual.
 - Las piezas `kind: "house"` cuentan impresiones y clics, pero no llevan la marca "Patrocinado".
 - En la portada, el `fallback` de cada `<Suspense>` es lo de hoy y la pieza se pinta en la misma caja: el prerender trae la imagen de hoy (con su `preload`) y la pieza llega en streaming sin mover el diseño.
+- El orden de las secciones depende de la lectura sin caché, así que va en un solo `<Suspense>` cuyo `fallback` es `HomeSectionList` con `placements={null}` y `shellBlocks`: el orden por defecto con lo de hoy (franja de confianza, tarjetas de promo, categorías, "Así de fácil" y los esqueletos de productos y tiendas cercanas), sin banners. Así el HTML prerenderizado conserva el contenido de hoy y, sin anuncios ni cambio de orden, la respuesta reemplaza el `fallback` por el mismo marcado. `shellBlocks` lleva los esqueletos y no `NearbyProducts` ni `NearbyStores`, que leen la cookie y no deben arrancar dentro del `fallback`; por eso empiezan a pedir sus datos cuando llega la respuesta de `/placements`.
 - El host de las imágenes se deduce de que posveapi las sirve con el mismo disco de Spatie que las de producto; el `.env` no se lee, así que si el disco apuntara a otro host, `next/image` lo rechazaría y habría que agregarlo a `remotePatterns`.
 
 ## 9. Pruebas
@@ -132,4 +149,5 @@ export async function StoresTopBanner() {
 - `features/ads/__tests__/placements.test.ts`: argumentos enviados a `getPlacements`, una lectura por combinación (con `cache` simulado que memoiza por argumentos), `null` con la API caída y relanzado del resto, `pieceForSlot`.
 - `features/ads/__tests__/AdImpression.test.tsx`: un `IntersectionObserver` simulado y temporizadores falsos para umbral 0,5, un segundo, una sola vez y cancelación al salir o desmontar.
 - `features/ads/__tests__/AdBanner.test.tsx`: sin pieza ni imágenes no pinta, marca sólo en `ad`, clic interno y externo con su `rel` y `ad_click`.
-- `features/ads/__tests__/HomeSlots.test.tsx`: `HomeHeroSlot` y `HomePromoSlots` con `getPagePlacements` simulado, con y sin pieza, con la API caída y con otro formato; marca sólo en `ad`, `ad_click` del hero, su nombre `sr-only` sin `alt` y la promo sin tarjeta de respaldo.
+- `features/ads/__tests__/HomeSlots.test.tsx`: `HomeHeroSlot` y `HomePromos` con `getPagePlacements` simulado, con y sin pieza, con la API caída y con otro formato; marca sólo en `ad`, `ad_click` del hero, su nombre `sr-only` sin `alt` y la promo sin tarjeta de respaldo.
+- `features/ads/__tests__/HomeSections.test.tsx`: `homeSectionOrder` sin respuesta, sin `sections`, con claves desconocidas, repetidas y ausentes; `HomeSectionList` con el orden por defecto sin banners, los banners en su lugar por defecto, el orden de `sections` y banners sin pieza, de otro formato o sin imagen; `HomeSections` con una sola lectura y la API caída.

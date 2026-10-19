@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { HomeHeroSlot } from "@/features/ads/components/HeroPiece";
-import { HOME_PROMO_SLOTS, HomePromoSlots, PromoList } from "@/features/ads/components/PromoPiece";
+import { type HomeBlocks, HomeSectionList, HomeSections } from "@/features/ads/components/HomeSections";
+import { HOME_PROMO_SLOTS } from "@/features/ads/components/PromoPiece";
 import { CategoryTiles } from "@/features/search/components/CategoryTiles";
 import { NearbyProducts, NearbyProductsSkeleton } from "@/features/search/components/NearbyProducts";
 import { SearchPill } from "@/features/search/components/SearchPill";
@@ -69,6 +70,29 @@ export default async function Home() {
     const category = promos[index];
     return category === undefined ? null : <CategoryPromoCard category={category} />;
   });
+  const staticBlocks = {
+    trust_strip: <TrustStrip />,
+    categories: <CategoryTiles categories={categories} />,
+    how_it_works: <HowItWorks />,
+  };
+  const shellBlocks: HomeBlocks = {
+    ...staticBlocks,
+    nearby_products: <NearbyProductsSkeleton />,
+    nearby_stores: <NearbyStoresSkeleton />,
+  };
+  const liveBlocks: HomeBlocks = {
+    ...staticBlocks,
+    nearby_products: (
+      <Suspense fallback={<NearbyProductsSkeleton />}>
+        <NearbyProducts />
+      </Suspense>
+    ),
+    nearby_stores: (
+      <Suspense fallback={<NearbyStoresSkeleton />}>
+        <NearbyStores />
+      </Suspense>
+    ),
+  };
   return (
     <div className="flex flex-col gap-8 sm:gap-10">
       <section className="relative flex min-h-[26rem] flex-col justify-center gap-6 rounded-3xl bg-ink p-6 text-ink-foreground sm:p-10 md:rounded-4xl">
@@ -86,17 +110,8 @@ export default async function Home() {
           <SearchPill />
         </div>
       </section>
-      <TrustStrip />
-      <Suspense fallback={<PromoList items={promoCards} />}>
-        <HomePromoSlots fallbacks={promoCards} />
-      </Suspense>
-      <CategoryTiles categories={categories} />
-      <Suspense fallback={<NearbyProductsSkeleton />}>
-        <NearbyProducts />
-      </Suspense>
-      <HowItWorks />
-      <Suspense fallback={<NearbyStoresSkeleton />}>
-        <NearbyStores />
+      <Suspense fallback={<HomeSectionList placements={null} blocks={shellBlocks} promoFallbacks={promoCards} />}>
+        <HomeSections blocks={liveBlocks} promoFallbacks={promoCards} />
       </Suspense>
       <SellBanner />
     </div>

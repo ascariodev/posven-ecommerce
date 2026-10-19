@@ -1,7 +1,7 @@
 # Plan: ads-espacios
 
 **Objetivo:** el ecommerce pinta los espacios publicitarios de `GET /placements` y el `sponsored` de `/search` y `/stores`, ordena la portada según `sections` y cuenta impresiones y clics como `ad_impression` y `ad_click`.
-**Estado:** en curso · Fase actual: 5
+**Estado:** en curso · Fase actual: 6
 
 ## Contexto mínimo
 - Spec: `posven/.claude/docs/specs/2026-10-18-publicidad-ecommerce-design.md` (§1 catálogo de espacios, §2.3 contrato, §3.6 conteo, §4 errores, §5 verificación). Plan 3 de §6.
@@ -42,7 +42,7 @@
 - **Alcance:** `home_hero` reemplaza la imagen del hero (el `h1` y el buscador quedan fijos y prerenderizados); `home_promo_1` y `home_promo_2` reemplazan las tarjetas de hoy, que quedan de respaldo. Sin cambio de LCP ni salto de diseño cuando no hay pieza o la API tarda.
 - **Terminado cuando:** vitest del área, tsc, eslint y `npx next build` sin aviso `blocking-route`.
 
-### [ ] Fase 5 — Portada: franjas y orden de secciones [riesgo]
+### [x] Fase 5 — Portada: franjas y orden de secciones [riesgo]
 - **Repo:** posven-ecommerce
 - **Alcance:** banners `home_strip` y `home_bottom`; las secciones siguen `sections` (el hero primero y "Vende" al final quedan fijos) y, sin respuesta, el orden de hoy.
 - **Terminado cuando:** vitest del orden con y sin `sections`, tsc, eslint y `npx next build`.
@@ -77,8 +77,11 @@
 - Fase 2 hecha: el navegador manda `{type: ad_impression|ad_click, ad_token}` (1..512) a `/api/events`; se reenvía `{type, ad_token, session_id}`; dedupe por sesión, tipo y token. `store_slug`/`product_slug` son `.nullish()` en el esquema pero los tipos de siempre los siguen exigiendo presentes.
 - Fase 3 hecha: `features/ads/server/placements.ts` exporta `getPagePlacements(page, {category?, store?}): Promise<PlacementsResponse|null>` (lee la cookie: va bajo `<Suspense>`) y `pieceForSlot(placements, slot): Piece|null`; componentes `AdImpression({token, children, className?})` y `AdLink({piece, children, className?})` (client), `AdBanner({piece, className?})` (server, dos `next/image` móvil `sm:hidden` 2:1 y escritorio `hidden sm:block` 5:1); `SPONSORED_LABEL = "Patrocinado"`. El host de imágenes de posveapi se infiere igual al de productos (`media.posven.io`); se confirma con una pieza real.
 - Fase 4 hecha: `features/ads/components/HeroPiece.tsx` (`HomeHeroSlot({fallback})`) y `PromoPiece.tsx` (`HomePromoSlots({fallbacks})`, `PromoList({items})`, `HOME_PROMO_SLOTS`); en `app/page.tsx` el `h1` y el buscador quedan fuera de Suspense; las dos promos van en un solo `<Suspense>` (la fase 5 mueve `promos` como un bloque). En móvil la pieza del hero cubre el fondo con velo `bg-ink/70` y sin badge ni cta: conviene que el usuario lo vea. `next build` en el worktree va con `--webpack` (Turbopack falla por la junction de node_modules). `features/site/__tests__/brand-icon.test.tsx` falla también en la base (ruta de la fuente relativa al cwd).
+- Fase 5 hecha: `features/ads/components/HomeSections.tsx` con `HomeSections({blocks, promoFallbacks})`, `HomeSectionList`, `homeSectionOrder(placements)`, tipos `HomeBlocks` y `HomeContentKey`; `HomePromoSlots` pasó a `HomePromos({placements, fallbacks})`. Hero fijo arriba con su `<Suspense>`, el resto en un `<Suspense>` cuyo fallback es el orden de hoy con esqueletos; `SellBanner` fijo al final. Clave repetida una vez, `sections: []` oculta todo, banner sólo con `format: banner`. Regla `RN-ADS-07`.
 - tsc en el worktree necesita antes `"<árbol>/node_modules/.bin/next" typegen "<árbol>"` (si no, faltan `PageProps`/`LayoutProps`).
 - `docs-check` marcará rancios los README que listan `client.ts`/`schemas.ts` (account, cart, checkout, events): se revisa tras el merge.
 - En main no existe nada de `placements`, `sponsored`, `ad_token` ni `IntersectionObserver`. `SponsoredStore` hoy marca "PATROCINADO" al primer premium (`NearbyStores.tsx`), lo que la fase 6 corrige.
 
 ## Mejoras propuestas
+- [ ] M-1: con `/placements` lento (tope de 5 s), `NearbyProducts` y `NearbyStores` de la portada empiezan a leer sólo cuando resuelve el orden de secciones y su esqueleto puede durar hasta ~10 s; calentar sus lecturas cacheadas antes del `await` de `HomeSections` (repo: posven-ecommerce)
+      Complejidad: media · Archivos: 2 · Riesgo: ninguno → sonnet

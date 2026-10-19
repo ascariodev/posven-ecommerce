@@ -16,6 +16,15 @@ README: `features/account/README.md`
 | editar el perfil, la contraseña, los avisos, las direcciones del comprador o eliminar su cuenta | `updateProfile() / changePasswordAction() / updateSettingsAction() / deleteAccountAction() / saveAddress() / deleteAddressAction() / setDefaultAddress()` | `features/account/server/accountActions.ts` | RN-ACCOUNT-03, RN-ACCOUNT-06 |
 | marcar o quitar un producto o una tienda de favoritos | `<FavoriteButton /> / toggleFavorite()` | `features/account/components/FavoriteButton.tsx` | RN-ACCOUNT-03, RN-ACCOUNT-05 |
 
+## ads
+
+README: `features/ads/README.md`
+
+| Intención | Entrada | Archivo | Reglas |
+|---|---|---|---|
+| leer las piezas publicitarias de una página | `getPagePlacements()` | `features/ads/server/placements.ts` | RN-ADS-01 |
+| pintar un banner publicitario con su conteo de impresión y clic | `<AdBanner />` | `features/ads/components/AdBanner.tsx` | RN-ADS-02, RN-ADS-03, RN-ADS-04, RN-ADS-05 |
+
 ## cart
 
 README: `features/cart/README.md`

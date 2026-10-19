@@ -1,7 +1,7 @@
 # Plan: ads-espacios
 
 **Objetivo:** el ecommerce pinta los espacios publicitarios de `GET /placements` y el `sponsored` de `/search` y `/stores`, ordena la portada según `sections` y cuenta impresiones y clics como `ad_impression` y `ad_click`.
-**Estado:** en curso · Fase actual: 3
+**Estado:** en curso · Fase actual: 4
 
 ## Contexto mínimo
 - Spec: `posven/.claude/docs/specs/2026-10-18-publicidad-ecommerce-design.md` (§1 catálogo de espacios, §2.3 contrato, §3.6 conteo, §4 errores, §5 verificación). Plan 3 de §6.
@@ -31,7 +31,7 @@
 - **Terminado cuando:** `npx vitest run features/events lib/marketplace` pasa con casos de token, slugs prohibidos y deduplicación.
 - **Commit:** `feat(events): impresiones y clics de anuncios`
 
-### [ ] Fase 3 — Módulo ads: pieza, impresión y clic
+### [x] Fase 3 — Módulo ads: pieza, impresión y clic
 - **Repo:** posven-ecommerce
 - **Alcance:** `features/ads/` con la lectura por página (`getPagePlacements`, una llamada por pedido con `cache` de React, ubicación de `getEffectiveLocation`, `null` si la API no está), el disparo de impresión (mitad visible un segundo, una vez por montaje), el enlace con clic por `sendBeaconEvent` (externo: otra pestaña y `rel="sponsored noopener"`) y el banner con imagen de escritorio y móvil; la marca "Patrocinado" sólo en `kind: ad`. Comprobar el host de las imágenes de posveapi contra `remotePatterns`.
 - **Terminado cuando:** `npx vitest run features/ads` pasa con un `IntersectionObserver` simulado; tsc y eslint limpios.
@@ -74,6 +74,7 @@
 ## Notas para la próxima sesión
 - Fase 1 hecha: `getPlacements({page, geo, radiusKm, category?, store?})` sin `'use cache'`; `listNearbyStores` con `placement?: StoresPlacement` (`home_stores_native|stores_native`); tipos `Piece`, `PlacementsResponse`, `PlacementPage`, `HomeSectionKey`, `SponsoredProduct`, `SponsoredStore` (choca de nombre con el componente `features/store/components/SponsoredStore.tsx`: importar con alias) y constantes `PLACEMENT_PAGES`, `HOME_SECTION_KEYS`. `slots` es `Record<string, Piece|null>`. Simulado: `sponsored` sólo en página 1 y se saca de `data` (búsqueda: último no destacado; tiendas: `abasto-la-esquina`, no premium); `getPlacements` da una pieza por espacio no nativo con imágenes `data:` y `sections` en el orden por omisión.
 - Fase 2 hecha: el navegador manda `{type: ad_impression|ad_click, ad_token}` (1..512) a `/api/events`; se reenvía `{type, ad_token, session_id}`; dedupe por sesión, tipo y token. `store_slug`/`product_slug` son `.nullish()` en el esquema pero los tipos de siempre los siguen exigiendo presentes.
+- Fase 3 hecha: `features/ads/server/placements.ts` exporta `getPagePlacements(page, {category?, store?}): Promise<PlacementsResponse|null>` (lee la cookie: va bajo `<Suspense>`) y `pieceForSlot(placements, slot): Piece|null`; componentes `AdImpression({token, children, className?})` y `AdLink({piece, children, className?})` (client), `AdBanner({piece, className?})` (server, dos `next/image` móvil `sm:hidden` 2:1 y escritorio `hidden sm:block` 5:1); `SPONSORED_LABEL = "Patrocinado"`. El host de imágenes de posveapi se infiere igual al de productos (`media.posven.io`); se confirma con una pieza real.
 - tsc en el worktree necesita antes `"<árbol>/node_modules/.bin/next" typegen "<árbol>"` (si no, faltan `PageProps`/`LayoutProps`).
 - `docs-check` marcará rancios los README que listan `client.ts`/`schemas.ts` (account, cart, checkout, events): se revisa tras el merge.
 - En main no existe nada de `placements`, `sponsored`, `ad_token` ni `IntersectionObserver`. `SponsoredStore` hoy marca "PATROCINADO" al primer premium (`NearbyStores.tsx`), lo que la fase 6 corrige.

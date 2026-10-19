@@ -19,7 +19,8 @@ paths:
 
 # Metadatos y SEO
 
-Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec §4.1 (`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`).
+Rige al editar los metadatos de una ruta. Qué rutas se indexan lo fija la spec §4.1 (si existe en el espacio de quien coordina,
+`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`; si no, rigen las reglas del repo).
 
 1. **El título lo arma la plantilla del layout.** `app/layout.tsx` fija `title.default` y `title.template` (`%s | SITE_NAME`);
    una página exporta sólo su parte (`title: "Buscar"` en `app/buscar/page.tsx`) o nada, como `/`. La

@@ -67,5 +67,5 @@ capabilities:
 <!--
 Borrar este bloque al terminar. Copiar a features/<dominio>/README.md o a
 lib/marketplace/README.md, con el frontmatter en la línea 1.
-Contrato: posven/.claude/docs/conventions/module-readme.md.
+Contrato: .claude/docs/conventions/module-readme.md.
 -->

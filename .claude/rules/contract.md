@@ -23,9 +23,9 @@ La ficha del módulo es `lib/marketplace/README.md`; esto rige al editar `lib/ma
    también. Fuera de `lib/marketplace/` se entra por `client.ts`: nadie importa `http.ts` ni
    `mock/`; sus constantes (`params.ts`) y tipos (`schemas.ts`) sí se importan directo.
 4. **Un campo nuevo entra primero en la spec §3**
-   (`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`), o en la §4 de
-   `posven/.claude/docs/specs/2026-09-29-cuentas-y-compras-design.md` si es de cuentas, y después
-   en `schemas.ts`. Ningún campo se renombra ni se quita (spec §3.1, ítem 7). Un campo nuevo de
+   (si existe en el espacio de quien coordina, `posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`; si no, rigen las reglas del repo), o en
+   la §4 de `posven/.claude/docs/specs/2026-09-29-cuentas-y-compras-design.md` si es de cuentas, y
+   después en `schemas.ts`. Ningún campo se renombra ni se quita (spec §3.1, ítem 7). Un campo nuevo de
    la API va `.optional()` (más `.nullable()` si la API lo manda nulo): el push a `main` despliega
    solo y puede llegar antes que posveapi, y un campo requerido ausente tumba el `safeParse` del
    recurso entero.

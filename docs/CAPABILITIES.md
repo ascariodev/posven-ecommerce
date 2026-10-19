@@ -1,6 +1,6 @@
 # Capacidades de posven-ecommerce
 
-Generado por `node posven/.claude/scripts/generate-index.mjs posven-ecommerce`: no se edita a mano.
+Generado por `node .claude/scripts/generate-index.mjs posven-ecommerce`: no se edita a mano.
 Se regenera y commitea junto con todo cambio al frontmatter `capabilities` de un README.
 
 ## account

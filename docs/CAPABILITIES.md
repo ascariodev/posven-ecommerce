@@ -24,6 +24,7 @@ README: `features/ads/README.md`
 |---|---|---|---|
 | leer las piezas publicitarias de una página | `getPagePlacements()` | `features/ads/server/placements.ts` | RN-ADS-01 |
 | pintar un banner publicitario con su conteo de impresión y clic | `<AdBanner />` | `features/ads/components/AdBanner.tsx` | RN-ADS-02, RN-ADS-03, RN-ADS-04, RN-ADS-05 |
+| reemplazar la imagen del hero y las promociones de la portada por piezas publicitarias | `<HomeHeroSlot fallback={...} /> / <HomePromoSlots fallbacks={[...]} />` | `features/ads/components/HeroPiece.tsx` | RN-ADS-05, RN-ADS-06 |
 
 ## cart
 

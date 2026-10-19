@@ -1,7 +1,7 @@
 # Plan: ads-espacios
 
 **Objetivo:** el ecommerce pinta los espacios publicitarios de `GET /placements` y el `sponsored` de `/search` y `/stores`, ordena la portada según `sections` y cuenta impresiones y clics como `ad_impression` y `ad_click`.
-**Estado:** en curso · Fase actual: 4
+**Estado:** en curso · Fase actual: 5
 
 ## Contexto mínimo
 - Spec: `posven/.claude/docs/specs/2026-10-18-publicidad-ecommerce-design.md` (§1 catálogo de espacios, §2.3 contrato, §3.6 conteo, §4 errores, §5 verificación). Plan 3 de §6.
@@ -37,7 +37,7 @@
 - **Terminado cuando:** `npx vitest run features/ads` pasa con un `IntersectionObserver` simulado; tsc y eslint limpios.
 - **Commit:** `feat(ads): pieza publicitaria con impresión y clic`
 
-### [ ] Fase 4 — Portada: hero y promociones [riesgo]
+### [x] Fase 4 — Portada: hero y promociones [riesgo]
 - **Repo:** posven-ecommerce
 - **Alcance:** `home_hero` reemplaza la imagen del hero (el `h1` y el buscador quedan fijos y prerenderizados); `home_promo_1` y `home_promo_2` reemplazan las tarjetas de hoy, que quedan de respaldo. Sin cambio de LCP ni salto de diseño cuando no hay pieza o la API tarda.
 - **Terminado cuando:** vitest del área, tsc, eslint y `npx next build` sin aviso `blocking-route`.
@@ -68,6 +68,7 @@
 - **Terminado cuando:** `npx playwright test` pasa entero.
 
 ## Decisiones
+- 2026-10-19: la imagen de hoy del hero conserva su `preload` aunque haya pieza (se descarga igual); la pieza usa `fetchPriority="high"`.
 - 2026-10-19: `sponsored` llega dentro de las respuestas cacheadas de `searchProducts` y `listNearbyStores` (`cacheLife("minutes")`): rota por entrada de caché y no por pedido, y el mismo token sirve a todos los que ven esa entrada. Separarlo exigiría otro endpoint en posveapi.
 - 2026-10-19: las piezas propias (`kind: house`) no llevan la marca "Patrocinado"; sí cuentan impresiones y clics.
 
@@ -75,6 +76,7 @@
 - Fase 1 hecha: `getPlacements({page, geo, radiusKm, category?, store?})` sin `'use cache'`; `listNearbyStores` con `placement?: StoresPlacement` (`home_stores_native|stores_native`); tipos `Piece`, `PlacementsResponse`, `PlacementPage`, `HomeSectionKey`, `SponsoredProduct`, `SponsoredStore` (choca de nombre con el componente `features/store/components/SponsoredStore.tsx`: importar con alias) y constantes `PLACEMENT_PAGES`, `HOME_SECTION_KEYS`. `slots` es `Record<string, Piece|null>`. Simulado: `sponsored` sólo en página 1 y se saca de `data` (búsqueda: último no destacado; tiendas: `abasto-la-esquina`, no premium); `getPlacements` da una pieza por espacio no nativo con imágenes `data:` y `sections` en el orden por omisión.
 - Fase 2 hecha: el navegador manda `{type: ad_impression|ad_click, ad_token}` (1..512) a `/api/events`; se reenvía `{type, ad_token, session_id}`; dedupe por sesión, tipo y token. `store_slug`/`product_slug` son `.nullish()` en el esquema pero los tipos de siempre los siguen exigiendo presentes.
 - Fase 3 hecha: `features/ads/server/placements.ts` exporta `getPagePlacements(page, {category?, store?}): Promise<PlacementsResponse|null>` (lee la cookie: va bajo `<Suspense>`) y `pieceForSlot(placements, slot): Piece|null`; componentes `AdImpression({token, children, className?})` y `AdLink({piece, children, className?})` (client), `AdBanner({piece, className?})` (server, dos `next/image` móvil `sm:hidden` 2:1 y escritorio `hidden sm:block` 5:1); `SPONSORED_LABEL = "Patrocinado"`. El host de imágenes de posveapi se infiere igual al de productos (`media.posven.io`); se confirma con una pieza real.
+- Fase 4 hecha: `features/ads/components/HeroPiece.tsx` (`HomeHeroSlot({fallback})`) y `PromoPiece.tsx` (`HomePromoSlots({fallbacks})`, `PromoList({items})`, `HOME_PROMO_SLOTS`); en `app/page.tsx` el `h1` y el buscador quedan fuera de Suspense; las dos promos van en un solo `<Suspense>` (la fase 5 mueve `promos` como un bloque). En móvil la pieza del hero cubre el fondo con velo `bg-ink/70` y sin badge ni cta: conviene que el usuario lo vea. `next build` en el worktree va con `--webpack` (Turbopack falla por la junction de node_modules). `features/site/__tests__/brand-icon.test.tsx` falla también en la base (ruta de la fuente relativa al cwd).
 - tsc en el worktree necesita antes `"<árbol>/node_modules/.bin/next" typegen "<árbol>"` (si no, faltan `PageProps`/`LayoutProps`).
 - `docs-check` marcará rancios los README que listan `client.ts`/`schemas.ts` (account, cart, checkout, events): se revisa tras el merge.
 - En main no existe nada de `placements`, `sponsored`, `ad_token` ni `IntersectionObserver`. `SponsoredStore` hoy marca "PATROCINADO" al primer premium (`NearbyStores.tsx`), lo que la fase 6 corrige.

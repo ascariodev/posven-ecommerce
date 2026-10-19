@@ -154,6 +154,7 @@ README: `lib/marketplace/README.md`
 | sugerir términos, productos y categorías mientras se escribe en el buscador | `getSuggestions()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02, RN-MARKETPLACE-03 |
 | listar los productos con oferta dentro del radio o la ciudad, del más cercano al más lejano | `listNearbyProducts()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02, RN-MARKETPLACE-03 |
 | listar las tiendas cercanas o de una ciudad con su distancia y las premium destacadas | `listNearbyStores()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02, RN-MARKETPLACE-03 |
+| obtener las piezas publicitarias de cada espacio de una página y el orden de las secciones de la portada | `getPlacements()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-03 |
 | obtener el árbol de categorías globales | `listCategories()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02 |
 | obtener estados, municipios y ciudades con tiendas | `listLocations()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02 |
 | obtener la ficha de un producto con el resumen nacional de sus ofertas, o su slug nuevo | `getProduct()` | `lib/marketplace/client.ts` | RN-MARKETPLACE-01, RN-MARKETPLACE-02, RN-MARKETPLACE-04 |

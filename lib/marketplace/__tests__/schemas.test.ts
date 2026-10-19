@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 import { resetMockAccounts } from "@/lib/marketplace/mock/accounts";
 import {
   addFavorite,

@@ -1,3 +1,5 @@
+import { cookies } from "next/headers";
+import { MarketplaceUnavailableError } from "../errors";
 import {
   nearbyProductsQuery,
   productQuery,
@@ -368,6 +370,8 @@ export async function listNearbyStores(p: {
   };
 }
 
+export const MOCK_ADS_COOKIE = "mock_ads";
+
 export async function getPlacements(p: {
   page: PlacementPage;
   geo: GeoFilter;
@@ -375,6 +379,11 @@ export async function getPlacements(p: {
   category?: string | null;
   store?: string | null;
 }): Promise<PlacementsResponse> {
+  const mode = (await cookies()).get(MOCK_ADS_COOKIE)?.value;
+  if (mode === "down") throw new MarketplaceUnavailableError("/placements");
+  if (mode === "none") {
+    return { slots: Object.fromEntries(Object.keys(MOCK_PLACEMENT_SLOTS[p.page]).map((slot) => [slot, null])) };
+  }
   return {
     slots: { ...MOCK_PLACEMENT_SLOTS[p.page] },
     ...(p.page === "home" ? { sections: [...MOCK_HOME_SECTIONS] } : {}),

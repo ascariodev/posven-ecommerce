@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock("next/cache", () => ({ cacheLife: vi.fn(), cacheTag: vi.fn() }));
 vi.mock("@/lib/marketplace/http", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/marketplace/http")>()),

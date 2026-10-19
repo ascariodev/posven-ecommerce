@@ -46,7 +46,7 @@ capabilities:
     file: "lib/marketplace/client.ts"
     input: "{ page: 'home'|'search'|'product'|'stores'|'store', geo: GeoFilter, radiusKm: RadiusKm|null, category?: string|null, store?: string|null }"
     output: "PlacementsResponse { slots: Record<string, Piece|null> (una clave por espacio no nativo; acepta claves desconocidas), sections?: string[] (sólo en home) } con Piece { kind: 'ad'|'house', format, image_desktop_url, image_mobile_url, alt, badge, title, cta, advertiser_name (nulables), href, external, token }"
-    source: "GET /placements de posveapi vía BFF, o el simulado; sin caché, porque la rotación es por pedido"
+    source: "GET /placements de posveapi vía BFF, o el simulado (la cookie mock_ads=none deja todos los espacios en null y sin sections, mock_ads=down lanza MarketplaceUnavailableError; sólo para el e2e); sin caché, porque la rotación es por pedido"
     rules: ["RN-MARKETPLACE-03"]
   - intent: "obtener el árbol de categorías globales"
     intent_aliases: ["categorias", "taxonomia", "arbol de categorias"]

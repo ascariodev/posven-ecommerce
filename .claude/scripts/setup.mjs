@@ -11,7 +11,7 @@
 
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { POSVEN, REPO_NAMES, WORKSPACE } from './lib/common.mjs';
 
 const MIN_NODE = 20;
@@ -32,7 +32,12 @@ check('git', !!gitVersion, gitVersion ?? 'no está en el PATH');
 const graphifyVersion = version('graphify', '--help');
 check('graphify', !!graphifyVersion, graphifyVersion ? 'en el PATH' : 'no está en el PATH: pip install graphifyy');
 
-const workspaceDir = WORKSPACE ? POSVEN : dirname(POSVEN);
+const mainCheckout = () => {
+  const r = spawnSync('git', ['-C', POSVEN, 'rev-parse', '--path-format=absolute', '--git-common-dir'], { encoding: 'utf8' });
+  const common = r.status === 0 ? r.stdout.trim() : '';
+  return common ? dirname(resolve(common)) : POSVEN;
+};
+const workspaceDir = WORKSPACE ? POSVEN : dirname(mainCheckout());
 for (const repo of REPO_NAMES) {
   const graph = join(workspaceDir, '.graphify-workspace', repo, 'graphify-out', 'graph.json');
   check(`grafo ${repo}`, existsSync(graph), existsSync(graph) ? graph : `falta ${graph}: ver "Generar el grafo" en .claude/README.md`);

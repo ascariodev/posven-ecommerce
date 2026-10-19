@@ -1,7 +1,7 @@
 {
   "repo": "posven-ecommerce",
   "fuente": {
-    "commit": "7c200d55a3f49a02fe86cdf252da6a0f950c5bc4",
+    "commit": "95162e42d6aeb2c89d954250680224b7df961c6c",
     "conCambios": true
   },
   "archivos": {
@@ -26,7 +26,7 @@
     "scripts/docs-check.mjs": "6739e6c5206255101342c8c24e55ff8bcac7091753f6aef9875a6236ce2d709a",
     "scripts/generate-index.mjs": "29f634e9ca58e0039cba974c3dd543eca056fd8f55f6e6c74021e27eed4f4cd9",
     "scripts/lib/common.mjs": "6014e24b0748b355ba510c510c65dd76f9970bc57b82c5363b278a16603a778d",
-    "scripts/setup.mjs": "e863aeba06b0dcfc7d8d0aa17401af52fb80d4e1a9d11fe6a3a06629c5cd3bac",
+    "scripts/setup.mjs": "e4516d8d674207fcc6dc146926a922b17108e6f33dcb7460d1a951e0c0b822c4",
     "scripts/worktree.mjs": "11426724f580a5be8a579bd2a8474e58f9aa6d62aa30d626533bbb0a9126f8a1",
     "settings.json": "0968bf6de7ae5b53639ecb0d703ebe7b81766823211a715d220ef2a8d16ffc3f",
     "skills/aplicar-mejoras/SKILL.md": "26d2230b981b5cc0456a6044a81aeea54626e0e662c3517714fc82d5e2233dee",

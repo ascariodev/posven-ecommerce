@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { SlotBanner } from "@/features/ads/components/SlotBanner";
 import { StoresDirectory, StoresDirectorySkeleton } from "@/features/store/components/StoresDirectory";
 
 export const metadata: Metadata = {
@@ -16,6 +17,9 @@ export default function StoresPage({
   return (
     <div className="flex flex-col gap-6">
       <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground">Tiendas</h1>
+      <Suspense fallback={null}>
+        <SlotBanner page="stores" slot="stores_top" />
+      </Suspense>
       <Suspense fallback={<StoresDirectorySkeleton />}>
         <StoresDirectory searchParams={searchParams} />
       </Suspense>

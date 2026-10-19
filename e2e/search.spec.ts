@@ -10,7 +10,7 @@ test("la portada lleva a la búsqueda con resultados, tasa y noindex", async ({ 
   await expect(page.getByRole("main").getByRole("link", { name: "Salud y medicamentos", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: `Productos en ${SITE_NAME}` })).toBeVisible();
   await expect(page.getByRole("heading", { name: `Comercios en ${SITE_NAME}` })).toBeVisible();
-  await expect(page.getByText("PATROCINADO")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Abasto La Esquina/ }).filter({ hasText: "Patrocinado" })).toBeVisible();
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000");
 
   await page.getByRole("combobox", { name: "Buscar productos" }).fill("acetaminofen");

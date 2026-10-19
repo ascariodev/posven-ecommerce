@@ -7,6 +7,7 @@ import { getEffectiveLocation } from "@/features/location/server/location";
 import { listNearbyStores } from "@/lib/marketplace/client";
 import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
 import { SITE_NAME } from "@/lib/site";
+import { SponsoredStore } from "./SponsoredStore";
 import { StoreCard } from "./StoreCard";
 
 const POSITIVE_INTEGER = /^\d+$/;
@@ -30,19 +31,21 @@ export async function StoresDirectory({
   const page = parsePage((await searchParams).pagina);
   const { location } = await getEffectiveLocation();
   const geo = toGeoFilter(location);
-  const { data, featured, meta } = await listNearbyStores({
+  const { data, featured, sponsored, meta } = await listNearbyStores({
     geo,
     radiusKm: geo ? DEFAULT_RADIUS_KM : null,
     page,
+    placement: "stores_native",
   });
 
-  const taken = new Set(featured.map((store) => store.slug));
+  const taken = new Set([...featured.map((store) => store.slug), sponsored?.slug]);
   const stores = [
-    ...featured.map((store) => ({ store, featured: true })),
+    ...featured.filter((store) => store.slug !== sponsored?.slug).map((store) => ({ store, featured: true })),
     ...data.filter((store) => !taken.has(store.slug)).map((store) => ({ store, featured: false })),
   ];
+  const sponsoredAt = Math.min(featured.filter((store) => store.slug !== sponsored?.slug).length, stores.length);
 
-  if (stores.length === 0) {
+  if (stores.length === 0 && sponsored === undefined) {
     return (
       <>
         {page > 1 && <meta name="robots" content="noindex" />}
@@ -62,7 +65,17 @@ export async function StoresDirectory({
         {location !== null ? " cerca de ti" : ` en ${SITE_NAME}`}
       </p>
       <ul aria-label="Comercios" className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {stores.map(({ store, featured: isFeatured }) => (
+        {stores.slice(0, sponsoredAt).map(({ store, featured: isFeatured }) => (
+          <li key={store.slug}>
+            <StoreCard store={store} featured={isFeatured} />
+          </li>
+        ))}
+        {sponsored !== undefined && (
+          <li key={`sponsored-${sponsored.slug}`}>
+            <SponsoredStore store={sponsored} />
+          </li>
+        )}
+        {stores.slice(sponsoredAt).map(({ store, featured: isFeatured }) => (
           <li key={store.slug}>
             <StoreCard store={store} featured={isFeatured} />
           </li>

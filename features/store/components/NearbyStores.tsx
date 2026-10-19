@@ -20,16 +20,20 @@ export async function NearbyStores() {
   const geo = toGeoFilter(location);
   let response: StoresResponse;
   try {
-    response = await listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null, page: 1 });
+    response = await listNearbyStores({ geo, radiusKm: geo ? DEFAULT_RADIUS_KM : null,
+      page: 1,
+      placement: "home_stores_native",
+    });
   } catch (error) {
     if (error instanceof MarketplaceUnavailableError) return null;
     throw error;
   }
 
-  const [sponsored, ...otherFeatured] = response.featured;
-  const taken = new Set(response.featured.map((store) => store.slug));
+  const { sponsored } = response;
+  const featured = response.featured.filter((store) => store.slug !== sponsored?.slug);
+  const taken = new Set([...response.featured.map((store) => store.slug), sponsored?.slug]);
   const stores = [
-    ...otherFeatured.map((store) => ({ store, featured: true })),
+    ...featured.map((store) => ({ store, featured: true })),
     ...response.data.filter((store) => !taken.has(store.slug)).map((store) => ({ store, featured: false })),
   ].slice(0, MAX_STORES);
 

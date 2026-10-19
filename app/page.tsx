@@ -6,13 +6,13 @@ import { HomeHeroSlot } from "@/features/ads/components/HeroPiece";
 import { type HomeBlocks, HomeSectionList, HomeSections } from "@/features/ads/components/HomeSections";
 import { HOME_PROMO_SLOTS } from "@/features/ads/components/PromoPiece";
 import { CategoryTiles } from "@/features/search/components/CategoryTiles";
-import { NearbyProducts, NearbyProductsSkeleton } from "@/features/search/components/NearbyProducts";
+import { NearbyProducts, NearbyProductsSkeleton, preloadNearbyProducts } from "@/features/search/components/NearbyProducts";
 import { SearchPill } from "@/features/search/components/SearchPill";
 import { searchHref } from "@/features/search/lib/query";
 import { HowItWorks } from "@/features/site/components/HowItWorks";
 import { SellBanner } from "@/features/site/components/SellBanner";
 import { TrustStrip } from "@/features/site/components/TrustStrip";
-import { NearbyStores, NearbyStoresSkeleton } from "@/features/store/components/NearbyStores";
+import { NearbyStores, NearbyStoresSkeleton, preloadNearbyStores } from "@/features/store/components/NearbyStores";
 import { listCategories } from "@/lib/marketplace/client";
 import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
 import type { Category } from "@/lib/marketplace/schemas";
@@ -63,6 +63,11 @@ function CategoryPromoCard({ category }: { category: Category }) {
   );
 }
 
+function preloadHomeReads() {
+  preloadNearbyProducts();
+  preloadNearbyStores();
+}
+
 export default async function Home() {
   const categories = await listCategories();
   const promos = categories.filter((category) => category.slug in PROMO_IMAGES);
@@ -111,7 +116,7 @@ export default async function Home() {
         </div>
       </section>
       <Suspense fallback={<HomeSectionList placements={null} blocks={shellBlocks} promoFallbacks={promoCards} />}>
-        <HomeSections blocks={liveBlocks} promoFallbacks={promoCards} />
+        <HomeSections blocks={liveBlocks} promoFallbacks={promoCards} preload={preloadHomeReads} />
       </Suspense>
       <SellBanner />
     </div>

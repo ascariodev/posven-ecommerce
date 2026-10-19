@@ -40,7 +40,12 @@ export function HomeSectionList({ placements, blocks, promoFallbacks }: HomeSect
   ));
 }
 
-export async function HomeSections({ blocks, promoFallbacks }: Omit<HomeSectionListProps, "placements">) {
+export async function HomeSections({
+  blocks,
+  promoFallbacks,
+  preload,
+}: Omit<HomeSectionListProps, "placements"> & { preload?: () => void }) {
+  preload?.();
   const placements = await getPagePlacements("home");
   return <HomeSectionList placements={placements} blocks={blocks} promoFallbacks={promoFallbacks} />;
 }

@@ -118,6 +118,18 @@ describe("HomeSectionList", () => {
 });
 
 describe("HomeSections", () => {
+  it("arranca preload antes de que resuelva /placements", async () => {
+    let resolvePlacements: (value: PlacementsResponse | null) => void = () => {};
+    vi.mocked(getPagePlacements).mockReturnValue(new Promise((resolve) => (resolvePlacements = resolve)));
+    const preload = vi.fn();
+    const pending = HomeSections({ blocks, promoFallbacks, preload });
+    expect(preload).toHaveBeenCalledTimes(1);
+    expect(getPagePlacements).toHaveBeenCalledWith("home");
+    resolvePlacements(null);
+    render(await pending);
+    expect(preload).toHaveBeenCalledTimes(1);
+  });
+
   it("lee los espacios de la portada una vez y, con la API caída, usa el orden por defecto", async () => {
     vi.mocked(getPagePlacements).mockResolvedValue(null);
     const { container } = render(await HomeSections({ blocks, promoFallbacks }));

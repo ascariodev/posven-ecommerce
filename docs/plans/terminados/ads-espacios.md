@@ -87,5 +87,5 @@
 - En main no existe nada de `placements`, `sponsored`, `ad_token` ni `IntersectionObserver`. `SponsoredStore` hoy marca "PATROCINADO" al primer premium (`NearbyStores.tsx`), lo que la fase 6 corrige.
 
 ## Mejoras propuestas
-- [ ] M-1: con `/placements` lento (tope de 5 s), `NearbyProducts` y `NearbyStores` de la portada empiezan a leer sólo cuando resuelve el orden de secciones y su esqueleto puede durar hasta ~10 s; calentar sus lecturas cacheadas antes del `await` de `HomeSections` (repo: posven-ecommerce)
+- [x] M-1: con `/placements` lento (tope de 5 s), `NearbyProducts` y `NearbyStores` de la portada empiezan a leer sólo cuando resuelve el orden de secciones y su esqueleto puede durar hasta ~10 s; calentar sus lecturas cacheadas antes del `await` de `HomeSections` (repo: posven-ecommerce)
       Complejidad: media · Archivos: 2 · Riesgo: ninguno → sonnet

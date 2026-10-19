@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { listNearbyStores } from "@/lib/marketplace/client";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
 import type { NearbyStore, SponsoredStore, StoresResponse } from "@/lib/marketplace/schemas";
-import { NearbyStores } from "../components/NearbyStores";
+import { NearbyStores, preloadNearbyStores } from "../components/NearbyStores";
 
 vi.mock("@/lib/marketplace/client", () => ({
   listNearbyStores: vi.fn(),
@@ -115,5 +115,18 @@ describe("NearbyStores", () => {
     vi.mocked(listNearbyStores).mockRejectedValue(new Error("otro"));
 
     await expect(NearbyStores()).rejects.toThrow("otro");
+  });
+
+  it("preloadNearbyStores lee con los mismos argumentos que el componente y no propaga el rechazo", async () => {
+    vi.mocked(listNearbyStores).mockResolvedValue({ data: [], featured: [], meta: { page: 1, per_page: 12, total: 0 } } as unknown as StoresResponse);
+    render(await NearbyStores());
+    const componentArgs = vi.mocked(listNearbyStores).mock.calls.at(-1)?.[0];
+    vi.mocked(listNearbyStores).mockClear();
+    vi.mocked(listNearbyStores).mockRejectedValue(new Error("caída"));
+
+    preloadNearbyStores();
+    await vi.waitFor(() => expect(listNearbyStores).toHaveBeenCalledTimes(1));
+
+    expect(vi.mocked(listNearbyStores).mock.calls[0]?.[0]).toStrictEqual(componentArgs);
   });
 });

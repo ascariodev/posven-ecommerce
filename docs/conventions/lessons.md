@@ -1,7 +1,7 @@
 # Lecciones (posven-ecommerce)
 
 Único lugar para lo aprendido de errores que se repetirían en otra parte. Formato, promoción y
-poda: regla `lessons-authoring` (`posven/.claude/rules/lessons-authoring.md`). Se lee entero antes
+poda: regla `lessons-authoring` (`.claude/rules/lessons-authoring.md`). Se lee entero antes
 de planificar o ejecutar un plan en este repo.
 
 ---
@@ -44,7 +44,7 @@ Una fase que cambia el comportamiento de un componente o una ruta de un módulo 
 en el mismo cambio: la ficha del símbolo, la fila de tests, las dependencias y `verified_against`,
 y también el README de otro módulo que liste el archivo cambiado (`docs-check` lo marca RANCIO).
 Quien revisa lo rechaza si falta, y cuesta una ronda entera.
-aplicada en: `posven/.claude/agents/implementador-fase.md` (punto 5)
+aplicada en: `.claude/agents/implementador-fase.md` (punto 5)
 
 ## L-10
 Un componente del layout raíz que marca la ruta activa con `usePathname()` desajusta la
@@ -62,7 +62,7 @@ aplicada en: `features/cart/__tests__/cart.test.ts`
 En el frontmatter de un README de módulo, un escalar entre comillas dobles (`output: "..."`) no
 lleva comillas dobles dentro (`"Ver menos"`, `name="robots"`): el YAML queda inválido y
 `generate-index.mjs` no lo detecta. Dentro se usan comillas simples o se reescribe sin comillas.
-aplicada en: `posven/.claude/scripts/docs-check.mjs`
+aplicada en: `.claude/scripts/docs-check.mjs`
 
 ## L-16
 Un campo nuevo de la API en un esquema de `lib/marketplace/schemas.ts` va `.optional()` (más

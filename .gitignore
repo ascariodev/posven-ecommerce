@@ -56,3 +56,5 @@ next-env.d.ts
 # Claude
 .claude/settings.local.json
 .claude/backup-*/
+.claude/worktrees/
+CLAUDE.local.md

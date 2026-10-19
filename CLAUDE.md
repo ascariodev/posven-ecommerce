@@ -1,10 +1,11 @@
+@.claude/CLAUDE.comun.md
 @AGENTS.md
 
 # posven-ecommerce
 
 Buscador web de productos por cercanía sobre el inventario y los precios de las tiendas que usan
-posven. Next.js 16 (App Router), React 19, TypeScript y Tailwind CSS v4. Spec:
-`posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`.
+posven. Next.js 16 (App Router), React 19, TypeScript y Tailwind CSS v4. Spec, si existe en el
+espacio de quien coordina: `posven/.claude/docs/specs/2026-09-26-ecommerce-hiperlocal-design.md`; si no, rigen las reglas del repo.
 
 ## No negociable
 
@@ -17,14 +18,11 @@ posven. Next.js 16 (App Router), React 19, TypeScript y Tailwind CSS v4. Spec:
 
 ## Árbol de trabajo
 
-Rama base `main`. Un repo por commit: un cambio que también toca posveapi se commitea allá por
-separado.
+Rama base `main`; el push a `main` despliega.
 
 ## Verificación
 
-Mientras trabajas: `node_modules/.bin/tsc --noEmit -p tsconfig.json`, con la ruta absoluta del
-repo delante de ambas rutas (sin `cd`, `npx tsc` resuelve al paquete ajeno `tsc`), y
-`npx eslint <archivos>`. Antes de cerrar: además `npx vitest run <área>`, y `npx next build` si
+Proporcional del común §5; mientras trabajas, además `npx eslint <archivos>`. Antes de cerrar: además `npx vitest run <área>`, y `npx next build` si
 se tocaron rutas, metadatos o caché. Antes de cerrar un plan: `npx playwright test` (e2e en
 modo simulado). Nada se reporta como pasando sin haberse corrido.
 

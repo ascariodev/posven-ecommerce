@@ -1,0 +1,118 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(graphify *)",
+      "Bash(git -C * status*)",
+      "Bash(git -C * diff*)",
+      "Bash(git -C * log*)",
+      "Bash(git -C * show*)",
+      "Bash(git -C * branch*)",
+      "Bash(git -C * blame*)",
+      "Bash(git -C * rev-parse*)",
+      "Bash(git -C * ls-files*)",
+      "Bash(git -C * check-ignore*)",
+      "Bash(git -C * worktree list*)",
+      "Bash(git -C * merge-base*)",
+      "Bash(git -C * add *)",
+      "Bash(git -C * commit *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(npx tsc --noEmit*)",
+      "Bash(npx jest *)",
+      "Bash(npx eslint *)",
+      "Bash(npm run lint*)",
+      "Bash(npx next build*)",
+      "Bash(npx vitest *)",
+      "Bash(npx playwright *)",
+      "Bash(docker compose exec app vendor/bin/phpunit*)",
+      "Bash(docker compose -f * exec app vendor/bin/phpunit*)",
+      "Bash(node .claude/hooks/* --self-test)",
+      "Bash(node .claude/hooks/plan-state.mjs*)",
+      "Bash(node .claude/scripts/*)"
+    ],
+    "ask": [
+      "Bash(psql:*)",
+      "Bash(sqlite3:*)",
+      "Bash(docker exec * psql*)",
+      "Bash(docker compose * psql*)",
+      "Bash(docker compose * php artisan tinker*)",
+      "Bash(docker compose * php artisan db*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/.env)",
+      "Read(./**/.env.*)",
+      "Bash(cat *.env*)",
+      "Bash(cat .env*)",
+      "Bash(cat ./.env*)"
+    ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/plan-state.mjs\" 2>/dev/null || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/rules-on-bash-read.mjs\" 2>/dev/null || true",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/context-guard.mjs\" 2>/dev/null || true",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/context-guard.mjs\" 2>/dev/null || true",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/check-worktree.mjs\" 2>/dev/null || true",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

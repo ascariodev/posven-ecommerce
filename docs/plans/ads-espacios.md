@@ -1,7 +1,7 @@
 # Plan: ads-espacios
 
 **Objetivo:** el ecommerce pinta los espacios publicitarios de `GET /placements` y el `sponsored` de `/search` y `/stores`, ordena la portada según `sections` y cuenta impresiones y clics como `ad_impression` y `ad_click`.
-**Estado:** en curso · Fase actual: 1
+**Estado:** en curso · Fase actual: 2
 
 ## Contexto mínimo
 - Spec: `posven/.claude/docs/specs/2026-10-18-publicidad-ecommerce-design.md` (§1 catálogo de espacios, §2.3 contrato, §3.6 conteo, §4 errores, §5 verificación). Plan 3 de §6.
@@ -12,7 +12,7 @@
 
 ## Fases
 
-### [ ] Fase 1 — Contrato de espacios y patrocinados
+### [x] Fase 1 — Contrato de espacios y patrocinados
 - **Repo:** posven-ecommerce
 - **Alcance:**
   - `schemas.ts`: `pieceSchema`, `placementsResponseSchema` (`slots` como registro de espacio a `Piece | null`, `sections` opcional) y `sponsored` opcional en `searchResponseSchema` (forma de `featured` de búsqueda más `token` y `advertiser_name`) y en `storesResponseSchema` (`nearbyStoreSchema` más `token` y `advertiser_name`). Tipos por `z.infer`.
@@ -72,6 +72,9 @@
 - 2026-10-19: las piezas propias (`kind: house`) no llevan la marca "Patrocinado"; sí cuentan impresiones y clics.
 
 ## Notas para la próxima sesión
+- Fase 1 hecha: `getPlacements({page, geo, radiusKm, category?, store?})` sin `'use cache'`; `listNearbyStores` con `placement?: StoresPlacement` (`home_stores_native|stores_native`); tipos `Piece`, `PlacementsResponse`, `PlacementPage`, `HomeSectionKey`, `SponsoredProduct`, `SponsoredStore` (choca de nombre con el componente `features/store/components/SponsoredStore.tsx`: importar con alias) y constantes `PLACEMENT_PAGES`, `HOME_SECTION_KEYS`. `slots` es `Record<string, Piece|null>`. Simulado: `sponsored` sólo en página 1 y se saca de `data` (búsqueda: último no destacado; tiendas: `abasto-la-esquina`, no premium); `getPlacements` da una pieza por espacio no nativo con imágenes `data:` y `sections` en el orden por omisión.
+- tsc en el worktree necesita antes `"<árbol>/node_modules/.bin/next" typegen "<árbol>"` (si no, faltan `PageProps`/`LayoutProps`).
+- `docs-check` marcará rancios los README que listan `client.ts`/`schemas.ts` (account, cart, checkout, events): se revisa tras el merge.
 - En main no existe nada de `placements`, `sponsored`, `ad_token` ni `IntersectionObserver`. `SponsoredStore` hoy marca "PATROCINADO" al primer premium (`NearbyStores.tsx`), lo que la fase 6 corrige.
 
 ## Mejoras propuestas

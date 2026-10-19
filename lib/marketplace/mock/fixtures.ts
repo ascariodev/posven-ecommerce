@@ -8,6 +8,8 @@ import type {
   LocationState,
   Money,
   Offer,
+  Piece,
+  PlacementPage,
   Product,
   Rate,
   ScheduleEntry,
@@ -725,6 +727,88 @@ export const MOCK_PRODUCTS: MockProduct[] = [
     offers: [offer("farmacia-central-valencia", "4.20", "153.30")],
   },
 ];
+
+function placeholderImage(width: number, height: number, color: string): string {
+  return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'%3E%3Crect width='${width}' height='${height}' fill='%23${color}'/%3E%3C/svg%3E`;
+}
+
+const HERO_PIECE: Piece = {
+  kind: "ad",
+  format: "hero",
+  image_desktop_url: placeholderImage(1240, 620, "bfdbfe"),
+  image_mobile_url: placeholderImage(750, 500, "bfdbfe"),
+  alt: "Anuncio simulado del hero",
+  badge: "Anuncio",
+  title: null,
+  cta: "Ver más",
+  href: "/tienda/farmacia-central-valencia",
+  external: false,
+  advertiser_name: "Farmacia Central",
+  token: "ad-simulado-home_hero",
+};
+
+const PROMO_PIECE: Piece = {
+  kind: "ad",
+  format: "promo",
+  image_desktop_url: placeholderImage(800, 400, "fde68a"),
+  image_mobile_url: placeholderImage(800, 400, "fde68a"),
+  alt: "Anuncio simulado de promoción",
+  badge: "Oferta",
+  title: "Promoción simulada",
+  cta: "Ver oferta",
+  href: "/buscar?categoria=salud-y-medicamentos",
+  external: false,
+  advertiser_name: "Genven",
+  token: "ad-simulado-home_promo",
+};
+
+const BANNER_PIECE: Piece = {
+  kind: "ad",
+  format: "banner",
+  image_desktop_url: placeholderImage(1200, 240, "d9f99d"),
+  image_mobile_url: placeholderImage(720, 360, "d9f99d"),
+  alt: "Anuncio simulado de banner",
+  badge: null,
+  title: null,
+  cta: null,
+  href: "https://anunciante.example/promo",
+  external: true,
+  advertiser_name: "Marca simulada",
+  token: "ad-simulado-banner",
+};
+
+export const MOCK_PLACEMENT_SLOTS: Record<PlacementPage, Record<string, Piece>> = {
+  home: {
+    home_hero: HERO_PIECE,
+    home_promo_1: { ...PROMO_PIECE, token: "ad-simulado-home_promo_1" },
+    home_promo_2: { ...PROMO_PIECE, title: "Otra promoción simulada", token: "ad-simulado-home_promo_2" },
+    home_strip: { ...BANNER_PIECE, token: "ad-simulado-home_strip" },
+    home_bottom: { ...BANNER_PIECE, token: "ad-simulado-home_bottom" },
+  },
+  search: {
+    search_top: { ...BANNER_PIECE, token: "ad-simulado-search_top" },
+    search_empty: { ...BANNER_PIECE, token: "ad-simulado-search_empty" },
+  },
+  product: { product_banner: { ...BANNER_PIECE, token: "ad-simulado-product_banner" } },
+  stores: { stores_top: { ...BANNER_PIECE, token: "ad-simulado-stores_top" } },
+  store: { store_banner: { ...BANNER_PIECE, token: "ad-simulado-store_banner" } },
+};
+
+export const MOCK_HOME_SECTIONS: string[] = [
+  "trust_strip",
+  "promos",
+  "categories",
+  "home_strip",
+  "nearby_products",
+  "how_it_works",
+  "nearby_stores",
+  "home_bottom",
+];
+
+export const MOCK_SPONSORED_STORE_SLUG = "abasto-la-esquina";
+export const MOCK_SPONSORED_ADVERTISER = "Marca simulada";
+export const MOCK_SPONSORED_PRODUCT_TOKEN = "ad-simulado-search_native";
+export const MOCK_SPONSORED_STORE_TOKEN = "ad-simulado-stores_native";
 
 export const MOCK_REDIRECTS: Record<string, string> = {
   "acetaminofen-500mg-x-20": "acetaminofen-500-mg-20-tabletas",

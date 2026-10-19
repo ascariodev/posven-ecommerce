@@ -120,9 +120,16 @@ const featuredProductSchema = z.object({
 });
 export type FeaturedProduct = z.infer<typeof featuredProductSchema>;
 
+const sponsoredProductSchema = featuredProductSchema.extend({
+  token: z.string(),
+  advertiser_name: z.string(),
+});
+export type SponsoredProduct = z.infer<typeof sponsoredProductSchema>;
+
 export const searchResponseSchema = z.object({
   data: z.array(searchItemSchema),
   featured: z.array(featuredProductSchema).max(2),
+  sponsored: sponsoredProductSchema.optional(),
   meta: pageMetaSchema,
   rate: rateSchema,
 });
@@ -151,12 +158,56 @@ export const nearbyStoreSchema = storeSummarySchema.extend({
 });
 export type NearbyStore = z.infer<typeof nearbyStoreSchema>;
 
+const sponsoredStoreSchema = nearbyStoreSchema.extend({
+  token: z.string(),
+  advertiser_name: z.string(),
+});
+export type SponsoredStore = z.infer<typeof sponsoredStoreSchema>;
+
 export const storesResponseSchema = z.object({
   data: z.array(nearbyStoreSchema),
   featured: z.array(nearbyStoreSchema).max(2),
+  sponsored: sponsoredStoreSchema.optional(),
   meta: pageMetaSchema,
 });
 export type StoresResponse = z.infer<typeof storesResponseSchema>;
+
+export const PLACEMENT_PAGES = ["home", "search", "product", "stores", "store"] as const;
+export type PlacementPage = (typeof PLACEMENT_PAGES)[number];
+
+export const HOME_SECTION_KEYS = [
+  "trust_strip",
+  "promos",
+  "categories",
+  "home_strip",
+  "nearby_products",
+  "how_it_works",
+  "nearby_stores",
+  "home_bottom",
+] as const;
+export type HomeSectionKey = (typeof HOME_SECTION_KEYS)[number];
+
+export const pieceSchema = z.object({
+  kind: z.enum(["ad", "house"]),
+  format: z.enum(["hero", "promo", "banner", "native_product", "native_store"]),
+  image_desktop_url: z.string().nullable(),
+  image_mobile_url: z.string().nullable(),
+  alt: z.string().nullable(),
+  badge: z.string().nullable(),
+  title: z.string().nullable(),
+  cta: z.string().nullable(),
+  href: z.string(),
+  external: z.boolean(),
+  advertiser_name: z.string().nullable(),
+  token: z.string(),
+});
+export type Piece = z.infer<typeof pieceSchema>;
+
+export const placementsResponseSchema = z.object({
+  slots: z.record(z.string(), pieceSchema.nullable()),
+  sections: z.array(z.string()).optional(),
+});
+export type PlacementsResponse = z.infer<typeof placementsResponseSchema>;
 
 export const categoriesResponseSchema = z.object({
   data: z.array(categoryNodeSchema),

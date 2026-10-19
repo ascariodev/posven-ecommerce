@@ -388,3 +388,35 @@ describe("categorías de la tienda simulada", () => {
     expect(response?.meta.total).toBe(0);
   });
 });
+
+describe("patrocinados simulados", () => {
+  it("la búsqueda trae un sponsored en la página 1 que no repite featured ni la lista", async () => {
+    const response = await searchProducts({ q: "", category: null, geo: null, radiusKm: null, page: 1 });
+    const slug = response.sponsored?.product.slug;
+    expect(slug).toBeDefined();
+    expect(response.featured.map((entry) => entry.product.slug)).not.toContain(slug);
+    expect(response.data.map((item) => item.slug)).not.toContain(slug);
+  });
+
+  it("la búsqueda no trae sponsored en la página 2 ni en una ciudad sin tiendas", async () => {
+    const page2 = await searchProducts({ q: "", category: null, geo: null, radiusKm: null, page: 2 });
+    const empty = await searchProducts({ q: "", category: null, geo: { city: "maracaibo" }, radiusKm: 10, page: 1 });
+    expect(page2.sponsored).toBeUndefined();
+    expect(empty.sponsored).toBeUndefined();
+  });
+
+  it("las tiendas traen un sponsored en la página 1 que no repite featured ni la lista", async () => {
+    const response = await listNearbyStores({ geo: null, radiusKm: null, page: 1 });
+    const slug = response.sponsored?.slug;
+    expect(slug).toBeDefined();
+    expect(response.featured.map((store) => store.slug)).not.toContain(slug);
+    expect(response.data.map((store) => store.slug)).not.toContain(slug);
+    expect((await listNearbyStores({ geo: null, radiusKm: null, page: 2 })).sponsored).toBeUndefined();
+  });
+
+  it("una ciudad con una sola tienda no queda sin lista por el sponsored", async () => {
+    const response = await listNearbyStores({ geo: { city: "caracas" }, radiusKm: 10, page: 1 });
+    expect(response.sponsored).toBeUndefined();
+    expect(response.data.length).toBeGreaterThan(0);
+  });
+});

@@ -7,6 +7,7 @@ import {
   cartFulfillmentQuery,
   nearbyProductsQuery,
   pageQuery,
+  placementsQuery,
   productQuery,
   searchQuery,
   storeQuery,
@@ -17,6 +18,7 @@ import {
   type GeoFilter,
   type OfferSort,
   type RadiusKm,
+  type StoresPlacement,
 } from "./params";
 import {
   addressEnvelopeSchema,
@@ -30,6 +32,7 @@ import {
   favoritesResponseSchema,
   locationsResponseSchema,
   nearbyProductsResponseSchema,
+  placementsResponseSchema,
   productResponseSchema,
   purchasePageSchema,
   purchaseSchema,
@@ -55,6 +58,8 @@ import {
   type LocationState,
   type MarketplaceEvent,
   type NearbyProductsResponse,
+  type PlacementPage,
+  type PlacementsResponse,
   type BuyAgainResponse,
   type ProductResponse,
   type ProfilePatch,
@@ -122,12 +127,24 @@ export async function listNearbyStores(p: {
   geo: GeoFilter;
   radiusKm: RadiusKm | null;
   page: number;
+  placement?: StoresPlacement;
 }): Promise<StoresResponse> {
   "use cache";
   cacheLife("minutes");
   cacheTag("marketplace:stores");
   if (usesMock()) return mock.listNearbyStores(p);
   return requestJson("/stores", storesQuery(p), storesResponseSchema);
+}
+
+export async function getPlacements(p: {
+  page: PlacementPage;
+  geo: GeoFilter;
+  radiusKm: RadiusKm | null;
+  category?: string | null;
+  store?: string | null;
+}): Promise<PlacementsResponse> {
+  if (usesMock()) return mock.getPlacements(p);
+  return requestJson("/placements", placementsQuery(p), placementsResponseSchema);
 }
 
 export async function listCategories(): Promise<CategoryNode[]> {

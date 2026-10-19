@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cartFulfillmentBody, cartFulfillmentQuery, nearbyProductsQuery, productQuery, searchQuery, storeQuery, storesQuery, suggestionsQuery } from "@/lib/marketplace/params";
+import { cartFulfillmentBody, cartFulfillmentQuery, nearbyProductsQuery, placementsQuery, productQuery, searchQuery, storeQuery, storesQuery, suggestionsQuery } from "@/lib/marketplace/params";
 
 const LOCATION_KEYS = ["lat", "lng", "city", "radius_km"];
 
@@ -91,6 +91,30 @@ describe("searchQuery", () => {
 describe("storesQuery", () => {
   it("sin geo no envía ubicación aunque haya radio (RN-MARKETPLACE-03)", () => {
     const query = storesQuery({ geo: null, radiusKm: 25, page: 1 });
+    expect(keysOf(query)).toEqual(["page"]);
+  });
+
+  it("placement viaja sólo cuando se pide", () => {
+    expect(storesQuery({ geo: null, radiusKm: null, page: 1, placement: "home_stores_native" }).get("placement")).toBe("home_stores_native");
+    expect(storesQuery({ geo: null, radiusKm: null, page: 1 }).has("placement")).toBe(false);
+  });
+});
+
+describe("placementsQuery", () => {
+  it("sin geo envía sólo page aunque haya radio (RN-MARKETPLACE-03)", () => {
+    expect(keysOf(placementsQuery({ page: "home", geo: null, radiusKm: 25 }))).toEqual(["page"]);
+  });
+
+  it("lleva ubicación, categoría y tienda cuando existen", () => {
+    const query = placementsQuery({ page: "search", geo: { city: "valencia" }, radiusKm: 10, category: "alimentos", store: "farmacia-sur" });
+    expect(query.get("page")).toBe("search");
+    expect(query.get("city")).toBe("valencia");
+    expect(query.get("category")).toBe("alimentos");
+    expect(query.get("store")).toBe("farmacia-sur");
+  });
+
+  it("omite category y store nulos", () => {
+    const query = placementsQuery({ page: "store", geo: null, radiusKm: null, category: null, store: null });
     expect(keysOf(query)).toEqual(["page"]);
   });
 });

@@ -12,6 +12,7 @@ import {
   listAddresses,
   listFavorites,
   listNearbyProducts,
+  getPlacements,
   listNearbyStores,
   listSitemap,
   loginCustomer,
@@ -40,6 +41,8 @@ import {
   locationsResponseSchema,
   moneySchema,
   offerSchema,
+  pieceSchema,
+  placementsResponseSchema,
   productResponseSchema,
   purchasePageSchema,
   purchaseSchema,
@@ -750,5 +753,56 @@ describe("suggestionsResponseSchema", () => {
     const response = await getSuggestions({ q: "acetaminofen", geo: null, radiusKm: null });
     const product = response.products[0];
     expect(suggestionsResponseSchema.safeParse({ ...response, products: Array(5).fill(product) }).success).toBe(false);
+  });
+});
+
+describe("espacios publicitarios y patrocinados", () => {
+  const piece = {
+    kind: "ad",
+    format: "banner",
+    image_desktop_url: null,
+    image_mobile_url: null,
+    alt: null,
+    badge: null,
+    title: null,
+    cta: null,
+    href: "/tienda/farmacia-central-valencia",
+    external: false,
+    advertiser_name: null,
+    token: "t",
+  };
+
+  it("pieza con todos los campos nulos permitidos", () => {
+    expect(pieceSchema.safeParse(piece).success).toBe(true);
+    expect(pieceSchema.safeParse({ ...piece, token: undefined }).success).toBe(false);
+  });
+
+  it("placements acepta claves desconocidas, espacios vacíos y sections ausente", () => {
+    const parsed = placementsResponseSchema.safeParse({ slots: { espacio_futuro: piece, home_hero: null } });
+    expect(parsed.success).toBe(true);
+    expect(placementsResponseSchema.safeParse({ slots: {}, sections: ["promos"] }).success).toBe(true);
+    expect(placementsResponseSchema.safeParse({}).success).toBe(false);
+  });
+
+  it("el simulado de placements pasa el esquema en cada página", async () => {
+    for (const page of ["home", "search", "product", "stores", "store"] as const) {
+      const response = await getPlacements({ page, geo: null, radiusKm: null });
+      expect(placementsResponseSchema.safeParse(response).success).toBe(true);
+      expect(response.sections !== undefined).toBe(page === "home");
+    }
+  });
+
+  it("búsqueda y tiendas aceptan respuestas con y sin sponsored", async () => {
+    const search = await searchProducts({ ...noFilters, q: "" });
+    const stores = await listNearbyStores({ geo: null, radiusKm: null, page: 1 });
+    expect(search.sponsored).toBeDefined();
+    expect(stores.sponsored).toBeDefined();
+    expect(searchResponseSchema.safeParse(search).success).toBe(true);
+    expect(storesResponseSchema.safeParse(stores).success).toBe(true);
+    const searchWithout = { ...search, sponsored: undefined };
+    const storesWithout = { ...stores, sponsored: undefined };
+    expect(searchResponseSchema.safeParse(searchWithout).success).toBe(true);
+    expect(storesResponseSchema.safeParse(storesWithout).success).toBe(true);
+    expect(searchResponseSchema.safeParse({ ...search, sponsored: { ...search.sponsored, token: undefined } }).success).toBe(false);
   });
 });

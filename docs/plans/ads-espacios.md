@@ -1,7 +1,7 @@
 # Plan: ads-espacios
 
 **Objetivo:** el ecommerce pinta los espacios publicitarios de `GET /placements` y el `sponsored` de `/search` y `/stores`, ordena la portada según `sections` y cuenta impresiones y clics como `ad_impression` y `ad_click`.
-**Estado:** en curso · Fase actual: 8
+**Estado:** en curso · Fase actual: 9
 
 ## Contexto mínimo
 - Spec: `posven/.claude/docs/specs/2026-10-18-publicidad-ecommerce-design.md` (§1 catálogo de espacios, §2.3 contrato, §3.6 conteo, §4 errores, §5 verificación). Plan 3 de §6.
@@ -57,7 +57,7 @@
 - **Alcance:** `search_top`, `search_empty` en el estado vacío y la tarjeta `sponsored` después de los `featured`, con la marca "Patrocinado" y su impresión y clic.
 - **Terminado cuando:** vitest de `features/search`, tsc, eslint y `npx next build`.
 
-### [ ] Fase 8 — Banners de producto y tienda
+### [x] Fase 8 — Banners de producto y tienda
 - **Repo:** posven-ecommerce
 - **Alcance:** `product_banner` bajo las ofertas de `/p/[slug]` (con la categoría del producto) y `store_banner` en `/tienda/[slug]` (con el slug de la tienda).
 - **Terminado cuando:** vitest del área, tsc, eslint y `npx next build`.
@@ -80,6 +80,7 @@
 - Fase 5 hecha: `features/ads/components/HomeSections.tsx` con `HomeSections({blocks, promoFallbacks})`, `HomeSectionList`, `homeSectionOrder(placements)`, tipos `HomeBlocks` y `HomeContentKey`; `HomePromoSlots` pasó a `HomePromos({placements, fallbacks})`. Hero fijo arriba con su `<Suspense>`, el resto en un `<Suspense>` cuyo fallback es el orden de hoy con esqueletos; `SellBanner` fijo al final. Clave repetida una vez, `sections: []` oculta todo, banner sólo con `format: banner`. Regla `RN-ADS-07`.
 - Fase 6 hecha: `SponsoredStore({store})` recibe el tipo `SponsoredStore` (alias `SponsoredStoreData`) con `AdImpression` y `AdLink`; `NearbyStores` pide `home_stores_native`, `StoresDirectory` `stores_native` (sponsored tras `featured`, excluido de la lista); `SlotBanner({page, slot, scope?})` nuevo en `features/ads/components/SlotBanner.tsx` (pinta `AdBanner` sólo con `format: banner`; reutilizable en fases 7 y 8); `/tiendas` monta `stores_top` en `<Suspense fallback={null}>`. `e2e/search.spec.ts` busca el enlace "Abasto La Esquina" con "Patrocinado" (sin correr playwright).
 - Fase 7 hecha: `SponsoredCard({item}: {item: SponsoredProduct})` en `features/search/components/SponsoredCard.tsx`, último `<li>` de "Destacados" sólo en página 1 y si no está en `featured`; `search_top` sobre el encabezado y `search_empty` antes del `EmptyState`, ambos `SlotBanner page="search"` con `scope={{category: query.categoria}}`. Los tests de `SearchResults` simulan `SlotBanner` (async).
+- Fase 8 hecha: `product_banner` bajo las ofertas de `/p/[slug]` (`category: product.category?.slug ?? null`) y `store_banner` tras `StoreHeader` en `/tienda/[slug]` (`store: slug`), cada uno en `<Suspense fallback={null}>`; excepción de los espacios publicitarios sumada a `.claude/rules/app-router.md` punto 7.
 - tsc en el worktree necesita antes `"<árbol>/node_modules/.bin/next" typegen "<árbol>"` (si no, faltan `PageProps`/`LayoutProps`).
 - `docs-check` marcará rancios los README que listan `client.ts`/`schemas.ts` (account, cart, checkout, events): se revisa tras el merge.
 - En main no existe nada de `placements`, `sponsored`, `ad_token` ni `IntersectionObserver`. `SponsoredStore` hoy marca "PATROCINADO" al primer premium (`NearbyStores.tsx`), lo que la fase 6 corrige.

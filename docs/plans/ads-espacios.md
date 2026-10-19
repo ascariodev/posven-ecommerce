@@ -1,7 +1,7 @@
 # Plan: ads-espacios
 
 **Objetivo:** el ecommerce pinta los espacios publicitarios de `GET /placements` y el `sponsored` de `/search` y `/stores`, ordena la portada según `sections` y cuenta impresiones y clics como `ad_impression` y `ad_click`.
-**Estado:** en curso · Fase actual: 7
+**Estado:** en curso · Fase actual: 8
 
 ## Contexto mínimo
 - Spec: `posven/.claude/docs/specs/2026-10-18-publicidad-ecommerce-design.md` (§1 catálogo de espacios, §2.3 contrato, §3.6 conteo, §4 errores, §5 verificación). Plan 3 de §6.
@@ -52,7 +52,7 @@
 - **Alcance:** "Tiendas cercanas" pide `placement=home_stores_native` y `SponsoredStore` pinta `sponsored` (no `featured[0]`); los premium vuelven a la lista como "Destacado". `/tiendas` pinta `sponsored` de `stores_native` y el banner `stores_top`. Ajustar `e2e/search.spec.ts:13` ("PATROCINADO").
 - **Terminado cuando:** vitest de `features/store`, tsc, eslint y `npx next build`.
 
-### [ ] Fase 7 — Espacios de /buscar
+### [x] Fase 7 — Espacios de /buscar
 - **Repo:** posven-ecommerce
 - **Alcance:** `search_top`, `search_empty` en el estado vacío y la tarjeta `sponsored` después de los `featured`, con la marca "Patrocinado" y su impresión y clic.
 - **Terminado cuando:** vitest de `features/search`, tsc, eslint y `npx next build`.
@@ -79,6 +79,7 @@
 - Fase 4 hecha: `features/ads/components/HeroPiece.tsx` (`HomeHeroSlot({fallback})`) y `PromoPiece.tsx` (`HomePromoSlots({fallbacks})`, `PromoList({items})`, `HOME_PROMO_SLOTS`); en `app/page.tsx` el `h1` y el buscador quedan fuera de Suspense; las dos promos van en un solo `<Suspense>` (la fase 5 mueve `promos` como un bloque). En móvil la pieza del hero cubre el fondo con velo `bg-ink/70` y sin badge ni cta: conviene que el usuario lo vea. `next build` en el worktree va con `--webpack` (Turbopack falla por la junction de node_modules). `features/site/__tests__/brand-icon.test.tsx` falla también en la base (ruta de la fuente relativa al cwd).
 - Fase 5 hecha: `features/ads/components/HomeSections.tsx` con `HomeSections({blocks, promoFallbacks})`, `HomeSectionList`, `homeSectionOrder(placements)`, tipos `HomeBlocks` y `HomeContentKey`; `HomePromoSlots` pasó a `HomePromos({placements, fallbacks})`. Hero fijo arriba con su `<Suspense>`, el resto en un `<Suspense>` cuyo fallback es el orden de hoy con esqueletos; `SellBanner` fijo al final. Clave repetida una vez, `sections: []` oculta todo, banner sólo con `format: banner`. Regla `RN-ADS-07`.
 - Fase 6 hecha: `SponsoredStore({store})` recibe el tipo `SponsoredStore` (alias `SponsoredStoreData`) con `AdImpression` y `AdLink`; `NearbyStores` pide `home_stores_native`, `StoresDirectory` `stores_native` (sponsored tras `featured`, excluido de la lista); `SlotBanner({page, slot, scope?})` nuevo en `features/ads/components/SlotBanner.tsx` (pinta `AdBanner` sólo con `format: banner`; reutilizable en fases 7 y 8); `/tiendas` monta `stores_top` en `<Suspense fallback={null}>`. `e2e/search.spec.ts` busca el enlace "Abasto La Esquina" con "Patrocinado" (sin correr playwright).
+- Fase 7 hecha: `SponsoredCard({item}: {item: SponsoredProduct})` en `features/search/components/SponsoredCard.tsx`, último `<li>` de "Destacados" sólo en página 1 y si no está en `featured`; `search_top` sobre el encabezado y `search_empty` antes del `EmptyState`, ambos `SlotBanner page="search"` con `scope={{category: query.categoria}}`. Los tests de `SearchResults` simulan `SlotBanner` (async).
 - tsc en el worktree necesita antes `"<árbol>/node_modules/.bin/next" typegen "<árbol>"` (si no, faltan `PageProps`/`LayoutProps`).
 - `docs-check` marcará rancios los README que listan `client.ts`/`schemas.ts` (account, cart, checkout, events): se revisa tras el merge.
 - En main no existe nada de `placements`, `sponsored`, `ad_token` ni `IntersectionObserver`. `SponsoredStore` hoy marca "PATROCINADO" al primer premium (`NearbyStores.tsx`), lo que la fase 6 corrige.

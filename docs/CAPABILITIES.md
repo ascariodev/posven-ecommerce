@@ -100,7 +100,7 @@ README: `features/purchases/README.md`
 | Intención | Entrada | Archivo | Reglas |
 |---|---|---|---|
 | listar las compras del comprador, paginadas | `<PurchaseList />` | `features/purchases/components/PurchaseList.tsx` | RN-PURCHASES-01 |
-| ver el detalle de una compra con el código de retiro y los reembolsos | `<PurchaseDetail />` | `features/purchases/components/PurchaseDetail.tsx` | RN-PURCHASES-02, RN-PURCHASES-03 |
+| ver el detalle de una compra con el código de retiro y los reembolsos | `<PurchaseDetail />` | `features/purchases/components/PurchaseDetail.tsx` | RN-PURCHASES-02, RN-PURCHASES-03, RN-PURCHASES-08 |
 | mostrar la línea de estados de un pedido | `<OrderTracker />` | `features/purchases/components/OrderTracker.tsx` | RN-PURCHASES-05 |
 | mostrar la última compra y las compras recientes en el resumen de la cuenta | `<LastPurchase /> y <RecentPurchases />` | `features/purchases/components/RecentPurchases.tsx` | RN-PURCHASES-01, RN-PURCHASES-04, RN-PURCHASES-07 |
 | volver a comprar productos de compras pagadas desde el resumen de la cuenta | `<BuyAgain />` | `features/purchases/components/BuyAgain.tsx` | RN-PURCHASES-06 |

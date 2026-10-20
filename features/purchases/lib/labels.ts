@@ -1,4 +1,5 @@
 import { formatUsd, formatVes } from "@/lib/format";
+import { chargedOnline } from "./payment";
 import type { Charge, Fulfillment, Purchase, PurchaseStatus, StoreOrderStatus } from "@/lib/marketplace/schemas";
 
 export const PURCHASE_STATUS_TEXT: Record<PurchaseStatus, string> = {
@@ -13,7 +14,9 @@ export function isCancelledPurchase(purchase: Purchase): boolean {
 }
 
 export function purchaseStatusText(purchase: Purchase): string {
-  return isCancelledPurchase(purchase) ? "Cancelada" : PURCHASE_STATUS_TEXT[purchase.status];
+  if (isCancelledPurchase(purchase)) return "Cancelada";
+  if (purchase.status === "paid" && !chargedOnline(purchase)) return "Confirmada";
+  return PURCHASE_STATUS_TEXT[purchase.status];
 }
 
 export const ORDER_STATUS_TEXT: Record<StoreOrderStatus, string> = {
@@ -77,6 +80,10 @@ export const ORDER_STEP_TEXT: Record<Fulfillment, readonly [string, string, stri
   pickup: ["Pagado", "Preparado", "Listo para retirar", "Entregado"],
   delivery: ["Pagado", "Preparando", "En camino", "Entregado"],
 };
+
+export const IN_STORE_FIRST_STEP_TEXT = "Confirmado";
+
+export const IN_STORE_READY_HINT = "Muestra tu código de retiro en caja y paga ahí";
 
 export const ORDER_STEP_STATE_TEXT = { done: "completado", next: "pendiente" } as const;
 

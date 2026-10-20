@@ -10,6 +10,7 @@ import { requireCustomer } from "@/features/account/server/session";
 import { purchaseHref } from "@/features/purchases/components/PurchaseList";
 import { OrderTracker } from "@/features/purchases/components/OrderTracker";
 import { chargeText, FULFILLMENT_TEXT } from "@/features/purchases/lib/labels";
+import { chargedOnline } from "@/features/purchases/lib/payment";
 import { formatUsd, formatVes } from "@/lib/format";
 import { getPurchase } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
@@ -21,12 +22,6 @@ export const PURCHASE_CODE_PATTERN = /^[A-Za-z0-9-]{1,40}$/;
 
 export function resultHref(code: string): string {
   return `/checkout/resultado?compra=${encodeURIComponent(code)}`;
-}
-
-// Una compra sin pedidos online nace pagada con cobro 0 (spec cuentas-y-compras §10.1): no hubo pago.
-// La ausencia de `payment` es `online`; el cobro 0 se reconoce por la cadena, sin convertirla.
-function chargedOnline(purchase: Purchase): boolean {
-  return purchase.orders.some((order) => order.payment !== "in_store") && !/^0+(\.0+)?$/.test(purchase.charge.amount);
 }
 
 async function readPurchase(code: string): Promise<Purchase> {

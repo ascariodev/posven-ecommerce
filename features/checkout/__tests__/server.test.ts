@@ -47,7 +47,7 @@ describe("loadCheckout", () => {
     vi.mocked(listAddresses).mockResolvedValue([address(1, true), address(2, false)]);
     vi.mocked(quoteCheckout).mockResolvedValue(quote([quoteStore()]));
 
-    const data = await loadCheckout(ctx, { addressId: 2, delivery: [CENTRAL] });
+    const data = await loadCheckout(ctx, { addressId: 2, delivery: [CENTRAL], inStore: [] });
 
     expect(data.kind === "ready" && data.addressId).toBe(2);
     expect(quoteCheckout).toHaveBeenCalledWith(ctx, {
@@ -64,7 +64,7 @@ describe("loadCheckout", () => {
     vi.mocked(listAddresses).mockResolvedValue([address(1, false), address(2, true)]);
     vi.mocked(quoteCheckout).mockResolvedValue(quote([quoteStore()]));
 
-    const data = await loadCheckout(ctx, { addressId: 99, delivery: [] });
+    const data = await loadCheckout(ctx, { addressId: 99, delivery: [], inStore: [] });
 
     expect(data.kind === "ready" && data.addressId).toBe(2);
   });
@@ -74,12 +74,28 @@ describe("loadCheckout", () => {
     vi.mocked(listAddresses).mockResolvedValue([]);
     vi.mocked(quoteCheckout).mockResolvedValue(quote([quoteStore()]));
 
-    await loadCheckout(ctx, { addressId: null, delivery: [CENTRAL, ABASTO] });
+    await loadCheckout(ctx, { addressId: null, delivery: [CENTRAL, ABASTO], inStore: [] });
 
     expect(quoteCheckout).toHaveBeenCalledWith(ctx, {
       stores: [
         { store_slug: CENTRAL, fulfillment: "pickup" },
         { store_slug: ABASTO, fulfillment: "pickup" },
+      ],
+      address_id: null,
+    });
+  });
+
+  it("pide pago en tienda sólo donde se eligió y omite payment en el resto", async () => {
+    vi.mocked(getSessionCart).mockResolvedValue(cart());
+    vi.mocked(listAddresses).mockResolvedValue([]);
+    vi.mocked(quoteCheckout).mockResolvedValue(quote([quoteStore()]));
+
+    await loadCheckout(ctx, { addressId: null, delivery: [], inStore: [ABASTO] });
+
+    expect(quoteCheckout).toHaveBeenCalledWith(ctx, {
+      stores: [
+        { store_slug: CENTRAL, fulfillment: "pickup" },
+        { store_slug: ABASTO, fulfillment: "pickup", payment: "in_store" },
       ],
       address_id: null,
     });
@@ -91,7 +107,7 @@ describe("loadCheckout", () => {
     vi.mocked(getSessionCart).mockResolvedValue(cart([gone]));
     vi.mocked(listAddresses).mockResolvedValue([]);
 
-    expect(await loadCheckout(ctx, { addressId: null, delivery: [] })).toEqual({ kind: "empty" });
+    expect(await loadCheckout(ctx, { addressId: null, delivery: [], inStore: [] })).toEqual({ kind: "empty" });
     expect(quoteCheckout).not.toHaveBeenCalled();
   });
 
@@ -102,7 +118,7 @@ describe("loadCheckout", () => {
       new MarketplaceAccountError({ status: 422, code: "cart_empty", message: "Tu carrito no tiene productos disponibles." }),
     );
 
-    expect(await loadCheckout(ctx, { addressId: null, delivery: [] })).toEqual({ kind: "empty" });
+    expect(await loadCheckout(ctx, { addressId: null, delivery: [], inStore: [] })).toEqual({ kind: "empty" });
   });
 
   it("si la dirección deja de ser válida al cotizar, vuelve a cotizar sin ella", async () => {
@@ -114,7 +130,7 @@ describe("loadCheckout", () => {
       )
       .mockResolvedValueOnce(quote([quoteStore()]));
 
-    const data = await loadCheckout(ctx, { addressId: 1, delivery: [CENTRAL] });
+    const data = await loadCheckout(ctx, { addressId: 1, delivery: [CENTRAL], inStore: [] });
 
     expect(data.kind === "ready" && data.addressId).toBeNull();
     expect(vi.mocked(quoteCheckout).mock.calls[1][1].address_id).toBeNull();

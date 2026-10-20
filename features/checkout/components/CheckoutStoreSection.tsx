@@ -1,4 +1,4 @@
-import { Store, Truck } from "lucide-react";
+import { Banknote, CreditCard, Store, Truck } from "lucide-react";
 import { useId } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,6 +6,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { hasDeliveryFee } from "@/features/cart/lib/fulfillment";
 import { formatUsd, formatVes } from "@/lib/format";
 import type { CartStore, DeliveryUnavailableReason, QuoteStore } from "@/lib/marketplace/schemas";
+
+// Sólo se avisa el motivo `delivery`: con `not_offered` la tienda no ofrece la opción y no se muestra.
+export const PAY_IN_STORE_ONLY_PICKUP_TEXT = "El pago en tienda es sólo para retiro.";
 
 export const DELIVERY_UNAVAILABLE_TEXT: Record<DeliveryUnavailableReason, string> = {
   no_delivery: "Esta tienda no hace entregas.",
@@ -30,17 +33,24 @@ export function CheckoutStoreSection({
   store,
   changed,
   delivery,
+  inStore,
   disabled,
   onFulfillment,
+  onPayment,
 }: {
   entry: CartStore;
   store: QuoteStore;
   changed: boolean;
   delivery: boolean;
+  inStore: boolean;
   disabled: boolean;
   onFulfillment: (delivery: boolean) => void;
+  onPayment: (inStore: boolean) => void;
 }) {
   const reasonId = useId();
+  const payReasonId = useId();
+  const payAvailable = store.pay_in_store_available === true;
+  const showPayment = payAvailable || store.pay_in_store_unavailable_reason === "delivery";
   const name = entry.store.name;
   const reason = store.delivery_unavailable_reason;
   const feeHint = store.fulfillment === "pickup" && store.delivery_available && hasDeliveryFee(entry);
@@ -101,6 +111,38 @@ export function CheckoutStoreSection({
             </p>
           )}
         </fieldset>
+        {showPayment && (
+          <fieldset className="flex flex-col gap-2">
+            <legend className="mb-2 text-sm font-medium text-foreground">Pago en {name}</legend>
+            <RadioGroup
+              value={inStore && payAvailable ? "in_store" : "online"}
+              onValueChange={(value) => onPayment(value === "in_store")}
+              disabled={disabled}
+              aria-label={`Pago en ${name}`}
+              className="grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2"
+            >
+              <label className={OPTION_CLASSES}>
+                <RadioGroupItem value="online" />
+                <CreditCard aria-hidden="true" className="size-4.5 shrink-0 text-primary-text" />
+                Pagar online
+              </label>
+              <label className={OPTION_CLASSES}>
+                <RadioGroupItem
+                  value="in_store"
+                  disabled={!payAvailable}
+                  aria-describedby={payAvailable ? undefined : payReasonId}
+                />
+                <Banknote aria-hidden="true" className="size-4.5 shrink-0 text-primary-text" />
+                Pagar en tienda
+              </label>
+            </RadioGroup>
+            {!payAvailable && (
+              <p id={payReasonId} className="text-sm text-muted-foreground">
+                {PAY_IN_STORE_ONLY_PICKUP_TEXT}
+              </p>
+            )}
+          </fieldset>
+        )}
         <dl className="flex flex-col gap-1 border-t border-border pt-3">
           <Row label="Subtotal" value={`${formatUsd(store.subtotal_usd)} · ${formatVes(store.subtotal_ves)}`} />
           {store.fulfillment === "delivery" && (

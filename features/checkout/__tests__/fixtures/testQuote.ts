@@ -12,6 +12,9 @@ export function quoteStore(overrides: Partial<QuoteStore> = {}): QuoteStore {
     fulfillment: "pickup",
     delivery_available: true,
     delivery_unavailable_reason: null,
+    payment: "online",
+    pay_in_store_available: false,
+    pay_in_store_unavailable_reason: "not_offered",
     subtotal_usd: "5.10",
     subtotal_ves: "186.15",
     delivery_fee_usd: "0.00",
@@ -52,6 +55,7 @@ export function cartStore(slug: string, name: string): CartStore {
     is_open: true,
     accepts_orders: true,
     offers_delivery: slug === CENTRAL,
+    accepts_pay_in_store: slug === ABASTO,
     distance_km: null,
     lines: [
       {

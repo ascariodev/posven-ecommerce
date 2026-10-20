@@ -7,7 +7,7 @@ import type { Address, CartStore, CheckoutQuoteInput, Fulfillment, Quote } from 
 import type { CheckoutParams } from "../lib/params";
 
 // Lectura de /checkout (spec cuentas-y-compras §5.3): el carrito del comprador, sus direcciones y
-// la Quote de lo elegido en la URL (`params.ts`).
+// la Quote de lo elegido en la URL (`params.ts`): dirección, entrega y pago por tienda.
 
 export type CheckoutData =
   | { kind: "empty" }
@@ -37,6 +37,8 @@ export async function loadCheckout(ctx: AccountContext, params: CheckoutParams):
     stores: stores.map((store) => ({
       store_slug: store.store.slug,
       fulfillment: (withAddress !== null && params.delivery.includes(store.store.slug) ? "delivery" : "pickup") as Fulfillment,
+      // Sin `payment` la API aplica `online`; si la tienda no lo admite, también (spec §10.3).
+      ...(params.inStore.includes(store.store.slug) ? { payment: "in_store" as const } : {}),
     })),
     address_id: withAddress?.id ?? null,
   });

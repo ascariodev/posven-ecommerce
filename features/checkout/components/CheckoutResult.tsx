@@ -23,6 +23,12 @@ export function resultHref(code: string): string {
   return `/checkout/resultado?compra=${encodeURIComponent(code)}`;
 }
 
+// Una compra sin pedidos online nace pagada con cobro 0 (spec cuentas-y-compras §10.1): no hubo pago.
+// La ausencia de `payment` es `online`; el cobro 0 se reconoce por la cadena, sin convertirla.
+function chargedOnline(purchase: Purchase): boolean {
+  return purchase.orders.some((order) => order.payment !== "in_store") && !/^0+(\.0+)?$/.test(purchase.charge.amount);
+}
+
 async function readPurchase(code: string): Promise<Purchase> {
   const { ctx } = await requireCustomer(resultHref(code));
   try {
@@ -108,10 +114,15 @@ export async function CheckoutResult({ code }: { code: string }) {
       return (
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 md:gap-6">
           <Outcome tone="success">
-            <h1 className={headingClasses}>¡Pago confirmado!</h1>
+            <h1 className={headingClasses}>{chargedOnline(purchase) ? "¡Pago confirmado!" : "Compra confirmada"}</h1>
             <p className="text-muted-foreground tabular-nums">
-              Código <strong className="text-foreground">{purchase.code}</strong> ·{" "}
-              <span className="whitespace-nowrap">pagaste {chargeText(purchase.charge)}</span>
+              Código <strong className="text-foreground">{purchase.code}</strong>
+              {chargedOnline(purchase) && (
+                <>
+                  {" "}
+                  · <span className="whitespace-nowrap">pagaste {chargeText(purchase.charge)}</span>
+                </>
+              )}
             </p>
             <p className="text-sm text-muted-foreground tabular-nums">
               Total {formatUsd(purchase.total_usd)} · {formatVes(purchase.total_ves)}

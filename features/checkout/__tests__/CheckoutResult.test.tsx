@@ -84,6 +84,21 @@ describe("CheckoutResult", () => {
     expect(screen.queryByRole("status")).toBeNull();
   });
 
+  it("pagada sin pedidos online: compra confirmada, sin decir que se pagó", async () => {
+    vi.mocked(getPurchase).mockResolvedValue({
+      ...purchase("paid"),
+      charge: { currency: "VES", amount: "0.00" },
+      orders: [order({ payment: "in_store" })],
+    });
+
+    render(await CheckoutResult({ code: "PV-00000A" }));
+
+    expect(screen.getByRole("heading", { level: 1, name: "Compra confirmada" })).toBeTruthy();
+    expect(screen.queryByText(/pagaste/)).toBeNull();
+    expect(screen.getByText("PV-00000A")).toBeTruthy();
+    expect(screen.getByText("Total $ 6,50 · Bs 237,25")).toBeTruthy();
+  });
+
   it.each<[PurchaseStatus, string]>([
     ["failed", "El pago no se completó"],
     ["expired", "La compra venció sin pago"],

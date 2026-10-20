@@ -72,6 +72,7 @@ export async function payCheckout(prev: CheckoutState, formData: FormData): Prom
     }
   });
   if ("status" in result) return result;
+  if (result.payment === null) redirect(`/checkout/resultado?compra=${encodeURIComponent(result.purchase_code)}`);
   // La pasarela devuelve una redirección o instrucciones, una sola (enmienda F).
   if (result.payment.redirect_url !== null) redirect(result.payment.redirect_url);
   return {

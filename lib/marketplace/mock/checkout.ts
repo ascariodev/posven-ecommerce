@@ -13,7 +13,10 @@ import {
   type CheckoutQuoteInput,
   type CheckoutStart,
   type DeliveryUnavailableReason,
+  type Fulfillment,
   type Money,
+  type OrderPayment,
+  type PayInStoreUnavailableReason,
   type Purchase,
   type PurchasePage,
   type Quote,
@@ -79,6 +82,13 @@ function deliveryUnavailableReason(store: MockStore, address: Address | null): D
   return null;
 }
 
+// Pagar en la tienda sólo con retiro y si la tienda lo ofrece; si no, queda `online` como la entrega
+// no disponible deja `pickup` (spec §10.3).
+function payInStoreUnavailableReason(store: MockStore, fulfillment: Fulfillment): PayInStoreUnavailableReason | null {
+  if (!store.accepts_pay_in_store) return "not_offered";
+  return fulfillment === "delivery" ? "delivery" : null;
+}
+
 function okLines(store: CartStore): CartStore["lines"] {
   return store.lines.filter((line) => line.status === "ok");
 }
@@ -105,6 +115,8 @@ function buildQuote(ctx: AccountContext, input: CheckoutQuoteInput): Quoted {
     if (cartStore === undefined || store === undefined || okLines(cartStore).length === 0) continue;
     const reason = deliveryUnavailableReason(store, address);
     const fulfillment = requested.fulfillment === "delivery" && reason === null ? "delivery" : "pickup";
+    const payReason = payInStoreUnavailableReason(store, fulfillment);
+    const payment: OrderPayment = requested.payment === "in_store" && payReason === null ? "in_store" : "online";
     const feeUsd = fulfillment === "delivery" ? (store.delivery_fee_usd ?? ZERO) : ZERO;
     const feeVes = fulfillment === "delivery" ? (store.delivery_fee_ves ?? ZERO) : ZERO;
     stores.push(cartStore);
@@ -113,6 +125,9 @@ function buildQuote(ctx: AccountContext, input: CheckoutQuoteInput): Quoted {
       fulfillment,
       delivery_available: reason === null,
       delivery_unavailable_reason: reason,
+      payment,
+      pay_in_store_available: payReason === null,
+      pay_in_store_unavailable_reason: payReason,
       subtotal_usd: cartStore.subtotal_usd,
       subtotal_ves: cartStore.subtotal_ves,
       delivery_fee_usd: feeUsd,
@@ -123,12 +138,13 @@ function buildQuote(ctx: AccountContext, input: CheckoutQuoteInput): Quoted {
   }
   if (quoteStores.length === 0) throw accountError("cart_empty");
 
-  const totalVes = sum(quoteStores.map((store) => store.total_ves));
+  // Sólo las tiendas `online` se cobran: sin ninguna, el cobro es 0.00 (spec §10.3).
+  const chargedVes = sum(quoteStores.filter((store) => store.payment === "online").map((store) => store.total_ves));
   const body = {
     stores: quoteStores,
     total_usd: sum(quoteStores.map((store) => store.total_usd)),
-    total_ves: totalVes,
-    charge: { currency: "VES" as const, amount: totalVes },
+    total_ves: sum(quoteStores.map((store) => store.total_ves)),
+    charge: { currency: "VES" as const, amount: chargedVes },
     rate: MOCK_RATE,
   };
   // Cadena opaca: cubre la Quote, la dirección y las cantidades del carrito.
@@ -164,6 +180,7 @@ function toOrder(cartStore: CartStore, quoteStore: QuoteStore, address: Address 
     store: cartStore.store,
     status: "pending_payment",
     fulfillment: quoteStore.fulfillment,
+    payment: quoteStore.payment ?? "online",
     pickup_code: null,
     address:
       quoteStore.fulfillment === "delivery" && address !== null
@@ -225,10 +242,11 @@ export async function startCheckout(ctx: AccountContext, input: CheckoutInput): 
     if (cartStore === undefined) throw new Error(`Tienda cotizada sin carrito: ${quoteStore.store_slug}`);
     return toOrder(cartStore, quoteStore, quoted.address);
   });
-  current.purchases.set(code, {
+  const chargesOnline = orders.some((order) => order.payment === "online");
+  const record: MockPurchase = {
     customerId: account.id,
     sequence,
-    failsPayment: account.customer.email === MOCK_FAILED_PAYMENT_EMAIL,
+    failsPayment: chargesOnline && account.customer.email === MOCK_FAILED_PAYMENT_EMAIL,
     bought: orders.flatMap((order) =>
       order.lines.map((line) => ({ store_slug: order.store.slug, product_slug: line.product.slug })),
     ),
@@ -244,14 +262,19 @@ export async function startCheckout(ctx: AccountContext, input: CheckoutInput): 
       rate: quoted.quote.rate,
       orders,
     },
-  });
+  };
+  current.purchases.set(code, record);
+  // Sin parte online no hay proveedor: la compra nace pagada y la respuesta no trae `payment`.
+  if (!chargesOnline) settle(record);
   const started: CheckoutStart = {
     purchase_code: code,
-    payment: {
-      provider: "fake",
-      redirect_url: `${SITE_URL}/checkout/resultado?compra=${code}`,
-      instructions: null,
-    },
+    payment: chargesOnline
+      ? {
+          provider: "fake",
+          redirect_url: `${SITE_URL}/checkout/resultado?compra=${code}`,
+          instructions: null,
+        }
+      : null,
   };
   current.started.set(startedKey, started);
   return structuredClone(started);
@@ -262,7 +285,7 @@ function isMissing(storeSlug: string, line: StoreOrderLine): boolean {
 }
 
 // Pago confirmado: los pedidos pasan a `accepted`, la línea faltante se reembolsa al instante
-// (spec §5.5) y el carrito pierde las líneas compradas (§5.3 paso 4). Pago fallido: los pedidos se
+// (spec §5.5; un pedido `in_store` no reembolsa, §10) y el carrito pierde las líneas compradas (§5.3 paso 4). Pago fallido: los pedidos se
 // cancelan y el carrito queda igual (enmienda L).
 function settle(record: MockPurchase): void {
   const purchase = record.purchase;
@@ -286,8 +309,10 @@ function settle(record: MockPurchase): void {
       line.accepted_quantity = 0;
     }
     const missing = order.lines.filter((line) => line.missing);
-    order.refunded_usd = sum(missing.map((line) => line.line_usd));
-    order.refunded_ves = sum(missing.map((line) => line.line_ves));
+    if (order.payment !== "in_store") {
+      order.refunded_usd = sum(missing.map((line) => line.line_usd));
+      order.refunded_ves = sum(missing.map((line) => line.line_ves));
+    }
     if (missing.length === order.lines.length) {
       order.status = "cancelled";
       order.timeline.cancelled_at = now;

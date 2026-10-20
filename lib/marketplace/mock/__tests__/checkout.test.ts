@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
 import type { AccountContext } from "@/lib/marketplace/params";
-import type { CheckoutQuoteInput, Fulfillment } from "@/lib/marketplace/schemas";
+import type { CheckoutQuoteInput, Fulfillment, OrderPayment } from "@/lib/marketplace/schemas";
 import { loginCustomer, registerCustomer, resetMockAccounts, updateMe } from "@/lib/marketplace/mock/accounts";
 import { deleteAccount } from "@/lib/marketplace/mock/adapter";
 import { cartItemsFor, resetMockCarts, setCartItem } from "@/lib/marketplace/mock/cart";
@@ -82,10 +82,17 @@ async function add(ctx: AccountContext, store_slug: string, product_slug: string
 }
 
 function input(
-  stores: [string, Fulfillment][],
+  stores: [string, Fulfillment, OrderPayment?][],
   address_id: number | null = null,
 ): CheckoutQuoteInput {
-  return { stores: stores.map(([store_slug, fulfillment]) => ({ store_slug, fulfillment })), address_id };
+  return {
+    stores: stores.map(([store_slug, fulfillment, payment]) => ({
+      store_slug,
+      fulfillment,
+      ...(payment === undefined ? {} : { payment }),
+    })),
+    address_id,
+  };
 }
 
 async function pay(ctx: AccountContext, quoteInput: CheckoutQuoteInput, idempotency_key = crypto.randomUUID()) {
@@ -121,6 +128,9 @@ describe("cotización del checkout simulado", () => {
         fulfillment: "pickup",
         delivery_available: true,
         delivery_unavailable_reason: null,
+        payment: "online",
+        pay_in_store_available: true,
+        pay_in_store_unavailable_reason: null,
         subtotal_usd: "5.00",
         subtotal_ves: "182.50",
         delivery_fee_usd: "0.00",
@@ -196,6 +206,110 @@ describe("cotización del checkout simulado", () => {
 
     expect(error.code).toBe("cart_empty");
     expect(error.status).toBe(422);
+  });
+});
+
+describe("pago en tienda simulado", () => {
+  it("retiro en una tienda que lo ofrece: queda in_store y el cobro es 0.00", async () => {
+    const ctx = await buyer();
+    await add(ctx, CENTRAL, ACETAMINOFEN, 2);
+
+    const quote = await quoteCheckout(ctx, input([[CENTRAL, "pickup", "in_store"]]));
+
+    expect(quote.stores[0]).toMatchObject({ payment: "in_store", pay_in_store_available: true, pay_in_store_unavailable_reason: null });
+    expect(quote.total_ves).toBe("182.50");
+    expect(quote.charge).toEqual({ currency: "VES", amount: "0.00" });
+  });
+
+  it("sin pedirlo, o donde no aplica, queda online con su motivo y sin error", async () => {
+    const ctx = await deliveryBuyer();
+    await add(ctx, CENTRAL, ACETAMINOFEN);
+    await add(ctx, ALTAMIRA, ACETAMINOFEN);
+
+    const quote = await quoteCheckout(
+      ctx,
+      input([[CENTRAL, "delivery", "in_store"], [ALTAMIRA, "pickup", "in_store"]], DELIVERY_ADDRESS_ID),
+    );
+
+    expect(quote.stores.map((store) => [store.payment, store.pay_in_store_unavailable_reason])).toEqual([
+      ["online", "delivery"],
+      ["online", "not_offered"],
+    ]);
+    expect(quote.charge.amount).toBe(quote.total_ves);
+  });
+
+  it("el cobro suma sólo las tiendas online y el hash cambia con la forma de pago", async () => {
+    const ctx = await buyer();
+    await add(ctx, CENTRAL, ACETAMINOFEN);
+    await add(ctx, ABASTO, HARINA);
+
+    const online = await quoteCheckout(ctx, input([[CENTRAL, "pickup"], [ABASTO, "pickup"]]));
+    const mixed = await quoteCheckout(ctx, input([[CENTRAL, "pickup", "in_store"], [ABASTO, "pickup"]]));
+
+    expect(mixed.stores.map((store) => store.payment)).toEqual(["in_store", "online"]);
+    expect(mixed.total_ves).toBe(online.total_ves);
+    expect(mixed.charge.amount).toBe(mixed.stores[1].total_ves);
+    expect(mixed.quote_hash).not.toBe(online.quote_hash);
+  });
+
+  it("sin parte online, el checkout confirma sin cobro: payment null, pagada y carrito sin las líneas", async () => {
+    const ctx = await buyer();
+    await add(ctx, CENTRAL, ACETAMINOFEN, 2);
+    await add(ctx, CENTRAL, ALCOHOL);
+
+    const started = await pay(ctx, input([[CENTRAL, "pickup", "in_store"]]));
+
+    expect(started.payment).toBeNull();
+    const purchase = await getPurchase(ctx, started.purchase_code);
+    expect(purchase.status).toBe("paid");
+    expect(purchase.paid_at).not.toBeNull();
+    expect(purchase.charge.amount).toBe("0.00");
+    const [order] = purchase.orders;
+    expect(order).toMatchObject({ payment: "in_store", status: "accepted" });
+    expect(order.lines.find((line) => line.product.slug === ALCOHOL)?.missing).toBe(true);
+    expect([order.refunded_usd, order.refunded_ves]).toEqual(["0.00", "0.00"]);
+  });
+
+  it("la misma idempotency_key repite payment null sin una segunda compra", async () => {
+    const ctx = await buyer();
+    await add(ctx, CENTRAL, ACETAMINOFEN);
+    const key = crypto.randomUUID();
+
+    const quoteInput = input([[CENTRAL, "pickup", "in_store"]]);
+    const { quote_hash } = await quoteCheckout(ctx, quoteInput);
+    const first = await startCheckout(ctx, { ...quoteInput, quote_hash, idempotency_key: key });
+    const second = await startCheckout(ctx, { ...quoteInput, quote_hash, idempotency_key: key });
+
+    expect(second).toEqual(first);
+    expect((await listPurchases(ctx, 1)).meta.total).toBe(1);
+  });
+
+  it("compra mixta: el pedido en tienda entra con el pago online y sin reembolso", async () => {
+    const ctx = await buyer();
+    await add(ctx, CENTRAL, ACETAMINOFEN);
+    await add(ctx, CENTRAL, ALCOHOL);
+    await add(ctx, ABASTO, HARINA);
+
+    const started = await pay(ctx, input([[CENTRAL, "pickup", "in_store"], [ABASTO, "pickup"]]));
+
+    expect(started.payment?.provider).toBe("fake");
+    expect((await getPurchase(ctx, started.purchase_code)).status).toBe("pending_payment");
+    const paid = await getPurchase(ctx, started.purchase_code);
+    expect(paid.status).toBe("paid");
+    expect(paid.orders.map((order) => [order.payment, order.status])).toEqual([
+      ["in_store", "accepted"],
+      ["online", "accepted"],
+    ]);
+    expect(paid.orders[0].refunded_usd).toBe("0.00");
+  });
+
+  it("pago-fallido@posven.test no falla una compra sin parte online", async () => {
+    const ctx = await failingBuyer();
+    await add(ctx, CENTRAL, ACETAMINOFEN);
+
+    const started = await pay(ctx, input([[CENTRAL, "pickup", "in_store"]]));
+
+    expect((await getPurchase(ctx, started.purchase_code)).status).toBe("paid");
   });
 });
 

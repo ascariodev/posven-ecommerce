@@ -125,6 +125,7 @@ export function quoteItems(items: CartItem[], deliveryStores: string[] = [], geo
         closes_at: openStatus(MOCK_STORE_DETAILS[item.store_slug]?.schedule ?? [], mockNow()).closes_at,
         accepts_orders: store.summary.accepts_orders,
         offers_delivery: store.offers_delivery,
+        accepts_pay_in_store: store.accepts_pay_in_store,
         distance_km: storeDistance(store, geo),
         lines: [],
         subtotal_usd: "0.00",

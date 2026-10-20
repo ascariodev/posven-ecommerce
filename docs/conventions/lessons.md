@@ -33,19 +33,6 @@ eliminada), el efecto de `useActionToast` nunca corre y el toast se pierde. El t
 dentro de la función pasada a `useActionState`, tras el `await`, y se prueba con e2e.
 aplicada en: `features/account/components/AddressActionButton.tsx`, `features/account/components/FavoriteToggleForm.tsx`
 
-## L-07
-Una validación nueva del simulado (`lib/marketplace/mock/`) lleva su prueba en la misma fase: sin
-ella, una regex que perdió el escape (`d{7}` por `\d{7}`) rechaza todo lo válido y la suite sigue
-en verde. Tras escribir una regex, se relee el archivo para confirmar las barras invertidas.
-aplicada en: `posven-ecommerce/.claude/rules/contract.md` (punto 5)
-
-## L-09
-Una fase que cambia el comportamiento de un componente o una ruta de un módulo actualiza su README
-en el mismo cambio: la ficha del símbolo, la fila de tests, las dependencias y `verified_against`,
-y también el README de otro módulo que liste el archivo cambiado (`docs-check` lo marca RANCIO).
-Quien revisa lo rechaza si falta, y cuesta una ronda entera.
-aplicada en: `.claude/agents/implementador-fase.md` (punto 5)
-
 ## L-10
 Un componente del layout raíz que marca la ruta activa con `usePathname()` desajusta la
 hidratación: con `cacheComponents` el HTML prerenderizado puede ser de otra ruta. La marca activa
@@ -57,12 +44,6 @@ aplicada en: `features/site/components/MobileNavLinks.tsx`
 lectura se repite. Quien comparte un `cache` con otro llamador lo invoca con los mismos argumentos
 (sin el valor por defecto explícito), y una prueba memoizando por argumentos lo fija.
 aplicada en: `features/cart/__tests__/cart.test.ts`
-
-## L-15
-En el frontmatter de un README de módulo, un escalar entre comillas dobles (`output: "..."`) no
-lleva comillas dobles dentro (`"Ver menos"`, `name="robots"`): el YAML queda inválido y
-`generate-index.mjs` no lo detecta. Dentro se usan comillas simples o se reescribe sin comillas.
-aplicada en: `.claude/scripts/docs-check.mjs`
 
 ## L-16
 Un campo nuevo de la API en un esquema de `lib/marketplace/schemas.ts` va `.optional()` (más

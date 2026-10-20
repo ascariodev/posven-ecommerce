@@ -16,7 +16,7 @@ export function HeroPiece({ piece }: { piece: Piece }) {
   return (
     <AdImpression
       token={piece.token}
-      className="absolute inset-0 overflow-hidden rounded-3xl sm:left-auto sm:w-3/5 sm:rounded-l-none md:rounded-r-4xl"
+      className="absolute inset-0 overflow-hidden rounded-3xl md:rounded-4xl"
     >
       <AdLink
         piece={piece}
@@ -28,9 +28,13 @@ export function HeroPiece({ piece }: { piece: Piece }) {
           src={desktop}
           alt={alt}
           fill
-          sizes="(min-width: 1024px) 620px, 60vw"
+          sizes="(min-width: 1024px) 992px, 100vw"
           fetchPriority="high"
-          className="hidden object-cover object-right [mask-image:linear-gradient(to_right,transparent,black_35%)] sm:block"
+          className="hidden object-cover sm:block"
+        />
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 hidden bg-linear-to-r from-ink/85 via-ink/70 via-45% to-ink/10 sm:block"
         />
         {label !== null && <span className="sr-only">{label}</span>}
         {piece.kind === "ad" && (

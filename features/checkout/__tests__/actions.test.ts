@@ -83,6 +83,25 @@ describe("payCheckout", () => {
     expect(vi.mocked(startCheckout).mock.calls[1][1]).not.toHaveProperty("bill_to_me");
   });
 
+  it("manda el pago en tienda y, sin cobro online, lleva directo al resultado", async () => {
+    vi.mocked(startCheckout).mockResolvedValue({ purchase_code: "PV-000003", payment: null });
+
+    await expect(payCheckout(INITIAL_CHECKOUT_STATE, form({ [`p-${CENTRAL}`]: "in_store" }))).rejects.toThrow(
+      "NEXT_REDIRECT:/checkout/resultado?compra=PV-000003",
+    );
+    expect(vi.mocked(startCheckout).mock.calls[0][1].stores).toEqual([
+      { store_slug: CENTRAL, fulfillment: "pickup", payment: "in_store" },
+    ]);
+  });
+
+  it("un pago distinto de in_store no manda payment", async () => {
+    vi.mocked(startCheckout).mockRejectedValue(accountError(422, "billing_incomplete", "x"));
+
+    await payCheckout(INITIAL_CHECKOUT_STATE, form({ [`p-${CENTRAL}`]: "online" }));
+
+    expect(vi.mocked(startCheckout).mock.calls[0][1].stores).toEqual([{ store_slug: CENTRAL, fulfillment: "pickup" }]);
+  });
+
   it("con instrucciones las devuelve con el código de la compra", async () => {
     vi.mocked(startCheckout).mockResolvedValue({
       purchase_code: "PV-000002",

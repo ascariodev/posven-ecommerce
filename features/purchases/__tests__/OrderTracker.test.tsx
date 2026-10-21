@@ -72,4 +72,16 @@ describe("OrderTracker", () => {
     expect(items[1].textContent).not.toContain("30/09/2026 14:20");
     expect(items[2].textContent).toContain("30/09/2026 14:40");
   });
+
+  it("un retiro para pagar en tienda abre con Confirmado y pide pagar en caja al estar listo", () => {
+    const inStore = order({ payment: "in_store" });
+    expect(states(inStore)).toEqual(["Confirmado:done", "Preparado:done", "Listo para retirar:now", "Entregado:next"]);
+    render(<OrderTracker order={inStore} />);
+    expect(screen.getAllByRole("listitem")[2].textContent).toContain("paga ahí");
+  });
+
+  it("un pedido para pagar en tienda cancelado dice Confirmado el, no Pagado el", () => {
+    render(<OrderTracker order={order({ payment: "in_store", status: "cancelled" })} />);
+    expect(screen.getByText("Confirmado el 30/09/2026 14:00")).toBeTruthy();
+  });
 });

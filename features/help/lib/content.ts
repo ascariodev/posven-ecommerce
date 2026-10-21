@@ -37,8 +37,8 @@ export const HELP_QUESTIONS: HelpQuestion[] = [
     topic: "como",
     question: "¿Puedo comprar en varias tiendas a la vez?",
     answer:
-      "Sí. Pagas una sola vez y cada tienda prepara su parte del pedido. En cada tienda eliges si retiras o recibes en casa, cuando ofrece entrega.",
-    source: "spec cuentas y compras §1 (decisiones 2 y 3) y §5.3; RN-CHECKOUT-02",
+      "Sí. Lo que pagas en línea lo pagas una sola vez y cada tienda prepara su parte del pedido. En cada tienda eliges si retiras o recibes en casa, cuando ofrece entrega, y, si retiras en una tienda que lo acepta, puedes pagar su parte en la caja al retirar.",
+    source: "spec cuentas y compras §1 (decisiones 2 y 3), §5.3 y §10.4; RN-CHECKOUT-02, RN-CHECKOUT-06",
   },
   {
     id: "sin-producto",

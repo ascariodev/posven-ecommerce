@@ -218,6 +218,32 @@ test.describe("checkout y compras", () => {
     await emptyCart(page);
   });
 
+  test("pagar en tienda: sin cobro online confirma la compra y lleva al resultado", async ({ page }) => {
+    await signIn(page, "entrega@posven.test", SEEDED_PASSWORD);
+    await emptyCart(page);
+    await add(page, HARINA_PATH, "Abasto La Esquina");
+
+    await page.goto("/checkout");
+    const payment = page.getByRole("radiogroup", { name: "Pago en Abasto La Esquina" });
+    await expect(payment.getByRole("radio", { name: "Pagar online" })).toBeChecked();
+    await expect(page.getByRole("button", { name: /^Pagar Bs / })).toBeVisible();
+    await clickHydrated(payment.getByRole("radio", { name: "Pagar en tienda" }));
+
+    await expect(page).toHaveURL(/p-abasto-la-esquina=in_store/);
+    await expect(payment.getByRole("radio", { name: "Pagar en tienda" })).toBeChecked();
+    const howYouPay = page.getByLabel("Cómo pagas");
+    await expect(howYouPay.getByText("Pagas al retirar en Abasto La Esquina")).toBeVisible();
+    await expect(howYouPay.getByText("Pagas ahora")).toHaveCount(0);
+
+    const confirm = page.getByRole("button", { name: "Confirmar compra" });
+    await expect(confirm).toBeEnabled();
+    await clickHydrated(confirm);
+    await expect(page).toHaveURL(/\/checkout\/resultado\?compra=[A-HJKMNP-Z2-9]{8}$/, { timeout: 15_000 });
+    await expect(page.getByRole("list", { name: "Estado del pedido" })).toBeVisible({ timeout: 15_000 });
+
+    await emptyCart(page);
+  });
+
   test("un pago fallido lo dice y deja el carrito igual", async ({ page }) => {
     await signIn(page, "pago-fallido@posven.test", SEEDED_PASSWORD);
     await add(page, ACETAMINOFEN_PATH, "Farmacia Central");

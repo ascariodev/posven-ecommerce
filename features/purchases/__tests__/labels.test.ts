@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { order, purchase } from "@/features/purchases/__tests__/fixtures/testPurchase";
 import { chargeText, purchaseProgress, purchaseStatusText } from "@/features/purchases/lib/labels";
+import { chargedOnline } from "@/features/purchases/lib/payment";
 import { formatUsd, formatVes } from "@/lib/format";
 
 describe("chargeText", () => {
@@ -39,4 +40,18 @@ describe("Cancelada", () => {
     expect(purchaseStatusText(input) === "Cancelada").toBe(cancelled);
     expect(purchaseProgress(input).text === "Cancelada").toBe(cancelled);
   });
+
+describe("compra sin cobro online", () => {
+  it("una compra pagada con todos los pedidos en tienda y cobro 0 es Confirmada", () => {
+    const input = purchase({ charge: { currency: "VES", amount: "0.00" }, orders: [order({ payment: "in_store" })] });
+    expect(purchaseStatusText(input)).toBe("Confirmada");
+    expect(chargedOnline(input)).toBe(false);
+  });
+
+  it("una compra mixta con cobro sigue Pagada", () => {
+    const input = purchase({ orders: [order({ payment: "in_store" }), order()] });
+    expect(purchaseStatusText(input)).toBe("Pagada");
+    expect(chargedOnline(input)).toBe(true);
+  });
+});
 });

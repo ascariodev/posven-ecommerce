@@ -23,6 +23,7 @@ export type MockStore = {
   summary: StoreSummary;
   distance_km: number;
   offers_delivery: boolean;
+  accepts_pay_in_store: boolean;
   is_open: boolean;
   delivery_radius_km: number | null;
   delivery_fee_usd: Money | null;
@@ -125,6 +126,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 1.2,
     offers_delivery: true,
+    accepts_pay_in_store: true,
     is_open: true,
     delivery_radius_km: 5,
     delivery_fee_usd: "1.50",
@@ -146,6 +148,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 4.8,
     offers_delivery: false,
+    accepts_pay_in_store: false,
     is_open: true,
     delivery_radius_km: null,
     delivery_fee_usd: null,
@@ -167,6 +170,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 7.5,
     offers_delivery: false,
+    accepts_pay_in_store: true,
     is_open: true,
     delivery_radius_km: null,
     delivery_fee_usd: null,
@@ -188,6 +192,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 9.3,
     offers_delivery: false,
+    accepts_pay_in_store: false,
     is_open: true,
     delivery_radius_km: null,
     delivery_fee_usd: null,
@@ -209,6 +214,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 165.4,
     offers_delivery: true,
+    accepts_pay_in_store: false,
     is_open: false,
     delivery_radius_km: 5,
     delivery_fee_usd: "2.00",
@@ -230,6 +236,7 @@ export const MOCK_STORES: MockStore[] = [
     },
     distance_km: 168.0,
     offers_delivery: false,
+    accepts_pay_in_store: false,
     is_open: true,
     delivery_radius_km: null,
     delivery_fee_usd: null,

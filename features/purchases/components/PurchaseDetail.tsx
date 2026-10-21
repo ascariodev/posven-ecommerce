@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatRate, formatUsd, formatVes } from "@/lib/format";
 import type { Purchase, StoreOrder } from "@/lib/marketplace/schemas";
 import { OrderTracker } from "./OrderTracker";
+import { chargedOnline, payableAtPickup, paysAtPickup } from "../lib/payment";
 import { chargeText, formatDateTime, FULFILLMENT_TEXT, ORDER_STATUS_TEXT, purchaseStatusText } from "../lib/labels";
 
 // Los montos son las cadenas de la API formateadas: el reembolso y el envío no se restan ni se suman.
@@ -21,6 +22,7 @@ function Row({ label, value, strong = false }: { label: string; value: string; s
 
 function OrderCard({ order, paid }: { order: StoreOrder; paid: boolean }) {
   const { store } = order;
+  const payable = paid && paysAtPickup(order) && order.status !== "cancelled" ? payableAtPickup(order) : null;
   return (
     <Card>
       <CardContent className="flex flex-col gap-4">
@@ -81,6 +83,13 @@ function OrderCard({ order, paid }: { order: StoreOrder; paid: boolean }) {
           {order.fulfillment === "delivery" && (
             <Row label="Envío" value={`${formatUsd(order.delivery_fee_usd)} · ${formatVes(order.delivery_fee_ves)}`} />
           )}
+          {payable !== null && (
+            <Row
+              label={order.status === "delivered" ? "Pagado al retirar" : "Pagas al retirar"}
+              value={`${formatUsd(payable.usd)} · ${formatVes(payable.ves)}`}
+              strong
+            />
+          )}
           {(order.refunded_usd !== ZERO || order.refunded_ves !== ZERO) && (
             <Row label="Reembolsado" value={`${formatUsd(order.refunded_usd)} · ${formatVes(order.refunded_ves)}`} strong />
           )}
@@ -104,7 +113,7 @@ export function PurchaseDetail({ purchase }: { purchase: Purchase }) {
           </div>
           <dl className="flex flex-col gap-1">
             <Row label="Total" value={`${formatUsd(purchase.total_usd)} · ${formatVes(purchase.total_ves)}`} strong />
-            <Row label="Cobrado" value={chargeText(purchase.charge)} />
+            {chargedOnline(purchase) && <Row label="Cobrado" value={chargeText(purchase.charge)} />}
           </dl>
           <p className="text-right text-sm text-muted-foreground">{formatRate(purchase.rate)}</p>
         </CardContent>

@@ -62,7 +62,10 @@ describe("CheckoutForm", () => {
 
     expect(screen.getByText("$ 7,00")).toBeTruthy();
     expect(screen.getByText("Bs 255,55")).toBeTruthy();
-    expect(screen.getByText("Se cobrará Bs 255,60")).toBeTruthy();
+    const howYouPay = screen.getByLabelText("Cómo pagas");
+    expect(within(howYouPay).getByText("Pagas ahora")).toBeTruthy();
+    expect(within(howYouPay).getByText("Bs 255,60")).toBeTruthy();
+    expect(within(howYouPay).queryByText(/^Pagas al retirar/)).toBeNull();
     expect(screen.getByText("$ 1,70 · Bs 62,05")).toBeTruthy();
     expect(screen.getAllByText("$ 5,10 · Bs 186,15")).toHaveLength(4);
     expect(screen.getByRole("button", { name: "Pagar Bs 255,60 de forma segura" })).toBeTruthy();
@@ -246,6 +249,87 @@ describe("CheckoutForm", () => {
     expect(screen.getByRole("alert").textContent).toContain("Completa tus datos de facturación.");
     expect(screen.getByRole("link", { name: "Completar mis datos" }).getAttribute("href")).toBe("/cuenta/perfil");
     expect(screen.getByRole("button", { name: "Pagar Bs 255,60 de forma segura" })).toBeTruthy();
+  });
+
+  it("sin pago en tienda ofrecido no muestra el selector de pago", () => {
+    renderForm();
+
+    expect(screen.queryByRole("radiogroup", { name: /^Pago en / })).toBeNull();
+  });
+
+  it("donde la tienda acepta pago en tienda ofrece las dos opciones con online marcado, y elegir en tienda vuelve a cotizar", () => {
+    renderForm({
+      quote: quote([quoteStore(), quoteStore({ store_slug: ABASTO, pay_in_store_available: true, pay_in_store_unavailable_reason: null })]),
+    });
+
+    expect(screen.getAllByRole("radiogroup", { name: /^Pago en / })).toHaveLength(1);
+    const group = screen.getByRole("radiogroup", { name: "Pago en Abasto La Esquina" });
+    expect(within(group).getByRole("radio", { name: "Pagar online" }).getAttribute("aria-checked")).toBe("true");
+    fireEvent.click(within(group).getByRole("radio", { name: "Pagar en tienda" }));
+
+    expect(replace).toHaveBeenCalledWith(`/checkout?p-${ABASTO}=in_store`, { scroll: false });
+  });
+
+  it("en entrega el pago en tienda queda deshabilitado con su motivo", () => {
+    renderForm({
+      quote: quote([quoteStore({ fulfillment: "delivery", pay_in_store_available: false, pay_in_store_unavailable_reason: "delivery" })]),
+    });
+
+    const group = screen.getByRole("radiogroup", { name: "Pago en Farmacia Central" });
+    const inStore = within(group).getByRole("radio", { name: "Pagar en tienda" });
+    expect((inStore as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByText("El pago en tienda es sólo para retiro.").id).toBe(inStore.getAttribute("aria-describedby"));
+  });
+
+  it("pasar a entrega una tienda que se pagaba en tienda la deja online", () => {
+    renderForm({
+      quote: quote([quoteStore({ payment: "in_store", pay_in_store_available: true, pay_in_store_unavailable_reason: null })]),
+      addresses: [address(2, "Oficina")],
+      addressId: 2,
+    });
+
+    const group = screen.getByRole("radiogroup", { name: "Entrega en Farmacia Central" });
+    fireEvent.click(within(group).getByRole("radio", { name: "Entrega a domicilio" }));
+
+    expect(replace).toHaveBeenCalledWith(`/checkout?direccion=2&f-${CENTRAL}=delivery`, { scroll: false });
+  });
+
+  it("en una compra mixta separa lo que se paga ahora de lo que se paga al retirar, y manda el pago elegido", () => {
+    const { container } = renderForm({
+      quote: quote([
+        quoteStore(),
+        quoteStore({
+          store_slug: ABASTO,
+          payment: "in_store",
+          pay_in_store_available: true,
+          pay_in_store_unavailable_reason: null,
+          total_usd: "3.20",
+          total_ves: "116.80",
+        }),
+      ], { charge: { currency: "VES", amount: "186.20" } }),
+    });
+
+    const howYouPay = screen.getByLabelText("Cómo pagas");
+    expect(within(howYouPay).getByText("Bs 186,20")).toBeTruthy();
+    expect(within(howYouPay).getByText("Pagas al retirar en Abasto La Esquina")).toBeTruthy();
+    expect(within(howYouPay).getByText("$ 3,20 · Bs 116,80")).toBeTruthy();
+    expect(hiddenValue(container, `p-${ABASTO}`)).toBe("in_store");
+    expect(hiddenValue(container, `p-${CENTRAL}`)).toBeNull();
+    expect(screen.getByRole("button", { name: "Pagar Bs 186,20 de forma segura" })).toBeTruthy();
+  });
+
+  it("sin pedidos online no cobra: confirma la compra", () => {
+    renderForm({
+      quote: quote([quoteStore({ payment: "in_store", pay_in_store_available: true, pay_in_store_unavailable_reason: null })], {
+        charge: { currency: "VES", amount: "0.00" },
+      }),
+    });
+
+    const howYouPay = screen.getByLabelText("Cómo pagas");
+    expect(within(howYouPay).queryByText("Pagas ahora")).toBeNull();
+    expect(within(howYouPay).getByText("Pagas al retirar en Farmacia Central")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Confirmar compra" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Pagar/ })).toBeNull();
   });
 
   it("sin el correo verificado no ofrece pagar", () => {

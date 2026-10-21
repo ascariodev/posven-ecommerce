@@ -17,7 +17,7 @@ import { CheckoutEmpty } from "./CheckoutEmpty";
 import { CheckoutStoreSection, DELIVERY_UNAVAILABLE_TEXT } from "./CheckoutStoreSection";
 import { chargeText } from "@/features/purchases/lib/labels";
 import { INITIAL_CHECKOUT_STATE } from "../lib/checkoutState";
-import { checkoutHref, FULFILLMENT_PARAM_PREFIX } from "../lib/params";
+import { checkoutHref, FULFILLMENT_PARAM_PREFIX, PAYMENT_PARAM_PREFIX } from "../lib/params";
 import { LINK_CLASSES, SECTION_LABEL_CLASSES } from "../lib/styles";
 
 // Los montos son las cadenas de la Quote y del carrito formateadas: aquí no se suma nada. "Cambió"
@@ -30,7 +30,17 @@ const PROFILE_HREF = "/cuenta/perfil";
 function hasChanged(store: QuoteStore, previous: Quote | null): boolean {
   if (previous === null) return false;
   const before = previous.stores.find((entry) => entry.store_slug === store.store_slug);
-  return before === undefined || before.total_usd !== store.total_usd || before.fulfillment !== store.fulfillment;
+  return (
+    before === undefined ||
+    before.total_usd !== store.total_usd ||
+    before.fulfillment !== store.fulfillment ||
+    paysInStore(before) !== paysInStore(store)
+  );
+}
+
+// La ausencia de `payment` es `online` (posveapi anterior a §10).
+function paysInStore(store: QuoteStore): boolean {
+  return store.payment === "in_store";
 }
 
 export function CheckoutForm({
@@ -69,11 +79,12 @@ export function CheckoutForm({
   const [choice, setChoice] = useState(() => ({
     addressId,
     delivery: initialQuote.stores.filter((store) => store.fulfillment === "delivery").map((store) => store.store_slug),
+    inStore: initialQuote.stores.filter(paysInStore).map((store) => store.store_slug),
   }));
 
-  function navigate(next: { addressId: number | null; delivery: string[] }) {
+  function navigate(next: { addressId: number | null; delivery: string[]; inStore: string[] }) {
     setChoice(next);
-    startTransition(() => router.replace(checkoutHref(next.addressId, next.delivery), { scroll: false }));
+    startTransition(() => router.replace(checkoutHref(next.addressId, next.delivery, next.inStore), { scroll: false }));
   }
 
   const errorNotice = useMemo(
@@ -103,6 +114,9 @@ export function CheckoutForm({
       ? state.message
       : null;
   const canPay = verified && state.status !== "email_unverified";
+  const chargesOnline = quote.stores.some((store) => !paysInStore(store));
+  const atPickup = quote.stores.filter(paysInStore);
+  const storeName = (slug: string) => stores.find((candidate) => candidate.store.slug === slug)?.store.name ?? slug;
 
   return (
     <div
@@ -133,6 +147,7 @@ export function CheckoutForm({
                 store={store}
                 changed={hasChanged(store, previous)}
                 delivery={choice.delivery.includes(store.store_slug)}
+                inStore={choice.inStore.includes(store.store_slug)}
                 disabled={busy}
                 onFulfillment={(delivery) =>
                   navigate({
@@ -140,6 +155,16 @@ export function CheckoutForm({
                     delivery: delivery
                       ? [...choice.delivery.filter((slug) => slug !== store.store_slug), store.store_slug]
                       : choice.delivery.filter((slug) => slug !== store.store_slug),
+                    // El pago en tienda es sólo para retiro: pasar a entrega lo deja online (spec §10.4).
+                    inStore: delivery ? choice.inStore.filter((slug) => slug !== store.store_slug) : choice.inStore,
+                  })
+                }
+                onPayment={(inStore) =>
+                  navigate({
+                    ...choice,
+                    inStore: inStore
+                      ? [...choice.inStore.filter((slug) => slug !== store.store_slug), store.store_slug]
+                      : choice.inStore.filter((slug) => slug !== store.store_slug),
                   })
                 }
               />
@@ -157,9 +182,26 @@ export function CheckoutForm({
               <dd className="font-heading text-2xl font-extrabold tabular-nums text-foreground">{formatUsd(quote.total_usd)}</dd>
             </div>
             <dd className="text-right tabular-nums text-foreground">{formatVes(quote.total_ves)}</dd>
-            <dd className="text-right text-sm text-muted-foreground">Se cobrará {chargeText(quote.charge)}</dd>
             <dd className="text-right text-sm text-muted-foreground">{formatRate(quote.rate)}</dd>
           </dl>
+          {(chargesOnline || atPickup.length > 0) && (
+            <dl aria-label="Cómo pagas" className="flex flex-col gap-1 border-t border-border pt-3 text-sm">
+              {chargesOnline && (
+                <div className="flex justify-between gap-4">
+                  <dt className="text-muted-foreground">Pagas ahora</dt>
+                  <dd className="tabular-nums text-foreground">{chargeText(quote.charge)}</dd>
+                </div>
+              )}
+              {atPickup.map((store) => (
+                <div key={store.store_slug} className="flex justify-between gap-4">
+                  <dt className="text-muted-foreground">Pagas al retirar en {storeName(store.store_slug)}</dt>
+                  <dd className="text-right tabular-nums text-foreground">
+                    {formatUsd(store.total_usd)} · {formatVes(store.total_ves)}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
           <p role="status" className="text-sm text-muted-foreground">
             {updating ? "Actualizando…" : ""}
           </p>
@@ -181,13 +223,14 @@ export function CheckoutForm({
           {state.status === "email_unverified" && <ResendVerificationForm />}
           {canPay && (
             <form action={formAction} className="flex flex-col gap-3">
-              {/* La dirección y las entregas son las de la Quote que se muestra, no las que se eligen
+              {/* La dirección, las entregas y los pagos son los de la Quote que se muestra, no los que se eligen
                   mientras llega la nueva ("Pagar" está deshabilitado entretanto). */}
               <input type="hidden" name="address_id" value={addressId ?? ""} />
               {quote.stores.map((store) => (
                 <span key={store.store_slug} hidden>
                   <input type="hidden" name="store_slug" value={store.store_slug} />
                   <input type="hidden" name={`${FULFILLMENT_PARAM_PREFIX}${store.store_slug}`} value={store.fulfillment} />
+                  {paysInStore(store) && <input type="hidden" name={`${PAYMENT_PARAM_PREFIX}${store.store_slug}`} value="in_store" />}
                 </span>
               ))}
               <input type="hidden" name="quote_hash" value={quote.quote_hash} />
@@ -223,8 +266,14 @@ export function CheckoutForm({
                 className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-30 border-t border-border bg-card px-4 py-3 md:static md:z-auto md:border-0 md:bg-transparent md:p-0"
               >
                 <Button type="submit" size="lg" className="w-full bg-success text-background hover:bg-success/90 shadow-raised" disabled={busy}>
-                  <LockIcon aria-hidden className="mr-2 h-4 w-4" />
-                  {paying ? "Procesando pago seguro…" : `Pagar ${chargeText(quote.charge)} de forma segura`}
+                  {chargesOnline && <LockIcon aria-hidden className="mr-2 h-4 w-4" />}
+                  {chargesOnline
+                    ? paying
+                      ? "Procesando pago seguro…"
+                      : `Pagar ${chargeText(quote.charge)} de forma segura`
+                    : paying
+                      ? "Confirmando compra…"
+                      : "Confirmar compra"}
                 </Button>
               </div>
             </form>

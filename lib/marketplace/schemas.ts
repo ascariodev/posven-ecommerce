@@ -552,12 +552,16 @@ export type CartLine = z.infer<typeof cartLineSchema>;
 export const fulfillmentSchema = z.enum(["pickup", "delivery"]);
 export type Fulfillment = z.infer<typeof fulfillmentSchema>;
 
+export const orderPaymentSchema = z.enum(["online", "in_store"]);
+export type OrderPayment = z.infer<typeof orderPaymentSchema>;
+
 export const cartStoreSchema = z.object({
   store: storeSummarySchema,
   is_open: z.boolean(),
   closes_at: openStatusShape.closes_at,
   accepts_orders: z.boolean(),
   offers_delivery: z.boolean(),
+  accepts_pay_in_store: z.boolean().optional(),
   distance_km: z.number().nonnegative().nullable().optional(),
   lines: z.array(cartLineSchema).min(1),
   subtotal_usd: moneySchema,
@@ -584,11 +588,17 @@ export type Cart = z.infer<typeof cartSchema>;
 export const deliveryUnavailableReasonSchema = z.enum(["no_delivery", "out_of_radius", "no_address"]);
 export type DeliveryUnavailableReason = z.infer<typeof deliveryUnavailableReasonSchema>;
 
+export const payInStoreUnavailableReasonSchema = z.enum(["not_offered", "delivery"]);
+export type PayInStoreUnavailableReason = z.infer<typeof payInStoreUnavailableReasonSchema>;
+
 export const quoteStoreSchema = z.object({
   store_slug: z.string(),
   fulfillment: fulfillmentSchema,
   delivery_available: z.boolean(),
   delivery_unavailable_reason: deliveryUnavailableReasonSchema.nullable(),
+  payment: orderPaymentSchema.optional(),
+  pay_in_store_available: z.boolean().optional(),
+  pay_in_store_unavailable_reason: payInStoreUnavailableReasonSchema.nullable().optional(),
   subtotal_usd: moneySchema,
   subtotal_ves: moneySchema,
   delivery_fee_usd: moneySchema,
@@ -615,7 +625,7 @@ export const quoteSchema = z.object({
 export type Quote = z.infer<typeof quoteSchema>;
 
 const checkoutStoresSchema = z
-  .array(z.strictObject({ store_slug: cartSlugSchema, fulfillment: fulfillmentSchema }))
+  .array(z.strictObject({ store_slug: cartSlugSchema, fulfillment: fulfillmentSchema, payment: orderPaymentSchema.optional() }))
   .min(1)
   .max(CART_MAX_LINES)
   .refine((stores) => new Set(stores.map((store) => store.store_slug)).size === stores.length, {
@@ -635,7 +645,8 @@ export const checkoutInputSchema = checkoutQuoteInputSchema.extend({
 });
 export type CheckoutInput = z.infer<typeof checkoutInputSchema>;
 
-// Exactamente uno de redirect_url e instructions no es nulo (enmienda F).
+// Exactamente uno de redirect_url e instructions no es nulo (enmienda F). `payment` es nulo cuando
+// ningún pedido se paga online: la compra nace pagada (spec cuentas-y-compras §10.3).
 export const checkoutStartSchema = z.object({
   purchase_code: z.string().min(1),
   payment: z
@@ -646,7 +657,8 @@ export const checkoutStartSchema = z.object({
     })
     .refine((payment) => (payment.redirect_url === null) !== (payment.instructions === null), {
       message: "El pago trae redirect_url o instructions, uno solo.",
-    }),
+    })
+    .nullable(),
 });
 export type CheckoutStart = z.infer<typeof checkoutStartSchema>;
 
@@ -692,6 +704,7 @@ export const storeOrderSchema = z.object({
   store: storeSummarySchema,
   status: storeOrderStatusSchema,
   fulfillment: fulfillmentSchema,
+  payment: orderPaymentSchema.optional(),
   pickup_code: z.string().nullable(),
   address: orderAddressSchema.nullable(),
   lines: z.array(storeOrderLineSchema).min(1),

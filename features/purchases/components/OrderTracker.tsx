@@ -1,7 +1,8 @@
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatDateTime, ORDER_STEP_STATE_TEXT } from "../lib/labels";
+import { formatDateTime, IN_STORE_FIRST_STEP_TEXT, ORDER_STEP_STATE_TEXT } from "../lib/labels";
 import { orderSteps, type TrackedOrder } from "../lib/orderSteps";
+import { paysAtPickup } from "../lib/payment";
 
 export function OrderTracker({ order, className }: { order: TrackedOrder; className?: string }) {
   const steps = orderSteps(order);
@@ -10,7 +11,9 @@ export function OrderTracker({ order, className }: { order: TrackedOrder; classN
       <div className={cn("flex flex-col gap-1 rounded-2xl bg-warning-soft p-4 text-sm text-foreground", className)}>
         <p className="font-semibold">Pedido cancelado</p>
         {order.timeline.cancelled_at !== null && <p>{formatDateTime(order.timeline.cancelled_at)}</p>}
-        {order.timeline.paid_at !== null && <p>Pagado el {formatDateTime(order.timeline.paid_at)}</p>}
+        {order.timeline.paid_at !== null && <p>
+            {paysAtPickup(order) ? IN_STORE_FIRST_STEP_TEXT : "Pagado"} el {formatDateTime(order.timeline.paid_at)}
+          </p>}
       </div>
     );
   }

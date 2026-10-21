@@ -1,6 +1,7 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { PurchaseDetail } from "@/features/purchases/components/PurchaseDetail";
+import { formatUsd, formatVes } from "@/lib/format";
 import { order, orderLine, purchase } from "@/features/purchases/__tests__/fixtures/testPurchase";
 
 afterEach(() => {
@@ -80,4 +81,35 @@ describe("PurchaseDetail", () => {
     expect(screen.queryByText("Aceptado")).toBeNull();
     expect(screen.queryByRole("list", { name: "Estado del pedido" })).toBeNull();
   });
+
+  it("un pedido para pagar al retirar muestra la suma de las líneas no faltantes y no el cobro", () => {
+    const missing = orderLine({ missing: true, line_usd: "1.60", line_ves: "58.40" });
+    render(
+      <PurchaseDetail
+        purchase={purchase({
+          charge: { currency: "VES", amount: "0.00" },
+          orders: [order({ payment: "in_store", status: "accepted", lines: [orderLine({ line_usd: "5.10", line_ves: "186.15" }), orderLine({ line_usd: "1.05", line_ves: "38.32" }), missing] })],
+        })}
+      />,
+    );
+
+    expect(screen.getByText("Pagas al retirar")).toBeTruthy();
+    expect(screen.getByText(`${formatUsd("6.15")} · ${formatVes("224.47")}`)).toBeTruthy();
+    expect(screen.getByText("Confirmada")).toBeTruthy();
+    expect(screen.queryByText("Cobrado")).toBeNull();
+    expect(screen.getByText("Confirmado")).toBeTruthy();
+  });
+
+  it("un pedido online de una compra mixta no muestra Pagas al retirar y la compra sigue cobrada", () => {
+    render(
+      <PurchaseDetail
+        purchase={purchase({ orders: [order({ payment: "online" }), order({ payment: "in_store", store: { ...order().store, slug: "otra", name: "Otra" } })] })}
+      />,
+    );
+
+    expect(screen.getAllByText("Pagas al retirar")).toHaveLength(1);
+    expect(screen.getByText("Cobrado")).toBeTruthy();
+    expect(screen.getByText("Pagada")).toBeTruthy();
+  });
+
 });

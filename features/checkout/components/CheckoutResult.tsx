@@ -10,6 +10,7 @@ import { requireCustomer } from "@/features/account/server/session";
 import { purchaseHref } from "@/features/purchases/components/PurchaseList";
 import { OrderTracker } from "@/features/purchases/components/OrderTracker";
 import { chargeText, FULFILLMENT_TEXT } from "@/features/purchases/lib/labels";
+import { chargedOnline } from "@/features/purchases/lib/payment";
 import { formatUsd, formatVes } from "@/lib/format";
 import { getPurchase } from "@/lib/marketplace/client";
 import { MarketplaceAccountError } from "@/lib/marketplace/errors";
@@ -108,10 +109,15 @@ export async function CheckoutResult({ code }: { code: string }) {
       return (
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 md:gap-6">
           <Outcome tone="success">
-            <h1 className={headingClasses}>¡Pago confirmado!</h1>
+            <h1 className={headingClasses}>{chargedOnline(purchase) ? "¡Pago confirmado!" : "Compra confirmada"}</h1>
             <p className="text-muted-foreground tabular-nums">
-              Código <strong className="text-foreground">{purchase.code}</strong> ·{" "}
-              <span className="whitespace-nowrap">pagaste {chargeText(purchase.charge)}</span>
+              Código <strong className="text-foreground">{purchase.code}</strong>
+              {chargedOnline(purchase) && (
+                <>
+                  {" "}
+                  · <span className="whitespace-nowrap">pagaste {chargeText(purchase.charge)}</span>
+                </>
+              )}
             </p>
             <p className="text-sm text-muted-foreground tabular-nums">
               Total {formatUsd(purchase.total_usd)} · {formatVes(purchase.total_ves)}

@@ -39,7 +39,7 @@ Cada respuesta se apoya en lo que el sistema hace, y la fuente queda en `source`
 | Pregunta | Fuente |
 |---|---|
 | Los precios son los de la tienda | spec hiperlocal §1 y §3.1 (IVA incluido, frescura); `OfferCard.tsx` muestra "actualizado hace" con `formatUpdatedAgo` |
-| Varias tiendas a la vez | spec cuentas y compras §1 (un cobro por compra, retiro o entrega por tienda) y §5.3; `RN-CHECKOUT-02` |
+| Varias tiendas a la vez | spec cuentas y compras §1 (un cobro por compra, retiro o entrega por tienda), §5.3 y §10.4 (pago en tienda al retirar, por tienda); `RN-CHECKOUT-02`, `RN-CHECKOUT-06` |
 | La tienda no tiene el producto | spec cuentas y compras §5.2 (líneas `unavailable`) y §5.5 (faltante reembolsado); `RN-PURCHASES-02` |
 | Precio en bolívares | spec hiperlocal §3.1 (tasa de la API) y tabla de casos (tasa del día); spec cuentas y compras (montos al pagar); `RN-CHECKOUT-02` |
 | No termino de pagar | spec cuentas y compras §5.3 (30 minutos, `expired` y `failed`) y tabla de casos (pago tardío, `late_payment`); `RN-CHECKOUT-04` |

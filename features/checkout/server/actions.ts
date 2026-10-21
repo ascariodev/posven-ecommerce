@@ -7,6 +7,7 @@ import { checkoutInputSchema, type CheckoutInput, type CheckoutStart } from "@/l
 import { withSession } from "@/features/account/server/session";
 import { cartEnabled } from "@/features/cart/lib/flag";
 import { INITIAL_CHECKOUT_STATE, PAY_FAILED, type CheckoutState } from "../lib/checkoutState";
+import { FULFILLMENT_PARAM_PREFIX, PAYMENT_PARAM_PREFIX } from "../lib/params";
 
 // Todo export de este archivo es un endpoint público: sólo la acción del formulario de pago.
 
@@ -16,7 +17,11 @@ function readInput(formData: FormData): CheckoutInput | null {
   const stores = formData
     .getAll("store_slug")
     .filter((value): value is string => typeof value === "string")
-    .map((store_slug) => ({ store_slug, fulfillment: formData.get(`f-${store_slug}`) }));
+    .map((store_slug) => ({
+      store_slug,
+      fulfillment: formData.get(`${FULFILLMENT_PARAM_PREFIX}${store_slug}`),
+      ...(formData.get(`${PAYMENT_PARAM_PREFIX}${store_slug}`) === "in_store" ? { payment: "in_store" } : {}),
+    }));
   const rawAddress = formData.get("address_id");
   const address_id = typeof rawAddress === "string" && /^[1-9]\d{0,8}$/.test(rawAddress) ? Number(rawAddress) : null;
   const parsed = checkoutInputSchema.safeParse({
@@ -72,6 +77,8 @@ export async function payCheckout(prev: CheckoutState, formData: FormData): Prom
     }
   });
   if ("status" in result) return result;
+  // Sin pedidos online no hay cobro: la compra ya nació confirmada (spec cuentas-y-compras §10.1).
+  if (result.payment === null) redirect(`/checkout/resultado?compra=${encodeURIComponent(result.purchase_code)}`);
   // La pasarela devuelve una redirección o instrucciones, una sola (enmienda F).
   if (result.payment.redirect_url !== null) redirect(result.payment.redirect_url);
   return {

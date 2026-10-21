@@ -546,6 +546,35 @@ describe("contrato de checkout y compras", () => {
     ).toBe(true);
   });
 
+  it("los campos del pago en tienda son opcionales y se validan si llegan (spec §10.3)", () => {
+    const [store] = quote.stores;
+    const inStore = {
+      ...store,
+      fulfillment: "pickup",
+      payment: "in_store",
+      pay_in_store_available: true,
+      pay_in_store_unavailable_reason: null,
+    };
+    const unavailable = { ...store, payment: "online", pay_in_store_available: false, pay_in_store_unavailable_reason: "delivery" };
+    expect(quoteSchema.safeParse({ ...quote, stores: [inStore, unavailable] }).success).toBe(true);
+    expect(quoteSchema.safeParse({ ...quote, stores: [{ ...store, payment: "cash" }] }).success).toBe(false);
+    expect(quoteSchema.safeParse({ ...quote, stores: [{ ...store, pay_in_store_unavailable_reason: "closed" }] }).success).toBe(false);
+    const order = { ...paidPurchase.orders[0], payment: "in_store" };
+    expect(purchaseSchema.safeParse({ ...paidPurchase, orders: [order] }).success).toBe(true);
+    expect(purchaseSchema.safeParse({ ...paidPurchase, orders: [{ ...order, payment: "cash" }] }).success).toBe(false);
+  });
+
+  it("el inicio del checkout acepta payment nulo y la entrada acepta payment por tienda", () => {
+    expect(checkoutStartSchema.safeParse({ purchase_code: "K7M2Q9XA", payment: null }).success).toBe(true);
+    expect(checkoutStartSchema.safeParse({ purchase_code: "K7M2Q9XA" }).success).toBe(false);
+    const withPayment = (payment: string) => ({
+      ...checkoutInput,
+      stores: [{ store_slug: "farmacia-central-valencia", fulfillment: "pickup", payment }],
+    });
+    expect(checkoutInputSchema.safeParse(withPayment("in_store")).success).toBe(true);
+    expect(checkoutInputSchema.safeParse(withPayment("cash")).success).toBe(false);
+  });
+
   it("una compra sin pagar lleva sus pedidos en pending_payment (enmienda L)", () => {
     const [order] = paidPurchase.orders;
     const pending = {

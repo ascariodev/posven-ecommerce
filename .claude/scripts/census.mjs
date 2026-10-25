@@ -39,9 +39,8 @@ if (![...REPO_NAMES, ...(WORKSPACE ? ['.claude'] : [])].includes(name)) {
 process.stdout.write(`# Censo: ${name}\n`);
 if (name === '.claude') {
   const dir = repoDir('.claude');
-  const files = gitLs(dir, ':(glob)rules/*.md', ':(glob)skills/**/*.md', ':(glob)agents/*.md');
+  const files = gitLs(dir, 'CLAUDE.md', ':(glob)rules/*.md', ':(glob)skills/**/*.md', ':(glob)agents/*.md');
   table('Contexto de posven/.claude', dir, files, top);
-  table('CLAUDE.md raíz', POSVEN, ['CLAUDE.md'], 1);
 } else {
   const dir = repoDir(name);
   table('Código más grande', dir, gitLs(dir, ...(CODE[name] ?? []).map((g) => `:(glob)${g}`)), top);

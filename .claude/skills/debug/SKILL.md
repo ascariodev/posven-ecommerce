@@ -23,8 +23,8 @@ Dónde se puede reproducir acá:
 
 - posvenapp: `npx jest tests/unit/<archivo>.test.ts` con un caso que falla; la lógica fiscal y de
   store es pura y se reproduce sin la app.
-- posveapi: sin PHP local. Con Docker arriba, `docker compose exec app vendor/bin/phpunit
-  --filter <test>`; sin Docker, se reproduce leyendo el flujo con datos concretos y se pide al
+- posveapi: sin PHP local. Con Docker arriba, el phpunit del §5 de `CLAUDE.comun.md` con
+  `--filter <test>`; sin Docker, se reproduce leyendo el flujo con datos concretos y se pide al
   usuario la prueba en `srvdebposven` si hace falta. Nunca se inventa una salida.
 - posven-ecommerce: se reproduce con la página en el servidor de desarrollo (`launch.json`,
   configuración `posven-ecommerce`).

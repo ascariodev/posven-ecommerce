@@ -1,6 +1,5 @@
 ---
 paths:
-  - "CLAUDE.md"
   - "**/CLAUDE.md"
   - ".claude/skills/**"
   - ".claude/agents/**"

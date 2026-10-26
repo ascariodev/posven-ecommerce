@@ -147,13 +147,11 @@ const claudeFiles = WORKSPACE ? gitLs(repoDir('.claude')) : [];
 for (const name of selected) {
   if (name === '.claude') {
     const rootView = [
-      'CLAUDE.md',
       ...claudeFiles.map((f) => `.claude/${f}`),
       ...REPO_NAMES.flatMap((r) => filesOf.get(r).map((f) => `${r}/${f}`)),
     ];
     checkRules('.claude/rules', join(POSVEN, '.claude', 'rules'), rootView);
     checkSizes('.claude', repoDir('.claude'), claudeFiles);
-    checkSizes('posven', POSVEN, ['CLAUDE.md']);
     continue;
   }
   const dir = repoDir(name);

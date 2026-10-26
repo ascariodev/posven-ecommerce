@@ -83,7 +83,7 @@ grafo y razona la conexión. Nunca un `graphify-out/` dentro del repo.
 
 | Repo | Mientras trabajas | Antes de cerrar |
 |---|---|---|
-| posveapi | revisión del diff (no hay PHP local) | tests en Docker si está arriba (`docker compose exec app vendor/bin/phpunit <ruta>`); si no, se declara "no verificado localmente" |
+| posveapi | revisión del diff (no hay PHP local) | tests en Docker si está arriba (`docker compose -f "<padre>/.claude/entorno/docker-compose.yml" exec app vendor/bin/phpunit <ruta>`); si no, se declara "no verificado localmente" |
 | posvenapp | `<repo>/node_modules/.bin/tsc --noEmit -p <repo>/tsconfig.json` | `npx jest <tests del área>`; los dorados fiscales si se tocó lógica fiscal |
 | posven-ecommerce | `<repo>/node_modules/.bin/tsc --noEmit -p <repo>/tsconfig.json` y `npx eslint <archivos>` | lo que dice el `CLAUDE.md` del repo |
 
@@ -93,10 +93,10 @@ Nunca se reporta como pasando algo que no se corrió. El frontend de posveapi se
 
 ## 6. Base de datos
 
-- posveapi: PostgreSQL 18 en Docker (`<padre>/docker-compose.yml`, servicio `postgres`, base
-  `posshop_dev`): `docker compose -f "<padre>/docker-compose.yml" exec postgres psql -U postgres
-  -d posshop_dev`; el `docker-compose.yml` de este comando y del §5 no viene en ningún repo,
-  vive en `<padre>` (si no lo tienes, pídelo a quien coordina). Credenciales en `posveapi/.env`: nunca se leen ni se muestran.
+- posveapi: PostgreSQL 18 en Docker (`<padre>/.claude/entorno/docker-compose.yml`, servicio
+  `postgres`, base `posshop_dev`): `docker compose -f "<padre>/.claude/entorno/docker-compose.yml"
+  exec postgres psql -U postgres -d posshop_dev`. El compose fija `name: posven`, del que salen los
+  nombres de los volúmenes: no se quita. Credenciales en `posveapi/.env`: nunca se leen ni se muestran.
 - posvenapp: SQLite en el dispositivo (expo-sqlite, `posven_v4.db`); no se consulta por terminal.
 - Sólo desarrollo local, nunca producción. Nunca `SELECT *` sin `LIMIT`. Antes de `UPDATE`,
   `DELETE` o `INSERT`: mostrar la consulta y cuántas filas afecta, y esperar confirmación.

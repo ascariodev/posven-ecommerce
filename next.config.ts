@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import { assertProductionEnv } from "./lib/env";
+
+assertProductionEnv(process.env);
 
 const isDev = process.env.NODE_ENV === "development";
 

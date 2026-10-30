@@ -3,7 +3,7 @@
 **Objetivo:** que un `.env` incompleto no llegue a producción, que `/api/events` y
 `/api/suggestions` tengan límite por IP, que las respuestas lleven cabeceras de seguridad y que los
 recomendados del producto no repitan el producto ni entre sí.
-**Estado:** en curso · Fase actual: 1
+**Estado:** en curso · Fase actual: 2
 
 ## Contexto mínimo
 - Spec: sin spec; origen en `posven/.claude/docs/evaluaciones/2026-10-28-evaluacion-sistema.md` (P3 y paso 5).
@@ -19,7 +19,7 @@ recomendados del producto no repitan el producto ni entre sí.
 
 ## Fases
 
-### [ ] Fase 1 [riesgo] — Fallar en producción sin MARKETPLACE_MODE o SITE_URL
+### [x] Fase 1 [riesgo] — Fallar en producción sin MARKETPLACE_MODE o SITE_URL
 - **Repo:** posven-ecommerce
 - **Alcance:** hoy `usesMock()` (`lib/marketplace/client.ts:79-84`) toma el simulado si
   `MARKETPLACE_MODE` falta, y `SITE_URL` (`lib/site.ts:2`) cae a `http://localhost:3000`. Una
@@ -72,8 +72,17 @@ recomendados del producto no repitan el producto ni entre sí.
   cacheada y no manda `X-Client-IP`, así que el límite `marketplace-suggestions` de posveapi cuenta
   la IP del servidor del ecommerce y un solo cliente con consultas al azar lo agota para todos.
 - 2026-10-30 — Fase 1 marcada `[riesgo]`: un error en `register()` tumba el sitio tras el deploy.
+- 2026-10-30 — Fase 1: `mock` declarado explícito vale en producción aunque falte `SITE_URL`.
+  `register()` comprueba sólo en el runtime `nodejs`; si lanza, `server.js` sale con código 1 y
+  PM2 reintenta en bucle (el build falla antes con el mismo `.env`, así que sólo pasa si se edita
+  el `.env` del servidor tras el deploy). `next.config.ts` importa `./lib/env` relativo: `next
+  build` se corre desde la raíz, como el workflow. `.env.example` no se tocó: la sesión no tiene
+  permiso sobre `.env*`; lo documenta el usuario si quiere.
 
 ## Notas para la próxima sesión
+- Fase 1 hecha. El build del worktree sólo compila con `--webpack` (Turbopack rechaza la junction
+  de `node_modules`); el build con Turbopack y el `.env` local se corre en el checkout principal
+  tras el merge.
 - `main` local va 2 commits por delante de `origin/main` (instalador del equipo sin push): al
   publicar este plan, esos commits salen también a producción.
 

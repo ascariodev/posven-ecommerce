@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MarketplaceUnavailableError } from "@/lib/marketplace/errors";
+import { SUGGESTIONS_PER_MINUTE } from "@/lib/rate-limit";
 
 const { getSuggestions, getUserLocation } = vi.hoisted(() => ({
   getSuggestions: vi.fn(),
@@ -57,5 +58,27 @@ describe("GET /api/suggestions", () => {
     const failure = new Error("bug");
     getSuggestions.mockRejectedValue(failure);
     await expect(get("?q=arroz")).rejects.toBe(failure);
+  });
+
+  describe("límite por IP", () => {
+    function getFrom(ip: string | null): Promise<Response> {
+      const headers = new Headers();
+      if (ip !== null) headers.set("x-forwarded-for", ip);
+      return GET(new Request("http://localhost/api/suggestions?q=arroz", { headers }));
+    }
+
+    it("pasado el límite responde 429 con Retry-After y sin llamar a la API; otra IP no se ve afectada", async () => {
+      for (let i = 0; i < SUGGESTIONS_PER_MINUTE; i += 1) expect((await getFrom("198.51.100.1")).status).toBe(200);
+      getSuggestions.mockClear();
+      const limited = await getFrom("198.51.100.1");
+      expect(limited.status).toBe(429);
+      expect(Number(limited.headers.get("Retry-After"))).toBeGreaterThan(0);
+      expect(getSuggestions).not.toHaveBeenCalled();
+      expect((await getFrom("198.51.100.2")).status).toBe(200);
+    });
+
+    it("sin IP válida no se limita", async () => {
+      for (let i = 0; i < SUGGESTIONS_PER_MINUTE + 5; i += 1) expect((await getFrom(null)).status).toBe(200);
+    });
   });
 });

@@ -14,14 +14,11 @@ import { PriceSummary } from "@/features/product/components/PriceSummary";
 import { ProductDetails } from "@/features/product/components/ProductDetails";
 import { ProductGallery } from "@/features/product/components/ProductGallery";
 import { ProductOffers, ProductOffersSkeleton } from "@/features/product/components/ProductOffers";
+import { RelatedProducts } from "@/features/product/components/RelatedProducts";
 import { ShareButton } from "@/features/product/components/ShareButton";
-import { ProductCard } from "@/features/search/components/ProductCard";
 import { breadcrumbListJsonLd, serializeJsonLd } from "@/lib/jsonld";
-import { listCategories, listSitemap, searchProducts } from "@/lib/marketplace/client";
+import { listCategories, listSitemap } from "@/lib/marketplace/client";
 import type { CategoryNode, ProductDetail } from "@/lib/marketplace/schemas";
-import { getEffectiveLocation } from "@/features/location/server/location";
-import { toGeoFilter } from "@/features/location/lib/cookie";
-import { DEFAULT_RADIUS_KM } from "@/lib/marketplace/params";
 
 const RECIPE_NOTE = "Requiere récipe, consúltalo en la tienda.";
 
@@ -65,33 +62,6 @@ async function categoryTrail(product: ProductDetail): Promise<{ slug: string; na
 function JsonLdScript({ data }: { data: object }) {
   return (
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }} />
-  );
-}
-
-async function RelatedProducts({ categorySlug, title }: { categorySlug: string | null, title: string }) {
-  const { location } = await getEffectiveLocation();
-  const geo = toGeoFilter(location);
-  const { data } = await searchProducts({
-    q: "",
-    category: categorySlug,
-    geo,
-    radiusKm: geo ? DEFAULT_RADIUS_KM : null,
-    page: 1,
-  });
-
-  if (data.length === 0) return null;
-
-  return (
-    <section className="flex flex-col gap-4">
-      <h2 className="font-heading text-xl font-bold tracking-tight text-foreground">{title}</h2>
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {data.slice(0, 5).map((item) => (
-          <li key={item.slug}>
-            <ProductCard item={item} />
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }
 
@@ -202,11 +172,11 @@ export default async function ProductPage({
 
       <div className="flex flex-col gap-12 mt-8">
         <Suspense fallback={<div className="h-64 bg-muted/20 animate-pulse rounded-xl"></div>}>
-          <RelatedProducts categorySlug={product.category?.slug ?? null} title="Cómpralos juntos" />
+          <RelatedProducts currentSlug={product.slug} categorySlug={product.category?.slug ?? null} section="together" />
         </Suspense>
 
         <Suspense fallback={<div className="h-64 bg-muted/20 animate-pulse rounded-xl"></div>}>
-          <RelatedProducts categorySlug={null} title="También vistos por otros clientes" />
+          <RelatedProducts currentSlug={product.slug} categorySlug={product.category?.slug ?? null} section="alsoViewed" />
         </Suspense>
       </div>
     </article>

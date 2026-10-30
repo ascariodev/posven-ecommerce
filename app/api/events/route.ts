@@ -4,10 +4,13 @@ import { z } from "zod";
 import { clientIpFrom } from "@/features/account/server/session";
 import { createDeduper, handleEvent } from "@/features/events/lib/handle";
 import { sendEvent } from "@/lib/marketplace/client";
+import { createRateLimiter, EVENTS_PER_MINUTE, rateLimitedResponse } from "@/lib/rate-limit";
 
 const SESSION_COOKIE = "sid";
 
 const shouldForward = createDeduper();
+
+const checkRate = createRateLimiter(EVENTS_PER_MINUTE);
 
 async function readSessionId(): Promise<string> {
   const cookieStore = await cookies();
@@ -25,6 +28,12 @@ async function readSessionId(): Promise<string> {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  const clientIp = clientIpFrom(request.headers.get("x-forwarded-for"));
+  if (clientIp !== null) {
+    const rate = checkRate(clientIp, Date.now());
+    if (!rate.allowed) return rateLimitedResponse(rate.retryAfterSeconds);
+  }
+
   const sessionId = await readSessionId();
   const { status, forward } = handleEvent({
     body: await request.text(),
@@ -35,7 +44,6 @@ export async function POST(request: Request): Promise<Response> {
   });
 
   if (forward !== null) {
-    const clientIp = clientIpFrom(request.headers.get("x-forwarded-for"));
     after(() =>
       sendEvent(forward, clientIp).catch((error: unknown) => {
         console.error("[events]", error);

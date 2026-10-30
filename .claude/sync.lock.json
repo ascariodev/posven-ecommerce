@@ -1,8 +1,8 @@
 {
   "repo": "posven-ecommerce",
   "fuente": {
-    "commit": "3c38eaab9300c3cc12eec1ecf423e366655c1607",
-    "conCambios": false
+    "commit": "92c75f7cf34d01a34f4f962cf2f73241c949374e",
+    "conCambios": true
   },
   "archivos": {
     "agents/doc-verifier.md": "b09e93c7837990f252386b05c88f84a5f58bfeb1bd99cff6ef96daf1b1d29987",
@@ -13,6 +13,7 @@
     "docs/plans/_plantilla.md": "3a55fbe34826e633b1e567bf57bbbded0fdef8eebd4366573ebee21c3c85d2ee",
     "hooks/check-worktree.mjs": "8d38d3d13a364763ece388eaf2ad54244ca40edb28ffa863c40e946e3c6981b0",
     "hooks/context-guard.mjs": "49007c744cc8b3018ad41547af0a052e10331c595b03e2a25be7f5acc22308c9",
+    "hooks/db-write-guard.mjs": "add5163de8898e38e5dbedbc54dcfb1c63cc044903f5512ddd6d5b56d8661780",
     "hooks/hook-stdin.mjs": "c33f9a70c3af915eff11bbaad198f2df4bcd03763afea8d912cfa1d0b8a52390",
     "hooks/lib/shell.mjs": "2c4cd1d805900aea7e8d78f73e40b58efddbc41656efad9c3aad98cb5da5eb17",
     "hooks/plan-state.mjs": "2fbd03496373605f63d1bdfe4ef5b16e3099445c374922b4d8f07aa057be596b",
@@ -28,7 +29,7 @@
     "scripts/lib/common.mjs": "6014e24b0748b355ba510c510c65dd76f9970bc57b82c5363b278a16603a778d",
     "scripts/setup.mjs": "e4516d8d674207fcc6dc146926a922b17108e6f33dcb7460d1a951e0c0b822c4",
     "scripts/worktree.mjs": "11426724f580a5be8a579bd2a8474e58f9aa6d62aa30d626533bbb0a9126f8a1",
-    "settings.json": "0968bf6de7ae5b53639ecb0d703ebe7b81766823211a715d220ef2a8d16ffc3f",
+    "settings.json": "41cf59eaf046d6816fbcaceb0f3cf4352db254cfcde895350aee344344c52960",
     "skills/aplicar-mejoras/SKILL.md": "26d2230b981b5cc0456a6044a81aeea54626e0e662c3517714fc82d5e2233dee",
     "skills/cerrar-fase/SKILL.md": "d095e57a716d2467f9a24effdfb071056b4f544a007d3c48933fcbe27b217e37",
     "skills/close-task/SKILL.md": "1210c4303de71e6c8259993d6d7677aec1dc747f676e7ad5dc1d7b9dd7e87e6c",

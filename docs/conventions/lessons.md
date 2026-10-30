@@ -50,3 +50,10 @@ Un campo nuevo de la API en un esquema de `lib/marketplace/schemas.ts` va `.opti
 `.nullable()` si la API lo manda nulo): el push a `main` despliega solo y puede llegar antes que
 posveapi, y un campo requerido ausente hace fallar el `safeParse` del recurso entero.
 aplicada en: `posven-ecommerce/.claude/rules/contract.md` (punto 4)
+
+## L-17
+Turbopack no compila en un worktree de `.claude/worktrees/`: su `node_modules` es una junction
+fuera de la raíz y `next dev`/`next build` mueren con "Symlink ... points out of the filesystem
+root". En el worktree se compila con `node node_modules/next/dist/bin/next build --webpack`; el e2e
+y el build por defecto se corren en el checkout principal tras el merge.
+aplicada en: pendiente: quien coordina, en `posven/.claude/scripts/worktree.mjs` o la verificación del `CLAUDE.md` del repo

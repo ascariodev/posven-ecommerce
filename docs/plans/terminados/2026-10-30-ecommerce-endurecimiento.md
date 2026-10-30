@@ -3,7 +3,7 @@
 **Objetivo:** que un `.env` incompleto no llegue a producción, que `/api/events` y
 `/api/suggestions` tengan límite por IP, que las respuestas lleven cabeceras de seguridad y que los
 recomendados del producto no repitan el producto ni entre sí.
-**Estado:** en curso · Fase actual: 4
+**Estado:** terminado
 
 ## Contexto mínimo
 - Spec: sin spec; origen en `posven/.claude/docs/evaluaciones/2026-10-28-evaluacion-sistema.md` (P3 y paso 5).
@@ -94,7 +94,10 @@ recomendados del producto no repitan el producto ni entre sí.
   peticiones de más. Sin categoría, la segunda sección muestra del 6.º al 10.º.
 
 ## Notas para la próxima sesión
-- Fases 1 a 4 hechas. El build del worktree sólo compila con `--webpack` (Turbopack rechaza la junction
+- Plan terminado. Vitest completo en la rama: 120 archivos, 1008 tests en verde. El e2e no corre
+  en el worktree (Turbopack rechaza la junction de `node_modules`); en `main` da 70 en verde y 1
+  saltado. Falta correr `npx playwright test` y `npx next build` (Turbopack) en el checkout
+  principal tras el merge, antes del push. El build del worktree sólo compila con `--webpack` (Turbopack rechaza la junction
   de `node_modules`); el build con Turbopack y el `.env` local se corre en el checkout principal
   tras el merge.
 - `main` local va 2 commits por delante de `origin/main` (instalador del equipo sin push): al

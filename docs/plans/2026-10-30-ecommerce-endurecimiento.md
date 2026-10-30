@@ -3,7 +3,7 @@
 **Objetivo:** que un `.env` incompleto no llegue a producción, que `/api/events` y
 `/api/suggestions` tengan límite por IP, que las respuestas lleven cabeceras de seguridad y que los
 recomendados del producto no repitan el producto ni entre sí.
-**Estado:** en curso · Fase actual: 3
+**Estado:** en curso · Fase actual: 4
 
 ## Contexto mínimo
 - Spec: sin spec; origen en `posven/.claude/docs/evaluaciones/2026-10-28-evaluacion-sistema.md` (P3 y paso 5).
@@ -47,7 +47,7 @@ recomendados del producto no repitan el producto ni entre sí.
 - **Terminado cuando:** prueba del limitador y de cada ruta con `npx vitest run`; tsc y eslint limpios.
 - **Commit:** `fix(api): limita por IP los eventos y las sugerencias`
 
-### [ ] Fase 3 — Cabeceras de seguridad
+### [x] Fase 3 — Cabeceras de seguridad
 - **Repo:** posven-ecommerce
 - **Alcance:** `headers()` en `next.config.ts` para todas las rutas: `X-Content-Type-Options:
   nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: DENY` y
@@ -83,9 +83,13 @@ recomendados del producto no repitan el producto ni entre sí.
   200 ms al teclear) y `EVENTS_PER_MINUTE = 180`. 429 sin cuerpo con `Retry-After`; el chequeo va
   antes de leer cuerpo y cookie. `useSuggestions` ya trata cualquier no OK como sin sugerencias.
   Contadores por proceso: con más de una instancia de PM2 cada una cuenta aparte.
+- 2026-10-30 — Fase 3: `securityHeaders` exportado desde `next.config.ts` y aplicado con
+  `source: "/:path*"`. El sitio sólo usa `navigator.geolocation` (`LocationPicker`, `AddressForm`)
+  y no tiene iframes propios, por eso `X-Frame-Options: DENY` y cámara y micrófono apagados. Si
+  nginx o Cloudflare ya ponen alguna, sale duplicada con el mismo valor.
 
 ## Notas para la próxima sesión
-- Fases 1 y 2 hechas. El build del worktree sólo compila con `--webpack` (Turbopack rechaza la junction
+- Fases 1 a 3 hechas. El build del worktree sólo compila con `--webpack` (Turbopack rechaza la junction
   de `node_modules`); el build con Turbopack y el `.env` local se corre en el checkout principal
   tras el merge.
 - `main` local va 2 commits por delante de `origin/main` (instalador del equipo sin push): al

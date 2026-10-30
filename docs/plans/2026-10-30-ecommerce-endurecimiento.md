@@ -55,7 +55,7 @@ recomendados del producto no repitan el producto ni entre sí.
 - **Terminado cuando:** prueba de `headers()` con vitest y `npx next build`; el e2e sigue en verde.
 - **Commit:** `fix(config): cabeceras de seguridad en todas las respuestas`
 
-### [ ] Fase 4 — Recomendados sin el producto actual ni repetidos
+### [x] Fase 4 — Recomendados sin el producto actual ni repetidos
 - **Repo:** posven-ecommerce
 - **Alcance:** `RelatedProducts` sale de `app/p/[slug]/page.tsx` a `features/product/` con una
   función pura que quita el producto actual de "Cómpralos juntos" (misma categoría) y, de "También
@@ -87,9 +87,14 @@ recomendados del producto no repitan el producto ni entre sí.
   `source: "/:path*"`. El sitio sólo usa `navigator.geolocation` (`LocationPicker`, `AddressForm`)
   y no tiene iframes propios, por eso `X-Frame-Options: DENY` y cámara y micrófono apagados. Si
   nginx o Cloudflare ya ponen alguna, sale duplicada con el mismo valor.
+- 2026-10-30 — Fase 4: `relatedSections(currentSlug, together, alsoViewed)` en
+  `features/product/lib/related.ts` (RN-PRODUCT-06) y `RelatedProducts` en
+  `features/product/components/`. Se mantienen los dos `Suspense`: cada sección pide las dos listas
+  con argumentos idénticos y comparte la caché de `searchProducts`, así deduplica igual sin
+  peticiones de más. Sin categoría, la segunda sección muestra del 6.º al 10.º.
 
 ## Notas para la próxima sesión
-- Fases 1 a 3 hechas. El build del worktree sólo compila con `--webpack` (Turbopack rechaza la junction
+- Fases 1 a 4 hechas. El build del worktree sólo compila con `--webpack` (Turbopack rechaza la junction
   de `node_modules`); el build con Turbopack y el `.env` local se corre en el checkout principal
   tras el merge.
 - `main` local va 2 commits por delante de `origin/main` (instalador del equipo sin push): al

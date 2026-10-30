@@ -3,7 +3,7 @@
 **Objetivo:** que un `.env` incompleto no llegue a producción, que `/api/events` y
 `/api/suggestions` tengan límite por IP, que las respuestas lleven cabeceras de seguridad y que los
 recomendados del producto no repitan el producto ni entre sí.
-**Estado:** en curso · Fase actual: 2
+**Estado:** en curso · Fase actual: 3
 
 ## Contexto mínimo
 - Spec: sin spec; origen en `posven/.claude/docs/evaluaciones/2026-10-28-evaluacion-sistema.md` (P3 y paso 5).
@@ -38,7 +38,7 @@ recomendados del producto no repitan el producto ni entre sí.
   tsc y eslint limpios.
 - **Commit:** `fix(config): falla en producción sin MARKETPLACE_MODE o SITE_URL`
 
-### [ ] Fase 2 — Límite por IP en /api/events y /api/suggestions
+### [x] Fase 2 — Límite por IP en /api/events y /api/suggestions
 - **Repo:** posven-ecommerce
 - **Alcance:** limitador en memoria por ventana fija y por IP (`clientIpFrom` de
   `features/account/server/session.ts`), con mapa acotado como `createDeduper`
@@ -78,9 +78,14 @@ recomendados del producto no repitan el producto ni entre sí.
   el `.env` del servidor tras el deploy). `next.config.ts` importa `./lib/env` relativo: `next
   build` se corre desde la raíz, como el workflow. `.env.example` no se tocó: la sesión no tiene
   permiso sobre `.env*`; lo documenta el usuario si quiere.
+- 2026-10-30 — Fase 2: `createRateLimiter(limit, windowMs)` en `lib/rate-limit.ts`, ventana fija
+  por IP con mapa acotado a 10 000 claves; `SUGGESTIONS_PER_MINUTE = 90` (el buscador pide cada
+  200 ms al teclear) y `EVENTS_PER_MINUTE = 180`. 429 sin cuerpo con `Retry-After`; el chequeo va
+  antes de leer cuerpo y cookie. `useSuggestions` ya trata cualquier no OK como sin sugerencias.
+  Contadores por proceso: con más de una instancia de PM2 cada una cuenta aparte.
 
 ## Notas para la próxima sesión
-- Fase 1 hecha. El build del worktree sólo compila con `--webpack` (Turbopack rechaza la junction
+- Fases 1 y 2 hechas. El build del worktree sólo compila con `--webpack` (Turbopack rechaza la junction
   de `node_modules`); el build con Turbopack y el `.env` local se corre en el checkout principal
   tras el merge.
 - `main` local va 2 commits por delante de `origin/main` (instalador del equipo sin push): al

@@ -3,9 +3,9 @@ module: "events"
 path: "features/events"
 type: "feature"
 exports: ["EVENT_DEDUP_WINDOW_MS", "isBot", "createDeduper", "handleEvent", "sendBeaconEvent", "ContactButtons", "ViewBeacon", "POST /api/events"]
-depends_on: ["lib/marketplace/client.ts", "features/account/server/session.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "components/ui/button.tsx"]
+depends_on: ["lib/marketplace/client.ts", "features/account/server/session.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "components/ui/button.tsx", "lib/rate-limit.ts"]
 tests: "features/events/__tests__/*.test.{ts,tsx}"
-verified_against: ["features/events/lib/handle.ts", "features/events/lib/beacon.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "app/api/events/route.ts", "features/account/server/session.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "components/ui/button.tsx"]
+verified_against: ["features/events/lib/handle.ts", "features/events/lib/beacon.ts", "features/events/components/ContactButtons.tsx", "features/events/components/ViewBeacon.tsx", "app/api/events/route.ts", "features/account/server/session.ts", "lib/marketplace/client.ts", "lib/marketplace/schemas.ts", "lib/site.ts", "components/ui/button.tsx", "lib/rate-limit.ts"]
 verified_at: "953bc45"
 capabilities:
   - intent: "registrar una vista, un clic de contacto, una búsqueda o un agregado al carrito de quien busca"
@@ -87,6 +87,7 @@ estadísticas ni guarda nada propio.
 ## 6. Dependencias
 
 - `lib/marketplace/client.ts`: `sendEvent()` en `app/api/events/route.ts`.
+- `lib/rate-limit.ts`: `createRateLimiter()`, `EVENTS_PER_MINUTE` y `rateLimitedResponse()` en `app/api/events/route.ts`.
 - `features/account/server/session.ts`: `clientIpFrom()` en `app/api/events/route.ts`.
 - `lib/marketplace/schemas.ts`: `eventInputSchema` y los tipos `EventInput`, `MarketplaceEvent`, `EventType`, `StoreSummary`, `Restriction`.
 - `lib/site.ts` (`SITE_NAME`) y `components/ui/button.tsx` (`buttonVariants`).
@@ -119,7 +120,7 @@ export function StoreContact({ store }: { store: StoreSummary }) {
 - Un producto `recipe` se muestra sin WhatsApp y con "Llamar" y "Ver ruta" (spec §3.1, ítem 5); "Ver ruta" abre sólo Google Maps.
 - La deduplicación vive en la memoria del proceso: con varias instancias del servidor, cada una deduplica por su cuenta.
 - La memoria del deduplicador tiene tope: con más de 10 000 claves sin vencer (un cliente sin cookies estrena `sid` en cada petición) se descartan las más viejas, así que un duplicado de una clave descartada se reenvía otra vez.
-- `handleEvent` rechaza con 400 un cuerpo de más de 1024 caracteres antes de parsearlo; `route.ts` lo lee entero con `request.text()` y no limita la frecuencia por IP: la limita posveapi (`marketplace-events`) por la IP que llega en `X-Client-IP`.
+- `handleEvent` rechaza con 400 un cuerpo de más de 1024 caracteres antes de parsearlo; `route.ts` lo lee entero con `request.text()` y limita la frecuencia por IP antes de leerlo: más de `EVENTS_PER_MINUTE` (180) en un minuto responde 429 con `Retry-After`, sin IP válida no se limita, y el contador vive en la memoria del proceso (`lib/rate-limit.ts`). Además la limita posveapi (`marketplace-events`) por la IP que llega en `X-Client-IP`.
 
 ## 9. Pruebas
 
@@ -127,4 +128,4 @@ export function StoreContact({ store }: { store: StoreSummary }) {
 - `features/events/__tests__/handle.test.ts`: cuerpo inválido 400, `search` sin `query` ni `category_slug` 400, cuerpo de más de 1024 caracteres 400, `product_view` válido con `session_id`, `search` reenviado y deduplicado por `query` y `category_slug`, bot y user-agent nulo sin reenvío, duplicado dentro y fuera de la ventana, descarte de la clave más vieja con el tope superado.
 - `features/events/__tests__/ContactButtons.test.tsx`: los tres `href`, sin WhatsApp por falta de número o por `recipe`, sin "Llamar" sin teléfono, clic en "Ver ruta" manda `click_route`.
 - `features/events/__tests__/ViewBeacon.test.tsx`: un rerender con el mismo evento o con props ajenas al evento (cambio de orden) envía una sola vez; otro `query` u otro `results_count` envía una vez más.
-- `features/events/__tests__/route.test.ts`: `POST /api/events` pasa a `sendEvent` el último valor de `x-forwarded-for` como `clientIp`, y `null` sin cabecera o con un valor que no es IP.
+- `features/events/__tests__/route.test.ts`: `POST /api/events` pasa a `sendEvent` el último valor de `x-forwarded-for` como `clientIp`, y `null` sin cabecera o con un valor que no es IP; pasado `EVENTS_PER_MINUTE` por IP responde 429 con `Retry-After`.

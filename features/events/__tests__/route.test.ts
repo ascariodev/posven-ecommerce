@@ -13,6 +13,7 @@ vi.mock("next/server", () => ({ after: (task: () => unknown) => task() }));
 vi.mock("@/lib/marketplace/client", () => ({ sendEvent }));
 
 import { POST } from "@/app/api/events/route";
+import { EVENTS_PER_MINUTE } from "@/lib/rate-limit";
 
 let counter = 0;
 
@@ -53,5 +54,16 @@ describe("POST /api/events", () => {
   it("pasa null si el último valor no es una IP válida", async () => {
     await post("203.0.113.9, no-es-una-ip");
     expect(sendEvent.mock.calls[0]?.[1]).toBeNull();
+  });
+
+  it("pasado el límite por IP responde 429 con Retry-After sin reenviar; otra IP y sin IP no se limitan", async () => {
+    for (let i = 0; i < EVENTS_PER_MINUTE; i += 1) expect((await post("192.0.2.1")).status).toBe(202);
+    sendEvent.mockClear();
+    const limited = await post("192.0.2.1");
+    expect(limited.status).toBe(429);
+    expect(Number(limited.headers.get("Retry-After"))).toBeGreaterThan(0);
+    expect(sendEvent).not.toHaveBeenCalled();
+    expect((await post("192.0.2.2")).status).toBe(202);
+    for (let i = 0; i < EVENTS_PER_MINUTE + 5; i += 1) expect((await post(null)).status).toBe(202);
   });
 });

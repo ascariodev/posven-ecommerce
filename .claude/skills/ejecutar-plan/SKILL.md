@@ -42,11 +42,15 @@ los subagentes. Nunca `cd`: `git -C <árbol>` y rutas absolutas.
    - `CONSULTA` o `BLOQUEADO`: para (ver "Cuándo parar").
 3. **Verificar:** corre la verificación proporcional del repo (`.claude/CLAUDE.comun.md` §5) con salida
    resumida.
-4. **Revisar:** despacha `revisor-fase` con la ruta del plan, la fase y el árbol. Si la fase
-   condensa documentación, despacha además `doc-verifier`.
+4. **Revisar:** despacha `revisor-fase` con la ruta del plan, la fase y el árbol, con el mismo
+   `model` que el implementador (opus si es `[riesgo]`, sonnet si no). Si la fase condensa
+   documentación, despacha además `doc-verifier`.
    - `LISTO`: sigue al paso 5.
    - `CAMBIOS NECESARIOS`: despacha `implementador-fase` con los problemas. Máximo **2 rondas
-     de corrección** por fase; si sigue fallando, para.
+     de corrección** por fase; si sigue fallando, para. Una corrección de pocas líneas en un
+     archivo la compruebas tú con `git -C <árbol> diff -- <archivo>` contra el problema señalado,
+     sin otra revisión completa; con varios archivos o un cambio de diseño, vuelve al revisor
+     (mediciones `M-01`).
 5. **Cerrar**, siguiendo `cerrar-fase` salvo la revisión, que ya hiciste: fase `[x]`, línea de
    Estado, "Decisiones" (incluidas las firmas que quedaron distintas del plan) y "Notas para la
    próxima sesión" con lo que reportó el subagente, lección si hubo retrabajo, y **un commit por

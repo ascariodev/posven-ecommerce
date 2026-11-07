@@ -108,15 +108,17 @@ Nunca se reporta como pasando algo que no se corrió. El frontend de posveapi se
 El estado vive en el plan, no en la conversación; dónde vive y cómo se compone: regla
 `plan-composition`. El hook `SessionStart` (`plan-state`) reinyecta el plan en curso.
 
-1. `/planificar <tarea>`: fases según `plan-composition`; espera aprobación.
+1. `/planificar <tarea>`: todo el análisis y todas las dudas se resuelven aquí, con un brief
+   completo por fase según `plan-composition`; espera aprobación.
 2. Ejecutar: `/ejecutar-plan <tarea>` (automático: `implementador-fase` + `revisor-fase`, un
    commit por fase) o, a mano, `/siguiente-fase <tarea>` → `/cerrar-fase <tarea>` → `/clear`.
 3. Lo no implementado va a `## Mejoras propuestas` como `M-<n>`: `/aplicar-mejoras <tarea>`.
 
-Una fase por sesión. Leer sólo lo que la fase necesita y explorar con subagentes que consulten el
-grafo primero. Una fase que crece se divide en el plan. Las decisiones se escriben en el plan.
-`docs/conventions/lessons.md` del repo se lee antes de implementar. Estas skills, salvo
-`cerrar-fase`, se activan en lenguaje natural.
+Una fase por sesión. La ejecución sólo implementa y no se detiene por dudas: opción recomendada
+anotada en `<tarea>.dudas.md`, que se presenta al final; lo que pide plan se escribe como plan
+`propuesto` y se sigue (regla `plan-composition`). Las decisiones se escriben en el plan.
+`docs/conventions/lessons.md` del repo se lee entero al planificar; al implementar, las `L-n`
+que cita el plan. Estas skills, salvo `cerrar-fase`, se activan en lenguaje natural.
 
 ## 8. Otras skills y agentes
 

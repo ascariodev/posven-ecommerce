@@ -2,37 +2,30 @@
 
 **Objetivo:** <qué debe quedar funcionando al final, en 1–2 líneas>
 **Estado:** en curso · Fase actual: 1
-<!-- El hook plan-state busca "en curso" en esta línea. Al terminar el plan: "terminado". -->
-<!-- Mantén el plan corto: detalla solo la fase siguiente; las lejanas, en 2–3 líneas.
-     Criterios de tamaño y cuándo se separa una fase: regla plan-composition. -->
+**Depende de:** <plan previo encadenado, o "ninguno">
+<!-- El hook plan-state busca "en curso" en esta línea. Al terminar: "terminado"; un plan escrito
+     durante otra ejecución y sin aprobar: "propuesto".
+     Tope de líneas y fases, y contenido del brief de cada fase: regla plan-composition. -->
 
 ## Contexto mínimo
-<!-- Solo lo que una sesión nueva necesita saber para arrancar. -->
+<!-- Sólo lo que una sesión nueva necesita para arrancar. -->
 - Spec: `<ruta#sección>` o "sin spec"
 - Repos y ramas: `<repo>` en `<árbol, ruta absoluta>`, rama `<rama>` (una línea por repo)
-- Restricciones: <invariantes que toca: fiscal, multiempresa por company_id, contrato API-TPV,
-  migraciones aditivas en SQLite...>
+- Restricciones: <invariantes que toca y lecciones L-n que aplican>
 - Archivos principales: `...`
 
 ## Fases
-<!-- Una fase = una sesión: máx. ~5 archivos sin contar tests, un solo objetivo, un criterio
-     verificable, el repo funcionando al terminar, y un solo repo. Backend antes que TPV.
-     Marcar con [riesgo] las fases con incertidumbre alta: se despachan con opus. -->
 
 ### [ ] Fase 1 — <nombre>
 - **Repo:** <posveapi | posvenapp | posven-ecommerce | posven/.claude>
-- **Alcance:** ...
-- **Archivos:** `...`
-- **Terminado cuando:** <test que pasa / comportamiento verificable, con el comando>
+- **Archivos:** `<ruta>:<ancla>` (uno por línea si son varios, con tests y README)
+- **Pasos:**
+  1. <en `<archivo>`, qué cambiar: firma, nombre, valor, regla o lección que aplica>
+- **Terminado cuando:** <comando exacto y lo que debe dar>
 - **Commit:** `<tipo(área): resumen en español>`
 
-### [ ] Fase 2 — <nombre>
-- **Repo:** ...
-- **Alcance:** ...
-- **Terminado cuando:** ...
-
 ## Decisiones
-<!-- Fecha — decisión — motivo. Esto reemplaza lo que se perdería al compactar. -->
+<!-- Fecha — decisión — motivo. Incluye las respuestas de la planificación. -->
 - 
 
 ## Notas para la próxima sesión

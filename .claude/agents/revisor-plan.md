@@ -26,6 +26,8 @@ Recibes la ruta de uno o más planes encadenados y, por repo, el árbol (ruta ab
    Grep). Toda vía que encuentres y no esté en una fase ni en "Decisiones" es un problema.
 5. **Transición:** la línea existe y cubre datos existentes, TPV con versión o caché anterior y
    orden del deploy; un paso manual de deploy que se puede resolver en código es un problema.
+   **Arrastres:** busca por tu cuenta, como dice la regla `plan-cobertura`, lo que otros planes
+   dejaron para este; el que no esté en una fase ni en "Decisiones" es un problema.
 6. **Brief:** pasos sin verbos de análisis, "Terminado cuando" con comando, `[riesgo]` y
    `[pantalla]` donde la regla los pide, tamaño dentro del tope.
 

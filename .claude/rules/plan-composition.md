@@ -27,7 +27,8 @@ El implementador no analiza: ejecuta el brief. Cada fase trae, resuelto al plani
    análisis ("revisar", "evaluar", "decidir", "investigar", "si hace falta").
 3. **Terminado cuando** con el comando exacto y lo que debe dar, y **Commit**.
 
-Las líneas Vías y Transición del Contexto mínimo y la fase `[pantalla]`: regla `plan-cobertura`.
+Las líneas Vías, Transición y Arrastres del Contexto mínimo y la fase `[pantalla]`: regla
+`plan-cobertura`.
 
 ## Tamaño y separación de fases
 

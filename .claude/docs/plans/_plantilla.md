@@ -14,6 +14,8 @@
 - Restricciones: <invariantes que toca y lecciones L-n que aplican>
 - Vías: <cada entrada que produce el efecto y cada lector del estado nuevo → fase N o "fuera: motivo">
 - Transición: <datos existentes, TPV con versión o caché anterior, orden del deploy>
+- Arrastres: <lo que otros planes dejaron para este → fase N o Decisiones, o "ninguno">
+<!-- Vías, Transición y Arrastres: regla plan-cobertura. -->
 - Archivos principales: `...`
 
 ## Fases

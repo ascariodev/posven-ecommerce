@@ -1,17 +1,17 @@
 {
   "repo": "posven-ecommerce",
   "fuente": {
-    "commit": "a950d207144dd09f523e9b364067a90e60c0f158",
+    "commit": "994f05d589ea38bbf109c17783f4d63022284116",
     "conCambios": true
   },
   "archivos": {
     "agents/doc-verifier.md": "b09e93c7837990f252386b05c88f84a5f58bfeb1bd99cff6ef96daf1b1d29987",
     "agents/implementador-fase.md": "1678221020886cad633deef5664f818084e27b75496311880299f7d04fe5649b",
     "agents/revisor-fase.md": "a0687f2b43c1461a71d2f398faf560d765db12da84fa8599a4aaef23ec2ce5b4",
-    "agents/revisor-plan.md": "d8c8b6018ca08fe668cabb356edf5cca026e6d58ca93dd24bc90be62e635b0c6",
+    "agents/revisor-plan.md": "531791a340134affd08c7ff9e46fbf56d1efe038a37a20602732f6bb27282219",
     "CLAUDE.comun.md": "df9c9c36176b5c1ec13b13842636db0e45d80465b88b502bbe936f217a27aad7",
     "docs/conventions/module-readme.md": "a84fcf30cde29cefb3f7ab4ab3c709c070662bf872d3008c8e8045d82655d3e5",
-    "docs/plans/_plantilla.md": "a7c87652324f1c6ae715a8e4d9b99a240125c9f9bce03298bab412c241b7fe88",
+    "docs/plans/_plantilla.md": "16a3597bce7a333a55db9ebf160df160a39067eee871c30f8fe6ebfb0690acc2",
     "hooks/check-worktree.mjs": "8d38d3d13a364763ece388eaf2ad54244ca40edb28ffa863c40e946e3c6981b0",
     "hooks/context-guard.mjs": "49007c744cc8b3018ad41547af0a052e10331c595b03e2a25be7f5acc22308c9",
     "hooks/db-write-guard.mjs": "add5163de8898e38e5dbedbc54dcfb1c63cc044903f5512ddd6d5b56d8661780",
@@ -23,8 +23,8 @@
     "rules/docs-authoring.md": "0f28bd301883a1cdeef35b6fbca036a733bb32779b317bdb1c3e5cbe6232bf99",
     "rules/lessons-authoring.md": "7b1a87326410c59a33dd1fa967746dc2d4bb2857b148b16699d60ba476f351c8",
     "rules/module-readme.md": "7db66ab818a3d8bdb81df8146d7d4ac8caf32f803403d9c7ec7d1f7f18dda8e4",
-    "rules/plan-cobertura.md": "ac3bf0da412d2cd49635f535dd49851f9e8c1527020c763387316328a8592018",
-    "rules/plan-composition.md": "8be3863c5b9ff58a6b7d35357cdb8950529892741b18f77cb585e887bf84a412",
+    "rules/plan-cobertura.md": "f411f3d85ca18d4d497254e67abd07f1120f025586fceedbcf9c4db6515ee571",
+    "rules/plan-composition.md": "602a5c4ea16d817188c688a1b52ef16ef3420847e67b724795efbd5d84dd238b",
     "scripts/census.mjs": "7a136d227b68b1899d80e6f7ef469d49fab93e653f5fcd31078e0e857c457905",
     "scripts/docs-check.mjs": "825d0a482a790e0344006de9ed53c7c9ceb26534d75509fca31e5f9cdf9f8402",
     "scripts/generate-index.mjs": "29f634e9ca58e0039cba974c3dd543eca056fd8f55f6e6c74021e27eed4f4cd9",
@@ -40,7 +40,7 @@
     "skills/discovery/SKILL.md": "07db9fce0c43f79988a2e44eec119a714e5c6e4b99405c271309e4ba73e7f174",
     "skills/ejecutar-plan/SKILL.md": "10fcf7b1365dd124408256731fa544d886eea61851c34d2c1f488e6a12ee653c",
     "skills/new-page/SKILL.md": "c3264eaf5f41fcf751b87b97c84eaa018cb59a3e06f230c5e5e3eb9fe2690327",
-    "skills/planificar/SKILL.md": "df053b4113738448f20f34d8158f086e206af55044f80e8ecf893c7b3f92c667",
+    "skills/planificar/SKILL.md": "84e6a47b59dba6996aa891d86b3fc580be5152d556079572e553526b879bb262",
     "skills/siguiente-fase/SKILL.md": "c63333eea367d008c1e18e441c397902a85b2551b4ea73d41580f2d54a326def",
     "skills/spec-lookup/SKILL.md": "bb801e5b550682e0785a0bdafb1c7132e9c3c6142b8db38ad9057d4e416064db"
   }

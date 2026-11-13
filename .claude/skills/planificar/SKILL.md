@@ -29,7 +29,7 @@ caminos.
      `graphify affected` por cada símbolo o campo de contrato que el plan cambia o quita: cada
      llamador queda en el `Archivos` de alguna fase. Si el grafo parece rancio, dilo y pregunta
      antes de reconstruirlo; donde no alcanza, Grep dirigido.
-   - Las **Vías** y la **Transición** de la regla `.claude/rules/plan-cobertura.md` (léela a
+   - Las **Vías**, la **Transición** y los **Arrastres** de la regla `.claude/rules/plan-cobertura.md` (léela a
      mano), buscadas por el efecto en el grafo y con Grep, no sólo por `affected`.
 2. **Cerrar las dudas antes de escribir.** Junta todo lo que el código y la spec no resuelven
    (comportamiento, nombres visibles, casos borde, compatibilidad, datos existentes, vías que

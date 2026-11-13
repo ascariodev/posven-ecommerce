@@ -45,7 +45,8 @@ absolutas.
    (`git -C <árbol> add <rutas>`, nunca `-A`), el mensaje `Commit:` de la fase, sin atribución.
    En posveapi, `--no-verify` solo si lo autoricé en esta sesión. Sin push.
 8. Termina con: "Listo. Haz /clear y luego /siguiente-fase $ARGUMENTS" (o "Plan terminado" si era
-   la última fase, más las dudas de `<tarea>.dudas.md` con la opción tomada, los planes
+   la última fase, más las dudas de `<tarea>.dudas.md` con la opción tomada, primero las
+   `[comportamiento]` (el merge espera mi sí sobre ellas), los planes
    `propuesto` que se escribieron, la tabla de mejoras pendientes y "se aplican con
    /aplicar-mejoras $ARGUMENTS" si las hay, y la propuesta de merge y cierre de los worktrees
    con el script de `.claude/CLAUDE.comun.md` §2).

@@ -12,6 +12,8 @@
 - Spec: `<ruta#sección>` o "sin spec"
 - Repos y ramas: `<repo>` en `<árbol, ruta absoluta>`, rama `<rama>` (una línea por repo)
 - Restricciones: <invariantes que toca y lecciones L-n que aplican>
+- Vías: <cada entrada que produce el efecto y cada lector del estado nuevo → fase N o "fuera: motivo">
+- Transición: <datos existentes, TPV con versión o caché anterior, orden del deploy>
 - Archivos principales: `...`
 
 ## Fases

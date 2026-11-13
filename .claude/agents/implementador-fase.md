@@ -37,6 +37,7 @@ Tu respuesta final es un reporte de máximo 12 líneas, sin pegar código ni dif
 - **Estado:** HECHO | BLOQUEADO
 - **Archivos modificados:** lista corta, marcando los que no estaban en el brief
 - **Criterio de terminado:** cumplido / no cumplido, con el comando que corriste y su resultado
-- **Dudas resueltas:** `<duda> → <opción tomada> (alternativa: <otra>)`, o "ninguna"
+- **Dudas resueltas:** `<duda> → <opción tomada> (alternativa: <otra>)`, con `[comportamiento]`
+  delante cuando corresponde según la regla `plan-composition`, o "ninguna"
 - **Decisiones** que afecten fases futuras, incluidas firmas distintas de las del plan (o "ninguna")
 - Si es BLOQUEADO: el motivo, con `archivo:línea`, en 1–3 líneas

@@ -81,6 +81,6 @@ como nuevas `M-<n>` clasificadas; no se aplican en esta corrida salvo que el usu
 ## Al terminar
 Resume en máximo 6 líneas: mejoras aplicadas con su modelo y commit, las pendientes y por qué,
 los planes `propuesto` que escribiste, y pasos de deploy si alguna los requiere. Presenta
-`<tarea>.dudas.md` con cada duda y la opción tomada. Propón en una línea
-el merge con el script (`merge`, `publicar` y `cerrar`, `.claude/CLAUDE.comun.md` §2); no lo corras sin
+`<tarea>.dudas.md` con cada duda y la opción tomada, primero las `[comportamiento]`. Propón en
+una línea, tras el sí del usuario sobre ellas, el merge con el script (`merge`, `publicar` y `cerrar`, `.claude/CLAUDE.comun.md` §2); no lo corras sin
 el sí.

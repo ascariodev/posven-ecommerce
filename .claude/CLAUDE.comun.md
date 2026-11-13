@@ -19,7 +19,7 @@ espacio de quien coordina, y la copia del repo no se edita a mano.
   al código hace del código el defecto, salvo que la tarea sea cambiar la regla.
 - Las `.claude/rules/*.md` con `paths:` se cargan solas al abrir con Read un archivo que casa,
   incluidas las comunes (`docs-authoring`, `lessons-authoring`, `plan-composition`,
-  `module-readme`). No se disparan al crear el primer archivo de su tipo: si vas a crear uno sin
+  `plan-cobertura`, `module-readme`). No se disparan al crear el primer archivo de su tipo: si vas a crear uno sin
   haber leído un vecino, lee antes la regla a mano.
 - Convenciones: `docs/conventions/` del repo (`lessons.md`, que se lee entero antes de
   planificar, `engineering.md` y la plantilla de README); el contrato de README de módulo y las

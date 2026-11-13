@@ -21,7 +21,9 @@ Recibes la ruta del plan, el número de la fase o el id `M-<n>` de la mejora, el
    gobiernan los archivos del diff y `<árbol>/docs/conventions/lessons.md`. Mira en especial:
    aritmética fiscal, `company_id` en toda consulta multiempresa, contrato API-TPV, migraciones
    SQLite solo aditivas y README de módulo al día en el mismo cambio, aunque el brief no lo
-   listara.
+   listara. Si el diff agrega o cambia un efecto (stock, totales, documento, campo) que otra
+   ruta del repo también produce o lee y no está en las Vías del plan, va a Problemas si rompe
+   algo hoy y, si no, a Dudas como `[comportamiento]`.
 4. Si el diff cambia o quita un símbolo exportado o un campo del contrato API-TPV, corre
    `graphify affected` con `--graph <padre>/.graphify-workspace/<repo>/graphify-out/graph.json`
    (`<padre>`: carpeta padre de los repos; o `cross-repo/graph.json`), crúzalo con el diff
@@ -34,7 +36,8 @@ Reporta en máximo 18 líneas:
 - **Cumple el brief:** sí/no. Lo que falta o lo que se hizo fuera del brief.
 - **Dudas:** por cada duda resuelta del implementador, "confirmada" o el problema que causa (va
   también en Problemas); y las que el diff destapa, con la opción recomendada, para que el
-  coordinador las anote en `<tarea>.dudas.md`. O "ninguna".
+  coordinador las anote en `<tarea>.dudas.md`, con `[comportamiento]` delante cuando corresponde
+  según la regla `plan-composition`. O "ninguna".
 - **Problemas** (solo reales, con `archivo:línea` y qué cambiar, para que el coordinador lo pase
   como paso concreto): bugs, casos borde sin cubrir, violaciones de convenciones, secretos o
   datos sensibles en el diff.

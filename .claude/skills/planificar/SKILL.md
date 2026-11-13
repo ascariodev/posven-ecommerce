@@ -29,8 +29,11 @@ caminos.
      `graphify affected` por cada símbolo o campo de contrato que el plan cambia o quita: cada
      llamador queda en el `Archivos` de alguna fase. Si el grafo parece rancio, dilo y pregunta
      antes de reconstruirlo; donde no alcanza, Grep dirigido.
+   - Las **Vías** y la **Transición** de la regla `.claude/rules/plan-cobertura.md` (léela a
+     mano), buscadas por el efecto en el grafo y con Grep, no sólo por `affected`.
 2. **Cerrar las dudas antes de escribir.** Junta todo lo que el código y la spec no resuelven
-   (comportamiento, nombres visibles, casos borde, compatibilidad, datos existentes) y pregúntalo
+   (comportamiento, nombres visibles, casos borde, compatibilidad, datos existentes, vías que
+   quedarían fuera, orden del deploy) y pregúntalo
    en una sola tanda, cada pregunta con su opción recomendada primero. Lo que el usuario no
    contesta o delega se decide con la recomendada. Toda respuesta va a "Decisiones". El plan no
    queda con "por definir", "evaluar", "investigar" ni "si hace falta".
@@ -40,13 +43,18 @@ caminos.
 4. Divide en fases según `.claude/rules/plan-composition.md` (léela a mano: crear el plan no
    la dispara). **Toda fase lleva su brief completo** según la regla, no sólo la primera: repo,
    archivos con ancla, pasos concretos, "Terminado cuando" con el comando del repo y commit
-   (conventional commit en español, sin atribución). Marca `[riesgo]` donde la regla lo indica.
+   (conventional commit en español, sin atribución). Marca `[riesgo]` donde la regla lo indica y
+   agrega la fase `[pantalla]` si el plan cambia una pantalla.
 5. **Tamaño del plan:** si pasa del límite de la regla (líneas o fases), divídelo en planes
    encadenados (`<tarea>-a`, `<tarea>-b`...), cada uno con su objetivo verificable y su línea
    "Depende de". Se presentan juntos y se aprueban de una vez.
 6. Revisa el plan contra la regla: brief completo en cada fase, sin verbos de análisis en los
    pasos, sin contradicciones entre fases ni con las Restricciones, cada llamador de `affected`
-   cubierto, y "Decisiones" con todo lo resuelto en el paso 2.
+   cubierto, y "Decisiones" con todo lo resuelto en el paso 2. Después despacha el agente
+   `revisor-plan` (`model: opus`) con la ruta de cada plan y las ramas, sin tus conclusiones;
+   corrige cada problema que reporte y vuelve a despacharlo si cambiaste fases (máximo 2 rondas).
+   Lo que decidas no corregir va a "Decisiones" con el motivo.
 7. No implementes nada. Muéstrame una tabla resumen (plan, fase, repo, nº de archivos, riesgo),
-   las líneas de cada plan y las decisiones tomadas con la opción recomendada sin que yo las
-   contestara, y espera mi aprobación. Aprobado, propón el commit del plan en su repo.
+   las líneas de cada plan, las vías que quedan fuera, lo que pide la transición en el deploy y
+   las decisiones tomadas con la opción recomendada sin que yo las contestara, y espera mi
+   aprobación. Aprobado, propón el commit del plan en su repo.

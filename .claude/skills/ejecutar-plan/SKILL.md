@@ -39,7 +39,10 @@ rutas absolutas.
    dirigido, y lo pasas como "Ajustes".
 2. **Implementar:** despacha `implementador-fase` con repo, árbol, rama y, pegados en el prompt,
    el texto de la fase, las Restricciones del Contexto mínimo, las Decisiones que la tocan y los
-   Ajustes. Fase `[riesgo]`: `model: opus`; si no, `model: sonnet`. Pasa siempre `model`.
+   Ajustes. Fase `[riesgo]`: `model: opus`; si no, `model: sonnet`. Pasa siempre `model`. La
+   fase `[pantalla]` no se despacha: la corres tú en el navegador con su escenario (regla
+   `plan-cobertura`), anotas en "Notas" lo que viste y un fallo se corrige como un
+   `CAMBIOS NECESARIOS` sobre la fase que lo causó.
    - `HECHO`: sigue al paso 3. Sus "Dudas resueltas" van a `<tarea>.dudas.md`.
    - `BLOQUEADO`: analiza tú el motivo y vuelve a despachar con el brief corregido. Si lo que
      falta cambia el alcance, la parte nueva va a un plan `propuesto` y la fase sigue con lo
@@ -75,9 +78,10 @@ necesitas, y espera. Cuando responda, retoma desde la fase pendiente.
 ## Al terminar el plan
 Estado `terminado`, plan y `<tarea>.dudas.md` a `terminados/` de su carpeta, poda de lecciones
 ya promovidas, commit, y resumen en máximo 8 líneas: fases, commits, decisiones relevantes,
-lecciones nuevas y pasos de deploy en orden. Después presenta `<tarea>.dudas.md`: cada duda con
-la opción tomada, y los planes `propuesto` que se escribieron. Si hay mejoras pendientes, una
+lecciones nuevas y pasos de deploy en orden. Después presenta `<tarea>.dudas.md`: primero las
+`[comportamiento]`, cada duda con la opción tomada, y los planes `propuesto` que se escribieron. Si hay mejoras pendientes, una
 tabla corta (id, mejora, repo, complejidad, modelo) y que se aplican con `/aplicar-mejoras
 <tarea>`. Cierra proponiendo en una línea, en este orden, el merge de cada repo con el script
 (`merge`, `publicar` y `cerrar`, `.claude/CLAUDE.comun.md` §2) y actualizar el grafo de cada repo
-tocado, y el cross-repo si el plan cruzó repos (skill `discovery`); nada de eso sin el sí.
+tocado, y el cross-repo si el plan cruzó repos (skill `discovery`); nada de eso sin el sí, y el
+merge, además, sólo tras el sí del usuario sobre las dudas `[comportamiento]`.

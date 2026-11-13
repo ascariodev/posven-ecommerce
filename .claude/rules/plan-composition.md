@@ -27,6 +27,8 @@ El implementador no analiza: ejecuta el brief. Cada fase trae, resuelto al plani
    análisis ("revisar", "evaluar", "decidir", "investigar", "si hace falta").
 3. **Terminado cuando** con el comando exacto y lo que debe dar, y **Commit**.
 
+Las líneas Vías y Transición del Contexto mínimo y la fase `[pantalla]`: regla `plan-cobertura`.
+
 ## Tamaño y separación de fases
 
 Una fase cumple todo: máximo ~5 archivos sin contar tests; un solo objetivo (si el nombre
@@ -46,7 +48,11 @@ La ejecución no se detiene por una duda: se toma la opción recomendada (la que
 las Restricciones y el contrato vigente y es más fácil de revertir; nunca cambia un contrato
 público ni el API-TPV que el plan no prevé, eso va a plan nuevo) y se anota en
 `<tarea>.dudas.md` junto al plan (`- Fase N: <duda> → <opción> (alternativa: <otra>)`), que se
-presenta al usuario al terminar. Un arreglo que no cabe en la fase ni en una mejora se escribe
+presenta al usuario al terminar. Lleva `[comportamiento]` tras `Fase N:` la duda cuya opción
+cambia lo que ve o recibe un usuario, el TPV u otro consumidor (mensaje, código HTTP, dato,
+campo), deja una vía o un caso sin cubrir o acepta un riesgo (pérdida, duplicado, ventana de
+fallo); firmas, nombres internos y forma de los tests van sin marca. Las `[comportamiento]` se
+presentan primero y el merge espera el sí del usuario sobre ellas. Un arreglo que no cabe en la fase ni en una mejora se escribe
 como plan nuevo con Estado `propuesto` y el contexto ya reunido, se anota ahí y la ejecución
 sigue; ese plan se ejecuta cuando el usuario lo pida.
 

@@ -1,7 +1,7 @@
 {
   "repo": "posven-ecommerce",
   "fuente": {
-    "commit": "994f05d589ea38bbf109c17783f4d63022284116",
+    "commit": "0887b4fde6e31c238e81812f0e969cee2d5ae2ff",
     "conCambios": true
   },
   "archivos": {
@@ -25,7 +25,7 @@
     "rules/module-readme.md": "7db66ab818a3d8bdb81df8146d7d4ac8caf32f803403d9c7ec7d1f7f18dda8e4",
     "rules/plan-cobertura.md": "f411f3d85ca18d4d497254e67abd07f1120f025586fceedbcf9c4db6515ee571",
     "rules/plan-composition.md": "602a5c4ea16d817188c688a1b52ef16ef3420847e67b724795efbd5d84dd238b",
-    "scripts/census.mjs": "7a136d227b68b1899d80e6f7ef469d49fab93e653f5fcd31078e0e857c457905",
+    "scripts/census.mjs": "8d5611afe0af7f1bd7a11b9600f491b9691156db942a64c34cac4103e95be4c4",
     "scripts/docs-check.mjs": "825d0a482a790e0344006de9ed53c7c9ceb26534d75509fca31e5f9cdf9f8402",
     "scripts/generate-index.mjs": "29f634e9ca58e0039cba974c3dd543eca056fd8f55f6e6c74021e27eed4f4cd9",
     "scripts/lib/common.mjs": "6014e24b0748b355ba510c510c65dd76f9970bc57b82c5363b278a16603a778d",

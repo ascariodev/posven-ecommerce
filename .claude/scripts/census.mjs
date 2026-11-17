@@ -7,7 +7,7 @@
 import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { POSVEN, REPO_NAMES, WORKSPACE, gitLs, repoDir } from './lib/common.mjs';
+import { REPO_NAMES, WORKSPACE, gitLs, repoDir } from './lib/common.mjs';
 
 const CODE = {
   posveapi: ['app/**/*.php', 'resources/js/**/*.vue', 'resources/js/**/*.js'],

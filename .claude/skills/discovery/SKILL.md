@@ -96,7 +96,8 @@ Al despachar un subagente que explora, el texto nombra el símbolo de partida y 
   checkout principal, así que un plan hecho en un worktree se refleja recién cuando su rama llega
   ahí. Si el plan cruzó repos, rehaz el cross-repo con los tres grafos:
   `graphify merge-graphs <api> <app> <ecommerce> --out "<padre>/.graphify-workspace/cross-repo/graph.json"`.
-  El grafo de un árbol `feat/v3` se actualiza sobre su árbol, sin cambios sin commit:
-  `GRAPHIFY_OUT="<padre>/.graphify-workspace/<repo>-v3/graphify-out" graphify update "<padre>/<repo>/.claude/worktrees/v3"`.
+  El grafo de un árbol `feat/v3` se actualiza sobre su árbol (su ruta:
+  `node <padre>/<repo>/.claude/scripts/worktree.mjs listar <padre>/<repo>`), sin cambios sin commit:
+  `GRAPHIFY_OUT="<padre>/.graphify-workspace/<repo>-v3/graphify-out" graphify update "<árbol feat/v3>"`.
 - Si `graphify` no está disponible, dilo en una línea y sigue con README y búsqueda directa; no
   se da el grafo por consultado.

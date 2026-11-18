@@ -52,7 +52,7 @@ posveapi, y un campo requerido ausente hace fallar el `safeParse` del recurso en
 aplicada en: `posven-ecommerce/.claude/rules/contract.md` (punto 4)
 
 ## L-17
-Turbopack no compila en un worktree de `.claude/worktrees/`: su `node_modules` es una junction
+Turbopack no compila en un worktree: su `node_modules` es una junction
 fuera de la raíz y `next dev`/`next build` mueren con "Symlink ... points out of the filesystem
 root". En el worktree se compila con `node node_modules/next/dist/bin/next build --webpack`; el e2e
 y el build por defecto se corren en el checkout principal tras el merge.

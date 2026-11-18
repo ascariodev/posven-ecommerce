@@ -5,7 +5,7 @@
 // CLAUDE_PROJECT_DIR o, sin ella, dos niveles sobre el script. Si contiene posveapi/, posvenapp/ o
 // posven-ecommerce/ (espacio de trabajo) busca en los tres y en .claude/docs/plans; si no, es un
 // repo suelto y busca sólo en su docs/plans (y .claude/docs/plans si existe). En ambos casos mira
-// también docs/plans de cada worktree de `.claude/worktrees/`. De un plan con copias en varios
+// también docs/plans de cada worktree de `<padre>/.worktrees/<repo>/` y de `.claude/worktrees/`. De un plan con copias en varios
 // árboles vale la tocada por última vez (su último commit, o la fecha del archivo si tiene cambios
 // sin commit), contando las de `terminados/`. Un plan sin cambios hace más de STALE_DAYS días se
 // lista aparte, y con varios en curso no se ordena preguntar: el hook también corre tras
@@ -16,7 +16,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const MAX_NOTE_LINES = 30;
@@ -29,14 +29,16 @@ const STALE_DAYS = 7;
 // Un plan recién planificado vive en el worktree de su tarea hasta el merge; los temporales
 // `merge-*` no llevan planes propios.
 function worktreePlanDirs(repoDir) {
-  const root = join(repoDir, '.claude', 'worktrees');
-  try {
-    return readdirSync(root)
-      .filter((name) => !name.startsWith('merge-'))
-      .map((name) => join(root, name, 'docs', 'plans'));
-  } catch {
-    return [];
-  }
+  const roots = [join(dirname(repoDir), '.worktrees', basename(repoDir)), join(repoDir, '.claude', 'worktrees')];
+  return roots.flatMap((root) => {
+    try {
+      return readdirSync(root)
+        .filter((name) => !name.startsWith('merge-'))
+        .map((name) => join(root, name, 'docs', 'plans'));
+    } catch {
+      return [];
+    }
+  });
 }
 
 const repoDirs = workspace ? repos.map((r) => join(posven, r)) : [posven];

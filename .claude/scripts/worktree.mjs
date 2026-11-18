@@ -7,13 +7,17 @@
 // Regla en .claude/CLAUDE.comun.md §2.
 //
 // Uso: node <repo>/.claude/scripts/worktree.mjs <orden> ...
-//   crear <repo> <tarea> [--rama <rama>] [--desde <ref>]
-//       Crea <repo>/.claude/worktrees/<tarea> en <rama> (por omisión feat/<tarea>; nueva desde
-//       <ref>, por omisión la rama del checkout principal, que es la base). Si el checkout principal
-//       tiene node_modules, lo enlaza como junction. Excluye .claude/worktrees/ en .git/info/exclude.
+//   crear <repo> <tarea> [--rama <rama>] [--desde <ref>] [--sin-hook]
+//       Crea <padre>/.worktrees/<repo>/<tarea> (<padre>, la carpeta que contiene al checkout
+//       principal) en <rama> (por omisión feat/<tarea>; nueva desde <ref>, por omisión la rama del
+//       checkout principal, que es la base). Si el checkout principal tiene node_modules, lo enlaza
+//       como junction y lo excluye en .git/info/exclude si el .gitignore del repo no cubre el
+//       enlace. Enlaza .husky/_ al del checkout principal cuando existe, para que el hook de
+//       commit corra en el árbol, y lo excluye en .git/info/exclude; con --sin-hook no lo enlaza
+//       (rama cuyo hook no puede correr en un árbol).
 //   merge <repo> <rama> [--no-verify]
 //       Trae el remoto de la base y adelanta el checkout principal si quedó atrás; luego crea el
-//       worktree temporal desprendido .claude/worktrees/merge-<tarea> en la base y hace
+//       worktree temporal desprendido <padre>/.worktrees/<repo>/merge-<tarea> en la base y hace
 //       merge --no-ff <rama>. Con conflictos se detiene: se resuelven y commitean en ese árbol.
 //       La verificación del repo se corre en ese árbol antes de publicar.
 //   publicar <repo> <rama> [--push] [--no-verify]
@@ -26,6 +30,9 @@
 //       --descartar (branch -D), que sólo se usa cuando el usuario descarta la tarea.
 //   listar [repo]
 //       Worktrees del repo con rama, cambios sin commit y si ya están en la base.
+// Los árboles viven fuera del repo porque Claude Code carga el CLAUDE.md y las reglas de cada
+// carpeta que contiene al archivo leído. publicar y cerrar encuentran también uno que siga en
+// <repo>/.claude/worktrees/.
 // <repo> es cualquier ruta dentro del repo o de uno de sus worktrees. Push, merge y --no-verify
 // sólo con pedido explícito del usuario. Nunca se cierra el worktree de otra sesión.
 
@@ -80,20 +87,33 @@ function taskName(name) {
   return name;
 }
 
-const treePath = (main, task) => join(main, '.claude', 'worktrees', task);
-const mergeTree = (main, branch) => treePath(main, `merge-${taskName(branch.split('/').pop())}`);
+const treeRoot = main => join(dirname(main), '.worktrees', basename(main));
+const legacyRoot = main => join(main, '.claude', 'worktrees');
+const treePath = (main, task) => join(treeRoot(main), task);
+const existingTree = (main, task) => [treePath(main, task), join(legacyRoot(main), task)].find(existsSync);
+const mergeTask = branch => `merge-${taskName(branch.split('/').pop())}`;
 const mergeBaseFile = tmp => join(git(tmp, 'rev-parse', '--absolute-git-dir'), 'claude-merge-base');
 
-function excludeWorktrees({ main, common }) {
-  if (quiet(main, 'check-ignore', '-q', '.claude/worktrees/x')) return;
-  mkdirSync(join(common, 'info'), { recursive: true });
-  appendFileSync(join(common, 'info', 'exclude'), '\n/.claude/worktrees/\n');
+function linkHusky({ main, common }, tree) {
+  const source = join(main, '.husky', '_');
+  const link = join(tree, '.husky', '_');
+  if (!existsSync(source) || !existsSync(dirname(link)) || existsSync(link)) return;
+  if (!quiet(main, 'check-ignore', '-q', '.husky/_')) {
+    mkdirSync(join(common, 'info'), { recursive: true });
+    appendFileSync(join(common, 'info', 'exclude'), '\n/.husky/_\n');
+  }
+  symlinkSync(source, link, 'junction');
 }
 
-function linkNodeModules(main, tree) {
+function linkNodeModules({ main, common }, tree) {
   const source = join(main, 'node_modules');
   const link = join(tree, 'node_modules');
-  if (existsSync(source) && !existsSync(link)) symlinkSync(source, link, 'junction');
+  if (!existsSync(source) || existsSync(link)) return;
+  symlinkSync(source, link, 'junction');
+  if (!quiet(tree, 'check-ignore', '-q', 'node_modules')) {
+    mkdirSync(join(common, 'info'), { recursive: true });
+    appendFileSync(join(common, 'info', 'exclude'), '\n/node_modules\n');
+  }
 }
 
 function unlinkNodeModules(tree) {
@@ -105,6 +125,15 @@ function unlinkNodeModules(tree) {
   }
 }
 
+function unlinkHusky(tree) {
+  const link = join(tree, '.husky', '_');
+  try {
+    if (lstatSync(link).isSymbolicLink()) unlinkSync(link);
+  } catch {
+    // Sin .husky/_ enlazado.
+  }
+}
+
 function dirty(tree) {
   return git(tree, 'status', '--porcelain')
     .split('\n')
@@ -113,6 +142,7 @@ function dirty(tree) {
 
 function removeTree(main, tree) {
   unlinkNodeModules(tree);
+  unlinkHusky(tree);
   if (!run(main, 'worktree', 'remove', tree)) fail(`No se pudo eliminar ${tree}.`);
 }
 
@@ -128,27 +158,32 @@ function syncBase({ main, base }) {
 }
 
 function crear(repo, task, flags) {
-  const tree = treePath(repo.main, taskName(task));
-  if (existsSync(tree)) fail(`Ya existe ${tree}: es de esta tarea o de otra sesión; no se toca.`);
+  const name = taskName(task);
+  const found = existingTree(repo.main, name);
+  if (found) fail(`Ya existe ${found}: es de esta tarea o de otra sesión; no se toca.`);
+  const tree = treePath(repo.main, name);
   const branch = flags.rama ?? `feat/${task}`;
   const from = flags.desde ?? repo.base;
-  excludeWorktrees(repo);
+  mkdirSync(treeRoot(repo.main), { recursive: true });
   const exists = quiet(repo.main, 'rev-parse', '--verify', '--quiet', `refs/heads/${branch}`);
   const args = exists ? ['worktree', 'add', tree, branch] : ['worktree', 'add', '-b', branch, tree, from];
   if (!run(repo.main, ...args)) fail('No se pudo crear el worktree.');
-  linkNodeModules(repo.main, tree);
+  linkNodeModules(repo, tree);
+  if (!flags['sin-hook']) linkHusky(repo, tree);
   console.log(`Árbol: ${tree}\nRama: ${branch}${exists ? ' (existente)' : ` (nueva desde ${from})`}\nBase: ${repo.base}`);
 }
 
 function merge(repo, branch, flags) {
   if (!quiet(repo.main, 'rev-parse', '--verify', '--quiet', `refs/heads/${branch}`)) fail(`No existe la rama ${branch}.`);
-  const tmp = mergeTree(repo.main, branch);
-  if (existsSync(tmp)) fail(`Ya hay un merge en curso en ${tmp}: termínalo con publicar o elimínalo.`);
+  const task = mergeTask(branch);
+  const found = existingTree(repo.main, task);
+  if (found) fail(`Ya hay un merge en curso en ${found}: termínalo con publicar o elimínalo.`);
+  const tmp = treePath(repo.main, task);
   syncBase(repo);
-  excludeWorktrees(repo);
+  mkdirSync(treeRoot(repo.main), { recursive: true });
   if (!run(repo.main, 'worktree', 'add', '--detach', tmp, repo.base)) fail('No se pudo crear el worktree temporal.');
   writeFileSync(mergeBaseFile(tmp), `${repo.base}\n`);
-  linkNodeModules(repo.main, tmp);
+  linkNodeModules(repo, tmp);
   const verify = flags['no-verify'] ? ['--no-verify'] : [];
   if (!run(tmp, 'merge', '--no-ff', ...verify, '-m', `Merge branch '${branch}' into ${repo.base}`, branch)) {
     const conflicts = tryGit(tmp, 'diff', '--name-only', '--diff-filter=U') || '(ninguno listado)';
@@ -158,8 +193,8 @@ function merge(repo, branch, flags) {
 }
 
 function publicar(repo, branch, flags) {
-  const tmp = mergeTree(repo.main, branch);
-  if (!existsSync(tmp)) fail(`No hay merge en curso en ${tmp}.`);
+  const tmp = existingTree(repo.main, mergeTask(branch));
+  if (!tmp) fail(`No hay merge en curso de ${branch}.`);
   const mergedOn = existsSync(mergeBaseFile(tmp)) ? readFileSync(mergeBaseFile(tmp), 'utf8').trim() : repo.base;
   if (mergedOn !== repo.base) {
     fail(`El merge de ${tmp} se hizo sobre ${mergedOn} y el checkout principal está ahora en ${repo.base}: vuélvelo a ${mergedOn}, o elimina el temporal y rehaz el merge.`);
@@ -185,8 +220,8 @@ function publicar(repo, branch, flags) {
 }
 
 function cerrar(repo, task, flags) {
-  const tree = treePath(repo.main, taskName(task));
-  if (!existsSync(tree)) fail(`No existe ${tree}.`);
+  const tree = existingTree(repo.main, taskName(task));
+  if (!tree) fail(`No existe el worktree ${task} de ${repo.main}.`);
   const pending = dirty(tree);
   if (pending.length) fail(`${tree} tiene cambios sin commit; no se elimina:\n${pending.join('\n')}`);
   const branch = tryGit(tree, 'symbolic-ref', '--short', 'HEAD');

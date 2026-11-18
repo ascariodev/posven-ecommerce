@@ -17,6 +17,10 @@ ya corrigió no es lección.
 narrativa ni culpables + una línea `aplicada en: <ruta entre comillas invertidas>` o
 `aplicada en: pendiente: <quién o qué plan lo construye>`. `pendiente` sin dueño no vale.
 
+El id nuevo sigue al mayor de todas las ramas de larga vida del repo, no sólo al de la actual
+(`git -C <repo> grep -h '^## L-' <rama> -- docs/conventions/lessons.md` por cada una): dos ramas
+que numeran por su cuenta dan el mismo id a lecciones distintas.
+
 ## Promover es el punto
 
 Una lección que se puede hacer cumplir mecánicamente (regla de `.claude/rules/`, test, hook,

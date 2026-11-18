@@ -9,6 +9,7 @@ effort: medium
 Ejecuta el plan `$ARGUMENTS` completo (`<repo>/docs/plans/$ARGUMENTS.md` o, en el
 espacio de quien coordina, `posven/.claude/docs/plans/$ARGUMENTS.md`). Si no llegaron
 argumentos, usa el plan activo (Estado "en curso"); si hay más de uno o ninguno, pregunta cuál.
+Un plan `propuesto` que el usuario pide ejecutar pasa antes a `en curso` (regla `plan-composition`).
 
 Eres **el coordinador**: analizas, despachas, revisas, registras y haces commit. **No escribes
 el código** ni pegas diffs ni contenido de archivos en tu conversación. El implementador sólo

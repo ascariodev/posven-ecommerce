@@ -27,7 +27,7 @@ const ALWAYS_ASK = [
 const FILE_REDIRECT = /\b(?:psql|sqlite3)\b[^|;&]*\s<\s*[^<]/i;
 const QUOTED = /"(?:\\.|[^"\\])*"|'[^']*'/g;
 const SQL_WRITE = /\b(?:insert|update|delete|drop|truncate|alter|create|grant|revoke|copy|merge|call|vacuum|reindex|cluster|refresh|into|upsert)\b|\bcomment\s+on\b|\bdo\s+\$/i;
-const PHP_WRITE = /->\s*(?:save|forceDelete|increment|decrement|attach|detach|sync|syncWithoutDetaching|push|restore|updateOrCreate|firstOrCreate|updateQuietly|saveQuietly|fill)\s*\(|\b(?:DB::(?:statement|unprepared)|Artisan::call|Schema::|dispatch(?:Sync)?)\b/i;
+const PHP_WRITE = /->\s*(?:save|forceDelete|increment|decrement|attach|detach|sync|syncWithoutDetaching|push|restore|updateOrCreate|firstOrCreate|updateQuietly|saveQuietly|fill|forceFill|forceCreate|destroy|touch|saveMany|createMany|updateExistingPivot|toggle|associate|dissociate)\s*\(|::\s*(?:destroy|forceCreate)\s*\(|\b(?:DB::(?:statement|unprepared)|Artisan::call|Schema::|dispatch(?:Sync)?)\b/i;
 
 export function reasonToAsk(command) {
   if (typeof command !== 'string' || !DB_COMMAND.test(command)) return null;
@@ -56,6 +56,12 @@ function selfTest() {
   check('tinker de lectura no pregunta', reasonToAsk(`docker compose exec app php artisan tinker --execute="dump(App\\Models\\User::count());"`) === null);
   check('tinker con ->save() pregunta', reasonToAsk(`docker compose exec app php artisan tinker --execute="$u=User::find(1); $u->name='x'; $u->save();"`) !== null);
   check('tinker con ::create( pregunta', reasonToAsk(`docker compose exec app php artisan tinker --execute="Tpv::create([])"`) !== null);
+  check('tinker con ::destroy( pregunta', reasonToAsk(`docker compose exec app php artisan tinker --execute="App\\Models\\User::destroy(5);"`) !== null);
+  check('tinker con ->touch() pregunta', reasonToAsk(`docker compose exec app php artisan tinker --execute="App\\Models\\Tpv::find(1)->touch();"`) !== null);
+  check('tinker con ->saveMany( pregunta', reasonToAsk(`docker compose exec app php artisan tinker --execute="$o->lines()->saveMany($l);"`) !== null);
+  check('tinker con ->createMany( pregunta', reasonToAsk(`docker compose exec app php artisan tinker --execute="$o->lines()->createMany([[]]);"`) !== null);
+  check('tinker con ->forceFill( pregunta', reasonToAsk(`docker compose exec app php artisan tinker --execute="$u->forceFill(['x'=>1]);"`) !== null);
+  check('tinker con ->pluck( no pregunta', reasonToAsk(`docker compose exec app php artisan tinker --execute="dump(App\\Models\\Tpv::query()->limit(5)->pluck('id'));"`) === null);
   check('tinker interactivo pregunta', reasonToAsk('docker compose exec app php artisan tinker') !== null);
   check('db:show no pregunta', reasonToAsk('docker compose exec app php artisan db:show') === null);
   check('db:wipe pregunta', reasonToAsk('docker compose exec app php artisan db:wipe --force') !== null);

@@ -97,7 +97,8 @@ Nunca se reporta como pasando algo que no se corrió. El frontend de posveapi se
   `postgres`, base `posshop_dev`): `docker compose -f "<padre>/.claude/entorno/docker-compose.yml"
   exec postgres psql -U postgres -d posshop_dev`. El compose fija `name: posven`, del que salen los
   nombres de los volúmenes: no se quita. Credenciales en `posveapi/.env`: nunca se leen ni se muestran.
-- posvenapp: SQLite en el dispositivo (expo-sqlite, `posven_v4.db`); no se consulta por terminal.
+- posvenapp: SQLite en el dispositivo; no se consulta por terminal. Motor, nombre de la base y
+  esquema dependen de la rama: regla `.claude/rules/sqlite.md` del árbol en que se trabaja.
 - Sólo desarrollo local, nunca producción. Nunca `SELECT *` sin `LIMIT`. Antes de `UPDATE`,
   `DELETE` o `INSERT`: mostrar la consulta y cuántas filas afecta, y esperar confirmación.
 - Esquema y migraciones: reglas `.claude/rules/migrations.md` (posveapi) y

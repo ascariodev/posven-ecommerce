@@ -16,6 +16,10 @@ existe, un plan por repo). Se crea desde `.claude/docs/plans/_plantilla.md`; cer
 mínimo hasta ~30 líneas y cada fase ~15-25. Lo que pasa se divide en planes encadenados con su
 línea "Depende de", porque quien coordina relee el plan entero.
 
+Estado: nace `propuesto`; pasa a `en curso · Fase actual: 1` cuando el usuario lo aprueba o pide
+ejecutarlo, y a `terminado` al cerrarlo. El hook `plan-state` sólo reinyecta los `en curso`: un
+plan sin aprobar no cuenta.
+
 ## Brief de fase
 
 El implementador no analiza: ejecuta el brief. Cada fase trae, resuelto al planificar:

@@ -37,7 +37,9 @@ espacio de quien coordina, y la copia del repo no se edita a mano.
   commitea, porque lo comparten las sesiones en paralelo y de él sale el grafo; sólo avanza con
   `merge --ff-only` (`merge` y `publicar` del script). La verificación del §5 se corre en el
   temporal del merge; al terminar, `cerrar`. Nunca se cierra un worktree con cambios sin commit
-  ni uno de otra sesión.
+  ni uno de otra sesión. El árbol queda en `<padre>/.worktrees/<repo>/<tarea>`, fuera del repo.
+  Una sesión abierta en el repo, y no en `<padre>` ni en el árbol, no carga el `CLAUDE.md` ni las
+  reglas del árbol al leerlo: tras `crear`, para y pide al usuario `/cd <árbol>`.
 - Exento el repo que se escribe directo (configuración, planes):
   `git -C <repo> config claude.mainCheckoutWrites true`, puesto por el usuario o a su pedido. El
   hook `<repo>/.claude/hooks/check-worktree.mjs` avisa al escribir en un checkout principal no

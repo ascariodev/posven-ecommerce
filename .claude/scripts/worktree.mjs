@@ -18,7 +18,8 @@
 //       La verificación del repo se corre en ese árbol antes de publicar.
 //   publicar <repo> <rama> [--push] [--no-verify]
 //       Con --push sube el merge a la base en cada remoto que la tiene. Adelanta el checkout
-//       principal con --ff-only y elimina el temporal.
+//       principal con --ff-only y elimina el temporal. Se niega si el checkout principal cambió de
+//       rama desde el merge: la base es la rama que tenía entonces, guardada en el temporal.
 //   cerrar <repo> <tarea> [--descartar]
 //       Quita la junction de node_modules (el enlace, no el destino), el worktree y la rama
 //       (branch -d). Se niega con cambios sin commit, y si la rama no está en la base salvo con
@@ -29,7 +30,7 @@
 // sólo con pedido explícito del usuario. Nunca se cierra el worktree de otra sesión.
 
 import { execFileSync, spawnSync } from 'node:child_process';
-import { appendFileSync, existsSync, lstatSync, mkdirSync, unlinkSync, symlinkSync } from 'node:fs';
+import { appendFileSync, existsSync, lstatSync, mkdirSync, readFileSync, unlinkSync, symlinkSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 
 const git = (dir, ...args) =>
@@ -81,6 +82,7 @@ function taskName(name) {
 
 const treePath = (main, task) => join(main, '.claude', 'worktrees', task);
 const mergeTree = (main, branch) => treePath(main, `merge-${taskName(branch.split('/').pop())}`);
+const mergeBaseFile = tmp => join(git(tmp, 'rev-parse', '--absolute-git-dir'), 'claude-merge-base');
 
 function excludeWorktrees({ main, common }) {
   if (quiet(main, 'check-ignore', '-q', '.claude/worktrees/x')) return;
@@ -145,6 +147,7 @@ function merge(repo, branch, flags) {
   syncBase(repo);
   excludeWorktrees(repo);
   if (!run(repo.main, 'worktree', 'add', '--detach', tmp, repo.base)) fail('No se pudo crear el worktree temporal.');
+  writeFileSync(mergeBaseFile(tmp), `${repo.base}\n`);
   linkNodeModules(repo.main, tmp);
   const verify = flags['no-verify'] ? ['--no-verify'] : [];
   if (!run(tmp, 'merge', '--no-ff', ...verify, '-m', `Merge branch '${branch}' into ${repo.base}`, branch)) {
@@ -157,6 +160,10 @@ function merge(repo, branch, flags) {
 function publicar(repo, branch, flags) {
   const tmp = mergeTree(repo.main, branch);
   if (!existsSync(tmp)) fail(`No hay merge en curso en ${tmp}.`);
+  const mergedOn = existsSync(mergeBaseFile(tmp)) ? readFileSync(mergeBaseFile(tmp), 'utf8').trim() : repo.base;
+  if (mergedOn !== repo.base) {
+    fail(`El merge de ${tmp} se hizo sobre ${mergedOn} y el checkout principal está ahora en ${repo.base}: vuélvelo a ${mergedOn}, o elimina el temporal y rehaz el merge.`);
+  }
   if (quiet(tmp, 'rev-parse', '-q', '--verify', 'MERGE_HEAD') || dirty(tmp).length) {
     fail(`El merge de ${tmp} no está terminado o tiene cambios sin commit.`);
   }

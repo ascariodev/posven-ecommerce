@@ -10,7 +10,8 @@ Retoma el plan `$ARGUMENTS`: está en `<repo>/docs/plans/$ARGUMENTS.md` o, en el
 espacio de quien coordina, en `posven/.claude/docs/plans/$ARGUMENTS.md`.
 
 Si no llegaron argumentos, usa el plan activo que indicó el hook `plan-state` al iniciar la
-sesión. Si hay más de uno, o ninguno, pregunta cuál.
+sesión. Si hay más de uno, o ninguno, pregunta cuál. Un plan `propuesto` que el usuario pide
+retomar pasa antes a `en curso` (regla `plan-composition`).
 
 La fase trae su brief completo (regla `plan-composition`): se implementa sin preguntar. Las
 dudas y los arreglos que piden plan se resuelven según "Dudas y planes nuevos durante la

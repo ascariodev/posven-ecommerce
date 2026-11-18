@@ -1,11 +1,10 @@
 # Plan: <nombre de la tarea>
 
 **Objetivo:** <qué debe quedar funcionando al final, en 1–2 líneas>
-**Estado:** en curso · Fase actual: 1
+**Estado:** propuesto
 **Depende de:** <plan previo encadenado, o "ninguno">
-<!-- El hook plan-state busca "en curso" en esta línea. Al terminar: "terminado"; un plan escrito
-     durante otra ejecución y sin aprobar: "propuesto".
-     Tope de líneas y fases, y contenido del brief de cada fase: regla plan-composition. -->
+<!-- Estados y quién los cambia, tope de líneas y fases, y contenido del brief de cada fase:
+     regla plan-composition. El hook plan-state busca "en curso" en la línea Estado. -->
 
 ## Contexto mínimo
 <!-- Sólo lo que una sesión nueva necesita para arrancar. -->

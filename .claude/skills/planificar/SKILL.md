@@ -57,4 +57,5 @@ caminos.
 7. No implementes nada. Muéstrame una tabla resumen (plan, fase, repo, nº de archivos, riesgo),
    las líneas de cada plan, las vías que quedan fuera, lo que pide la transición en el deploy y
    las decisiones tomadas con la opción recomendada sin que yo las contestara, y espera mi
-   aprobación. Aprobado, propón el commit del plan en su repo.
+   aprobación. Aprobado, pasa el Estado a `en curso` (regla `plan-composition`) y propón el
+   commit del plan en su repo.

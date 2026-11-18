@@ -4,10 +4,16 @@
 // Plan activo = un `docs/plans/*.md` cuya línea `**Estado:**` dice "en curso". La raíz es
 // CLAUDE_PROJECT_DIR o, sin ella, dos niveles sobre el script. Si contiene posveapi/, posvenapp/ o
 // posven-ecommerce/ (espacio de trabajo) busca en los tres y en .claude/docs/plans; si no, es un
-// repo suelto y busca sólo en su docs/plans (y .claude/docs/plans si existe).
+// repo suelto y busca sólo en su docs/plans (y .claude/docs/plans si existe). En ambos casos mira
+// también docs/plans de cada worktree de `.claude/worktrees/`. De un plan con copias en varios
+// árboles vale la tocada por última vez (su último commit, o la fecha del archivo si tiene cambios
+// sin commit), contando las de `terminados/`. Un plan sin cambios hace más de STALE_DAYS días se
+// lista aparte, y con varios en curso no se ordena preguntar: el hook también corre tras
+// compactar, en medio de una tarea que puede no ser de ningún plan.
 // Sale siempre con 0: un fallo aquí nunca bloquea la sesión.
 
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -16,9 +22,27 @@ const MAX_NOTE_LINES = 30;
 const posven = resolve(process.env.CLAUDE_PROJECT_DIR || join(dirname(fileURLToPath(import.meta.url)), '..', '..'));
 const repos = ['posveapi', 'posvenapp', 'posven-ecommerce'];
 const workspace = repos.some((r) => existsSync(join(posven, r)));
-const dirs = workspace
-  ? [...repos.map((r) => join(posven, r, 'docs', 'plans')), join(posven, '.claude', 'docs', 'plans')]
-  : [join(posven, 'docs', 'plans'), join(posven, '.claude', 'docs', 'plans')];
+const STALE_DAYS = 7;
+
+// Un plan recién planificado vive en el worktree de su tarea hasta el merge; los temporales
+// `merge-*` no llevan planes propios.
+function worktreePlanDirs(repoDir) {
+  const root = join(repoDir, '.claude', 'worktrees');
+  try {
+    return readdirSync(root)
+      .filter((name) => !name.startsWith('merge-'))
+      .map((name) => join(root, name, 'docs', 'plans'));
+  } catch {
+    return [];
+  }
+}
+
+const repoDirs = workspace ? repos.map((r) => join(posven, r)) : [posven];
+const dirs = [
+  ...repoDirs.map((d) => join(d, 'docs', 'plans')),
+  join(posven, '.claude', 'docs', 'plans'),
+  ...repoDirs.flatMap(worktreePlanDirs),
+];
 
 function plansIn(dir) {
   try {
@@ -30,20 +54,53 @@ function plansIn(dir) {
   }
 }
 
-try {
-  const active = [];
-  for (const file of dirs.flatMap(plansIn)) {
-    const text = readFileSync(file, 'utf8');
-    const status = text.split('\n').find((l) => /^\*\*Estado:\*\*/i.test(l.trim()));
-    if (status && /en curso/i.test(status)) active.push({ file, text, status: status.trim() });
+function git(dir, args) {
+  try {
+    return execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8', timeout: 2000, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  } catch {
+    return null;
   }
+}
 
+function touchedMs(file) {
+  const dir = dirname(file);
+  const name = file.split(/[\\/]/).pop();
+  const pending = git(dir, ['status', '--porcelain', '--', name]);
+  const committed = pending === '' ? git(dir, ['log', '-1', '--format=%ct', '--', name]) : null;
+  return committed ? Number(committed) * 1000 : statSync(file).mtimeMs;
+}
+
+const statusOf = (text) => text.split('\n').find((l) => /^\*\*Estado:\*\*/i.test(l.trim()));
+
+try {
   const shown = (file) => relative(posven, file).replaceAll('\\', '/');
   const slug = (file) => file.split(/[\\/]/).pop().replace(/\.md$/, '');
+
+  const candidates = new Map();
+  for (const file of dirs.flatMap(plansIn)) {
+    const status = statusOf(readFileSync(file, 'utf8'));
+    if (status && /en curso/i.test(status) && !candidates.has(slug(file))) candidates.set(slug(file), file);
+  }
+
+  const active = [];
+  const stale = [];
+  for (const name of candidates.keys()) {
+    const copies = dirs
+      .flatMap((d) => [join(d, `${name}.md`), join(d, 'terminados', `${name}.md`)])
+      .filter(existsSync)
+      .map((file) => ({ file, touched: touchedMs(file) }));
+    const latest = copies.reduce((a, b) => (b.touched > a.touched ? b : a));
+    const text = readFileSync(latest.file, 'utf8');
+    const status = statusOf(text);
+    if (!status || !/en curso/i.test(status)) continue;
+    const days = Math.floor((Date.now() - latest.touched) / 86_400_000);
+    (days > STALE_DAYS ? stale : active).push({ file: latest.file, text, status: status.trim(), days });
+  }
+
   const out = [];
   if (active.length > 1) {
-    out.push(`[plan-state] Hay ${active.length} planes en curso: ${active.map((a) => shown(a.file)).join(', ')}.`);
-    out.push('Pregunta al usuario con cuál seguir antes de leer ninguno.');
+    out.push(`[plan-state] Planes en curso: ${active.map((a) => shown(a.file)).join(', ')}.`);
+    out.push('Si el usuario pide seguir un plan sin nombrarlo, pregunta cuál; si pide otra cosa, no leas ninguno.');
   } else if (active.length === 1) {
     const { file, text, status } = active[0];
     const lines = text.split('\n');
@@ -62,6 +119,12 @@ try {
     if (next) out.push(`Siguiente fase pendiente: ${next.replace(/^###\s*\[ \]\s*/, '')}`);
     if (notes.length) out.push('Notas para la próxima sesión:', ...notes);
     out.push(`Para continuar: /siguiente-fase ${slug(file)} (o /ejecutar-plan ${slug(file)})`);
+  }
+  if (stale.length) {
+    out.push(
+      `[plan-state] En curso sin cambios hace más de ${STALE_DAYS} días (cerrar o retomar; no se leen sin pedido): ` +
+        stale.map((s) => `${shown(s.file)} (${s.days} d)`).join(', ') + '.',
+    );
   }
   if (out.length) process.stdout.write(out.join('\n') + '\n');
 } catch {

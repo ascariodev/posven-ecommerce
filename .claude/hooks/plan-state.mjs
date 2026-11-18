@@ -10,6 +10,8 @@
 // sin commit), contando las de `terminados/`. Un plan sin cambios hace más de STALE_DAYS días se
 // lista aparte, y con varios en curso no se ordena preguntar: el hook también corre tras
 // compactar, en medio de una tarea que puede no ser de ningún plan.
+// De `terminados/` lista los de Estado "pantalla pendiente" (regla plan-cobertura); con copias en
+// varios árboles vale la del checkout principal.
 // Sale siempre con 0: un fallo aquí nunca bloquea la sesión.
 
 import { execFileSync } from 'node:child_process';
@@ -125,6 +127,17 @@ try {
       `[plan-state] En curso sin cambios hace más de ${STALE_DAYS} días (cerrar o retomar; no se leen sin pedido): ` +
         stale.map((s) => `${shown(s.file)} (${s.days} d)`).join(', ') + '.',
     );
+  }
+  const settled = new Set();
+  const screenPending = [];
+  for (const file of dirs.flatMap((d) => plansIn(join(d, 'terminados')))) {
+    if (settled.has(slug(file))) continue;
+    settled.add(slug(file));
+    const status = statusOf(readFileSync(file, 'utf8'));
+    if (status && /pantalla pendiente/i.test(status)) screenPending.push(file);
+  }
+  if (screenPending.length) {
+    out.push(`[plan-state] Terminados con la fase [pantalla] sin correr: ${screenPending.map(shown).join(', ')}.`);
   }
   if (out.length) process.stdout.write(out.join('\n') + '\n');
 } catch {

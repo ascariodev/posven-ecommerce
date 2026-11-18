@@ -20,6 +20,7 @@ Grafos (carpeta oculta en la carpeta padre de los repos, `<padre>`;
 | posvenapp (TPV) | `$G/posvenapp/graphify-out/graph.json` |
 | posven-ecommerce (buscador web) | `$G/posven-ecommerce/graphify-out/graph.json` (se construye a pedido; si no existe, Grep y Glob) |
 | algo que cruza API y TPV (payload, sync, evento) | `$G/cross-repo/graph.json` |
+| el árbol `feat/v3` de posveapi o de posvenapp | `$G/<repo>-v3/graphify-out/graph.json` (el cross-repo no lo incluye) |
 
 ## Cuál orden
 
@@ -95,5 +96,7 @@ Al despachar un subagente que explora, el texto nombra el símbolo de partida y 
   checkout principal, así que un plan hecho en un worktree se refleja recién cuando su rama llega
   ahí. Si el plan cruzó repos, rehaz el cross-repo con los tres grafos:
   `graphify merge-graphs <api> <app> <ecommerce> --out "<padre>/.graphify-workspace/cross-repo/graph.json"`.
+  El grafo de un árbol `feat/v3` se actualiza sobre su árbol, sin cambios sin commit:
+  `GRAPHIFY_OUT="<padre>/.graphify-workspace/<repo>-v3/graphify-out" graphify update "<padre>/<repo>/.claude/worktrees/v3"`.
 - Si `graphify` no está disponible, dilo en una línea y sigue con README y búsqueda directa; no
   se da el grafo por consultado.

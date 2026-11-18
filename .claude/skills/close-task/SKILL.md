@@ -49,8 +49,8 @@ detiene y se reporta. Declarar una deuda en el reporte y seguir no es una tercer
 - Sin `Co-Authored-By`, sin "Generated with", sin atribución de ninguna clase.
 - Archivos por ruta (`git -C <repo> add <rutas>`), nunca `-A` en un repo con trabajo ajeno sin
   commitear.
-- Fuera de un plan, el commit se propone y se espera aprobación. En posveapi el hook pint falla
-  sin PHP: `--no-verify` se pide cada vez.
+- Fuera de un plan, el commit se propone y se espera aprobación. En posveapi el hook de
+  commit corre pint en el contenedor: `--no-verify` se pide cada vez y sólo sin Docker.
 - El commit va en el worktree de la tarea, nunca en el checkout principal. Sin push ni merge sin
   pedido explícito; pedido el merge, `merge`, `publicar` y `cerrar` del script de
   `.claude/CLAUDE.comun.md` §2.

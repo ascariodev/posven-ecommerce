@@ -27,9 +27,10 @@ rutas absolutas.
    cuadra, o si el plan de su "Depende de" no está `terminado`, pregunta: son las únicas otras
    preguntas permitidas.
 3. Si hay fases de posveapi, comprueba tú si Docker está arriba (`docker compose -f
-   "<padre>/.claude/entorno/docker-compose.yml" ps`) y pregunta sólo esto: ¿autorizo
-   `--no-verify` para los commits de este plan (el hook de pint falla sin PHP)? Va a "Decisiones"
-   y vale sólo para este plan.
+   "<padre>/.claude/entorno/docker-compose.yml" ps`) y, si no, levántalo (`up -d`): con el
+   contenedor en marcha el hook de commit corre pint y las fases `[riesgo]` se pueden verificar
+   (`.claude/CLAUDE.comun.md` §5). Sólo si no levanta pregunta esto: ¿autorizo `--no-verify` para
+   los commits de este plan? Va a "Decisiones" y vale sólo para este plan.
 4. Anuncia en 2–3 líneas cuántas fases pendientes hay y el orden.
 
 ## Bucle: por cada fase pendiente (`### [ ]`), en orden
@@ -51,7 +52,7 @@ rutas absolutas.
 3. **Verificar:** corre la verificación proporcional del repo (`.claude/CLAUDE.comun.md` §5) con
    salida resumida. Un fallo que no causó el plan se anota en `<tarea>.dudas.md` y se sigue.
 4. **Revisar:** despacha `revisor-fase` con la ruta del plan, la fase, el árbol y las "Dudas
-   resueltas" del implementador, con el mismo `model` que el implementador. Si la fase condensa
+   resueltas" del implementador, con `model: opus` sea cual sea el del implementador. Si la fase condensa
    documentación, despacha además `doc-verifier`.
    - `LISTO`: sigue al paso 5. Las dudas que marque van a `<tarea>.dudas.md`.
    - `CAMBIOS NECESARIOS`: convierte cada problema en un paso concreto (archivo, ancla, qué
@@ -69,6 +70,8 @@ rutas absolutas.
 ## Cuándo parar (y sólo entonces)
 - La acción siguiente es irreversible y el plan no la prevé: borrar datos, tocar producción,
   actualizar un snapshot fiscal, push o merge.
+- Una fase `[riesgo]` cuya verificación no se pudo correr (`.claude/CLAUDE.comun.md` §5): queda
+  sin commit.
 - Una fase no pasa la revisión tras la ronda con opus y las siguientes dependen de ella. Si no
   dependen, revierte sus archivos (`git -C <árbol> checkout -- <rutas>` y borra los que creó),
   déjala `[ ]` con la nota en `<tarea>.dudas.md` y sigue.
@@ -77,7 +80,8 @@ Al parar: deja el plan y `<tarea>.dudas.md` al día, explica en máximo 5 línea
 necesitas, y espera. Cuando responda, retoma desde la fase pendiente.
 
 ## Al terminar el plan
-Estado `terminado`, plan y `<tarea>.dudas.md` a `terminados/` de su carpeta, poda de lecciones
+Estado `terminado` (o `terminado · pantalla pendiente`, regla `plan-cobertura`), plan y
+`<tarea>.dudas.md` a `terminados/` de su carpeta, poda de lecciones
 ya promovidas, commit, y resumen en máximo 8 líneas: fases, commits, decisiones relevantes,
 lecciones nuevas y pasos de deploy en orden. Después presenta `<tarea>.dudas.md`: primero las
 `[comportamiento]`, cada duda con la opción tomada, y los planes `propuesto` que se escribieron. Si hay mejoras pendientes, una

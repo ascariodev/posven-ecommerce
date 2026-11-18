@@ -22,14 +22,18 @@ Recibes la ruta de uno o más planes encadenados y, por repo, el árbol (ruta ab
    ninguna fase contradice a otra, a las Restricciones ni a "Decisiones".
 4. **Vías:** busca por tu cuenta, por el efecto y no por el símbolo, las entradas que producen el
    efecto del plan y los lectores del estado nuevo (grafo en
-   `<padre>/.graphify-workspace/<repo>/graphify-out/graph.json` o `cross-repo/graph.json`, y
-   Grep). Toda vía que encuentres y no esté en una fase ni en "Decisiones" es un problema.
+   `<padre>/.graphify-workspace/<repo>/graphify-out/graph.json` o `cross-repo/graph.json`, o el
+   del árbol si tiene uno propio, `.claude/CLAUDE.comun.md` §3, y Grep). Toda vía que encuentres y no esté en una fase ni en "Decisiones" es un problema.
 5. **Transición:** la línea existe y cubre datos existentes, TPV con versión o caché anterior y
    orden del deploy; un paso manual de deploy que se puede resolver en código es un problema.
    **Arrastres:** busca por tu cuenta, como dice la regla `plan-cobertura`, lo que otros planes
    dejaron para este; el que no esté en una fase ni en "Decisiones" es un problema.
 6. **Brief:** pasos sin verbos de análisis, "Terminado cuando" con comando, `[riesgo]` y
    `[pantalla]` donde la regla los pide, tamaño dentro del tope.
+7. **Lo que el brief deja abierto:** recorre cada fase como quien la implementa. Todo lo que
+   obligaría a elegir (un nombre, un valor, un mensaje, un caso borde, qué hacer con un llamador o
+   con un dato existente) y no está en la fase ni en "Decisiones" es un problema: la ejecución lo
+   resolvería sola como duda fuera del brief.
 
 Reporta en máximo 20 líneas:
 

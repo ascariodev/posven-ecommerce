@@ -11,7 +11,8 @@
 //       Crea <padre>/.worktrees/<repo>/<tarea> (<padre>, la carpeta que contiene al checkout
 //       principal) en <rama> (por omisión feat/<tarea>; nueva desde <ref>, por omisión la rama del
 //       checkout principal, que es la base). Si el checkout principal tiene node_modules, lo enlaza
-//       como junction. Enlaza .husky/_ al del checkout principal cuando existe, para que el hook de
+//       como junction y lo excluye en .git/info/exclude si el .gitignore del repo no cubre el
+//       enlace. Enlaza .husky/_ al del checkout principal cuando existe, para que el hook de
 //       commit corra en el árbol, y lo excluye en .git/info/exclude; con --sin-hook no lo enlaza
 //       (rama cuyo hook no puede correr en un árbol).
 //   merge <repo> <rama> [--no-verify]
@@ -104,10 +105,15 @@ function linkHusky({ main, common }, tree) {
   symlinkSync(source, link, 'junction');
 }
 
-function linkNodeModules(main, tree) {
+function linkNodeModules({ main, common }, tree) {
   const source = join(main, 'node_modules');
   const link = join(tree, 'node_modules');
-  if (existsSync(source) && !existsSync(link)) symlinkSync(source, link, 'junction');
+  if (!existsSync(source) || existsSync(link)) return;
+  symlinkSync(source, link, 'junction');
+  if (!quiet(tree, 'check-ignore', '-q', 'node_modules')) {
+    mkdirSync(join(common, 'info'), { recursive: true });
+    appendFileSync(join(common, 'info', 'exclude'), '\n/node_modules\n');
+  }
 }
 
 function unlinkNodeModules(tree) {
@@ -162,7 +168,7 @@ function crear(repo, task, flags) {
   const exists = quiet(repo.main, 'rev-parse', '--verify', '--quiet', `refs/heads/${branch}`);
   const args = exists ? ['worktree', 'add', tree, branch] : ['worktree', 'add', '-b', branch, tree, from];
   if (!run(repo.main, ...args)) fail('No se pudo crear el worktree.');
-  linkNodeModules(repo.main, tree);
+  linkNodeModules(repo, tree);
   if (!flags['sin-hook']) linkHusky(repo, tree);
   console.log(`Árbol: ${tree}\nRama: ${branch}${exists ? ' (existente)' : ` (nueva desde ${from})`}\nBase: ${repo.base}`);
 }
@@ -177,7 +183,7 @@ function merge(repo, branch, flags) {
   mkdirSync(treeRoot(repo.main), { recursive: true });
   if (!run(repo.main, 'worktree', 'add', '--detach', tmp, repo.base)) fail('No se pudo crear el worktree temporal.');
   writeFileSync(mergeBaseFile(tmp), `${repo.base}\n`);
-  linkNodeModules(repo.main, tmp);
+  linkNodeModules(repo, tmp);
   const verify = flags['no-verify'] ? ['--no-verify'] : [];
   if (!run(tmp, 'merge', '--no-ff', ...verify, '-m', `Merge branch '${branch}' into ${repo.base}`, branch)) {
     const conflicts = tryGit(tmp, 'diff', '--name-only', '--diff-filter=U') || '(ninguno listado)';

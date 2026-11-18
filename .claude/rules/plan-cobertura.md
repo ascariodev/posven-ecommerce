@@ -36,4 +36,6 @@ escribe `[arrastre: <plan>]` en esa línea, con el nombre del plan o su letra en
 Un plan que cambia una pantalla termina con una fase `[pantalla]`: escenario por vía tocada
 (entorno local, empresa y datos de prueba de seeds o fixtures, pasos, resultado esperado). La
 corre quien coordina en el navegador, no el implementador; si no hay entorno o datos para
-correrla, el cierre la informa como "no verificado en pantalla" con el escenario para el usuario.
+correrla, el cierre la informa como "no verificado en pantalla" con el escenario para el usuario,
+la fase queda `[ ]` y el plan se cierra con Estado `terminado · pantalla pendiente`. Pasa a
+`terminado` cuando alguien corre el escenario y marca la fase.

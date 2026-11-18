@@ -19,7 +19,7 @@ absolutas.
    lo hagas solo.
 2. Corre la verificación proporcional del repo (`.claude/CLAUDE.comun.md` §5) con salida resumida:
    posvenapp tsc y jest del área, más los dorados si fue fiscal; posveapi phpunit en Docker o "no
-   verificado localmente"; posven-ecommerce lo que dice su CLAUDE.md. Si algo falla, avísame antes
+   verificado localmente" (nunca en una fase `[riesgo]`); posven-ecommerce lo que dice su CLAUDE.md. Si algo falla, avísame antes
    de seguir.
 3. Despacha `revisor-fase` con la ruta del plan, la fase y el árbol. Si devuelve CAMBIOS
    NECESARIOS, muéstrame los problemas y espera mi decisión. Las dudas que marque van a
@@ -33,7 +33,8 @@ absolutas.
    - Las sugerencias del revisor y los pendientes que no se aplicaron y pasan el filtro de la
      regla `plan-composition` van a `## Mejoras propuestas` como `- [ ] M-<n>`, clasificadas con
      los criterios de la skill `aplicar-mejoras`. No las implementes.
-   - Si era la última fase: Estado `terminado` y mueve el plan y su `<tarea>.dudas.md` a
+   - Si era la última fase: Estado `terminado` (o `terminado · pantalla pendiente`, regla
+     `plan-cobertura`) y mueve el plan y su `<tarea>.dudas.md` a
      `terminados/` de su carpeta (créala si no existe). Poda de `lessons.md` las lecciones ya
      promovidas, según la regla `lessons-authoring`.
 5. Si hubo un error que costó retrabajo, agrega una lección a `docs/conventions/lessons.md` del
@@ -43,7 +44,8 @@ absolutas.
    backend antes que TPV): nómbralos en el cierre.
 7. Commit en el repo de la fase: archivos por ruta, con el plan y `<tarea>.dudas.md`
    (`git -C <árbol> add <rutas>`, nunca `-A`), el mensaje `Commit:` de la fase, sin atribución.
-   En posveapi, `--no-verify` solo si lo autoricé en esta sesión. Sin push.
+   En posveapi el hook corre pint en el contenedor: `--no-verify` solo sin Docker y si lo
+   autoricé en esta sesión. Sin push.
 8. Termina con: "Listo. Haz /clear y luego /siguiente-fase $ARGUMENTS" (o "Plan terminado" si era
    la última fase, más las dudas de `<tarea>.dudas.md` con la opción tomada, primero las
    `[comportamiento]` (el merge espera mi sí sobre ellas), los planes

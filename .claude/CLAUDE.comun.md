@@ -52,7 +52,9 @@ Graphify es requisito: `pip install graphifyy`; su skill (`/graphify`) se instal
 usuario escribe `/graphify`, usa la skill graphify antes de cualquier otra cosa. Grafos en
 `<padre>/.graphify-workspace/` (carpeta oculta: `ls -a`): `<repo>/graphify-out/graph.json` por repo y,
 si existe, `cross-repo/graph.json`, preferido en lo que cruza repos; si no existe, consulta cada
-grafo y razona la conexión. Nunca un `graphify-out/` dentro del repo.
+grafo y razona la conexión. Nunca un `graphify-out/` dentro del repo. El árbol de larga vida
+`feat/v3` de posveapi y de posvenapp tiene grafo propio en `<repo>-v3/graphify-out/graph.json`:
+lo que se trabaja en ese árbol se consulta ahí, porque el del repo es foto de su rama base.
 
 1. `graphify query "<pregunta>" --graph <ruta>` (o `explain "<nodo>"`, `path "A" "B"`) antes
    de grepear, abrir archivos, responder sobre arquitectura o hacer un cambio no trivial.
@@ -88,7 +90,10 @@ grafo y razona la conexión. Nunca un `graphify-out/` dentro del repo.
 | posven-ecommerce | `<repo>/node_modules/.bin/tsc --noEmit -p <repo>/tsconfig.json` y `npx eslint <archivos>` | lo que dice el `CLAUDE.md` del repo |
 
 `<repo>` es la ruta absoluta del repo: sin `cd`, `npx tsc` resuelve al paquete ajeno `tsc`.
-Nunca se reporta como pasando algo que no se corrió. El frontend de posveapi se verifica con
+Nunca se reporta como pasando algo que no se corrió. Una fase `[riesgo]` no se cierra con "no
+verificado localmente": si Docker no está arriba se levanta (`docker compose -f
+"<padre>/.claude/entorno/docker-compose.yml" up -d`) y, si no levanta, la fase queda sin commit
+y la ejecución para ahí. El frontend de posveapi se verifica con
 `npx vite build --outDir <scratchpad>`, nunca `npm run build`.
 
 ## 6. Base de datos

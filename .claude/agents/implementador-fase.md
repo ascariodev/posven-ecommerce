@@ -27,7 +27,8 @@ ni `lessons.md` enteros y no preguntas.
    improvises: reporta `BLOQUEADO` con el motivo concreto.
 5. Verifica con el comando del "Terminado cuando" y el proporcional del repo
    (`.claude/CLAUDE.comun.md` §5): en posvenapp, un snapshot fiscal nunca con `-u`; en posveapi
-   sin Docker, "no verificado localmente". Salida resumida, sólo los fallos. Tras escribir un
+   sin Docker, "no verificado localmente", salvo en una fase `[riesgo]`, que se reporta
+   `BLOQUEADO`. Salida resumida, sólo los fallos. Tras escribir un
    FQCN de PHP en un README, relee la línea y confirma cada `\`: la herramienta de edición puede
    perderlas sin que `docs-check` lo marque.
 6. **No hagas commit ni edites el plan**: eso lo hace el coordinador.

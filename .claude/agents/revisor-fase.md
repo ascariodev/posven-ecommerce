@@ -2,7 +2,7 @@
 name: revisor-fase
 description: Revisa en solo lectura el diff sin commit de la fase o mejora (M-n) en curso contra su plan, CLAUDE.md, las rules y las lecciones. Lo despachan ejecutar-plan, cerrar-fase y aplicar-mejoras.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 effort: medium
 ---
 

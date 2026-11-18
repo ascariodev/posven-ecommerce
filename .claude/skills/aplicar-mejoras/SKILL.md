@@ -51,7 +51,8 @@ Formato de cada línea: el de `## Mejoras propuestas` en `.claude/docs/plans/_pl
 2. Lee `docs/conventions/lessons.md` de cada repo que toca.
 3. Muestra una tabla corta (id, mejora, repo, nivel, modelo) de lo que vas a aplicar; las que
    piden plan nuevo, dilo ahí. Si alguna es de posveapi, comprueba tú si Docker está arriba y
-   pregunta sólo si autorizo `--no-verify`; sin esa pregunta, sigue sin esperar.
+   levántalo si no; sólo si no levanta pregunta si autorizo `--no-verify`. Sin esa pregunta,
+   sigue sin esperar.
 
 ## Por cada mejora, en orden
 1. Arma su brief según la regla `plan-composition` (archivos con ancla, pasos concretos, comando
